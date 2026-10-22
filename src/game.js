@@ -1365,10 +1365,10 @@ function sheetEvt(){const e=evtNow(),b=e.boss,v=evtSt();
     return `<div class="ui-card ui-card--row evt-w evt-slot">${wArt(w.b,{cls:'qimg'})}<div class="grow"><b class="q${w.q}">${bpOf(w).n}${w.lv?' +'+w.lv:''}</b><div class="small muted"><span class="nobr">每小時 ${fmt(x.pw)}${bossWeak(w,b)?' <span class="t-ok">弱點</span>':''}</span>・<span class="nobr">本週已打 ${fmt(acc)}</span></div></div>${btn('收回','bossout',{cls:'btn-sec sm',attrs:`data-s="${k}"`})}</div>`};
   return head+`<div class="evt-hero" style="background-image:url(${A(b.bg)})">${img(b.art,'evt-mon')}<div class="evt-hero-in"><b>${b.n}</b><span class="small">弱點：${b.wn}<span class="nobr">（傷害 ×1.5）</span></span></div></div>
    ${bossRankPanel()}<div class="ui-panel panel"><div class="kv"><span>本週我的傷害</span><b>${fmt(bossLive())}</b></div><div class="kv"><span>目前每小時傷害</span><b>${fmt(bossRate())}</b></div><div class="small muted">派武器駐守首領，每小時造成「戰力」的傷害（打中弱點 ×1.5），離線也會繼續打，最多 ${BOSS_SLOTS} 把。駐守首領的武器不能同時打村莊、強化或熔解。每週日 0 點結算換下一隻首領，武器會留著繼續打。距離結算 ${fmtLeft(e.end-NOW())}。</div></div>
-   ${bossGlobalPanel(b,v)}
-   <div class="label">首領駐守位（${nPost}/${BOSS_SLOTS}）</div><div class="evt-ws">${v.slots.map(slot).join('')}</div>
-   <div class="label">挑武器派遣（戰力高的在前）</div><div class="evt-ws">${ws.length?ws.map(w=>{const vi=where(w);return `<div class="ui-card ui-card--row evt-w">${wArt(w.b,{cls:'qimg'})}<div class="grow"><b class="q${w.q}">${bpOf(w).n}${w.lv?' +'+w.lv:''}</b><div class="small muted"><span class="nobr">每小時 ${fmt(bossDmgOf(w,b))}${bossWeak(w,b)?' <span class="t-ok">弱點</span>':''}</span>${vi>=0?`・<span class="nobr t-gold">會從 ${vNo(vi)} 收回</span>`:''}</div></div>${btn('派遣','bosspost',{cls:'btn-primary sm',attrs:`data-id="${w.id}"`,dis:full})}</div>`}).join(''):'<div class="small muted">武器庫沒有可以派的武器，先去鍛造一把。</div>'}</div>
-   ${full&&ws.length?'<div class="small muted center">駐守位滿了，想換武器先收回一把。</div>':''}`}
+   <div class="label evt-lb">首領駐守位（${nPost}/${BOSS_SLOTS}）</div><div class="evt-ws">${v.slots.map(slot).join('')}</div>
+   <div class="label evt-lb">挑武器派遣（戰力高的在前）</div><div class="evt-ws">${ws.length?ws.map(w=>{const vi=where(w);return `<div class="ui-card ui-card--row evt-w">${wArt(w.b,{cls:'qimg'})}<div class="grow"><b class="q${w.q}">${bpOf(w).n}${w.lv?' +'+w.lv:''}</b><div class="small muted"><span class="nobr">每小時 ${fmt(bossDmgOf(w,b))}${bossWeak(w,b)?' <span class="t-ok">弱點</span>':''}</span>${vi>=0?`・<span class="nobr t-gold">會從 ${vNo(vi)} 收回</span>`:''}</div></div>${btn('派遣','bosspost',{cls:'btn-primary sm',attrs:`data-id="${w.id}"`,dis:full})}</div>`}).join(''):'<div class="small muted">武器庫沒有可以派的武器，先去鍛造一把。</div>'}</div>
+   ${full&&ws.length?'<div class="small muted center">駐守位滿了，想換武器先收回一把。</div>':''}
+   <div class="evt-lb"></div>${bossGlobalPanel(b,v)}`}
 
 // v3.87 排名裡其他玩家駐守的武器（唯讀）
 function sheetBossW(r,j){const g=bossBoardNow(),x=g&&g.top[r],ws=x?(x.ws||[]).filter(w=>BP[bpId(w.b)]):[],w=ws[j],b=evtNow().boss;
