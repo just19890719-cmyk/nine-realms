@@ -1382,10 +1382,10 @@ const MATART={iron:'mat_iron',oak:'mat_oak',leather:'mat_leather',silver:'mat_si
 const CATS={axe:'斧',sword:'劍',dagger:'短刃',polearm:'長柄',hammer:'錘',bow:'弓',crossbow:'弩',shield:'盾',throw:'投擲',tool:'工具'};
 // sec = 正式版 1× 秒數；試玩可在測試工具調整時間流速
 const TIERS=[
-  {n:'鐵製',mult:1,stable:6,sec:60,gold:10,furnace:1,unlock:0,slag:1},
-  {n:'霜銀',mult:2.5,stable:5,sec:300,gold:60,furnace:2,unlock:4,slag:4},
-  {n:'龍鱗',mult:6,stable:3,sec:900,gold:250,furnace:4,unlock:7,slag:10},
-  {n:'神器',mult:11,stable:0,sec:2400,gold:800,furnace:5,unlock:8,slag:25}
+  {n:'鐵製',mult:1,stable:6,sec:6,gold:10,furnace:1,unlock:0,slag:1},
+  {n:'霜銀',mult:2.5,stable:5,sec:30,gold:60,furnace:2,unlock:4,slag:4},
+  {n:'龍鱗',mult:6,stable:3,sec:90,gold:250,furnace:4,unlock:7,slag:10},
+  {n:'神器',mult:11,stable:0,sec:240,gold:800,furnace:5,unlock:8,slag:25}
 ];
 const BPS=[
  ['t1_woodaxe','伐木斧','axe',0,14,0],['t1_handaxe','手斧','axe',0,12,0],
@@ -1444,16 +1444,16 @@ const POWER_FLOOR=.6; // 戰力超過需求時，狩獵時間最多縮短到 60%
 const SLOT_ANVIL=[1,1,3,5]; // 附魔第 1~4 格需要的鐵砧等級
 const REALMS=['米德加德','約頓','尼福爾','亞爾夫','瓦納','斯瓦塔','穆斯貝','赫爾','阿斯嘉'];
 const VILLAGES=[
- {name:'鐵爐村',who:'村民・伐木工',cat:'axe',req:10,sec:1200,gold:12,danger:0,tag:'labor',drops:[['iron',.8,1,1],['oak',.6,1,1]],txt:'伐木工的斧頭全鈍了，冬天前得砍夠柴火。'},
- {name:'松林哨站',who:'村民・守林人',cat:'polearm',req:13,sec:1800,gold:24,danger:.02,tag:'beast',drops:[['oak',.8,1,1],['leather',.5,1,1]],txt:'守林人要長矛擋住林中的野豬群。'},
- {name:'狼嚎谷',who:'村民・獵人',cat:'bow',req:15,sec:2700,gold:45,danger:.04,tag:'beast',drops:[['leather',.8,1,1],['iron',.4,1,1],['fang',.15,1,1],['fur',.03,1,1]],txt:'獵人要一把好弓，谷裡的狼群越來越大膽。'},
- {name:'霜溪鎮',who:'鎮民自衛隊',cat:'sword',req:22,sec:3600,gold:70,danger:.05,tag:'beast',drops:[['iron',.6,1,1],['silver',.35,1,1],['fang',.35,1,1]],txt:'溪邊出現霜狼，自衛隊要換新劍。'},
- {name:'鹿角堡',who:'軍隊・堡壘守衛',cat:'shield',req:32,sec:7200,gold:100,danger:.06,tag:'beast',drops:[['silver',.5,1,2],['fang',.4,1,2],['shard',.25,1,1]],txt:'冰鴉群天天俯衝城牆，守衛需要堅固的盾。'},
- {name:'渡鴉灣',who:'軍隊・港口衛兵',cat:'crossbow',req:34,sec:10800,gold:170,danger:.08,tag:'beast',drops:[['silver',.5,1,2],['fang',.3,1,1],['shard',.3,1,1],['serpent',.06,1,1]],txt:'海蛇在港外出沒，衛兵要能遠射的弩。'},
- {name:'雪峰營地',who:'軍隊・山地軍團',cat:'hammer',req:75,sec:14400,gold:280,danger:.1,tag:'beast',drops:[['silver',.6,1,2],['fang',.6,1,2],['scale',.15,1,1],['rune',.15,1,1],['fur',.1,1,1],['shard',.15,1,1]],txt:'雪怪的甲殼太硬，軍團要能砸碎它的戰錘。'},
- {name:'巨人足跡',who:'軍隊・王國先鋒',cat:'axe',req:110,sec:21600,gold:450,danger:.12,tag:'giant',need:'giant',drops:[['rune',.3,1,1],['scale',.2,1,1],['shard',.5,1,2],['icecore',.15,1,1]],txt:'霜巨人走下山了。武器必須帶有「剋巨人」。'},
- {name:'灰燼要塞',who:'軍隊・要塞騎士',cat:'sword',req:160,sec:28800,gold:700,danger:.14,tag:'giant',drops:[['scale',.3,1,1],['rune',.3,1,1],['shard',.3,1,1],['fireheart',.15,1,1]],txt:'火巨人的斥候燒毀了外牆，騎士要更強的劍。'},
- {name:'世界樹根穴',who:'軍隊・屠龍軍',cat:'polearm',req:200,sec:36000,gold:1000,danger:.16,tag:'dragon',need:'dragon',drops:[['scale',.35,1,2],['rune',.3,1,1],['shard',.5,1,2]],txt:'尼德霍格啃咬著世界樹根。長柄武器必須帶有「剋龍」。'}
+ {name:'鐵爐村',who:'村民・伐木工',cat:'axe',req:10,sec:120,gold:12,danger:0,tag:'labor',drops:[['iron',.8,1,1],['oak',.6,1,1]],txt:'伐木工的斧頭全鈍了，冬天前得砍夠柴火。'},
+ {name:'松林哨站',who:'村民・守林人',cat:'polearm',req:13,sec:180,gold:24,danger:.02,tag:'beast',drops:[['oak',.8,1,1],['leather',.5,1,1]],txt:'守林人要長矛擋住林中的野豬群。'},
+ {name:'狼嚎谷',who:'村民・獵人',cat:'bow',req:15,sec:270,gold:45,danger:.04,tag:'beast',drops:[['leather',.8,1,1],['iron',.4,1,1],['fang',.15,1,1],['fur',.03,1,1]],txt:'獵人要一把好弓，谷裡的狼群越來越大膽。'},
+ {name:'霜溪鎮',who:'鎮民自衛隊',cat:'sword',req:22,sec:360,gold:70,danger:.05,tag:'beast',drops:[['iron',.6,1,1],['silver',.35,1,1],['fang',.35,1,1]],txt:'溪邊出現霜狼，自衛隊要換新劍。'},
+ {name:'鹿角堡',who:'軍隊・堡壘守衛',cat:'shield',req:32,sec:720,gold:100,danger:.06,tag:'beast',drops:[['silver',.5,1,2],['fang',.4,1,2],['shard',.25,1,1]],txt:'冰鴉群天天俯衝城牆，守衛需要堅固的盾。'},
+ {name:'渡鴉灣',who:'軍隊・港口衛兵',cat:'crossbow',req:34,sec:1080,gold:170,danger:.08,tag:'beast',drops:[['silver',.5,1,2],['fang',.3,1,1],['shard',.3,1,1],['serpent',.06,1,1]],txt:'海蛇在港外出沒，衛兵要能遠射的弩。'},
+ {name:'雪峰營地',who:'軍隊・山地軍團',cat:'hammer',req:75,sec:1440,gold:280,danger:.1,tag:'beast',drops:[['silver',.6,1,2],['fang',.6,1,2],['scale',.15,1,1],['rune',.15,1,1],['fur',.1,1,1],['shard',.15,1,1]],txt:'雪怪的甲殼太硬，軍團要能砸碎它的戰錘。'},
+ {name:'巨人足跡',who:'軍隊・王國先鋒',cat:'axe',req:110,sec:2160,gold:450,danger:.12,tag:'giant',need:'giant',drops:[['rune',.3,1,1],['scale',.2,1,1],['shard',.5,1,2],['icecore',.15,1,1]],txt:'霜巨人走下山了。武器必須帶有「剋巨人」。'},
+ {name:'灰燼要塞',who:'軍隊・要塞騎士',cat:'sword',req:160,sec:2880,gold:700,danger:.14,tag:'giant',drops:[['scale',.3,1,1],['rune',.3,1,1],['shard',.3,1,1],['fireheart',.15,1,1]],txt:'火巨人的斥候燒毀了外牆，騎士要更強的劍。'},
+ {name:'世界樹根穴',who:'軍隊・屠龍軍',cat:'polearm',req:200,sec:3600,gold:1000,danger:.16,tag:'dragon',need:'dragon',drops:[['scale',.35,1,2],['rune',.3,1,1],['shard',.5,1,2]],txt:'尼德霍格啃咬著世界樹根。長柄武器必須帶有「剋龍」。'}
 ];
 const TAGN={labor:'勞務',beast:'野獸',giant:'巨人',dragon:'龍族'};
 const FURNACE_COST=[0,3000,6000,15000,40000],ANVIL_COST=[0,2000,8000,25000,50000],SLOT_COST=[0,3000,15000,40000];
@@ -1493,8 +1493,9 @@ const itemName=k=>MATS[k]||ITEMS[k][0];
 const KEY='nine-realms-smith-v3',KEY_V2='nine-realms-smith-v2';
 function freshStats(){return{harvest:0,forged:[0,0,0,0,0],enhTry:0,enhOk:0,enhFail:0,breaks:0,scrollUsed:0,maxLv:0,melted:0,goldIn:0,events:0}}
 function freshVillage(i){return{status:i===0?'open':'locked',weaponId:null,cycleStart:null,strat:'normal',bank:{cycles:0,gold:0,mats:{},events:0}}}
-const GAME_SPEED=10;   // v3.45 封測速度（狩獵／鍛造 10 倍）
-function fresh(){return{v:VERSION,gold:500,fcRw:true,gems:100,slag:0,speed:GAME_SPEED,capH:8,pity:0,
+const GAME_SPEED=1;    // v3.69 原本的封測 10 倍速已直接寫進狩獵／鍛造時間，畫面上的時間都是真實時間
+const OFFLINE_H=12;    // v3.69 離線累積上限（真實時間 12 小時）
+function fresh(){return{v:VERSION,gold:500,fcRw:true,gems:100,slag:0,speed:GAME_SPEED,capH:OFFLINE_H,pity:0,
   mats:{iron:8,oak:6,leather:3,silver:0,fang:0,scale:0,rune:0,shard:1,fur:0,icecore:0,fireheart:0,serpent:0},
   items:{scroll:1,bless:1,blueprint:0},furnace:1,anvil:1,slots:1,weapons:[],nextId:1,jobs:[],
   villages:VILLAGES.map((v,i)=>freshVillage(i)),monthly:{until:0,last:''},stats:freshStats(),ach:{},best:{},lbRw:{},lastSeen:NOW(),clockWarn:false}}
@@ -1510,7 +1511,7 @@ function sanitize(s){
   for(const k in MATS)s.mats[k]=Math.max(0,Math.floor(+s.mats[k]||0));
   for(const k in ITEMS)s.items[k]=Math.max(0,Math.floor(+s.items[k]||0));
   s.gold=Math.max(0,Math.floor(+s.gold||0));s.gems=Math.max(0,Math.floor(+s.gems||0));s.slag=Math.max(0,Math.floor(+s.slag||0));
-  s.stats=Object.assign(freshStats(),s.stats||{});s.ach=s.ach||{};s.best=s.best||{};s.lbRw=s.lbRw||{};s.speed=GAME_SPEED;s.capH=s.capH||8;s.pity=s.pity||0;
+  s.stats=Object.assign(freshStats(),s.stats||{});s.ach=s.ach||{};s.best=s.best||{};s.lbRw=s.lbRw||{};s.speed=GAME_SPEED;s.capH=OFFLINE_H;s.pity=s.pity||0;
   s.weapons.forEach(w=>w.b=bpId(w.b));(s.jobs||[]).forEach(j=>j.b=bpId(j.b));for(const k in (s.best||{}))if(s.best[k])s.best[k].b=bpId(s.best[k].b);
   const seen=new Set();s.weapons=s.weapons.filter(w=>BP[w.b]);let maxId=0;
   for(const w of s.weapons){if(seen.has(w.id))w.id=null;else seen.add(w.id);maxId=Math.max(maxId,w.id||0);w.lock=!!w.lock;w.test=!!w.test;w.traits=w.traits||[];w.ench=[0,1,2,3].map(i=>(w.ench||[])[i]||null);w.created=w.created||NOW()}
@@ -1540,7 +1541,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='3.68';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='3.69';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -2824,8 +2825,8 @@ function sheetDev(){
    <div class="label">v3.64 紅點提醒</div><div class="devgrid">${B('uigive','送一把可交付的武器')}${B('uidot_w','武器庫：最新一把標 NEW')}${B('uidot_bp','鐵匠鋪：最新圖紙標 NEW')}${B('uidot_full','村莊倉庫滿（醒目紅點）')}${B('uidot_mk','交易所：模擬有成交')}${B('uidot_mon','商城：月卡今天可領')}${B('uidot_st','目前哪些紅點會亮')}</div>
      <div class="label">v3.67 分頁美術預熱</div><div class="devgrid">${B('uiwarm','預熱狀態')}${B('uiwarmrun','連切 5 個分頁測出圖')}</div>
      <div class="label">時間流速（正式版 1×）</div><div class="row">${[1,10,30,60].map(n=>`<button class="ui-btn ui-btn--chip chipbtn ${S.speed===n?'on':''}" data-act="speed" data-k="${n}">${n}×</button>`).join('')}</div>
-     <div class="label">離線累積上限</div><div class="row">${[8,12].map(n=>`<button class="ui-btn ui-btn--chip chipbtn ${S.capH===n?'on':''}" data-act="cap" data-k="${n}">${n} 小時</button>`).join('')}</div>
-     <div class="label">村莊與鍛造</div><div class="devgrid">${B('hunt','所有村莊立即 +10 輪')}${B('offline','模擬離線 8 小時')}${B('forge','鍛造立即完成')}${B('unlock','解鎖全部村莊與圖紙')}${B('maxup','工坊、學徒滿級')}${B('danger','1-2 下一輪必定受襲')}${B('tlack','缺料鍛造提示（獵弓）')}${B('tharvest','2 秒後完成一輪（看收成按鈕）')}${B('achall','達成全部成就條件')}${B('daily','重置月卡今日領取')}</div>
+     <div class="label">離線累積上限</div><div class="row">${[1,OFFLINE_H].map(n=>`<button class="ui-btn ui-btn--chip chipbtn ${S.capH===n?'on':''}" data-act="cap" data-k="${n}">${n} 小時</button>`).join('')}</div>
+     <div class="label">村莊與鍛造</div><div class="devgrid">${B('hunt','所有村莊立即 +10 輪')}${B('offline',`模擬離線 ${OFFLINE_H} 小時`)}${B('forge','鍛造立即完成')}${B('unlock','解鎖全部村莊與圖紙')}${B('maxup','工坊、學徒滿級')}${B('danger','1-2 下一輪必定受襲')}${B('tlack','缺料鍛造提示（獵弓）')}${B('tharvest','2 秒後完成一輪（看收成按鈕）')}${B('achall','達成全部成就條件')}${B('daily','重置月卡今日領取')}</div>
      <div class="label">時間防作弊</div><div class="devgrid">${B('back','裝置時間倒退 1 小時')}${B('fwd','裝置時間恢復')}</div>`,
    enh:`<div class="label">1. 送出測試武器（標示「測試」，強化不扣資源、不能交付村莊）</div>
      <div class="row">${['鐵製','霜銀','龍鱗','神器'].map((n,t)=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devTier??0)===t?'on':''}" data-act="devset" data-k="devTier" data-v="${t}">${n}</button>`).join('')}</div>
@@ -2923,7 +2924,7 @@ function devdo(k){if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=
     Promise.all([AUTH?adminCheck():Promise.resolve(false),fetch(SB_URL+'/rest/v1/rpc/ac_version',{method:'POST',headers:{apikey:SB_KEY,'Content-Type':'application/json'},body:'{}'}).then(r=>r.ok?r.json():null).catch(()=>null)]).then(([adm,ver])=>{
       ui.testOut=`<div><b>安全設定檢查</b></div>`+row(true,'網站模式：'+(CLOUD_ONLY?'正式（只能雲端存檔）':'測試版（本機）'))+row(!!AUTH,'登入帳號：'+(AUTH?esc(AUTH.user.email):'未登入'))
         +row(adm||!CLOUD_ONLY,'管理員：'+(adm?'是（可以使用開發者工具）':CLOUD_ONLY?'否（正式網站不能開開發者工具）':'否（測試版不限制）'))
-        +row(parseFloat(ver)>=3.63,'伺服器防作弊版本：'+(ver||'讀不到（v3.63 的 SQL 還沒執行）'))+row(parseFloat(ver)>=3.65,'排行榜戰力由伺服器計算：'+(parseFloat(ver)>=3.65?'是':'否（04_leaderboard_v3.65.sql 還沒執行）'))
+        +row(parseFloat(ver)>=3.63,'伺服器防作弊版本：'+(ver||'讀不到（v3.63 的 SQL 還沒執行）'))+row(parseFloat(ver)>=3.65,'排行榜戰力由伺服器計算：'+(parseFloat(ver)>=3.65?'是':'否（04_leaderboard_v3.65.sql 還沒執行）'))+row(parseFloat(ver)>=3.69,'伺服器離線上限 12 小時：'+(parseFloat(ver)>=3.69?'是':'否（05_offline12h_v3.69.sql 還沒執行）'))
         +row(true,'一般玩家連點頭像 20 下：'+(CLOUD_ONLY?'不會開啟開發者工具':'測試版會開啟'));render()});return}
   if(k==='tlbsv'){ui.testOut='檢查中…';render();   // v3.65 每座村莊：本機最佳戰力、是否已上傳、伺服器上的戰力
     (async()=>{if(AUTH){await lbSync();LBR.t=0;await lbFetch(true)}
@@ -2938,7 +2939,7 @@ function devdo(k){if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=
   ({gold:()=>S.gold+=5000,gems:()=>S.gems+=1000,t1:()=>{m.iron+=30;m.oak+=30;m.leather+=30},t2:()=>{m.silver+=20;m.fang+=20},t3:()=>{m.scale+=10;m.rune+=10},
    mon:()=>{m.fur+=5;m.icecore+=5;m.fireheart+=5;m.serpent+=5},shard:()=>m.shard+=10,items:()=>{S.items.scroll+=5;S.items.bless+=5},bp:()=>S.items.blueprint++,slag:()=>S.slag+=30,
    hunt:()=>{tick();S.villages.forEach((st,i)=>{const w=st.weaponId!=null&&W(st.weaponId);if(w)for(let c=0;c<10;c++)rollCycle(i,w,st)})},
-   offline:()=>S.villages.forEach(st=>{if(st.cycleStart!=null)st.cycleStart-=8*3600000/S.speed}),
+   offline:()=>S.villages.forEach(st=>{if(st.cycleStart!=null)st.cycleStart-=OFFLINE_H*3600000/S.speed}),
    forge:()=>S.jobs.forEach(j=>j.end=NOW()),unlock:()=>S.villages.forEach(st=>{if(st.status!=='cleared')st.status='cleared'}),
    maxup:()=>{S.furnace=5;S.anvil=5;S.slots=4},w6:()=>give('t2_longsword',2,6),wm:()=>give('m_nidhogg',3,0),w8:()=>give('t3_halberd',3,8,[{k:'dragon',v:30},null,null,null]),
    wt:()=>{['t1_ironsword','t2_warhammer','t3_halberd'].forEach(b=>makeWeapon(b,4,0));toast('已放入 3 把傳說武器，點開看先天特性')},
@@ -3146,7 +3147,7 @@ const TUT=[
  {t:'點武器就能<b>交付</b>。武器會留在村莊幫忙狩獵，完成委託會解鎖下一座村莊和新圖紙。',sel:()=>ui.sheet&&ui.sheet.t==='v'?'.sheet [data-act=deliver]':ui.tab!=='village'?'.nav [data-act=tab][data-k=village]':'[data-act=vopen][data-i="0"]',done:()=>S.villages[0].weaponId!=null},
  // 二、狩獵與收成
  {t:'委託完成！村莊開始<b>自動狩獵</b>，帶回金幣和材料。導覽先幫你把第一輪跑完了，按「<b>全部收成</b>」領取！',go:()=>{const st=S.villages[0],w=st.weaponId!=null&&W(st.weaponId);if(w&&st.cycleStart!=null&&!st.bank.cycles){st.cycleStart=NOW()-dur(0,w)-500;tick()}},sel:()=>ui.sheet?'.sheet [data-act=close]':ui.tab!=='village'?'.nav [data-act=tab][data-k=village]':'[data-act=collectAll]',done:()=>S.stats.harvest>0},
- {t:'收成會一直累積，<b>離線</b>也照樣狩獵（最多 8 小時）。之後記得常回來收成。',sel:()=>null,ok:'知道了'},
+ {t:'收成會一直累積，<b>離線</b>也照樣狩獵（最多 '+OFFLINE_H+' 小時）。之後記得常回來收成。',sel:()=>null,ok:'知道了'},
  // 三、重型／輕型
  {t:'回<b>鐵匠鋪</b>再打一把<b>伐木斧</b>，這把拿來練習<b>強化</b>。',sel:()=>ui.result?'.modal-card [data-act=rclose]':ui.sheet?'.sheet [data-act=close]':ui.tab!=='forge'?'.nav [data-act=tab][data-k=forge]':ui.ftab!=='bp'?'[data-act=ftab][data-k=bp]':ui.bp!=='t1_woodaxe'?'[data-act=bp][data-k=t1_woodaxe]':'[data-act=forge]',done:()=>S.jobs.length>0||!!tutW()},
  {t:'鍛造中…看下方的<b>進度條</b>，打好後會自動放進武器庫。',tf:()=>{const j=S.jobs[0];return j&&!tutW()?`鍛造中…剩 <b>${Math.max(0,Math.ceil((j.end-NOW())/1000))} 秒</b>。看下方的<b>進度條</b>，打好後會自動放進武器庫。`:'打好了！打開<b>武器庫</b>看看這把新的伐木斧。'},
