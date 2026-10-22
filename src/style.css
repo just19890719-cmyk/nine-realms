@@ -1158,4 +1158,6 @@ body.tutoring #view{padding-bottom:40vh}
 .gt-logo{animation:none;filter:drop-shadow(0 6px 18px rgba(0,0,0,.8)) drop-shadow(0 0 20px rgba(255,130,35,.45))}
 .tut-ring{animation:none}
 .tut-ring::before{content:"";position:absolute;inset:-2px;border-radius:13px;border:2px solid #fff6d0;box-shadow:0 0 18px 4px rgba(255,230,150,.7);opacity:0;animation:pulseO 1s ease-in-out infinite;pointer-events:none}
+/* v3.59 村莊卡「首次收復獎勵」金幣圖示被全域 img{display:block} 擠到獨立一行 */
+.fg-ic{display:inline-block}
 </style>

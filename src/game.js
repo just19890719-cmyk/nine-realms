@@ -166,7 +166,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='3.58';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='3.59';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -434,6 +434,10 @@ function enchCost(w,directed){return 40*TIERS[bpOf(w).t].mult*(directed?3:1)}
 function qualWeights(useBp,t){if(useBp)return[0,0,0,0,1000];const s=S.anvil-1;const q=QW.map((x,i)=>x+QSHIFT[i]*s);if(t===3){q[0]=0;q[1]=0}return q}
 const forgeSec=b=>TIERS[b.t].sec*(1-.1*(S.furnace-1));
 const hasMats=c=>Object.entries(c).every(([k,n])=>S.mats[k]>=n);
+// v3.59 列出缺少的材料／金幣（鍛造按鈕、提示共用）
+let DEV_LACK=0;   // 開發者工具「缺料提示測試」：暫時當作材料全部不夠（不動存檔）
+const lackList=(need,g)=>{const hv=k=>DEV_LACK>Date.now()?0:S.mats[k]||0;const l=Object.entries(need).filter(([k,n])=>!(hv(k)>=n)).map(([k,n])=>[k,n-hv(k)]);if(S.gold<g)l.push(['gold',g-S.gold]);return l};
+const lackStr=l=>l.map(([k,n])=>(k==='gold'?'金幣':MATS[k])+' ×'+fmt(n)).join('、');
 const monthlyOn=()=>S.monthly.until>NOW();
 const slotOpen=s=>S.anvil>=SLOT_ANVIL[s];
 function bpLock(b){if(cleared()<b.unlock)return'收復 1-'+b.unlock+' 解鎖';if(S.furnace<TIERS[b.t].furnace)return'熔爐 Lv'+TIERS[b.t].furnace;return''}
@@ -481,7 +485,7 @@ function finishJob(j){
 function forgeStart(bid,qty,useBp){
   const b=BP[bid];if(!b)return'沒有這張圖紙';if(bpLock(b))return bpLock(b);qty=bulkOn()?Math.max(1,Math.min(10,Math.floor(qty)||1)):1;
   const c=recipe(b),need={};for(const k in c)need[k]=c[k]*qty;const g=goldOf(b)*qty;
-  if(S.jobs.length>=S.slots)return'學徒都在忙';if(!hasMats(need)||S.gold<g)return'材料或金幣不夠';
+  if(S.jobs.length>=S.slots)return'學徒都在忙';{const ls=lackList(need,g);if(ls.length)return'缺少：'+lackStr(ls)}
   if(S.weapons.length+S.jobs.reduce((a,j)=>a+(j.qty||1),0)+qty>CAP_WEAPONS)return'武器庫已滿（'+CAP_WEAPONS+' 把），先熔解一些武器';
   for(const k in need)S.mats[k]-=need[k];S.gold-=g;
   const bp=!!(useBp&&S.items.blueprint>0);if(bp)S.items.blueprint--;
@@ -572,7 +576,7 @@ const smithLv=()=>1+cleared()+(S.furnace-1)+(S.anvil-1)+(S.slots-1);
 const queuedQty=()=>S.jobs.reduce((a,j)=>a+(j.qty||1),0);
 
 /* ---------- 行動（介面包裝） ---------- */
-function startForge(){const r=forgeStart(ui.bp,ui.qty,ui.useBp);if(typeof r==='string')return toast(r,'bad');snd('forge_start');
+function startForge(){const r=forgeStart(ui.bp,ui.qty,ui.useBp);if(typeof r==='string'){const el=document.querySelector('.sel-bp .lack-line,.sel-bp .goal');if(el)el.scrollIntoView({behavior:'smooth',block:'center'});return toast(r,'bad')}snd('forge_start');
   ui.useBp=false;toast(`開始鍛造 ${BP[ui.bp].n}${r.qty>1?' ×'+r.qty:''}，完成需要 ${fmtT(r.end-r.start)}`,'ok');ui.ftab='queue';render()}
 function maxQty(){const b=BP[ui.bp];if(!bulkOn()||bpLock(b))return 1;const c=recipe(b);let n=10;
   for(const k in c)n=Math.min(n,Math.floor(S.mats[k]/c[k]));n=Math.min(n,Math.floor(S.gold/goldOf(b)),CAP_WEAPONS-S.weapons.length-queuedQty());return Math.max(1,n)}
@@ -1024,9 +1028,8 @@ function viewForge(){
     const list=BPS.filter(b=>(ui.cat==='all'||b.cat===ui.cat)&&(cleared()+1>=b.unlock||b.t===0));
     const b=BP[ui.bp],lock=bpLock(b),qty=bulkOn()?Math.min(ui.qty,10):1,c=recipe(b),g=goldOf(b)*qty,free=S.jobs.length<S.slots;
     const need={};for(const k in c)need[k]=c[k]*qty;const full=S.weapons.length+queuedQty()+qty>CAP_WEAPONS;
-    const ok=!lock&&free&&hasMats(need)&&S.gold>=g&&!full;const est=Math.round(b.base*TIERS[b.t].mult);
-    const why=lock||(!free?'學徒都在忙，先等佇列完成':full?'武器庫已滿':!hasMats(need)?'材料不足':S.gold<g?'金幣不足':'');
-    const lacks=Object.entries(need).filter(([k,n])=>S.mats[k]<n).map(([k,n])=>[k,n-S.mats[k]]);if(S.gold<g)lacks.push(['gold',g-S.gold]);
+    const lacks=lackList(need,g),ok=!lock&&free&&!lacks.length&&!full;const est=Math.round(b.base*TIERS[b.t].mult);
+    const why=lock||(!free?'學徒都在忙，先等佇列完成':full?'武器庫已滿':lacks.length?'缺 '+lackStr(lacks):'');
     const lackTxt=lacks.map(([k,n])=>`<b>${k==='gold'?'金幣':MATS[k]} ×${fmt(n)}</b>`).join('、'),lackT1=lacks.some(([k])=>SHOP_MATS.some(x=>x[0]===k));
     body=`<div class="catbar">${cats.map(k=>`<button class="ui-btn ui-btn--toggle cat ${ui.cat===k?'on':''}" data-act="cat" data-k="${k}">${img(k==='all'?'nav_armory':CAT_ICON[k])}<span>${k==='all'?'全部':CATS[k]}</span></button>`).join('')}</div>
      <div class="hscroll">${list.map(x=>bpTile(x,x.id===ui.bp)).join('')}</div>
@@ -1043,7 +1046,7 @@ function viewForge(){
       ${lackTxt?`<div class="lack-line">缺少：${lackTxt}${lackT1?` ${btn('到商人購買','tab',{cls:'btn-sec sm',attrs:'data-k="shop"'})}`:''}</div>`:''}
       `}</div>
      ${lock?'':`<div class="ui-card ui-card--bar forge-bar"><div class="fb-info">${wArt(b.id,{cls:'fb-img'})}<span><b>${b.n} ×${qty}</b><span class="small ${ok?'muted':'t-danger'}">${ok?`${fmt(g)} 金・${fmtT(forgeSec(b)*1000*(qty>1?qty*.6:1)/S.speed)}`:why}</span></span></div>
-      <button class="ui-btn ui-btn--primary btn btn-primary" data-act="forge" ${ok?'':'disabled'}>開始鍛造</button></div>`}`;
+      <button class="ui-btn ui-btn--primary btn btn-primary ${ok?'':'is-disabled'}" data-act="forge" ${ok?'':'aria-disabled="true"'}>開始鍛造</button></div>`}`;
   }else if(ui.ftab==='mat'){
     body=`<div class="ui-panel panel">${ptitle('材料倉庫')}<div class="matgrid">${Object.keys(MATS).map(k=>matBox(k)).join('')}</div>
      <div class="row small muted"><span>鍛造殘渣 ${S.slag}</span><span>防爆卷 ${S.items.scroll}</span><span>祝福石 ${S.items.bless}</span><span>傳說圖紙 ${S.items.blueprint}</span></div>
@@ -1398,7 +1401,7 @@ function sheetDev(){
      <div class="label">測試武器</div><div class="devgrid">${B('wt','3 把帶特性的傳說武器')}${B('w6','+6 霜銀長劍（安定 5）')}${B('wm','神器尼德霍格龍矛（安定 0）')}${B('w8','+8 龍鱗戟')}${B('fill','武器庫塞到 195 把')}</div>`,
    prog:`<div class="label">時間流速（正式版 1×）</div><div class="row">${[1,10,30,60].map(n=>`<button class="ui-btn ui-btn--chip chipbtn ${S.speed===n?'on':''}" data-act="speed" data-k="${n}">${n}×</button>`).join('')}</div>
      <div class="label">離線累積上限</div><div class="row">${[8,12].map(n=>`<button class="ui-btn ui-btn--chip chipbtn ${S.capH===n?'on':''}" data-act="cap" data-k="${n}">${n} 小時</button>`).join('')}</div>
-     <div class="label">村莊與鍛造</div><div class="devgrid">${B('hunt','所有村莊立即 +10 輪')}${B('offline','模擬離線 8 小時')}${B('forge','鍛造立即完成')}${B('unlock','解鎖全部村莊與圖紙')}${B('maxup','工坊、學徒滿級')}${B('danger','1-2 下一輪必定受襲')}${B('achall','達成全部成就條件')}${B('daily','重置月卡今日領取')}</div>
+     <div class="label">村莊與鍛造</div><div class="devgrid">${B('hunt','所有村莊立即 +10 輪')}${B('offline','模擬離線 8 小時')}${B('forge','鍛造立即完成')}${B('unlock','解鎖全部村莊與圖紙')}${B('maxup','工坊、學徒滿級')}${B('danger','1-2 下一輪必定受襲')}${B('tlack','缺料鍛造提示（獵弓）')}${B('tharvest','2 秒後完成一輪（看收成按鈕）')}${B('achall','達成全部成就條件')}${B('daily','重置月卡今日領取')}</div>
      <div class="label">時間防作弊</div><div class="devgrid">${B('back','裝置時間倒退 1 小時')}${B('fwd','裝置時間恢復')}</div>`,
    enh:`<div class="label">1. 送出測試武器（標示「測試」，強化不扣資源、不能交付村莊）</div>
      <div class="row">${['鐵製','霜銀','龍鱗','神器'].map((n,t)=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devTier??0)===t?'on':''}" data-act="devset" data-k="devTier" data-v="${t}">${n}</button>`).join('')}</div>
@@ -1459,6 +1462,9 @@ function devdo(k){if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=
   if(k==='gtlogin'){ui.sheet=null;render();return showLogin()}
   if(k==='gtstory'){ui.sheet=null;render();return showStory()}
   if(k==='gtreset'){S.introSeen=0;save();return toast('下次登入後會再播放開場故事')}
+  if(k==='tlack'){DEV_LACK=Date.now()+15000;ui.sheet=null;ui.tab='forge';ui.ftab='bp';ui.cat='all';ui.bp='t1_huntbow';ui.qty=1;render();setTimeout(()=>{startForge();setTimeout(render,15100)},400);return toast('測試：15 秒內當作材料不夠，按「開始鍛造」會顯示缺什麼')}   // v3.59
+  if(k==='tharvest'){const i=S.villages.findIndex(st=>st.weaponId!=null&&st.cycleStart!=null&&W(st.weaponId));if(i<0)return toast('先交付一把武器到村莊','bad');const w=W(S.villages[i].weaponId);
+    S.villages[i].cycleStart=NOW()-dur(i,w)+2000;ui.sheet=null;ui.tab='village';render();return toast(`1-${i+1} 兩秒後完成一輪，停在這頁看「收成」按鈕會不會自己出現`)}   // v3.59
   if(k==='autoenh'){const w=makeWeapon('t1_ironhammer',1,0);S.gold=Math.max(S.gold,5000);ui.sheet={t:'w',id:w.id,m:'main'};autoEnhance(w.id);return}   // 測試一鍵強化：放一把 +0 鐵錘、補到 5000 金後執行
   
   if(k==='ticon'){const ls=[...document.querySelectorAll('link[rel~="icon"],link[rel="apple-touch-icon"],link[rel="manifest"]')];
@@ -1546,7 +1552,7 @@ document.addEventListener('touchend',e=>{const o=TAP0;TAP0=null;if(!o||o.b.disab
   if(Math.abs(t.clientX-o.x)<12&&Math.abs(t.clientY-o.y)<12&&Date.now()-o.t<600){if(e.cancelable)e.preventDefault();TAP_EL=o.b;TAP_T=Date.now();TAP_XY=[t.clientX,t.clientY];o.b.click()}},{passive:false,capture:true});
 // v3.23 手指按住按鈕的期間暫停定時重畫，避免按鈕在按下與放開之間被換掉而吃掉點擊（需要按兩次的原因）
 document.addEventListener('pointerdown',e=>{if(e.target.closest('[data-act],button,input,select,label'))PTR_DOWN=true},{passive:true,capture:true});
-['pointerup','pointercancel'].forEach(ev=>document.addEventListener(ev,()=>{if(!PTR_DOWN)return;setTimeout(()=>{PTR_DOWN=false;if(PTR_PEND){PTR_PEND=false;if(ui.tab!=='village')render()}},60)},{passive:true,capture:true}));   // 介面音效在手指按下的瞬間就播放，不等放開
+['pointerup','pointercancel'].forEach(ev=>document.addEventListener(ev,()=>{if(!PTR_DOWN)return;setTimeout(()=>{PTR_DOWN=false;if(PTR_PEND){PTR_PEND=false;render()}},60)},{passive:true,capture:true}));   // 介面音效在手指按下的瞬間就播放，不等放開
 document.addEventListener('pointerdown',e=>{const b=e.target.closest('[data-act]');if(!b||b.disabled)return;const a=b.dataset.act;if(['enhance','fxskip','devdo','mute','sndtest','sfxalt','scrim','sndvol'].includes(a)||b.closest('.hscroll,.catbar')||(a==='rclose'&&e.target!==b))return;snd(uiSndOf(a));PD_SND=Date.now()},{passive:true});
 document.addEventListener('click',e=>{
   const b=e.target.closest('[data-act]');if(!b||b.disabled)return;if(e.isTrusted&&TAP_EL&&Date.now()-TAP_T<700&&(b===TAP_EL||Math.abs(e.clientX-TAP_XY[0])<30&&Math.abs(e.clientY-TAP_XY[1])<30))return;const a=b.dataset.act,d=b.dataset;sfxPreload();
@@ -1743,6 +1749,7 @@ function start(){try{if(localStorage.getItem('nrs-dpv')!=='0')document.body.clas
   if(migrated)toast('已把 v2 存檔升級成 v3。');
   if(after>before)toast(`離線期間村莊狩獵了 ${after-before} 輪，記得收成！`);
   else if(!S.weapons.length&&!S.jobs.length&&!(S.tut<TUT.length))toast('歡迎來到米德加德。先鍛造一把伐木斧，交給鐵爐村的伐木工。');
-  setInterval(()=>{if(tick()&&ui.tab!=='village'){if(PTR_DOWN)PTR_PEND=true;else render()}updateLive()},250);setInterval(save,3000);
+  // v3.59 村莊分頁也要重畫：以前停在村莊分頁時，狩獵完成一輪不會出現「收成」按鈕（要切分頁才看得到）
+  setInterval(()=>{if(tick()){if(PTR_DOWN)PTR_PEND=true;else render()}updateLive()},250);setInterval(save,3000);
   try{if(/dev-ui/.test(location.hash)){ui.sheet={t:'d'};ui.devTab='ui';render()}}catch(e){}  // 網址加 #dev-ui 直接開啟 UI 元件總覽
 }
