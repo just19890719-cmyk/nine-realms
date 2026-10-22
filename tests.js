@@ -187,7 +187,7 @@ function saveTests(){
     res.push(T('E14 收藏武器不能熔解、武器庫滿 200 把不能再鍛造',m1===null&&!!W(lk.id)&&typeof f1==='string',`收藏熔解${m1===null?'被擋下':'成功(錯誤)'}；滿倉鍛造：${typeof f1==='string'?f1:'成功(錯誤)'}`));
     // 殘渣不能套利
     const cost1=Object.entries(recipe(BP.t1_woodaxe)).reduce((a,[k,n])=>a+n*(k==='iron'?8:6),0)+TIERS[0].gold,slagVal=TIERS[0].slag*(4*8/3);
-    res.push(T('E13 爆裝殘渣價值低於武器成本（無法靠爆裝獲利）',slagVal<cost1*.3,`鐵製爆裝殘渣約值 ${slagVal.toFixed(1)} 金，鍛造成本約 ${cost1} 金（不含強化費）`));
+    res.push(T('E13 爆裝殘渣價值低於武器成本（無法靠爆裝獲利）',slagVal<cost1*.3,`鐵製爆裝殘渣約值 ${slagVal.toFixed(1)} 金幣，鍛造成本約 ${cost1} 金幣（不含強化費）`));
   });
   return res;
 }

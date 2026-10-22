@@ -1329,4 +1329,13 @@ button.goal-tap{display:block;width:100%;text-align:left;font:inherit;font-size:
 button.goal-tap b{display:block;margin-top:2px;color:var(--gold-hi)}
 button.vv-d{font:inherit;font-size:11px;color:inherit;cursor:pointer}
 .pick-cur{display:flex;align-items:center;gap:8px;margin:6px 0 4px;flex-wrap:wrap}
+/* v3.82 窄螢幕（320）「基礎戰力」不要被拆成兩行：太窄時數值整段換到下一行 */
+.powbox.inline{flex-wrap:wrap;column-gap:6px;row-gap:0}.powbox.inline>*{white-space:nowrap}
+/* v3.82 開始鍛造鈕移到數量列（取代原本「最多」和底部鍛造條） */
+.qtyrow .forge-go{margin-left:auto;min-width:112px;min-height:46px;padding:4px 14px;flex-direction:column;gap:0;line-height:1.15}
+.forge-go .fg-t{display:block;font-size:16px}.forge-go .fg-s{display:block;font-size:11px;font-weight:400;opacity:.85;white-space:nowrap}
+.qtyrow .qhint{flex:1 1 90px;min-width:0}
+.forge-why{margin-top:4px;text-align:right}
+@media (max-width:420px){.qtyrow{flex-wrap:nowrap}.qtyrow .qchip{min-width:44px;padding:0 6px}.qtyrow .forge-go{min-width:100px;padding:4px 10px}}
+@media (max-width:360px){.qtyrow>.label{display:none}.qtyrow .qchip{min-width:40px;padding:0 4px}.qtyrow .forge-go{min-width:96px;padding:4px 8px}}
 </style>
