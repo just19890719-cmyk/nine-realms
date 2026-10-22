@@ -1227,4 +1227,27 @@ button.matbox:active{border-color:var(--gold)}
 .evt-hp.dead{border-color:var(--gold,#d8a64a)}
 .evt-top{font-size:13px}
 .evt-top.me b,.evt-top.me span{color:var(--gold,#d8a64a)}
+/* v3.73 村莊怪物血條（方案 B）：縮圖換成怪物、進度條換成血條；動畫只用 transform／opacity */
+.vcard .vmon{position:relative;width:64px;height:64px;flex:none}
+.vcard .vmon .vthumb{display:block}
+.vcard .vmon-m{border:1px solid #4a2a22;box-shadow:0 0 6px rgba(0,0,0,.6)}
+.vmon:after{content:'';position:absolute;inset:0;border-radius:6px;background:radial-gradient(circle,rgba(255,70,50,.5),transparent 70%);opacity:0;pointer-events:none}
+.vmon.hit:after{animation:monFlash .3s ease-out}
+.vmon.hit .vthumb{animation:monHit .32s ease-out}
+.vmon.kill .vthumb{animation:monKill .8s ease-out}
+.vmon.full .vthumb{opacity:.55}
+.mon-slash{position:absolute;left:8px;top:29px;width:48px;height:5px;border-radius:3px;background:linear-gradient(90deg,transparent,#fff 45%,#ffd36b 60%,transparent);box-shadow:0 0 8px #ffb347;opacity:0;transform:rotate(-38deg) scaleX(.2);animation:monSlash .3s ease-out;pointer-events:none;z-index:2}
+.mon-pop{position:absolute;left:50%;top:4px;font-weight:900;font-size:14px;font-style:normal;color:#ffd36b;text-shadow:0 0 4px #b84a14,0 2px 2px #000;white-space:nowrap;pointer-events:none;opacity:0;animation:monPop .8s ease-out forwards;z-index:3}
+.mon-pop.kill{color:#fff3c4;font-size:15px;top:18px;animation-duration:1.1s}
+@keyframes monFlash{0%{opacity:0}30%{opacity:1}100%{opacity:0}}
+@keyframes monHit{0%{transform:none}25%{transform:translateX(3px) scale(.95)}55%{transform:translateX(-2px)}100%{transform:none}}
+@keyframes monKill{0%{opacity:1;transform:none}30%{opacity:0;transform:scale(1.15)}45%{opacity:0;transform:scale(.7)}100%{opacity:1;transform:none}}
+@keyframes monSlash{0%{opacity:0;transform:rotate(-38deg) scaleX(.2)}40%{opacity:1}100%{opacity:0;transform:rotate(-38deg) scaleX(1.1)}}
+@keyframes monPop{0%{opacity:0;transform:translate(-50%,6px) scale(.7)}20%{opacity:1;transform:translate(-50%,0) scale(1.15)}100%{opacity:0;transform:translate(-50%,-22px)}}
+.hpbar{position:relative}
+.hpbar i{background:linear-gradient(90deg,#7a1612,#c4302a,#e8574a);box-shadow:0 0 8px rgba(220,60,50,.55)}
+.hpbar i.full{background:linear-gradient(90deg,#4a3a30,#6b564a);box-shadow:none}
+.hp-t{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;gap:6px;padding:0 7px;font-size:11px;line-height:1;color:#fff;text-shadow:0 1px 2px #000,0 0 3px #000;pointer-events:none}
+.hp-n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(prefers-reduced-motion:reduce){.vmon *,.vmon:after{animation:none!important}}
 </style>
