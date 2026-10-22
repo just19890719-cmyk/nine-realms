@@ -1209,7 +1209,8 @@ button.matbox:active{border-color:var(--gold)}
 .evt-go{flex:none;font-size:13px;color:var(--gold,#d8a64a);white-space:nowrap}
 .evt-ban .dot{position:absolute;top:6px;right:6px}
 .evt-hero{height:140px;border-radius:12px;background-size:cover;background-position:center;position:relative;overflow:hidden;margin-bottom:10px}
-.evt-hero-in{position:absolute;left:0;right:0;bottom:0;padding:24px 12px 10px;background:linear-gradient(transparent,rgba(0,0,0,.85));display:flex;flex-direction:column}
+.evt-mon{position:absolute;right:10px;top:10px;width:120px;height:120px;border-radius:10px;border:1px solid var(--line2);box-shadow:0 4px 14px rgba(0,0,0,.6);object-fit:cover}
+.evt-hero-in{position:absolute;left:0;right:0;bottom:0;padding:24px 140px 10px 12px;background:linear-gradient(transparent,rgba(0,0,0,.85));display:flex;flex-direction:column}
 .evt-hero-in b{font-size:18px}
 .evt-ws{display:flex;flex-direction:column;gap:8px}
 .evt-w{display:flex;align-items:center;gap:10px;padding:8px 10px}
@@ -1221,6 +1222,7 @@ button.matbox:active{border-color:var(--gold)}
 .evt-st.done{opacity:.6}
 .evt-ck{width:20px;height:20px;flex:none}
 .evt-global{display:flex;flex-direction:column;gap:6px}
+@media (max-width:360px){.evt-mon{width:92px;height:92px}.evt-hero-in{padding-right:112px}.evt-go{font-size:12px}}
 .evt-hp{position:relative;height:22px;border-radius:6px;background:#2a2118;overflow:hidden;border:1px solid var(--line2)}
 .evt-hp i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#8c1d14,#d8452c)}
 .evt-hp span{position:relative;display:block;text-align:center;font-size:12px;line-height:20px;color:#fff;text-shadow:0 1px 2px #000}

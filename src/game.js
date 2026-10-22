@@ -117,13 +117,13 @@ const repUsed=()=>Object.values(S.rep.t).reduce((a,b)=>a+b,0);
 const repPts=()=>S.rep?Math.max(0,S.rep.lv-1-repUsed()):0;
 const repBox=l=>({gold:100*l,...(l%5===0?{bless:1}:{}),...(l%10===0?{scroll:1}:{})});   // 升到 Lv.l 的聲望寶箱
 // v3.72 每週限時活動（台灣時間）：週一～週四「雙倍收成」、週五～週日「首領討伐」；首領每週輪替
-// 首領圖先借用村莊圖（之後換 AI 生圖 art/boss_*.webp）；weak＝弱點（武器類別或附魔），傷害 ×1.5
+// 首領圖用 v3.73 的怪物圖（art/mon_N），背景用對應的村莊圖；weak＝弱點（武器類別或附魔），傷害 ×1.5
 const EVT_BOSS=[
- {id:'fenrir',n:'魔狼芬里爾',art:'v3',weak:{cat:'axe'},wn:'斧類武器',mat:'fur'},
- {id:'thrym',n:'霜巨人王索列姆',art:'v8',weak:{aff:'giant'},wn:'帶「剋巨人」的武器',mat:'icecore'},
- {id:'surtr',n:'火巨人蘇爾特',art:'v9',weak:{aff:'frost'},wn:'帶「霜寒」的武器',mat:'fireheart'},
- {id:'jorm',n:'塵世巨蟒耶夢加得',art:'v6',weak:{cat:'crossbow'},wn:'弩',mat:'serpent'},
- {id:'nidhogg',n:'尼德霍格',art:'v10',weak:{aff:'dragon'},wn:'帶「剋龍」的武器',mat:'scale'}
+ {id:'fenrir',n:'魔狼芬里爾',art:'mon_4',bg:'v4',weak:{cat:'axe'},wn:'斧類武器',mat:'fur'},
+ {id:'thrym',n:'霜巨人王索列姆',art:'mon_8',bg:'v8',weak:{aff:'giant'},wn:'帶「剋巨人」的武器',mat:'icecore'},
+ {id:'surtr',n:'火巨人蘇爾特',art:'mon_9',bg:'v9',weak:{aff:'frost'},wn:'帶「霜寒」的武器',mat:'fireheart'},
+ {id:'jorm',n:'塵世巨蟒耶夢加得',art:'mon_6',bg:'v6',weak:{cat:'crossbow'},wn:'弩',mat:'serpent'},
+ {id:'nidhogg',n:'尼德霍格',art:'mon_10',bg:'v10',weak:{aff:'dragon'},wn:'帶「剋龍」的武器',mat:'scale'}
 ];
 const BOSS_HITS=3;   // 每天（台灣時間）挑戰次數
 // 本週累積傷害達到門檻就自動發獎；M＝本週首領的怪物素材
@@ -1215,7 +1215,7 @@ function sheetTalent(){const r=S.rep,need=repNeed(r.lv),pts=repPts(),bx=repBox(r
 function evtBanner(){const e=evtNow(),left=fmtLeft(e.end-NOW());
   if(e.k==='double')return `<div class="evt-ban dbl">${img('it_gold','evt-ic')}<div class="grow"><b>限時活動・雙倍收成</b><div class="small">村莊收成的金幣和一般材料 ×2</div><div class="small muted">剩 ${left}・接著是首領討伐（${e.boss.n}）</div></div></div>`;
   const v=evtSt(),nx=BOSS_STAGE[v.got];
-  return `<button class="evt-ban boss" data-act="evtopen">${img(e.boss.art,'evt-boss')}<div class="grow"><b>限時活動・首領討伐</b><div class="small">${e.boss.n}・今天還能挑戰 ${BOSS_HITS-v.hits} 次</div><i class="cb-bar"><i style="width:${nx?Math.min(100,v.dmg/nx[0]*100):100}%"></i></i><div class="small muted">${nx?`累積傷害 ${fmt(v.dmg)}／${fmt(nx[0])}`:'獎勵全部領完了'}・剩 ${left}</div></div><span class="evt-go">出擊 ›</span>${bossDot()?'<i class="dot"></i>':''}</button>`}
+  return `<button class="evt-ban boss" data-act="evtopen">${img(e.boss.art,'evt-boss')}<div class="grow"><b>限時活動・首領討伐</b><div class="small"><span class="nobr">${e.boss.n}</span>・<span class="nobr">今天剩 ${BOSS_HITS-v.hits} 次</span></div><i class="cb-bar"><i style="width:${nx?Math.min(100,v.dmg/nx[0]*100):100}%"></i></i><div class="small muted"><span class="nobr">${nx?`傷害 ${fmt(v.dmg)}／${fmt(nx[0])}`:'獎勵全部領完了'}</span>・<span class="nobr">剩 ${left}</span></div></div><span class="evt-go">出擊 ›</span>${bossDot()?'<i class="dot"></i>':''}</button>`}
 function bossGlobalPanel(b,v){const giftTxt=Object.entries(stageGift(BOSS_GIFT,b)).map(([k,n])=>(k==='gold'?'金幣':itemName(k))+' ×'+fmt(n)).join('、');
   if(!AUTH&&!ui.bossSim)return `<div class="ui-panel panel"><div class="small muted">登入雲端帳號後會顯示全服血條，大家一起打。</div></div>`;
   if(AUTH&&Date.now()-BOSS_G.t>30000)setTimeout(()=>bossBoard(),0);const g=BOSS_G.b;
@@ -1231,7 +1231,7 @@ function sheetEvt(){const e=evtNow(),b=e.boss,v=evtSt();
   if(e.k!=='boss')return head+`<div class="ui-panel panel"><div class="small">首領討伐在每週五～週日（台灣時間）開放。下一場首領：${b.n}。</div></div>`;
   const gTxt=g=>Object.entries(stageGift(g,b)).map(([k,n])=>(k==='gold'?'金幣':itemName(k))+' ×'+fmt(n)).join('、');
   const ws=S.weapons.filter(w=>!w.test).sort((x,y)=>bossDmgOf(y,b)-bossDmgOf(x,b)).slice(0,5),out=v.hits>=BOSS_HITS;
-  return head+`<div class="evt-hero" style="background-image:url(${A(b.art)})"><div class="evt-hero-in"><b>${b.n}</b><span class="small">弱點：${b.wn}（傷害 ×1.5）</span></div></div>
+  return head+`<div class="evt-hero" style="background-image:url(${A(b.bg)})">${img(b.art,'evt-mon')}<div class="evt-hero-in"><b>${b.n}</b><span class="small">弱點：${b.wn}<span class="nobr">（傷害 ×1.5）</span></span></div></div>
    <div class="ui-panel panel"><div class="kv"><span>本週累積傷害</span><b>${fmt(v.dmg)}</b></div><div class="kv"><span>今天挑戰次數</span><b>${BOSS_HITS-v.hits}／${BOSS_HITS}</b></div><div class="small muted">每天可以出擊 ${BOSS_HITS} 次，傷害＝武器戰力（打中弱點 ×1.5）。駐守中的武器也能出擊，不會被收回。剩 ${fmtLeft(e.end-NOW())}。</div></div>
    ${bossGlobalPanel(b,v)}
    <div class="label">挑一把武器出擊</div><div class="evt-ws">${ws.length?ws.map(w=>`<div class="ui-card ui-card--row evt-w">${wArt(w.b,{cls:'qimg'})}<div class="grow"><b class="q${w.q}">${bpOf(w).n}${w.lv?' +'+w.lv:''}</b><div class="small muted">預估傷害 ${fmt(bossDmgOf(w,b))}${bossWeak(w,b)?' <span class="t-ok">弱點</span>':''}</div></div>${btn('出擊','bosshit',{cls:'btn-primary sm',attrs:`data-id="${w.id}"`,dis:out})}</div>`).join(''):'<div class="small muted">武器庫沒有武器，先去鍛造一把。</div>'}</div>
