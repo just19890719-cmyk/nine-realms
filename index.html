@@ -1,3 +1,8 @@
+<!doctype html>
+<html lang="zh-Hant-TW"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f0c09">
 <title>九界鐵匠</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1141,6 +1146,8 @@ html,body,button,[data-act],label,input,select{touch-action:manipulation}
 /* v3.43 底部五個分頁 */
 .nav-in{grid-template-columns:repeat(5,1fr);gap:2px}.nav-in .ui-navtab span{white-space:nowrap;font-size:12px}
 .mk-tabs .chipbtn{white-space:nowrap;font-size:12px;padding:6px 4px}
+/* v3.47 雲端存檔失敗提示 */
+#cloudbar{position:fixed;left:8px;right:8px;top:calc(env(safe-area-inset-top,0px) + 6px);z-index:300;background:#5a1410;border:1px solid #ff8a7a;color:#ffe0da;border-radius:10px;padding:8px 10px;font-size:13px;text-align:center}
 </style>
 <div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div></div>
 <main class="wrap" id="view"></main>
@@ -1480,7 +1487,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD='v3.46 封測';const BETA=true;
+const BUILD_ID='3.47';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -1490,7 +1497,9 @@ const SB_ERR=m=>{m=String(m||'');return /signups? (are )?(not allowed|disabled)/
 async function sbAuth(path,body){const r=await fetch(SB_URL+'/auth/v1/'+path,{method:'POST',headers:{apikey:SB_KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
   const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.msg||j.error_description||j.message||j.error||('HTTP '+r.status));return j}
 async function sbToken(){if(!AUTH)return null;if(Date.now()<AUTH.expires_at)return AUTH.access_token;
-  try{const j=await sbAuth('token?grant_type=refresh_token',{refresh_token:AUTH.refresh_token});authSave({...authFrom(j),user:AUTH.user});return AUTH.access_token}catch(e){CLOUD.err='登入已過期，請重新登入';return null}}
+  try{const st=JSON.parse(localStorage.getItem(AUTH_KEY)||'null');if(st&&st.user&&st.user.id===AUTH.user.id&&st.expires_at>Date.now()){AUTH=st;return AUTH.access_token}}catch(e){}   // v3.47 同瀏覽器另一個分頁已經換過新憑證，直接沿用，避免兩邊同時換憑證互相作廢
+  try{const j=await sbAuth('token?grant_type=refresh_token',{refresh_token:AUTH.refresh_token});authSave({...authFrom(j),user:AUTH.user});return AUTH.access_token}
+  catch(e){CLOUD.err='登入已過期，請重新登入';if(!/fetch|network/i.test(e.message)&&CLOUD.ready&&!CLOUD.kicked){CLOUD.reauth=true;CLOUD.ready=false;authSave(null);if(typeof showLogin==='function')showLogin('登入已過期，請重新登入（目前的進度會保留）')}return null}}
 async function sbRest(path,opt={}){const t=await sbToken();if(!t)throw new Error('尚未登入');
   const r=await fetch(SB_URL+'/rest/v1/'+path,{...opt,headers:{apikey:SB_KEY,Authorization:'Bearer '+t,'Content-Type':'application/json',...(opt.headers||{})}});
   if(!r.ok){const j=await r.json().catch(()=>({}));throw new Error(j.message||('HTTP '+r.status))}const tx=await r.text();if(!tx)return null;try{return JSON.parse(tx)}catch(e){return null}}
@@ -1501,22 +1510,35 @@ function cloudLogout(){cloudPush(true).finally(()=>{authSave(null);CLOUD.ready=f
   if(CLOUD_ONLY){S=sanitize(fresh());ui.sheet=null;ui.result=null;render();showLogin()}else{toast('已登出。');render()}})}
 // 登入後：讀雲端存檔（雲端為準）；新帳號建立全新進度。並登記這支手機的連線代碼（同帳號只能一支手機）
 async function cloudAfterLogin(){const uid=AUTH.user.id;SID=Math.random().toString(36).slice(2)+Date.now().toString(36);CLOUD.kicked=false;
-  let row=null;try{const r=await sbRest('saves?select=data,nickname&user_id=eq.'+uid);row=r&&r[0]}catch(e){CLOUD.err=SB_ERR(e.message);throw e}
-  if(row&&row.data&&row.data.villages){S=sanitize(row.data);if(row.nickname&&!S.nick)S.nick=row.nickname}else if(CLOUD_ONLY)S=sanitize(fresh());
-  S.uid=uid;const now=new Date().toISOString();
-  if(row)await sbRest('saves?user_id=eq.'+uid,{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({session_id:SID})});
-  else await sbRest('saves',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({user_id:uid,data:S,session_id:SID,updated_at:now})});
-  CLOUD.ready=true;CLOUD.dirty=false;CLOUD.last=Date.now();CLOUD.state='ok';CLOUD.err='';if(!CLOUD_ONLY)try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
-  render();return row?'cloud':'new'}
+  LBR.rows={};LBR.t=0;MK.rows=[];MK.mine=[];MK.t=0;
+  // 先登記這支手機、同一個請求拿回存檔：避免「讀完存檔、還沒登記前，舊手機又存了一次」被蓋掉
+  let row=null;try{const r=await sbRest('saves?user_id=eq.'+uid+'&select=data,nickname,updated_at',{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({session_id:SID})});row=r&&r[0]}catch(e){CLOUD.err=SB_ERR(e.message);throw e}
+  const keepMem=CLOUD.reauth&&S.uid===uid&&row&&Date.parse(row.updated_at)<=(CLOUD.pushAt||0)+3000;   // 登入過期重登：雲端沒被別台改過 → 保留目前畫面上的進度
+  if(keepMem){}else if(row&&row.data&&row.data.villages){S=sanitize(row.data);if(row.nickname&&!S.nick)S.nick=row.nickname}else if(CLOUD_ONLY)S=sanitize(fresh());
+  S.uid=uid;CLOUD.reauth=false;
+  if(!row)await sbRest('saves',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({user_id:uid,data:S,session_id:SID,updated_at:new Date().toISOString()})});
+  try{localStorage.setItem('nrs-sid',SID)}catch(e){}
+  CLOUD.ready=true;CLOUD.dirty=!!keepMem;CLOUD.last=Date.now();CLOUD.state='ok';CLOUD.err='';if(!CLOUD_ONLY)try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
+  if(keepMem)cloudPush(true);syncClock();render();return row?'cloud':'new'}
+// 伺服器時間：所有狩獵／鍛造計時都用伺服器時間，換手機、手機時間不準都不會出錯
+async function syncClock(){if(!AUTH)return;try{const t0=Date.now(),r=await sbRest('rpc/server_now',{method:'POST',body:'{}'}),t1=Date.now();const sv=Date.parse(typeof r==='string'?r:(r&&r.server_now)||'');
+  if(sv)CLOCK.offset=sv+(t1-t0)/2-t1}catch(e){}}
 // 存檔上傳：只有「目前登記的這支手機」寫得進去；寫不進去代表帳號已在別的手機登入
-async function cloudPush(force,leaving){if(!AUTH||!CLOUD.ready||CLOUD.busy||CLOUD.kicked||(!force&&!CLOUD.dirty))return;CLOUD.busy=true;CLOUD.dirty=false;
+async function cloudPush(force,leaving){if(!AUTH||!CLOUD.ready||CLOUD.busy||CLOUD.kicked||CLOUD.outdated||(!force&&!CLOUD.dirty))return;CLOUD.busy=true;CLOUD.dirty=false;
   try{const body=JSON.stringify({nickname:S.nick||null,data:S,updated_at:new Date().toISOString()});
     const r=await sbRest('saves?user_id=eq.'+AUTH.user.id+'&session_id=eq.'+SID+'&select=user_id',{method:'PATCH',headers:{Prefer:'return=representation'},keepalive:!!leaving&&body.length<60000,body});
     if(!r||!r.length){CLOUD.busy=false;return cloudKicked()}
-    CLOUD.last=Date.now();CLOUD.err='';CLOUD.state='ok'}
+    CLOUD.last=CLOUD.pushAt=Date.now();CLOUD.err='';CLOUD.state='ok'}
   catch(e){CLOUD.dirty=true;CLOUD.err=SB_ERR(e.message);CLOUD.state='err'}finally{CLOUD.busy=false}}
-function cloudKicked(){if(CLOUD.kicked)return;CLOUD.kicked=true;CLOUD.ready=false;authSave(null);
-  if(CLOUD_ONLY){S=sanitize(fresh());ui.sheet=null;ui.result=null;render()}showLogin('這個帳號已經在其他手機登入，這支手機已自動登出。')}
+function cloudKicked(){if(CLOUD.kicked||CLOUD.leaving)return;   // 頁面正在關閉／重新整理：不處理（避免舊頁面把新頁面的登入清掉）
+  CLOUD.kicked=true;CLOUD.ready=false;
+  let tab=false;try{const ls=localStorage.getItem('nrs-sid');tab=!!ls&&ls!==SID&&!!localStorage.getItem(AUTH_KEY)}catch(e){}
+  if(tab)AUTH=null;else authSave(null);   // v3.47 同瀏覽器另一個分頁接手：不清共用憑證；別台裝置接手：清掉這裡的憑證，避免重新整理又把對方擠掉
+  if(CLOUD_ONLY){S=sanitize(fresh());ui.sheet=null;ui.result=null;render()}
+  if(tab)return showKickTab();showLogin('這個帳號已經在其他裝置登入，這裡已自動登出。')}
+function showKickTab(){document.body.classList.add('gating');const g=gateEl();g.className='gate-login gate-loading';g.onclick=e=>{if(e.target.closest('[data-gk]'))location.reload()};
+  g.innerHTML=`<div class="gt-scene"><img class="gt-ly gt-bg" src="${LG('key_bg')}" alt=""><div class="gt-vig"></div></div><img class="gt-logo" src="${LG('logo')}" alt="九界鐵匠"><div class="gt-box gt-load"><div class="gt-ttl">遊戲已在另一個分頁開啟</div><div class="small muted center">同一個帳號一次只能在一個地方玩。要在這裡繼續，請按下方按鈕（另一個分頁會自動停止）。</div><button type="button" class="ui-btn ui-btn--primary btn btn-primary big" data-gk="1">在這裡繼續玩</button></div>`}
+if(typeof window!=='undefined')window.addEventListener('storage',e=>{if(e.key==='nrs-sid'&&CLOUD.ready&&e.newValue&&e.newValue!==SID)cloudKicked()});
 async function cloudCheckSession(){if(!AUTH||!CLOUD.ready||CLOUD.kicked)return;try{const r=await sbRest('saves?select=session_id&user_id=eq.'+AUTH.user.id);if(r&&r[0]&&r[0].session_id&&r[0].session_id!==SID)cloudKicked()}catch(e){}}
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const NICK_OK=n=>{const c=Array.from(n);return c.length<2?'暱稱至少 2 個字':c.length>8?'暱稱最多 8 個字':/^[\p{L}\p{N}_]+$/u.test(n)?'':'暱稱只能用中文、英文、數字或底線'};
@@ -1541,14 +1563,18 @@ function showName(first,preview){document.body.classList.add('gating');const g=g
       .catch(e=>say(SB_ERR(e.message),1)).finally(()=>{delete g.dataset.busy;b.disabled=false})}}
 function afterAuthEnter(){setTimeout(()=>mkSettle(true),1500);setTimeout(()=>{lbSync().finally(()=>lbFetch(true))},2000);if(AUTH&&!S.nick)return showName(true);gateClose();if(!S.introSeen)setTimeout(showStory,350)}
 async function cloudPull(){const r=await sbRest('saves?select=data,updated_at&user_id=eq.'+AUTH.user.id);if(!r||!r[0])throw new Error('雲端還沒有存檔');S=sanitize(r[0].data);S.uid=AUTH.user.id;if(!CLOUD_ONLY)try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}CLOUD.last=Date.now();render()}
-if(typeof window!=='undefined'){setInterval(()=>{if(AUTH&&CLOUD.dirty)cloudPush()},10000);setInterval(()=>{if(!document.hidden)cloudCheckSession()},30000);
+if(typeof window!=='undefined'){setInterval(()=>{if(AUTH&&CLOUD.dirty)cloudPush()},10000);setInterval(()=>{if(AUTH&&!document.hidden)syncClock()},600000);
+  // 雲端存檔連續失敗超過 30 秒：畫面上方顯示紅色提示（避免玩家玩了很久卻沒存到）
+  setInterval(()=>{let b=document.getElementById('cloudbar');const bad=AUTH&&CLOUD.ready&&CLOUD.err&&CLOUD.dirty&&Date.now()-CLOUD.last>30000;
+    if(!bad){if(b)b.remove();return}if(!b){b=document.createElement('button');b.id='cloudbar';b.onclick=()=>{CLOUD.last=Date.now()-25000;cloudPush(true)};document.body.appendChild(b)}
+    b.textContent='⚠ 雲端存檔失敗：'+CLOUD.err+'（點這裡重試）'},2000);setInterval(()=>{if(!document.hidden)cloudCheckSession()},30000);
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&AUTH){save();cloudPush(true,true)}else if(AUTH)cloudCheckSession()})}
 
 /* ---------- v3.41 交易所（玩家之間買賣武器；伺服器 Supabase：market 表＋market_* 函式） ---------- */
 const MK_FEE=.05,MK_MAX=10,MK_DAYS=3,MK_CUR={gold:['it_gold','金幣'],gems:['it_gems','鑽石']};
 const MK={rows:[],mine:[],loading:false,err:'',t:0,tab:'buy',cat:'all',cur:'all',sort:'new',sellCur:'gold'};
 const mkMock=()=>!AUTH&&devMode();   // 未登入但開了開發者模式 → 用本機「離線模擬」市場，方便測試畫面
-const MK_ERR=m=>{m=String(m||'');return /not available/i.test(m)?'這件商品已經賣出或下架了':/listing limit/i.test(m)?`同時最多上架 ${MK_MAX} 件`:/bad price/i.test(m)?'價格不正確':/self/i.test(m)?'不能買自己上架的武器':/could not find the function|PGRST202|relation .*market/i.test(m)?'交易所尚未啟用（伺服器還沒設定好）':SB_ERR(m)};
+const MK_ERR=m=>{m=String(m||'');return /session/i.test(m)?'這個帳號已經在其他手機登入':/not available/i.test(m)?'這件商品已經賣出或下架了':/listing limit/i.test(m)?`同時最多上架 ${MK_MAX} 件`:/bad price/i.test(m)?'價格不正確':/self/i.test(m)?'不能買自己上架的武器':/could not find the function|PGRST202|relation .*market/i.test(m)?'交易所尚未啟用（伺服器還沒設定好）':SB_ERR(m)};
 const mkClean=w=>{const o=JSON.parse(JSON.stringify(w));delete o.id;delete o.lock;delete o.test;return o};
 const mkLeft=r=>Math.max(0,Date.parse(r.expires_at)-Date.now());
 const mkGarrison=id=>S.villages.some(v=>v.weaponId===id);
@@ -1572,7 +1598,7 @@ async function mkMockApi(fn,a){const d=mkMockDB(),now=Date.now(),me='me';let out
 async function mkApi(fn,a={}){if(mkMock())return mkMockApi(fn,a);if(!AUTH)throw new Error('尚未登入');
   if(fn==='browse')return sbRest('market?select=id,seller,seller_nick,weapon,bp,lv,q,cur,price,expires_at,created_at&status=eq.open&expires_at=gt.'+encodeURIComponent(new Date().toISOString())+'&order=created_at.desc&limit=80');
   if(fn==='mine')return sbRest('market?select=id,seller,seller_nick,weapon,bp,lv,q,cur,price,expires_at,created_at&seller=eq.'+AUTH.user.id+'&status=eq.open&order=created_at.desc');
-  return sbRest('rpc/market_'+fn,{method:'POST',body:JSON.stringify(a)})}
+  return sbRest('rpc/market_'+fn,{method:'POST',body:JSON.stringify({...a,p_sid:SID})})}
 const mkMe=r=>mkMock()?r.seller==='me':AUTH&&r.seller===AUTH.user.id;
 async function mkLoad(){if(MK.loading)return;MK.loading=true;MK.err='';mkRender();
   try{await mkSettle(true);const [a,b]=await Promise.all([mkApi('browse'),mkApi('mine')]);MK.rows=(a||[]).filter(r=>BP[bpId(r.bp)]);MK.mine=(b||[]).filter(r=>BP[bpId(r.bp)]);MK.t=Date.now()}
@@ -2858,6 +2884,13 @@ const LG=n=>'art/login/'+n+'.webp';
 function gateEl(){let g=document.getElementById('gate');if(!g){g=document.createElement('div');g.id='gate';document.body.appendChild(g)}return g}
 function gateClose(){const g=document.getElementById('gate');if(g){g.classList.add('out');setTimeout(()=>{if(g.classList.contains('out'))g.remove()},450)}document.body.classList.remove('gating')}
 const gEmb=(n,cls)=>Array.from({length:n},(_,k)=>`<img class="gt-em e${k} ${cls||''}" src="${A('dp/'+['fx_ember1','fx_ember_trail','fx_ember1','fx_ember_big','fx_ember_cluster','fx_ember1','fx_ember_trail','fx_ember1','fx_ember1','fx_ember_big'][k%10])}" alt="">`).join('');
+// v3.47 只允許玩最新版：網站上的 version.json 跟遊戲版本不同 → 先把進度存到雲端，再擋住畫面要求更新
+async function verCheck(){if(!CLOUD_ONLY||CLOUD.outdated)return false;try{const r=await fetch('version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return false;const j=await r.json();
+  if(j&&j.v&&j.v!==BUILD_ID){if(CLOUD.ready)await cloudPush(true).catch(()=>{});CLOUD.outdated=j.v;showUpdate(j.v);return true}}catch(e){}return false}
+function showUpdate(v){document.body.classList.add('gating');const g=gateEl();g.className='gate-login gate-loading';g.onclick=e=>{if(e.target.closest('[data-gu]'))location.replace(location.pathname+'?v='+encodeURIComponent(v)+'&t='+Date.now())};
+  g.innerHTML=`<div class="gt-scene"><img class="gt-ly gt-bg" src="${LG('key_bg')}" alt=""><div class="gt-vig"></div></div><img class="gt-logo" src="${LG('logo')}" alt="九界鐵匠"><div class="gt-box gt-load"><div class="gt-ttl">有新版本 v${esc(v)}</div><div class="small muted center">目前是 v${BUILD_ID}，需要更新才能繼續玩。你的進度已存到雲端，不會遺失。</div><button type="button" class="ui-btn ui-btn--primary btn btn-primary big" data-gu="1">立即更新</button></div>`}
+if(typeof window!=='undefined'){setInterval(()=>{if(!document.hidden)verCheck()},60000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')verCheck()});
+  window.addEventListener('pagehide',()=>{if(AUTH&&CLOUD.ready){save();cloudPush(true,true)}CLOUD.leaving=true});window.addEventListener('pageshow',e=>{if(e.persisted)CLOUD.leaving=false})}
 function showLoading(t){document.body.classList.add('gating');const g=gateEl();g.className='gate-login gate-loading';g.onclick=null;
   g.innerHTML=`<div class="gt-scene"><img class="gt-ly gt-bg" src="${LG('key_bg')}" alt=""><img class="gt-ly gt-glow" src="${LG('key_glow')}" alt=""><div class="gt-fog"></div><div class="gt-embers">${gEmb(10)}</div><div class="gt-vig"></div></div><img class="gt-logo" src="${LG('logo')}" alt="九界鐵匠"><div class="gt-box gt-load"><div class="gt-ttl">${t}</div></div>`}
 function showLogin(msg){document.body.classList.add('gating');const g=gateEl();g.className='gate-login';
@@ -2878,7 +2911,7 @@ function showLogin(msg){document.body.classList.add('gating');const g=gateEl();g
     if(k==='login'||k==='signup'){const em=(g.querySelector('#gtMail').value||'').trim(),pw=g.querySelector('#gtPw').value||'',msg=g.querySelector('.gt-msg');
       const say=(t,bad)=>{if(msg){msg.textContent=t;msg.className='gt-msg'+(bad?' bad':'')}};
       if(!/^\S+@\S+\.\S+$/.test(em))return say('請輸入正確的 Email',1);if(pw.length<6)return say('密碼至少要 6 碼',1);
-      if(g.dataset.busy)return;g.dataset.busy='1';g.querySelectorAll('[data-gt]').forEach(x=>x.disabled=true);say(k==='login'?'登入中…':'建立帳號中…');
+      if(g.dataset.busy)return;g.dataset.busy='1';g.querySelectorAll('[data-gt]').forEach(x=>x.disabled=true);say(k==='login'?'登入中…':'建立帳號中…');verCheck();
       (k==='login'?cloudLogin(em,pw):cloudSignup(em,pw)).then(r=>{toast(r==='cloud'?'已讀取雲端進度，歡迎回來！':k==='signup'?'帳號建立完成，進度會自動存到雲端。':'登入成功，進度會自動存到雲端。','ok');afterAuthEnter()})
         .catch(e=>{say(SB_ERR(e.message),1)}).finally(()=>{delete g.dataset.busy;g.querySelectorAll('[data-gt]').forEach(x=>x.disabled=false)});return}}}
 function showStory(){document.body.classList.add('gating');const list=STORY.filter(s=>STORY_HAS[s[0]]);let i=0;const g=gateEl();g.className='gate-story';
@@ -2961,8 +2994,9 @@ function start(){try{if(localStorage.getItem('nrs-dpv')!=='0')document.body.clas
   bindUI();preloadVfx();render();save();
   tutInit();
   try{if(/gate/.test(location.hash)||!(navigator.webdriver||/nogate/.test(location.hash))){   // 自動測試（webdriver）預設跳過登入，網址加 #gate 才顯示
+    showLoading('檢查版本…');verCheck().then(old=>{if(old)return;
     if(AUTH&&AUTH.user&&!/forcelogin/.test(location.hash)){showLoading('讀取雲端存檔…');cloudAfterLogin().then(()=>afterAuthEnter()).catch(e=>showLogin('讀取雲端存檔失敗：'+SB_ERR(e.message)+'，請重新登入'))}
-    else showLogin()}}catch(e){}
+    else showLogin()})}}catch(e){}
   if(migrated)toast('已把 v2 存檔升級成 v3。');
   if(after>before)toast(`離線期間村莊狩獵了 ${after-before} 輪，記得收成！`);
   else if(!S.weapons.length&&!S.jobs.length&&!(S.tut<TUT.length))toast('歡迎來到米德加德。先鍛造一把伐木斧，交給鐵爐村的伐木工。');
