@@ -1109,6 +1109,10 @@ html,body,button,[data-act],label,input,select{touch-action:manipulation}
 /* v3.36 登入畫面：背景圖本身也有鐵匠，前景去背鐵匠改成與背景完全同步，避免錯位出現雙手殘影 */
 .gt-fg{transform:translate(calc(var(--mx) * -10px),calc(var(--my) * -6px));animation:gtZoom 20s ease-in-out infinite alternate}
 .gate-name .gt-row>.btn:only-child{grid-column:1/-1;width:100%}
+
+/* v3.40 音效設定 */
+.snd-set{display:grid;gap:10px;margin-top:4px}.snd-set .kv b{display:flex;align-items:center}.snd-set .chipbtn.on{border-color:var(--gold);color:#ffd77a}
+#sndvol{width:100%;accent-color:#d9a548;height:28px}
 </style>
 <div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div></div>
 <main class="wrap" id="view"></main>
@@ -1444,7 +1448,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}CLOUD.dirty=true}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD='v3.39 封測';
+const BUILD='v3.40 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off'};
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -1475,6 +1479,7 @@ async function cloudPush(force){if(!AUTH||CLOUD.busy||(!force&&!CLOUD.dirty))ret
       body:JSON.stringify({user_id:AUTH.user.id,nickname:S.nick||null,data:S,updated_at:new Date().toISOString()})});
     CLOUD.last=Date.now();CLOUD.err='';CLOUD.state='ok'}
   catch(e){CLOUD.dirty=true;CLOUD.err=SB_ERR(e.message);CLOUD.state='err'}finally{CLOUD.busy=false}}
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const NICK_OK=n=>{const c=Array.from(n);return c.length<2?'暱稱至少 2 個字':c.length>8?'暱稱最多 8 個字':/^[\p{L}\p{N}_]+$/u.test(n)?'':'暱稱只能用中文、英文、數字或底線'};
 async function cloudSetNick(n){const old=S.nick;S.nick=n;
   try{await sbRest('saves?on_conflict=user_id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({user_id:AUTH.user.id,nickname:n,data:S,updated_at:new Date().toISOString()})});save();CLOUD.dirty=false;CLOUD.last=Date.now()}
@@ -1627,8 +1632,8 @@ function enhanceCore(id,opt={}){
   const w=W(id);if(!w)return{err:'找不到武器'};if(where(w)>=0)return{err:'駐守中的武器要先收回'};if(w.lv>=15)return{err:'已經是最高等級 +15'};
   const next=w.lv+1,cost=enhCost(w),danger=next>stable(w),test=!!w.test;
   if(!test&&S.gold<cost)return{err:'金幣不夠',need:'gold'};
-  if(opt.bless&&!test&&S.items.bless<1)return{err:'祝福石不足：請取消勾選或到商店補充',need:'bless'};
-  if(opt.scroll&&danger&&!test&&S.items.scroll<1)return{err:'防爆卷不足：請取消勾選或到商店補充',need:'scroll'};
+  if(opt.bless&&!test&&S.items.bless<1)return{err:'祝福石不足：請取消勾選或到商城補充',need:'bless'};
+  if(opt.scroll&&danger&&!test&&S.items.scroll<1)return{err:'防爆卷不足：請取消勾選或到商城補充',need:'scroll'};
   if(!test){S.gold-=cost;S.stats.enhTry++}
   // v3.14：危險區勾選防爆卷，每次強化都消耗 1 張（不論成功、失敗或爆裝）
   const usedScroll=!!(opt.scroll&&danger);if(usedScroll&&!test){S.items.scroll--;S.stats.scrollUsed++}
@@ -1668,6 +1673,10 @@ const AFFIX_ICON={flame:'mat_fireheart',frost:'mat_icecore',swift:'it_hourglass'
 const TRAIT_ICON={sharp:'tr_sharp',sturdy:'tr_sturdy',light:'tr_light',treasure:'tr_treasure',giantslayer:'tr_giantslayer',runic:'tr_runic'};
 const STRAT_ICON={normal:'it_gold',material:'mat_iron',rare:'mat_scale'};
 const TIER_FRAME=[0,2,3,4]; // 圖紙外框顏色：鐵製灰、霜銀藍、龍鱗紫、神器金
+// v3.40 音效設定：喇叭圖示打開，可開關音效、調整音量
+function sndSettings(){const v=Math.round((S.vol??1)*100);
+  ui.result={t:'info',k:'snd',title:'音效設定',html:`<div class="snd-set"><div class="kv"><span>音效</span><b><button class="ui-btn ui-btn--chip chipbtn ${S.mute?'':'on'}" data-act="sndmute">${S.mute?'關閉':'開啟'}</button></b></div>
+   <div class="kv"><span>音量</span><b class="snd-v">${v}%</b></div><input id="sndvol" type="range" min="0" max="100" step="5" value="${v}" ${S.mute?'disabled':''}></div>`};render()}
 function showLevel(){const c=cleared(),lv=smithLv();
   const row=(k,v,m)=>`<div class="kv"><span>${k}</span><b>${v}${m?` <span class="small muted">／${m}</span>`:''}</b></div>`;
   const nb=BPS.filter(b=>b.unlock===c+1),nx=VILLAGES[c],nt=TIERS.find(t=>t.furnace>S.furnace);
@@ -1781,7 +1790,7 @@ function sfxLoadAll(){const c=sfxCtx();if(!c)return;Object.keys(SFXV).forEach(n=
   const u=sfxUrl(n);fetch(u).then(r=>r.arrayBuffer()).then(ab=>new Promise((ok,no)=>c.decodeAudioData(ab,ok,no))).then(buf=>{if(sfxUrl(n)===u)SFXBUF[n]=sfxTrim(buf)}).catch(()=>{if(sfxUrl(n)===u)SFXBUF[n]=null})})}
 // 去掉 MP3 開頭的靜音（編碼器會補一小段空白）
 function sfxTrim(buf){const d=buf.getChannelData(0);let i=0;while(i<d.length&&Math.abs(d[i])<0.004)i++;return{buf,off:Math.max(0,i-32)/buf.sampleRate}}
-function snd(n,rate=1,vol){if(QUIET||S.mute||!(n in SFXV))return;try{const c=sfxCtx(),b=SFXBUF[n];
+function snd(n,rate=1,vol){if(QUIET||S.mute||!(n in SFXV))return;vol=(vol??1)*(S.vol??1);if(vol<=0)return;try{const c=sfxCtx(),b=SFXBUF[n];
   if(c&&b&&b!=='loading'){const s=c.createBufferSource(),g=c.createGain();s.buffer=b.buf;s.playbackRate.value=rate;g.gain.value=Math.min(1,(vol??1)*SFXV[n]);s.connect(g).connect(c.destination);s.start(0,b.off);return}
   if(typeof Audio==='undefined')return;const base=sfxPool[n]||(sfxPool[n]=new Audio(sfxUrl(n)));const a=base.cloneNode();a.volume=Math.min(1,(vol??1)*SFXV[n]);a.preservesPitch=false;a.playbackRate=rate;a.play().catch(()=>{})}catch(e){}}
 const ENH_SND={ok:'enh_ok',fail:'enh_fail',broke:'enh_break',saved:'enh_saved'};
@@ -2091,10 +2100,10 @@ function bpTile(b,on){const l=bpLock(b);return `<button class="wt bp ${on?'on':'
 const matBox=(k,need)=>need==null?`<div class="matbox">${img(MATART[k])}<span class="mb-n">${MATS[k]}</span><span class="mb-c">${fmt(S.mats[k])}</span></div>`
   :`<div class="matbox need ${S.mats[k]<need?'lack':'ok'}">${img(MATART[k])}<span class="mb-n">${MATS[k]}</span><span class="mb-have">持有 ${fmt(S.mats[k])}</span><span class="mb-need">需要 ${fmt(need)}</span></div>`;
 const traitHtml=w=>(w.traits||[]).map(t=>`<span class="trait">${TRAITS[t.k].n} +${t.v}%</span>`).join('');
-function renderRes(){const el=document.getElementById('res');if(!el)return;
-  el.innerHTML=`<button class="player" data-act="player" aria-label="鐵匠等級 Lv.${smithLv()}">${img('ui_player_emblem','emblem')}<i class="lvb">Lv${smithLv()}</i><span class="pname"><span class="small muted">Lv.${smithLv()}</span><b>九界鐵匠</b></span></button>
-  <button class="ui-iconbtn mute" data-act="mute" aria-label="${S.mute?'開啟音效':'關閉音效'}">${S.mute?ic('sound-off'):ic('sound-on')}</button><span class="chip">${img('it_gold')}<b class="num">${fmt(S.gold)}</b></span><span class="chip">${img('it_gems')}<b class="num">${fmt(S.gems)}</b><button class="ui-iconbtn plus" data-act="tab" data-k="shop" aria-label="儲值">${img('ic_plus')}</button></span>${devMode()?`<button class="ui-iconbtn gear" data-act="dev" aria-label="開發工具">${img('ic_gear')}</button>`:''}`}
-const TABS=[['forge','鐵匠鋪','nav_forge'],['armory','武器庫','nav_armory'],['village','村莊','nav_village'],['shop','商店','nav_shop']];
+let RES_H='';function renderRes(){const el=document.getElementById('res');if(!el)return;
+  const h=`<button class="player" data-act="player" aria-label="鐵匠等級 Lv.${smithLv()}">${img('ui_player_emblem','emblem')}<i class="lvb">Lv${smithLv()}</i><span class="pname"><span class="small muted">Lv.${smithLv()}</span><b>${esc(S.nick||(AUTH?'未命名鐵匠':'訪客鐵匠'))}</b></span></button>
+  <button class="ui-iconbtn mute" data-act="mute" aria-label="${S.mute?'開啟音效':'關閉音效'}">${S.mute?ic('sound-off'):ic('sound-on')}</button><span class="chip">${img('it_gold')}<b class="num">${fmt(S.gold)}</b></span><span class="chip">${img('it_gems')}<b class="num">${fmt(S.gems)}</b><button class="ui-iconbtn plus" data-act="tab" data-k="shop" aria-label="儲值">${img('ic_plus')}</button></span>${devMode()?`<button class="ui-iconbtn gear" data-act="dev" aria-label="開發工具">${img('ic_gear')}</button>`:''}`;if(h!==RES_H||!el.firstChild){RES_H=h;el.innerHTML=h}}
+const TABS=[['forge','鐵匠鋪','nav_forge'],['armory','武器庫','nav_armory'],['village','村莊','nav_village'],['shop','商城','nav_shop']];
 let NAV_H='';function renderNav(){const N=document.getElementById('nav'),h=TABS.map(([k,n,ic])=>{const dot=(k==='village'&&S.villages.some(v=>v.bank.cycles))||(k==='forge'&&false);
   return `<button data-act="tab" data-k="${k}" class="ui-navtab ${ui.tab===k?'on':''}">${img(ic)}<span>${n}</span>${dot?'<i class="dot"></i>':''}</button>`}).join('');if(h!==NAV_H||!N.firstChild){NAV_H=h;N.innerHTML=h}}
 
@@ -2151,7 +2160,7 @@ function viewForge(){
   }else if(ui.ftab==='mat'){
     body=`<div class="ui-panel panel">${ptitle('材料倉庫')}<div class="matgrid">${Object.keys(MATS).map(k=>matBox(k)).join('')}</div>
      <div class="row small muted"><span>鍛造殘渣 ${S.slag}</span><span>防爆卷 ${S.items.scroll}</span><span>祝福石 ${S.items.bless}</span><span>傳說圖紙 ${S.items.blueprint}</span></div>
-     <div class="small muted">一階材料可以到商店向旅行商人購買或賣出；高階材料靠村莊狩獵取得。</div></div>`;
+     <div class="small muted">一階材料可以到商城向旅行商人購買或賣出；高階材料靠村莊狩獵取得。</div></div>`;
   }else{
     body=`<div class="ui-panel panel">${ptitle(`鍛造佇列（學徒 ${S.jobs.length}/${S.slots}）`)}${S.jobs.length?S.jobs.map((j,n)=>`<div class="ui-card ui-card--row qrow">${wArt(j.b,{cls:'qimg'})}<div class="grow"><div class="row small"><b class="grow">${BP[j.b].n}${j.qty>1?' ×'+j.qty:''}${j.bp?'・傳說圖紙':''}</b><span class="num" data-jtime="${n}"></span></div><div class="ui-prog prog"><i data-jprog="${n}"></i></div></div>${btn('取消','cancelJob',{cls:'btn-sec sm',attrs:`data-i="${n}"`})}</div>`).join('')+'<div class="small muted">取消會全額退回材料與金幣。完成後自動放進武器庫。</div>'
       :'<div class="empty">鐵砧空著。到「圖紙」挑一把開始鍛造。</div>'}
@@ -2259,8 +2268,8 @@ function sheetWeapon(id,mode){
       const stats=cls=>`<div class="ev-stats ${cls}">${st.map(([k,v,s])=>`<div class="ev-st ${k==='爆裝率'&&danger?(sc?'guard':'risk'):''}"><span>${k}</span>${v}${s?`<i>${s}</i>`:''}</div>`).join('')}</div>`;
       const tg=`<div class="ev-tgls"><label class="ev-tgl ${bl?'on':''} ${hasBl?'':'off'}">${img('it_bless')}<span>祝福石<i>${hasBl?'剩 '+S.items.bless:'已用完'}</i></span><input type="checkbox" id="usebless" ${bl?'checked':''} ${hasBl?'':'disabled'}></label>
         <label class="ev-tgl ${sc?'on':''} ${danger&&hasSc?'':'off'}">${img('it_scroll')}<span>防爆卷<i>${!danger?'安定區不需要':hasSc?'剩 '+S.items.scroll:'已用完'}</i></span><input type="checkbox" id="usescroll" ${sc?'checked':''} ${danger&&hasSc?'':'disabled'}></label></div>`;
-      const warn=danger?(sc?`<div class="ev-warn guard guardline">${img('it_scroll')}防爆卷保護中：爆裝時武器保留</div>`:`<div class="ev-warn risk warn"><span class="grow"><b>沒有防爆卷保護</b>：爆裝會永久失去武器（${pct(total)}）</span>${hasSc?'':btn('去商店','tab',{cls:'btn-sec sm',attrs:'data-k="shop"'})}</div>`):'';
-      const lack=lackScroll||lackBless?`<div class="lack-line">${lackScroll?'防爆卷用完了。':'祝福石用完了。'}${btn(lackScroll?'取消防爆卷':'取消祝福石','noItem',{cls:'btn-sec sm',attrs:`data-k="${lackScroll?'useScroll':'useBless'}"`})}${btn('去商店','tab',{cls:'btn-sec sm',attrs:'data-k="shop"'})}</div>`:'';
+      const warn=danger?(sc?`<div class="ev-warn guard guardline">${img('it_scroll')}防爆卷保護中：爆裝時武器保留</div>`:`<div class="ev-warn risk warn"><span class="grow"><b>沒有防爆卷保護</b>：爆裝會永久失去武器（${pct(total)}）</span>${hasSc?'':btn('去商城','tab',{cls:'btn-sec sm',attrs:'data-k="shop"'})}</div>`):'';
+      const lack=lackScroll||lackBless?`<div class="lack-line">${lackScroll?'防爆卷用完了。':'祝福石用完了。'}${btn(lackScroll?'取消防爆卷':'取消祝福石','noItem',{cls:'btn-sec sm',attrs:`data-k="${lackScroll?'useScroll':'useBless'}"`})}${btn('去商城','tab',{cls:'btn-sec sm',attrs:'data-k="shop"'})}</div>`:'';
       const lab=ui.busy?'強化中…':lackGold?'金幣不足':lackBless?'祝福石不足':lackScroll?'防爆卷不足':armed?`確認強化（${pct(total)} 爆裝）`:`${last?'再次強化':'強化'} +${w.lv}→+${next}`;
       const bar=`<div class="ev-bar ${canAuto?'two':''}"><button class="ui-btn ${unguarded?'ui-btn--danger':'ui-btn--primary'} btn ${unguarded?'btn-risk':'btn-primary'} big" data-act="enhance" data-id="${id}" ${ui.busy||lackGold||lackBless||lackScroll?'disabled':''}>${lab}</button>
         ${canAuto?`<button class="ui-btn ui-btn--accent btn wd-auto ev-auto" data-act="autoEnh" data-id="${id}" ${ui.busy||lackGold?'disabled':''}><span>${lackGold?'金幣不足':'一鍵到 <b>+'+stable(w)+'</b>'}</span><span class="small">約 ${fmt(autoEnhCost(w))} 金</span></button>`:''}</div>
@@ -2282,7 +2291,7 @@ function sheetWeapon(id,mode){
       <label class="ui-card optcard ${sc?'on':''} ${danger?'':'off'} ${lackScroll?'lack':''}">${img('it_scroll')}<span><b>防爆卷</b><span class="small ${S.items.scroll||!danger?'muted':'t-danger'}">${danger?'每次強化消耗 1 張':'安定區不需要'}・剩 ${S.items.scroll}</span></span><input type="checkbox" id="usescroll" ${ui.useScroll?'checked':''} ${danger?'':'disabled'}></label></div>
      <button class="ui-btn ${unguarded?'ui-btn--danger':'ui-btn--primary'} btn ${unguarded?'btn-risk':'btn-primary'} big" data-act="enhance" data-id="${id}" ${ui.busy||lackGold||lackBless||lackScroll?'disabled':''}>${label}</button>
      ${!danger&&w.lv<stable(w)?`<button class="ui-btn ui-btn--accent btn wd-auto" data-act="autoEnh" data-id="${id}" ${ui.busy||lackGold?'disabled':''}><span>${lackGold?'金幣不足，無法一鍵強化':'一鍵強化到安定值 <b>+'+stable(w)+'</b>'}</span><span class="small">${free?'測試武器免費':'約 '+fmt(autoEnhCost(w))+' 金・持有 '+fmt(S.gold)}${lackGold?'':'・不會爆裝'}</span></button>`:''}
-     ${lackScroll||lackBless?`<div class="lack-line">${lackScroll?'勾選了防爆卷，但已經用完。':'勾選了祝福石，但已經用完。'}${btn(lackScroll?'取消防爆卷':'取消祝福石','noItem',{cls:'btn-sec sm',attrs:`data-k="${lackScroll?'useScroll':'useBless'}"`})}${btn('去商店補充','tab',{cls:'btn-sec sm',attrs:'data-k="shop"'})}</div>`:''}
+     ${lackScroll||lackBless?`<div class="lack-line">${lackScroll?'勾選了防爆卷，但已經用完。':'勾選了祝福石，但已經用完。'}${btn(lackScroll?'取消防爆卷':'取消祝福石','noItem',{cls:'btn-sec sm',attrs:`data-k="${lackScroll?'useScroll':'useBless'}"`})}${btn('去商城補充','tab',{cls:'btn-sec sm',attrs:'data-k="shop"'})}</div>`:''}
      ${armed?'<div class="small t-danger center">沒有防爆卷保護。再按一次確認，本次進入強化頁之後不會再問。</div>':''}
      <details class="enh-more"><summary>詳細說明</summary>
       <div class="kvgrid">${kv('安定值','+'+stable(w)+'（'+TIERS[b.t].n+'）')}${kv('失敗後爆裝率',danger?pct(bc):'0%')}${kv('基礎成功率',pct(RATE[next]))}${kv('失敗率',pct(1-r))}</div>
@@ -2451,7 +2460,7 @@ function sheetAch(){const v=ui.achV||'A',nDone=ACH.filter(a=>S.ach[a.id]).length
     return `<div class="ach-d ${st}"><div class="ach-d-rw">${img(MATS[k]?MATART[k]:ITEMS[k][1])}<b>×${n}</b>${more.length?`<span class="ach-d-more">${achRw({r:Object.fromEntries(more)})}</span>`:''}</div><div class="ach-d-name">${itemName(k)}</div><div class="small">${a.n}</div>${st==='done'?'<div class="small t-ok">已領取</div>':bar(a)}${achBtn(a,st,'ach-fullbtn')}</div>`}).join('')}</div>`;
 }
 
-/* ---------- 商店 ---------- */
+/* ---------- 商城 ---------- */
 // v3.20 特性說明：武器詳情點特性標籤會跳出
 const TRAIT_HELP={
  sharp:'交給<b>野獸類</b>村莊（狼嚎谷、霜溪鎮、鹿角堡、渡鴉灣、雪峰營地等）時，每輪狩獵時間縮短。',
@@ -2466,7 +2475,7 @@ const INFO={
   bless:()=>({icon:'it_bless',title:'祝福石',html:'勾選後，該次強化成功率 +10%（最高 100%）。<br><br>每次強化消耗 1 個，不論成功或失敗。'}),
   horn:()=>({icon:'it_horn',title:'狩獵號角',html:'所有有駐守武器的村莊，立即完成 30 分鐘份量的狩獵，獎勵直接放進各村莊的累積獎勵，不會超過離線上限。'}),
   glass:()=>({icon:'it_hourglass',title:'鍛造沙漏',html:'所有正在鍛造的武器立即完成。'}),
-  monthly:()=>({icon:'it_monthly',title:'北境月卡',html:'購買後立即獲得 300 鑽石，30 天內每天可以領 50 鑽石。<br><br>試玩版不會真的扣款。'}),
+  monthly:()=>({icon:'it_monthly',title:'北境月卡（免費）',html:'領取後立即獲得 300 鑽石，30 天內每天可以領 50 鑽石。<br><br>封測期間免費。'}),
   gacha:()=>({icon:'mat_rune',title:'符文祈願機率',html:`<div class="tblwrap"><table class="tbl"><tr><th>獎勵</th><th>數量</th><th>機率</th><th>保底池</th></tr>${GACHA.map(([k,n,p])=>`<tr><td>${itemName(k)}</td><td>×${n}</td><td>${p/10}%</td><td>${p<=PITY_MAX_W?'✓':''}</td></tr>`).join('')}</table></div><div class="small muted" style="margin-top:8px">十連保底：前 9 抽都沒有出現保底池（✓）的獎勵時，第 10 抽改從保底池抽出，取代原本的結果。單抽沒有保底。</div>`}),
   merchant:()=>({icon:'mat_iron',title:'旅行商人',html:`販售一階材料：${SHOP_MATS.map(([k,p])=>MATS[k]+' '+p+' 金').join('、')}。<br><br>也收購多出來的一階材料，每個 ${SELL_PRICE.iron} 金（低於售價，不能套利）。高階材料要靠村莊狩獵取得。`}),
   slag:()=>({icon:'mat_shard',title:'鍛造殘渣',html:'危險區強化爆裝時回收的殘渣，不可交易。<br><br>鐵製 1、霜銀 4、龍鱗 10、神器 25 個。可以兌換少量鐵礦、霜銀或符文碎片。'})
@@ -2475,10 +2484,10 @@ function viewShop(){
   const on=monthlyOn(),days=Math.ceil((S.monthly.until-NOW())/864e5);
   const info=k=>`<button class="ui-iconbtn info-btn" data-act="info" data-k="${k}" aria-label="說明">${ic('info')}</button>`;
   const card=(ic,name,sub,price,act,attrs,ik,dis)=>`<div class="ui-card pcard">${info(ik)}${img(ic,'pc-ico')}<b>${name}</b><span class="small muted">${sub}</span><button class="ui-btn ui-btn--secondary btn btn-sec sm pc-buy" data-act="${act}" ${attrs} ${dis?'disabled':''}>${price}</button></div>`;
-  return `<div class="pagehead"><h2>商店</h2></div>
-  <div class="ui-panel panel">${ptitle('鑽石（試玩版不扣款）')}<div class="gems3">${[[60,'NT$30'],[330,'NT$150'],[1280,'NT$590']].map(([g,p])=>`<button class="ui-card gemcard" data-act="topup" data-n="${g}">${img('it_gems')}<b>${g} 鑽</b><span class="price">${p}</span></button>`).join('')}</div></div>
-  <div class="ui-panel panel month ${on?'on':''}">${info('monthly')}<div class="item">${img('it_monthly')}<div class="grow"><b>北境月卡</b><div class="small muted">${on?`剩餘 ${days} 天`:'立得 300 鑽＋每天 50 鑽'}</div></div>
-   ${on?btn(S.monthly.last===today()?'今日已領':'領 50 鑽','claim',{cls:'btn-primary sm',dis:S.monthly.last===today()}):btn('NT$150','monthly',{cls:'btn-primary sm'})}</div></div>
+  return `<div class="pagehead"><h2>商城</h2></div>
+  ${BETA?'':`<div class="ui-panel panel">\${ptitle('鑽石（試玩版不扣款）')}<div class="gems3">\${[[60,'NT$30'],[330,'NT$150'],[1280,'NT$590']].map(([g,p])=>\`<button class="ui-card gemcard" data-act="topup" data-n="\${g}">\${img('it_gems')}<b>\${g} 鑽</b><span class="price">\${p}</span></button>\`).join('')}</div></div>`}
+  <div class="ui-panel panel month ${on?'on':''}">${info('monthly')}<div class="item">${img('it_monthly')}<div class="grow"><b>北境月卡（免費）</b><div class="small muted">${on?`剩餘 ${days} 天`:'立得 300 鑽＋每天 50 鑽'}</div></div>
+   ${on?btn(S.monthly.last===today()?'今日已領':'領 50 鑽','claim',{cls:'btn-primary sm',dis:S.monthly.last===today()}):btn(BETA?'免費領取':'NT$150','monthly',{cls:'btn-primary sm'})}</div></div>
   <div class="ui-panel panel">${ptitle('特殊道具')}<div class="pgrid">
    ${card('it_scroll','防爆卷',`爆裝時保住武器<br>持有 ${S.items.scroll}`,'30 鑽','item','data-k="scroll" data-n="30"','scroll')}
    ${card('it_bless','祝福石',`成功率 +10%<br>持有 ${S.items.bless}`,'20 鑽','item','data-k="bless" data-n="20"','bless')}
@@ -2623,14 +2632,14 @@ const uiSndOf=a=>a==='tab'||a==='ftab'||a==='cat'||a==='acat'?'ui_tab':['close',
 let PD_SND=0;
 // v3.25 橫向捲動列（圖紙、分類）在 iPhone 上：慣性滑動中的第一下、或手指微晃，系統會把點擊吃掉 → 自己判斷「點一下」
 let TAP0=null,TAP_EL=null,TAP_T=0,TAP_XY=[0,0];
-const TAP_SEL='.hscroll [data-act],.catbar [data-act],#nav [data-act]';
+const TAP_SEL='.hscroll [data-act],.catbar [data-act],#nav [data-act],#res [data-act]';
 document.addEventListener('touchstart',e=>{const b=e.target.closest(TAP_SEL);const t=e.touches[0];TAP0=b&&e.touches.length===1?{b,x:t.clientX,y:t.clientY,t:Date.now()}:null},{passive:true,capture:true});
 document.addEventListener('touchend',e=>{const o=TAP0;TAP0=null;if(!o||o.b.disabled||!o.b.isConnected)return;const t=e.changedTouches[0];
   if(Math.abs(t.clientX-o.x)<12&&Math.abs(t.clientY-o.y)<12&&Date.now()-o.t<600){if(e.cancelable)e.preventDefault();TAP_EL=o.b;TAP_T=Date.now();TAP_XY=[t.clientX,t.clientY];o.b.click()}},{passive:false,capture:true});
 // v3.23 手指按住按鈕的期間暫停定時重畫，避免按鈕在按下與放開之間被換掉而吃掉點擊（需要按兩次的原因）
 document.addEventListener('pointerdown',e=>{if(e.target.closest('[data-act],button,input,select,label'))PTR_DOWN=true},{passive:true,capture:true});
 ['pointerup','pointercancel'].forEach(ev=>document.addEventListener(ev,()=>{if(!PTR_DOWN)return;setTimeout(()=>{PTR_DOWN=false;if(PTR_PEND){PTR_PEND=false;if(ui.tab!=='village')render()}},60)},{passive:true,capture:true}));   // 介面音效在手指按下的瞬間就播放，不等放開
-document.addEventListener('pointerdown',e=>{const b=e.target.closest('[data-act]');if(!b||b.disabled)return;const a=b.dataset.act;if(['enhance','fxskip','devdo','mute','sndtest','sfxalt','scrim'].includes(a)||b.closest('.hscroll,.catbar'))return;snd(uiSndOf(a));PD_SND=Date.now()},{passive:true});
+document.addEventListener('pointerdown',e=>{const b=e.target.closest('[data-act]');if(!b||b.disabled)return;const a=b.dataset.act;if(['enhance','fxskip','devdo','mute','sndtest','sfxalt','scrim','sndvol'].includes(a)||b.closest('.hscroll,.catbar')||(a==='rclose'&&e.target!==b))return;snd(uiSndOf(a));PD_SND=Date.now()},{passive:true});
 document.addEventListener('click',e=>{
   const b=e.target.closest('[data-act]');if(!b||b.disabled)return;if(e.isTrusted&&TAP_EL&&Date.now()-TAP_T<700&&(b===TAP_EL||Math.abs(e.clientX-TAP_XY[0])<30&&Math.abs(e.clientY-TAP_XY[1])<30))return;const a=b.dataset.act,d=b.dataset;sfxPreload();
   if(!['enhance','fxskip','devdo','mute','sndtest','sfxalt'].includes(a)&&Date.now()-PD_SND>700)snd(uiSndOf(a));
@@ -2658,16 +2667,17 @@ document.addEventListener('click',e=>{
    uidpv:()=>{const on=document.body.classList.toggle('dpv');try{localStorage.setItem('nrs-dpv',on?'1':'0')}catch(e){}render()},
    uifpv:()=>{document.body.classList.toggle('fpv');render()},
    uiskintest:()=>{if(UI_SKIN['btn-primary']&&UI_SKIN['btn-primary']._test){UI_SKIN['btn-primary']=null}else{UI_SKIN['btn-primary']={src:'art/ui_btn_wood.webp',slice:[40,70,40,70],border:[12,24,12,24],css:'padding:2px 10px',_test:true}}applySkin();render()},
-   devoff:()=>setDev(false),mute:()=>{S.mute=!S.mute;save();if(!S.mute)snd('ui_click');renderRes()},devset:()=>{ui[d.k]=+d.v;render()},devsets:()=>{ui[d.k]=d.v;render()},noItem:()=>{ui[d.k]=false;ui.riskArm=null;render()},devforce:()=>{DEV.force=d.k||null;toast(DEV.force?'下一次強化測試武器時會套用指定結果':'已取消指定');render()},forgeCat:()=>{ui.tab='forge';ui.ftab='bp';ui.cat=d.k;const f=BPS.find(b=>b.cat===d.k&&!bpLock(b));if(f)ui.bp=f.id;render();scrollTo(0,0)},aclear:()=>{ui.acat='all';ui.aq='all';ui.ast='all';render()},info:()=>{ui.result={t:'info',...INFO[d.k]()};render()},devtab:()=>{ui.devTab=d.k;render()},
+   devoff:()=>setDev(false),mute:()=>sndSettings(),sndmute:()=>{S.mute=!S.mute;save();if(!S.mute)snd('ui_click');sndSettings()},devset:()=>{ui[d.k]=+d.v;render()},devsets:()=>{ui[d.k]=d.v;render()},noItem:()=>{ui[d.k]=false;ui.riskArm=null;render()},devforce:()=>{DEV.force=d.k||null;toast(DEV.force?'下一次強化測試武器時會套用指定結果':'已取消指定');render()},forgeCat:()=>{ui.tab='forge';ui.ftab='bp';ui.cat=d.k;const f=BPS.find(b=>b.cat===d.k&&!bpLock(b));if(f)ui.bp=f.id;render();scrollTo(0,0)},aclear:()=>{ui.acat='all';ui.aq='all';ui.ast='all';render()},info:()=>{ui.result={t:'info',...INFO[d.k]()};render()},devtab:()=>{ui.devTab=d.k;render()},
    rename:()=>{ui.result=null;render();showName(!S.nick)},
-   player:()=>{const t=Date.now();ui.tapN=(t-(ui.tapT||0)<1500?(ui.tapN||0):0)+1;ui.tapT=t;if(ui.tapN>=5){ui.tapN=0;setDev(!devMode());toast(devMode()?'已開啟開發者模式，右上角出現齒輪。':'已關閉開發者模式。')}else{clearTimeout(ui.lvT);const n=ui.tapN;ui.lvT=setTimeout(()=>{if(ui.tapN===n)showLevel()},380)}},
+   player:()=>{const t=Date.now();ui.tapN=(t-(ui.tapT||0)<1500?(ui.tapN||0):0)+1;ui.tapT=t;if(ui.tapN>=20){ui.tapN=0;clearTimeout(ui.lvT);ui.result=null;setDev(!devMode());toast(devMode()?'已開啟開發者模式，右上角出現齒輪。':'已關閉開發者模式。')}else{clearTimeout(ui.lvT);const n=ui.tapN;ui.lvT=setTimeout(()=>{if(ui.tapN===n)showLevel()},300)}},
    buy:()=>buyMat(d.k,+d.p,+d.n),sell:()=>sellMat(d.k,+d.n),up:()=>upgrade(d.k),hire,topup:()=>{S.gems+=+d.n;toast('測試儲值：鑽石 +'+d.n,'ok');save();render()},
    monthly,claim:claimMonthly,item:()=>buyItem(d.k,+d.n),speedHunt,speedForge,pull:()=>pull(+d.n)
   })[a]?.();
 });
 document.addEventListener('wheel',e=>{const h=e.target.closest('.hscroll,.catbar,.realms,.devtabs');if(h&&Math.abs(e.deltaY)>Math.abs(e.deltaX)&&h.scrollWidth>h.clientWidth){h.scrollLeft+=e.deltaY;e.preventDefault()}},{passive:false});
 document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('[role=button][data-act]')){e.preventDefault();e.target.click()}});
-document.addEventListener('change',e=>{const id=e.target.id;if(id==='usescroll'||id==='usebless'){ui.riskArm=null}if(id==='aq')ui.aq=e.target.value;if(id==='ast')ui.ast=e.target.value;if(id==='usescroll')ui.useScroll=e.target.checked;if(id==='usebless')ui.useBless=e.target.checked;if(id==='usebp')ui.useBp=e.target.checked;if(id==='asort')ui.asort=e.target.value;render()});
+document.addEventListener('input',e=>{if(e.target.id!=='sndvol')return;S.vol=+e.target.value/100;const o=document.querySelector('.snd-v');if(o)o.textContent=e.target.value+'%'});
+document.addEventListener('change',e=>{const id=e.target.id;if(id==='sndvol'){save();snd('ui_click');return sndSettings()}if(id==='usescroll'||id==='usebless'){ui.riskArm=null}if(id==='aq')ui.aq=e.target.value;if(id==='ast')ui.ast=e.target.value;if(id==='usescroll')ui.useScroll=e.target.checked;if(id==='usebless')ui.useBless=e.target.checked;if(id==='usebp')ui.useBp=e.target.checked;if(id==='asort')ui.asort=e.target.value;render()});
 }
 
 // v3.17 景深視差：把指標位置／手機傾斜換成 -1～1 的 --mx --my，前後景依深度反向位移
@@ -2738,14 +2748,14 @@ const TUT=[
  {t:'<b>附魔</b>用符文碎片幫武器加詞條：烈焰、霜寒加戰力，<b>剋巨人</b>、<b>剋龍</b>是後期委託必備。鐵砧升級會開放更多附魔欄。',go:()=>{const w=tutW();if(w){ui.enhLast=null;ui.sheet={t:'w',id:w.id,m:'main'}}},sel:()=>'.sheet [data-act=wmode][data-m=ench]',ok:'知道了'},
  // 五、其他系統
  {t:'鐵匠鋪的<b>工坊升級</b>：熔爐越高能打越高階的材質，鐵砧越高品質越好。<b>學徒</b>可以同時鍛造多把，<b>熔解</b>能把不要的武器換回材料。',go:()=>{ui.sheet=null;ui.tab='forge';scrollTo(0,0)},sel:()=>'.hf-bar',ok:'知道了'},
- {t:'缺材料時到<b>商店</b>：旅行商人用金幣賣一階材料；鑽石可以買防爆卷、祝福石和加速道具。',go:()=>{ui.sheet=null;ui.tab='shop';scrollTo(0,0)},sel:()=>'.nav [data-act=tab][data-k=shop]',ok:'知道了'},
+ {t:'缺材料時到<b>商城</b>：旅行商人用金幣賣一階材料；鑽石可以買防爆卷、祝福石和加速道具。',go:()=>{ui.sheet=null;ui.tab='shop';scrollTo(0,0)},sel:()=>'.nav [data-act=tab][data-k=shop]',ok:'知道了'},
  {t:'村莊頁的<b>委託成就</b>可以免費領防爆卷和祝福石；<b>排行榜</b>比你交給每座村莊最強的武器，衝進前 10 名有獎勵。',go:()=>{ui.sheet=null;ui.tab='village';scrollTo(0,0)},sel:()=>'.vbar',ok:'知道了'},
  {go:()=>{ui.sheet=null;ui.tab='forge';scrollTo(0,0)},t:'基本就是這樣：<b>鍛造 → 交付 → 收成 → 強化 → 附魔</b>，一路收復九界！送你 <b>防爆卷 ×1、祝福石 ×1</b> 當開工禮。',sel:()=>null,ok:'開始冒險',end:1}];
 // 各系統第一次打開時的說明（導覽結束後才會出現，每個只出現一次）
 const TIPS={
- mat:['材料倉庫','一階材料（鐵礦、橡木、皮革）可以在商店向商人購買；霜銀、狼牙、龍鱗等高階材料要靠村莊狩獵掉落。'],
+ mat:['材料倉庫','一階材料（鐵礦、橡木、皮革）可以在商城向商人購買；霜銀、狼牙、龍鱗等高階材料要靠村莊狩獵掉落。'],
  armory:['武器庫','點武器看詳情、強化、附魔。上方可依類別篩選與排序；點鎖頭「收藏」的武器不會被熔解。'],
- shop:['商店','旅行商人用金幣買賣一階材料；鑽石可以買防爆卷、祝福石、狩獵號角與鍛造沙漏。'],
+ shop:['商城','旅行商人用金幣買賣一階材料；鑽石可以買防爆卷、祝福石、狩獵號角與鍛造沙漏。'],
  danger:['危險區','這次強化超過安定值：失敗會有機率爆裝，武器會永久消失。沒有防爆卷時會要你再確認一次。'],
  ench:['附魔','選一格欄位：一般附魔隨機出詞條；指定附魔可以選詞條，但要 4 個符文碎片。已經有詞條的欄位可以重抽。'],
  vdetail:['狩獵策略','一般狩獵收益穩定；素材追獵金幣少、材料多；稀有追蹤時間較長，但稀有材料掉落大幅提升。'],
