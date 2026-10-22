@@ -271,7 +271,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='3.92';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='3.93';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -353,6 +353,10 @@ if(typeof window!=='undefined')setInterval(()=>{if(Date.now()-NEWS.t>30000)newsF
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 /* ---------- v3.88 世界聊天＋玩家名片：全部經過伺服器函式（chat_send 檢查冷卻、禁言、等級、髒話）；聊天開著每 4 秒、關著每 30 秒拿新訊息 ---------- */
 const CHAT={rows:[],last:0,sys:[],sysLast:0,unread:0,sysUnread:0,t:0,busy:false,cd:0,draft:'',err:'',tab:'w',sending:false,mockN:0};
+// v3.89 稱號（條件要和 SQL chat_titles 一致；屠龍者、人氣鐵匠只有伺服器算得出來）
+const TITLES=[{k:'smith12',n:'百鍛名匠',d:'把武器強化到 +12'},{k:'legend',n:'傳說鍛造師',d:'鍛造出傳說品質的武器'},{k:'guard',n:'九界守護者',d:'收復 10 座村莊'},{k:'giant',n:'巨人剋星',d:'收復約頓海姆 2-1'},{k:'dragon',n:'屠龍者',d:'首領週排名前 3 名'},{k:'pop',n:'人氣鐵匠',d:'累積 30 個讚'}];
+const titleLocal=k=>k==='smith12'?S.stats.maxLv>=12:k==='legend'?(S.stats.forged[4]||0)>0:k==='guard'?cleared()>=10:k==='giant'?!!(S.villages[10]&&S.villages[10].status==='cleared'):false;
+const titleOn=k=>!!k&&(titleLocal(k)||(PC.mine||[]).includes(k));
 const CHAT_MAX=60,CHAT_CD=5000,CHAT_LV=3,CHAT_QUICK=['恭喜！','節哀…','求帶','收武器','謝謝','哈哈'];
 const chatOn=()=>!!(AUTH&&CLOUD.ready);
 const chatMock=()=>!AUTH&&!CLOUD_ONLY;   // 本機未登入：離線模擬，用來看畫面
@@ -369,8 +373,8 @@ function chatErrText(r){r=String(r||'');if(r.startsWith('muted:'))return`你被�
 const chatSrvErr=e=>/function|not find|schema cache|404/i.test(e&&e.message||'')?'聊天功能還沒開通（伺服器還沒更新）':SB_ERR(e&&e.message);
 // 離線模擬資料
 const CHAT_MOCK_ROWS=[['雷霆之錘',18,'有人要 +10 戰斧嗎？交易所掛 3,000 金幣'],['冰原少女',9,'新手問一下，防爆卷什麼時候用比較好？'],['霜狼',22,'高等級再用，前面先省著'],['渡鴉',25,'剛衝上 +12，手還在抖'],['北境小鐵',14,'這把真的＊＊心痛']];
-function chatMockInit(){if(CHAT.rows.length)return;const t=Date.now();CHAT.rows=CHAT_MOCK_ROWS.map(([n,lv,b],k)=>({id:k+1,uid:'mock-'+k,nick:n,lv,body:b,mine:false,at:new Date(t-(5-k)*60000).toISOString()}));CHAT.last=CHAT.rows.length;
-  CHAT.sys=[{id:1,uid:'mock-2',nick:'霜狼',bp:'t2_longsword',lv:12,ok:true,at:new Date(t-300000).toISOString()},{id:2,uid:'mock-4',nick:'北境小鐵',bp:'t2_longbow',lv:11,ok:false,at:new Date(t-120000).toISOString()}];CHAT.sysLast=2}
+function chatMockInit(){if(CHAT.rows.length)return;const t=Date.now();CHAT.rows=CHAT_MOCK_ROWS.map(([n,lv,b],k)=>({id:k+1,uid:'mock-'+k,nick:n,lv,body:b,mine:false,at:new Date(t-(5-k)*60000).toISOString(),title:k===2?'smith12':k===3?'legend':null,w:k===3?{b:'t2_longsword',q:3,lv:12,rf:0,traits:[],ench:[]}:null}));CHAT.last=CHAT.rows.length;
+  CHAT.sys=[{id:1,uid:'mock-2',nick:'霜狼',bp:'t2_longsword',lv:12,ok:true,at:new Date(t-300000).toISOString(),cheers:4,cheered:false},{id:3,uid:'me',mine:true,nick:S.nick||'我',bp:'t1_woodaxe',lv:10,ok:true,at:new Date(t-200000).toISOString(),cheers:2},{id:2,uid:'mock-4',nick:'北境小鐵',bp:'t2_longbow',lv:11,ok:false,at:new Date(t-120000).toISOString()}];CHAT.sysLast=2}
 function chatAdd(rows){let n=0;for(const x of rows){if(CHAT.rows.some(r=>r.id===x.id))continue;CHAT.rows.push(x);CHAT.last=Math.max(CHAT.last,+x.id||0);if(!x.mine&&!chatBlocked(x.uid))n++}
   if(CHAT.rows.length>120)CHAT.rows.splice(0,CHAT.rows.length-120);return n}
 async function chatFetch(force){if(CHAT.busy||!chatOn()||document.hidden)return;CHAT.busy=true;CHAT.t=Date.now();const first=!CHAT.last;
@@ -378,22 +382,35 @@ async function chatFetch(force){if(CHAT.busy||!chatOn()||document.hidden)return;
     if(Array.isArray(r)){const n=chatAdd(r);if(!first&&!(chatOpen()&&CHAT.tab==='w'))CHAT.unread=Math.min(99,CHAT.unread+n)}
     if(chatOpen()&&CHAT.tab==='s'||force){const s=await sbRest('rpc/chat_sys',{method:'POST',body:JSON.stringify({p_after:CHAT.sysLast})});
       if(Array.isArray(s))for(const x of s){if(CHAT.sys.some(y=>y.id===x.id))continue;CHAT.sys.push(x);CHAT.sysLast=Math.max(CHAT.sysLast,+x.id||0)}if(CHAT.sys.length>60)CHAT.sys.splice(0,CHAT.sys.length-60)}}
-  catch(e){CHAT.err=chatSrvErr(e)}finally{CHAT.busy=false}chatPaint()}
+  catch(e){CHAT.err=chatSrvErr(e)}finally{CHAT.busy=false}chatPaint();cheerInbox()}
 if(typeof window!=='undefined')setInterval(()=>{if(!chatOn())return;const gap=chatOpen()?4000:30000;if(Date.now()-CHAT.t>=gap)chatFetch()},1000);
-async function chatSend(){const el=document.getElementById('cxIn');const t=(el?el.value:CHAT.draft).replace(/\s+/g,' ').trim();
+async function chatSend(wid){const el=document.getElementById('cxIn');let t=(el?el.value:CHAT.draft).replace(/\s+/g,' ').trim();const sw=wid!=null&&S.weapons.find(w=>w.id===wid&&!w.test);
+  if(wid!=null&&!sw)return toast('找不到這把武器','bad');if(sw&&!t)t='分享了一把武器';
   if(CHAT.sending)return;const pre=chatPre(t);if(pre)return toast(pre,'bad');
   const left=CHAT.cd-Date.now();if(left>0)return toast(chatErrText('slow:'+Math.ceil(left/1000)),'bad');
-  if(chatMock()){chatMockInit();chatAdd([{id:++CHAT.last,uid:'me',nick:S.nick||'我',lv:smithLv(),body:t,mine:true,at:new Date().toISOString()}])}
+  if(chatMock()){chatMockInit();chatAdd([{id:++CHAT.last,uid:'me',nick:S.nick||'我',lv:smithLv(),body:t,mine:true,at:new Date().toISOString(),title:titleOn(S.title)?S.title:null,w:sw?{b:sw.b,q:sw.q,lv:sw.lv,rf:sw.rf||0,traits:sw.traits,ench:sw.ench,p:power(sw)}:null}])}
   else{if(!chatOn())return toast('請先登入','bad');if(!S.nick)return toast(CHAT_MSG.nonick,'bad');CHAT.sending=true;
-    try{const r=await sbRest('rpc/chat_send',{method:'POST',body:JSON.stringify({p_sid:SID,p_ch:'w',p_body:t})});
+    try{const r=await sbRest('rpc/chat_send',{method:'POST',body:JSON.stringify(sw?{p_sid:SID,p_ch:'w',p_body:t,p_wid:sw.id}:{p_sid:SID,p_ch:'w',p_body:t})});
       if(r==='session')return cloudKicked();if(r!=='ok')return toast(chatErrText(r),'bad')}
     catch(e){return toast(chatSrvErr(e),'bad')}finally{CHAT.sending=false}}
-  CHAT.cd=Date.now()+CHAT_CD;CHAT.draft='';if(el)el.value='';snd('ui_click');if(!chatMock())await chatFetch();chatPaint(true)}
+  CHAT.cd=Date.now()+CHAT_CD;CHAT.draft='';CHAT.pick=false;if(el)el.value='';snd('ui_click');if(sw)render();if(!chatMock())await chatFetch();chatPaint(true)}
 function chatRowHtml(x){const u=esc(x.uid||''),nm=esc(x.nick||'無名鐵匠');
-  return `<div class="cx-m"><span class="lv">Lv${x.lv|0}</span><button class="who ${x.mine?'me':''}" data-act="pcard" data-u="${u}" data-n="${nm}" data-m="${x.mine?'':+x.id||''}">${x.mine?'我':nm}</button>${esc(x.body)}<span class="tm">${chatAgo(x.at)}</span></div>`}
-function chatSysHtml(x){const b=BP[bpId(x.bp)];if(!b)return'';const nm=esc(x.nick||'無名鐵匠'),who=`<button class="who" data-act="pcard" data-u="${esc(x.uid||'')}" data-n="${nm}">${nm}</button>`;
-  return `<div class="cx-sys ${x.ok?'':'brk'}">${x.ok?`恭喜 ${who} 把 <b>${esc(b.n)}</b> 強化到 <b>+${x.lv}</b>！`:`${who} 的 <b>${esc(b.n)}</b> 衝 <b>+${x.lv}</b> 失敗，武器化為殘渣……`}<span class="tm">${chatAgo(x.at)}</span></div>`}
-function chatListHtml(){if(CHAT.tab==='s'){const r=CHAT.sys.filter(x=>!chatBlocked(x.uid));return r.length?r.map(chatSysHtml).join(''):`<div class="small muted center cx-empty">${CHAT.err||'最近一天還沒有 +10 以上的強化公告'}</div>`}
+  const T=TITLES.find(t=>t.k===x.title),w=x.w&&BP[bpId(x.w.b)]?x.w:null,b=w&&BP[bpId(w.b)];
+  return `<div class="cx-m">${T?`<span class="tt">${T.n}</span>`:''}<span class="lv">Lv${x.lv|0}</span><button class="who ${x.mine?'me':''}" data-act="pcard" data-u="${u}" data-n="${nm}" data-m="${x.mine?'':+x.id||''}">${x.mine?'我':nm}</button>${esc(x.body)}<span class="tm">${chatAgo(x.at)}</span>${w?`<button class="cx-card" data-act="chatw" data-m="${+x.id||0}"><span class="ca">${wArt(b.id,{frame:w.q|0})}</span><span class="grow"><b class="q${w.q|0}">${esc(b.n)} <span class="lvt">+${w.lv|0}</span></b><span class="small muted">${QUAL[w.q|0].n}・戰力 ${fmt(w.p||power({...w,b:b.id}))}</span></span><span class="go">查看</span></button>`:''}</div>`}
+function chatSysHtml(x){const b=BP[bpId(x.bp)];if(!b)return'';const nm=esc(x.nick||'無名鐵匠'),who=`<button class="who" data-act="pcard" data-u="${esc(x.uid||'')}" data-n="${nm}">${nm}</button>`,mine=x.mine||!!(AUTH&&x.uid===AUTH.user.id),n=x.cheers|0;
+  const ch=!x.ok?'':mine?(n?`<span class="cx-chn">${n} 位鐵匠恭喜你</span>`:''):`<button class="cx-ch ${x.cheered?'on':''}" data-act="cheer" data-id="${+x.id||0}" ${x.cheered?'disabled':''}>${x.cheered?'已恭喜':'恭喜'}${n?' '+n:''}</button>`;
+  return `<div class="cx-sys ${x.ok?'':'brk'}"><div class="cx-st">${x.ok?`恭喜 ${who} 把 <b>${esc(b.n)}</b> 強化到 <b>+${x.lv}</b>！`:`${who} 的 <b>${esc(b.n)}</b> 衝 <b>+${x.lv}</b> 失敗，武器化為殘渣……`}<span class="tm">${chatAgo(x.at)}</span></div>${ch}</div>`}
+// v3.89 恭喜：別人恭喜我的紀錄，每 30 秒看一次，合併成一則提示
+async function cheerAdd(id){const x=CHAT.sys.find(r=>r.id===id);if(!x||x.cheered)return;
+  if(!chatMock()){try{const r=await sbRest('rpc/news_cheer_add',{method:'POST',body:JSON.stringify({p_id:id})});if(r!=='ok'&&r!=='done')return toast({self:'不能恭喜自己',gone:'這則公告已經過期了',many:'今天恭喜太多次了，明天再來',login:'請先登入'}[r]||'恭喜失敗','bad')}catch(e){return toast(chatSrvErr(e),'bad')}}
+  x.cheered=true;x.cheers=(x.cheers|0)+1;snd('deliver');toast(`已恭喜 ${esc(x.nick)}！`,'ok');chatPaint()}
+async function cheerInbox(){if(!chatOn()||Date.now()-(CHAT.ci||0)<30000)return;CHAT.ci=Date.now();
+  try{const r=await sbRest('rpc/news_cheer_inbox',{method:'POST',body:JSON.stringify({p_after:S.cheerLast||0})});if(!Array.isArray(r)||!r.length)return;cheerShow(r)}catch(e){}}
+function cheerShow(r){const g={};for(const x of r){S.cheerLast=Math.max(S.cheerLast||0,+x.id||0);(g[x.news_id]=g[x.news_id]||{bp:x.bp,lv:x.lv,n:[]}).n.push(x.from_nick||'無名鐵匠')}save();
+  Object.values(g).forEach((v,i)=>{const b=BP[bpId(v.bp)],who=v.n.slice(0,2).map(esc).join('、')+(v.n.length>2?` 等 ${v.n.length} 位鐵匠`:'');setTimeout(()=>{snd('deliver');toast(`🎉 ${who} 恭喜你${b?`把 <b>${esc(b.n)}</b> 強化到 +${v.lv|0}`:''}！`,'ok')},i*2800)})}
+function chatPickHtml(){const ws=S.weapons.filter(w=>!w.test).sort((a,b)=>power(b)-power(a)).slice(0,40);
+  return `<div class="small muted cx-pk-h">選一把武器貼到世界頻道（輸入框的文字會一起送出）</div>`+(ws.length?ws.map(w=>{const b=BP[w.b];return `<button class="cx-card cx-pk" data-act="chatsendw" data-id="${w.id}"><span class="ca">${wArt(b.id,{frame:w.q})}</span><span class="grow"><b class="q${w.q}">${esc(b.n)} <span class="lvt">+${w.lv}</span></b><span class="small muted">${QUAL[w.q].n}・戰力 ${fmt(power(w))}</span></span><span class="go">貼上</span></button>`}).join(''):'<div class="small muted center cx-empty">武器庫是空的</div>')}
+function chatListHtml(){if(CHAT.pick&&CHAT.tab==='w')return chatPickHtml();if(CHAT.tab==='s'){const r=CHAT.sys.filter(x=>!chatBlocked(x.uid));return r.length?r.map(chatSysHtml).join(''):`<div class="small muted center cx-empty">${CHAT.err||'最近一天還沒有 +10 以上的強化公告'}</div>`}
   const r=CHAT.rows.filter(x=>!chatBlocked(x.uid));return r.length?r.map(chatRowHtml).join(''):`<div class="small muted center cx-empty">${CHAT.err||(chatOn()&&!CHAT.t?'讀取中…':'還沒有人說話，來打聲招呼吧！')}</div>`}
 function sheetChat(){const cd=Math.max(0,Math.ceil((CHAT.cd-Date.now())/1000)),canLv=smithLv()>=CHAT_LV||CLOUD.admin;
   const tb=(k,n,b,lk)=>`<button class="cx-tab ${CHAT.tab===k?'on':''} ${lk?'lk':''}" data-act="chattab" data-k="${k}">${n}${lk?img('ic_lock','cx-lk'):''}${b?`<i class="ui-badge badge">${b}</i>`:''}</button>`;
@@ -401,7 +418,7 @@ function sheetChat(){const cd=Math.max(0,Math.ceil((CHAT.cd-Date.now())/1000)),c
   <div class="cx-tabs">${tb('w','世界',0)}${tb('g','公會',0,1)}${tb('s','系統',CHAT.sysUnread)}</div>
   <div class="cx-list" id="cxList">${chatListHtml()}</div>
   ${CHAT.tab==='w'?(canLv?`<div class="cx-quick">${CHAT_QUICK.map(q=>`<button class="cx-q" data-act="chatq" data-k="${esc(q)}">${esc(q)}</button>`).join('')}</div>
-  <div class="cx-in"><input id="cxIn" type="text" maxlength="${CHAT_MAX}" autocomplete="off" enterkeyhint="send" placeholder="說點什麼…" value="${esc(CHAT.draft)}"><button class="ui-btn ui-btn--primary btn btn-primary cx-send" data-act="chatsend">送出</button></div>
+  <div class="cx-in"><button class="cx-wb ${CHAT.pick?'on':''}" data-act="chatpick" aria-label="分享武器">${CHAT.pick?'取消':'武器'}</button><input id="cxIn" type="text" maxlength="${CHAT_MAX}" autocomplete="off" enterkeyhint="send" placeholder="說點什麼…" value="${esc(CHAT.draft)}"><button class="ui-btn ui-btn--primary btn btn-primary cx-send" data-act="chatsend">送出</button></div>
   <div class="cx-note"><span id="cxCd">${cd?cd+' 秒後可以再發言':`最多 ${CHAT_MAX} 字`}</span><span>點名字可以看名片、檢舉、封鎖</span></div>`
   :`<div class="cx-note cx-lvneed">鐵匠等級 Lv.${CHAT_LV} 才能發言（目前 Lv.${smithLv()}），先去收復村莊吧！</div>`)
   :`<div class="cx-note">${CHAT.tab==='s'?'強化 +10 以上成功或爆裝，都會出現在這裡':''}</div>`}`}
@@ -423,18 +440,20 @@ if(typeof document!=='undefined'){document.addEventListener('input',e=>{if(e.tar
   document.addEventListener('keydown',e=>{if(e.target&&e.target.id==='cxIn'&&e.key==='Enter'&&!e.isComposing){e.preventDefault();chatSend()}})}
 
 /* 玩家名片：點聊天或排行榜的名字 */
-const PC={u:null,n:'',m:null,d:null,err:'',busy:false};
+const PC={u:null,n:'',m:null,d:null,err:'',busy:false,mine:[]};
 async function pcOpen(u,n,m){PC.u=u;PC.n=n||'';PC.m=m||null;PC.d=null;PC.err='';pcShow();
   if(chatMock()||String(u).startsWith('mock')||u==='me'){const k=+String(u).slice(5)||0;PC.d=u==='me'?pcSelf():{uid:u,nick:n,lv:[18,9,22,25,14][k]||10,cleared:[8,3,10,12,6][k]||5,maxlv:[10,6,13,12,11][k]||8,likes:[12,1,30,44,5][k]||0,liked:false,left:3,me:false,w:{b:['t2_daneaxe','t1_woodaxe','t2_longsword','t2_longsword','t2_longbow'][k]||'t1_woodaxe',q:[2,0,3,3,2][k]||1,lv:[10,6,13,12,11][k]||8,traits:[],ench:[]}};if(PC.d.w&&!BP[PC.d.w.b])PC.d.w.b='t1_woodaxe';if(PC.d.w)PC.d.w.p=power({...PC.d.w,b:bpId(PC.d.w.b)});return pcShow()}
-  try{PC.d=await sbRest('rpc/pc_card',{method:'POST',body:JSON.stringify({p_uid:u})});if(!PC.d)PC.err='找不到這位玩家'}catch(e){PC.err=chatSrvErr(e)}if(PC.u===u)pcShow()}
-function pcSelf(){const best=[...S.weapons].filter(w=>!w.test).sort((a,b)=>power(b)-power(a))[0];return{uid:'me',nick:S.nick||'我',lv:smithLv(),cleared:cleared(),maxlv:S.weapons.reduce((a,w)=>w.test?a:Math.max(a,w.lv),0),likes:0,liked:false,left:3,me:true,w:best?{...best,p:power(best)}:null}}
+  try{PC.d=await sbRest('rpc/pc_card',{method:'POST',body:JSON.stringify({p_uid:u})});if(!PC.d)PC.err='找不到這位玩家';else if(PC.d.me&&Array.isArray(PC.d.titles))PC.mine=PC.d.titles}catch(e){PC.err=chatSrvErr(e)}if(PC.u===u)pcShow()}
+function pcSelf(){const best=[...S.weapons].filter(w=>!w.test).sort((a,b)=>power(b)-power(a))[0];return{uid:'me',nick:S.nick||'我',lv:smithLv(),cleared:cleared(),maxlv:S.weapons.reduce((a,w)=>w.test?a:Math.max(a,w.lv),0),likes:0,liked:false,left:3,me:true,title:titleOn(S.title)?S.title:null,titles:TITLES.filter(t=>titleLocal(t.k)).map(t=>t.k),w:best?{...best,p:power(best)}:null}}
 function pcShow(){if(!ui.result||ui.result.k!=='pc'){ui.result={t:'info',k:'pc',icon:'ui_player_emblem',title:'',html:''}}const d=PC.d,blk=chatBlocked(PC.u);
   ui.result.title=esc(d?d.nick:PC.n||'玩家');
   if(!d){ui.result.html=`<div class="small muted center">${PC.err||'讀取中…'}</div>`;return render()}
   const w=d.w&&BP[bpId(d.w.b)]?d.w:null,b=w&&BP[bpId(w.b)];
-  ui.result.html=`<div class="pc-top"><span class="small muted">鐵匠 Lv.${d.lv|0}</span>${d.me?'<span class="small t-gold">這是你</span>':''}</div>
+  const T=TITLES.find(t=>t.k===d.title),has=d.me?(Array.isArray(d.titles)?d.titles:[]):[];
+  ui.result.html=`<div class="pc-top">${T?`<span class="tt">${T.n}</span>`:''}<span class="small muted">鐵匠 Lv.${d.lv|0}</span>${d.me?'<span class="small t-gold">這是你</span>':''}</div>
    <div class="pc-st"><div><b>${d.cleared|0}</b>收復村莊</div><div><b>+${d.maxlv|0}</b>最高強化</div><div><b>${fmt(d.likes|0)}</b>獲得的讚</div></div>
    <div class="small muted pc-lb">最強武器</div>${w?`<div class="pc-w">${wArt(b.id,{frame:w.q|0})}<div class="grow"><b class="q${w.q|0}">${esc(b.n)} <span class="lvt">+${w.lv|0}</span></b><div class="small muted">${QUAL[w.q|0].n}・戰力 ${fmt(w.p||power({...w,b:b.id}))}</div></div></div>`:'<div class="small muted">還沒有武器</div>'}
+   ${d.me?`<div class="small muted pc-lb">稱號（點一下戴上，會顯示在聊天名字前面）</div><div class="pc-tts">${TITLES.map(t=>{const ok=has.includes(t.k)||titleLocal(t.k),on=S.title===t.k&&ok;return `<button class="pc-tt ${on?'on':''} ${ok?'':'lk'}" data-act="pctitle" data-k="${t.k}" ${ok?'':'disabled'}><b>${t.n}</b><span>${ok?(on?'戴著':'已解鎖'):t.d}</span></button>`}).join('')}</div>`:''}
    ${d.me?'':`<div class="pc-bt">${btn(d.liked?'今天已讚':`讚（今天剩 ${d.left|0} 次）`,'pclike',{cls:'btn-primary',dis:d.liked||!(d.left>0)})}${btn(blk?'解除封鎖':'封鎖','pcblock')}${PC.m?btn('檢舉這則訊息','pcreport',{cls:'btn-danger'}):''}</div>
    ${blk?'<div class="small muted center">已封鎖：聊天裡看不到他的訊息</div>':''}`}
    ${CLOUD.admin&&!d.me?`<div class="label">管理員</div><div class="pc-adm">${btn('禁言 1 小時','pcmute',{attrs:'data-h="1"'})}${btn('禁言 1 天','pcmute',{attrs:'data-h="24"'})}${btn('永久禁言','pcmute',{attrs:'data-h="876000"',cls:'btn-danger'})}${btn('解除禁言','pcmute',{attrs:'data-h="0"'})}${PC.m?btn('刪除這則訊息','pchide',{cls:'btn-danger'}):''}</div>`:''}`;render()}
@@ -1910,9 +1929,10 @@ function sheetDev(){
      <div class="small muted">危險區（約 2.8 秒）</div><div class="devgrid">${B('fx_ok','危險區・成功')}${B('fx_fail','危險區・失敗')}${B('fx_broke','危險區・爆裝')}${B('fx_saved','危險區・防爆')}</div>`,
    test:`<div class="devgrid">${B('tsec','安全設定檢查（v3.65）','btn-primary')}${B('tlbsv','排行榜上傳檢查')}${B('tquick','執行快速測試')}${B('tecon','執行 30 天經濟模擬')}${B('ticon','檢查 App icon')}</div>${ui.testOut?`<div class="test-out">${ui.testOut}</div>`:''}`,
    ui:tab==='ui'?uiGallery():'',
-   chat:`<div class="label">v3.88 世界聊天＋玩家名片（${chatOn()?'連線真實伺服器':chatMock()?'未登入：離線模擬，只看畫面':'未連線'}）</div>
+   chat:`<div class="label">v3.88～3.89 世界聊天＋玩家名片（${chatOn()?'連線真實伺服器':chatMock()?'未登入：離線模擬，只看畫面':'未連線'}）</div>
      <div class="devgrid">${B('chopen','打開聊天視窗','btn-primary')}${B('chnew','模擬收到 3 則新訊息')}${B('chlong','模擬一則 60 字長訊息')}${B('chcd','模擬發言冷卻 5 秒')}${B('chsys','打開系統頻道')}${B('chbar','底部聊天條：'+(S.chatBar===false?'目前隱藏':'目前顯示'))}</div>
      <div class="label">玩家名片</div><div class="devgrid">${B('pcme','看自己的名片')}${B('pcother','看別人的名片（模擬）')}${B('chunblk','清空封鎖名單（'+chatBlk().length+' 人）')}</div>
+     <div class="label">v3.89 武器卡、稱號、恭喜</div><div class="devgrid">${B('chwcard','模擬別人貼一張武器卡')}${B('chtitle','解鎖本機 4 個稱號（+12、傳說、10 村、2-1）')}${B('chtitle0','卸下稱號')}${B('chcheer','模擬收到 3 位鐵匠恭喜')}${B('chsys','打開系統頻道（按恭喜）')}</div>
      <div class="label">檢查</div><div class="devgrid">${B('chfilter','測試輸入檢查（網址、電話、字數）')}${B('tsec','安全設定檢查（含聊天 SQL）')}</div>`,
    mk:`<div class="label">交易所（v3.41）</div><div class="small muted" style="margin-bottom:6px">${AUTH?'目前連線真實伺服器（'+esc(S.nick||AUTH.user.email)+'）':'未登入：交易所使用「離線模擬」，只存在這支手機，用來測試畫面與流程'}</div>
      <div class="devgrid">${B('mkopen','開啟交易所')}${B('mksettle','立即結算我的成交／過期')}</div>
@@ -1936,6 +1956,10 @@ function devdo(k){if(k.startsWith('ch')||k.startsWith('pc')){ui.sheet=null;   //
     if(k==='chbar'){S.chatBar=S.chatBar===false;save();ui.sheet={t:'d'};render();return toast('底部聊天條：'+(S.chatBar===false?'隱藏':'顯示'))}
     if(k==='pcme'){render();return pcOpen('me',S.nick||'我')}
     if(k==='pcother'){render();return pcOpen('mock-2','霜狼',chatOn()?null:3)}
+    if(k==='chwcard'){chatAdd([{id:CHAT.last+1,uid:'mock-1',nick:'冰原少女',lv:9,body:'剛打出來的，大家看看',mine:false,at:new Date().toISOString(),title:'guard',w:{b:'t2_warhammer',q:4,lv:11,rf:0,traits:[],ench:[]}}]);return chatOpenSheet('w')}
+    if(k==='chtitle'){S.stats.maxLv=Math.max(12,S.stats.maxLv);S.stats.forged[4]=Math.max(1,S.stats.forged[4]||0);S.villages.forEach((v,i)=>{if(i<=10)v.status='cleared'});if(S.villages[11]&&S.villages[11].status==='locked')S.villages[11].status='open';save();render();return pcOpen('me',S.nick||'我')}
+    if(k==='chtitle0'){S.title=null;save();ui.sheet={t:'d'};render();return toast('已卸下稱號')}
+    if(k==='chcheer'){cheerShow([{id:(S.cheerLast||0)+1,news_id:-1,from_nick:'霜狼',bp:'t2_longsword',lv:12},{id:(S.cheerLast||0)+2,news_id:-1,from_nick:'渡鴉',bp:'t2_longsword',lv:12},{id:(S.cheerLast||0)+3,news_id:-1,from_nick:'雷霆之錘',bp:'t2_longsword',lv:12}]);ui.sheet={t:'d'};return render()}
     if(k==='chunblk'){S.cbl=[];save();ui.sheet={t:'d'};render();return toast('封鎖名單已清空','ok')}
     if(k==='chfilter'){const cs=[['大家好',''],['https://abc.com',1],['加我 line id abc',1],['0912 345 678',1],['12345678',1],['   ',1],['字'.repeat(61),1],['字'.repeat(60),'']];
       const bad=cs.filter(([t,e])=>!!chatPre(t)!==!!e);ui.sheet={t:'d'};render();return toast(bad.length?'失敗：'+bad.map(x=>esc(x[0].slice(0,10))).join('、'):'輸入檢查 8 項全部通過',bad.length?'bad':'ok')}
@@ -2159,7 +2183,9 @@ document.addEventListener('click',e=>{
   ({tab:()=>{if(ui.busy&&ui.fxDone)ui.fxDone();ui.pickV=null;if(ui.tab==='armory'&&d.k!=='armory'&&S.weapons.some(wNew)){S.seenW=S.nextId-1;save()}if(d.k==='market'&&S.mkNew){S.mkNew=0;save()}ui.tab=d.k;if(d.k==='market'&&(AUTH||mkMock())&&Date.now()-MK.t>20000)setTimeout(mkLoad,0);ui.sheet=null;ui.enhLast=null;render();warmTabs();d.k==='village'?scrollToNextVillage():scrollTo(0,0)},close:()=>{if(ui.busy)return;ui.sheet=null;ui.enhLast=null;ui.riskArm=null;ui.riskOk=null;render()},scrim:()=>{if(ui.busy)return;ui.sheet=null;ui.enhLast=null;render()},dev:()=>{ui.sheet={t:'d'};render()},achopen:()=>{ui.qTab=signReady()?'s':boxReadyN()||!achReadyN()?'d':'o';ui.sheet={t:'a'};render()},
    sheetW:()=>{ui.sheet={t:'ws',k:'w'};render()},sheetM:()=>{ui.sheet={t:'ws',k:'m'};render()},sheetT:()=>{ui.sheet={t:'ws',k:'t'};render()},evtopen:()=>{ui.sheet={t:'evt'};render()},bossw:()=>{ui.sheet={t:'bw',r:+d.r,j:+d.j};render()},
    chatopen:()=>chatOpenSheet(),chattab:()=>{if(d.k==='g')return toast('公會功能會在之後的版本開放');CHAT.tab=d.k;if(d.k==='s')CHAT.sysUnread=0;else CHAT.unread=0;render();const L=document.getElementById('cxList');if(L)L.scrollTop=L.scrollHeight;if(chatOn())chatFetch(true)},
-   chatq:()=>{const el=document.getElementById('cxIn');if(!el)return;const v=(el.value+(el.value&&!/\s$/.test(el.value)?' ':'')+d.k);el.value=Array.from(v).slice(0,CHAT_MAX).join('');CHAT.draft=el.value;el.focus()},chatsend:()=>chatSend(),
+   chatq:()=>{const el=document.getElementById('cxIn');if(!el)return;const v=(el.value+(el.value&&!/\s$/.test(el.value)?' ':'')+d.k);el.value=Array.from(v).slice(0,CHAT_MAX).join('');CHAT.draft=el.value;el.focus()},chatsend:()=>chatSend(),cheer:()=>cheerAdd(+d.id),chatsys:()=>{if(chatOn()||chatMock())chatOpenSheet('s')},chatpick:()=>{CHAT.pick=!CHAT.pick;chatPaint(!CHAT.pick);const L=document.getElementById('cxList');if(L&&CHAT.pick)L.scrollTop=0;const b=document.querySelector('.cx-wb');if(b){b.textContent=CHAT.pick?'取消':'武器';b.classList.toggle('on',CHAT.pick)}},chatsendw:()=>chatSend(+d.id),
+   chatw:()=>{const x=CHAT.rows.find(r=>r.id===+d.m);if(!x||!x.w||!BP[bpId(x.w.b)])return;ui.result={t:'info',title:x.mine?'我的武器':`${esc(x.nick)}的武器`,html:mkWeaponBox(x.w)};render()},
+   pctitle:()=>{S.title=S.title===d.k?null:d.k;save();CLOUD.dirty=true;toast(S.title?`已戴上「${TITLES.find(t=>t.k===d.k).n}」，下一則聊天開始顯示`:'已卸下稱號');if(PC.d){PC.d.title=S.title}pcShow()},
    pcard:()=>{if(!d.u)return;pcOpen(d.u,d.n,d.m)},pclike:()=>pcLike(),pcblock:()=>pcBlock(),pcreport:()=>pcReport(),pcmute:()=>pcAdmin('chat_mute',{p_uid:PC.u,p_hours:+d.h}),pchide:()=>pcAdmin('chat_hide',{p_id:+PC.m}),
    cbarset:()=>{S.chatBar=S.chatBar===false;save();chatBarPaint();showLevel()},cblun:()=>{const L=chatBlk(),i=L.findIndex(x=>x.u===d.u);if(i>=0)L.splice(i,1);save();chatPaint();showLevel()},
    bossgift:()=>{const g=bossClaimStages();if(!g)return toast('現在還不能領','bad');snd('unlock');toast('全服獎勵：'+giftTxt(g),'ok');render()},
