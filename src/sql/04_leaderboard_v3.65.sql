@@ -2,6 +2,7 @@
 -- 1) 戰力不再相信手機傳來的數字，伺服器用武器內容自己算（公式與遊戲 power() 相同）
 -- 2) 上傳的武器必須真的在雲端存檔裡（品質、強化等級、特性、附魔都要一樣），類別要符合村莊
 -- 3) 現有排行榜紀錄依武器內容重新計算一次戰力
+-- 這份可以單獨執行，不需要先跑 03。
 
 -- 圖紙資料（與遊戲 BPS 相同；舊圖紙 id 先換成保留的那把）
 create or replace function public.lb_bpid(p_b text) returns text language sql immutable as $$
@@ -10,8 +11,10 @@ create or replace function public.lb_bpid(p_b text) returns text language sql im
     when 't3_doubleaxe' then 't3_greataxe' when 't3_saber' then 't3_greatsword' when 't3_spear' then 't3_halberd' when 't3_scythe' then 't3_halberd'
     else p_b end $$;
 
-create or replace function public.lb_bp(p_b text) returns table(base float8, cat text, inn_k text, inn_v float8) language sql immutable as $$
-  select x.base::float8, x.cat, x.inn_k, x.inn_v::float8 from (values
+drop function if exists public.lb_bp(text);
+create or replace function public.lb_bp(p_b text) returns table(base float8, mult float8, cat text, inn_k text, inn_v float8) language sql immutable as $$
+  -- mult：階級倍率（鐵製 1、霜銀 2.5、龍鱗 6、神器 11，與遊戲 TIERS.mult 相同）
+  select x.base::float8, (case when x.id like 't2\_%' then 2.5 when x.id like 't3\_%' then 6 when x.id like 'm\_%' then 11 else 1 end)::float8, x.cat, x.inn_k, x.inn_v::float8 from (values
     ('t1_woodaxe',14,'axe',null,0),('t1_farmspear',11,'polearm',null,0),('t1_pickaxe',11,'tool',null,0),('t1_huntbow',10,'bow',null,0),
     ('t1_sling',7,'throw',null,0),('t1_huntknife',9,'dagger',null,0),('t1_ironsword',12,'sword',null,0),('t1_roundshield',10,'shield',null,0),
     ('t1_crossbow',13,'crossbow',null,0),('t1_ironhammer',16,'hammer',null,0),
@@ -37,7 +40,7 @@ begin
       + coalesce((select sum((e->>'v')::float8) from jsonb_array_elements(coalesce(w->'ench', '[]')) e where jsonb_typeof(e) = 'object' and e->>'k' = 'flame'), 0) * rm;
   fr := (case when bp.inn_k = 'frost' then bp.inn_v else 0 end)
       + coalesce((select sum((e->>'v')::float8) from jsonb_array_elements(coalesce(w->'ench', '[]')) e where jsonb_typeof(e) = 'object' and e->>'k' = 'frost'), 0) * rm;
-  return floor(bp.base * ac_mult(lb_bpid(w->>'b')) * qm * em * (1 + (fl + fr) / 100) + 0.5)::int;
+  return floor(bp.base * bp.mult * qm * em * (1 + (fl + fr) / 100) + 0.5)::int;
 end $$;
 
 -- 上傳排行榜：回傳伺服器算出的戰力
