@@ -325,6 +325,8 @@ function econHtml(capH){const e=econReport(capH);let h=`<div><b>30 天經濟模�
   return h}
 // v3.62 版面檢查（只在瀏覽器）：把商城、武器庫、村莊、材料倉庫畫在 320～480px 寬的隱藏容器裡，
 // 找出被擠成一個字寬、文字直排的欄位，以及字超出按鈕的情況（v3.61 旅行商人在 430 寬 iPhone 上直排就是這種）
+// 只看文字本身有沒有跑出按鈕外框（紅點這類絕對定位的小圖示故意貼在框外，不算）
+function textOut(b){const br=b.getBoundingClientRect(),w=document.createTreeWalker(b,NodeFilter.SHOW_TEXT);let n;while((n=w.nextNode())){if(!n.textContent.trim())continue;const r=document.createRange();r.selectNodeContents(n);for(const q of r.getClientRects())if(q.left<br.left-1||q.right>br.right+1)return true}return false}
 function layoutTests(){if(typeof document==='undefined')return[];const res=[],keep=[ui.tab,ui.ftab];
   const views=[['商城',()=>viewShop()],['武器庫',()=>viewArmory()],['村莊',()=>viewVillage()],['材料倉庫',()=>{ui.ftab='mat';return viewForge()}]];
   const box=document.createElement('div');box.className='wrap';box.style.cssText='position:absolute;left:-10000px;top:0;visibility:hidden';document.body.appendChild(box);
@@ -333,7 +335,7 @@ function layoutTests(){if(typeof document==='undefined')return[];const res=[],ke
       box.querySelectorAll('*').forEach(el=>{const t=[...el.childNodes].filter(x=>x.nodeType===3).map(x=>x.textContent.trim()).join('');if(t.length<3)return;
         const r=el.getBoundingClientRect(),fs=parseFloat(getComputedStyle(el).fontSize)||14;if(!r.width)return;
         if(r.width<fs*2.2&&r.height>fs*3.5)bad.push(`${w}px「${t.slice(0,8)}」直排`)});
-      box.querySelectorAll('button').forEach(b=>{if(b.textContent.trim().length>1&&b.offsetWidth&&b.scrollWidth>b.clientWidth+2)bad.push(`${w}px 按鈕「${b.textContent.trim().slice(0,10)}」字超出`)})}
+      box.querySelectorAll('button').forEach(b=>{if(b.textContent.trim().length>1&&b.offsetWidth&&textOut(b))bad.push(`${w}px 按鈕「${b.textContent.trim().slice(0,10)}」字超出`)})}
     res.push(T('G 版面 '+n+'（320～480px 寬）沒有直排或字超出按鈕',!bad.length,bad.length?[...new Set(bad)].slice(0,4).join('；'):'7 種寬度都正常'))}
   box.remove();[ui.tab,ui.ftab]=keep;return res}
 function runTests(mode){
