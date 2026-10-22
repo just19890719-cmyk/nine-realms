@@ -248,7 +248,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='3.76';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='3.77';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -743,7 +743,7 @@ const CAT_ICON=Object.fromEntries(['axe','sword','dagger','polearm','hammer','bo
 const AFFIX_ICON={flame:'mat_fireheart',frost:'mat_icecore',swift:'it_hourglass',loot:'it_gold',giant:'m_frostgiant',dragon:'mat_scale'};
 const TRAIT_ICON={sharp:'tr_sharp',sturdy:'tr_sturdy',light:'tr_light',treasure:'tr_treasure',giantslayer:'tr_giantslayer',runic:'tr_runic'};
 const STRAT_ICON={normal:'it_gold',material:'mat_iron',rare:'mat_scale'};
-const TIER_FRAME=[0,2,3,4]; // 圖紙外框顏色：鐵製灰、霜銀藍、龍鱗紫、神器金
+const TIER_FRAME=[0,2,3,4,4]; // 圖紙外框顏色：鐵製灰、霜銀藍、龍鱗紫、神器金、巨人金（外框是材質，不是品質）
 // v3.40 音效設定：喇叭圖示打開，可開關音效、調整音量
 function sndSettings(){const v=Math.round((S.vol??1)*100);
   ui.result={t:'info',k:'snd',title:'音效設定',html:`<div class="snd-set"><div class="kv"><span>音效</span><b><button class="ui-btn ui-btn--chip chipbtn ${S.mute?'':'on'}" data-act="sndmute">${S.mute?'關閉':'開啟'}</button></b></div>
@@ -1244,6 +1244,7 @@ function viewForge(){
         <div class="powbox inline"><span class="small muted">基礎戰力</span><b>${est}～${Math.round(est*2.3)}</b></div></div></div>
       ${b.inn?`<div><span class="aff inn">天生・${AFFIX[b.inn[0]].n} +${b.inn[1]}%</span></div>`:''}
       ${lock?`<div class="goal">${lock}</div>`:`
+      <div class="bp-qual"><div class="label">鍛造品質機率</div><div class="qbar">${((qw,sum)=>qw.map((x,i)=>`<span class="q${i}" style="flex:1">${QUAL[i].n}<br>${Math.round(x/sum*1000)/10}%</span>`).join(''))(qualWeights(false,b.t),qualWeights(false,b.t).reduce((a,x)=>a+x,0))}</div><div class="small muted bp-qnote">外框顏色代表材質階級，品質在鍛造完成時隨機決定</div></div>
       <div class="label">所需材料（×${qty}）</div><div class="mats">${Object.entries(need).map(([k,n])=>matBox(k,n)).join('')}<div class="matbox need ${S.gold<g?'lack':'ok'}">${img('it_gold')}<span class="mb-n">金幣</span><span class="mb-have">持有 ${fmt(S.gold)}</span><span class="mb-need">需要 ${fmt(g)}</span></div></div>
       <div class="qtyrow"><span class="label">數量</span>${bulkOn()?[1,5,10].map(n=>`<button class="ui-btn ui-btn--chip qchip ${qty===n?'on':''}" data-act="qty" data-k="${n}">×${n}</button>`).join('')+`<button class="ui-btn ui-btn--chip qchip ${qty===maxQty()&&![1,5,10].includes(qty)?'on':''}" data-act="qty" data-k="${maxQty()}">最多 ×${maxQty()}</button>`:'<span class="small muted">收復 1-5 後可一次鍛造多把</span>'}
        <span class="small muted grow right">${fmtT(forgeSec(b)*1000*(qty>1?qty*.6:1)/S.speed)}</span></div>

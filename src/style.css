@@ -1321,4 +1321,5 @@ button.arr.off{pointer-events:none}
 .rf-step{display:flex;gap:10px;align-items:center;font-size:16px;white-space:nowrap}
 .rf-box .mats{justify-content:center}
 @media (max-width:374px){.vcard .drops{flex-wrap:wrap;width:59px;justify-content:center}.vcard .drops .dico:nth-child(3){display:none}}   /* v3.76 窄螢幕：掉落只顯示 2 個，讓村莊名稱有位置 */
+.bp-qual{margin:6px 0 2px}.bp-qual .label{margin-bottom:4px}.bp-qnote{margin-top:4px}
 </style>

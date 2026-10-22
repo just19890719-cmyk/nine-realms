@@ -390,6 +390,7 @@ function evtTests(){const res=[];
 function runAll(opts={}){
   const t0=Date.now();const lv=levelCheck();
   const res=[...lv.res,...forgeTests(opts.N||100000),...enhanceTests(opts.N||100000),...saveTests(),...dailyTests(),...specTests(20261020,opts.N?Math.max(opts.N,100000):200000).res,...(typeof window!=='undefined'?repTests():[]),...evtTests(),...realm2Tests()];
+  res.push(T('圖紙外框：每個材質階級都有外框（巨人也有）',TIERS.every((_,i)=>TIER_FRAME[i]!=null),TIERS.map((t,i)=>t.n+'→框'+TIER_FRAME[i]).join('、')));
   return{res,lv,ms:Date.now()-t0};
 }
 function resHtml(res){return res.map(r=>`<div><b class="${r.pass?'p':'f'}">${r.pass?'通過':'未通過'}</b> ${r.name}<div class="muted">${r.detail}</div></div>`).join('')}
