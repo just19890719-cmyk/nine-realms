@@ -1468,14 +1468,14 @@ function sheetWeapon(id,mode){
     const s=ui.enchSlot,open=slotOpen(s),c1=enchCost(w),e=w.ench[s],rm=runicMul(w),tw=Object.values(AFFIX).reduce((a,x)=>a+x.w,0),P=x=>Math.round(x/tw*100)+'%';
     const mini=`<div class="nv-head">${wArt(b.id,{frame:w.q,cls:'nv-art'})}<div class="grow"><b class="q${w.q}">${b.n} +${w.lv}</b><div class="ec-have">${img('mat_shard')}<b>${S.mats.shard}</b>${img('it_gold')}<b>${fmt(S.gold)}</b></div>${traitVal(w,'runic')?`<div class="small t-ok">符文親和：附魔數值 ×${rm.toFixed(2)}</div>`:''}</div></div>`;
     const slots=`<div class="nv-sec"><span class="nv-k">選擇欄位</span><div class="slots nv-slots">${[0,1,2,3].map(k=>slotHtml(w,k,true)).join('')}</div></div>`;
-    const cur=!open?`<div class="ec-cur locked">${img('ic_lock')}<div class="grow"><span class="ec-k">第 ${s+1} 格</span><b>還沒開放</b><span class="small muted">鐵砧升到 Lv${SLOT_ANVIL[s]} 才能使用</span></div></div>`
-      :e?`<div class="ec-cur">${img(AFFIX_ICON[e.k])}<div class="grow"><span class="ec-k">第 ${s+1} 格・目前詞條</span><b>${AFFIX[e.k].n} <i>+${r1(e.v*rm)}%</i></b><span class="small muted">${AFF_EFF[e.k](r1(e.v*rm))}</span></div></div><div class="ec-warn">重抽會隨機換成新的詞條，目前的詞條會被覆蓋。</div>`
-      :`<div class="ec-cur none"><span class="ec-q">?</span><div class="grow"><span class="ec-k">第 ${s+1} 格・空欄位</span><b>隨機獲得 1 種詞條</b><span class="small muted">詞條和數值都隨機，機率看下方</span></div></div>`;
+    const cur=!open?`<div class="ec-cur locked">${img('ic_lock')}<div class="grow"><span class="ec-k">第 ${s+1} 格</span><b>還沒開放<span class="ec-e">鐵砧 Lv${SLOT_ANVIL[s]} 開放</span></b></div></div>`
+      :e?`<div class="ec-cur">${img(AFFIX_ICON[e.k])}<div class="grow"><span class="ec-k">第 ${s+1} 格目前詞條</span><b>${AFFIX[e.k].n} <i>+${r1(e.v*rm)}%</i><span class="ec-e">${AFF_EFF[e.k](r1(e.v*rm))}</span></b></div><span class="ec-w">重抽會覆蓋</span></div>`
+      :`<div class="ec-cur none"><span class="ec-q">?</span><div class="grow"><span class="ec-k">第 ${s+1} 格・空欄位</span><b>隨機獲得 1 種詞條</b></div></div>`;
     const pool=AFF_G.map(([g,gn])=>{const xs=Object.entries(AFFIX).filter(([k,a])=>a.g===g);
-      return `<div class="ec-gh"><span>${gn}</span><i>合計 ${P(xs.reduce((a,[k,x])=>a+x.w,0))}</i></div>${xs.map(([k,a])=>`<button class="ec-row" data-act="affinfo" data-k="${k}">${img(AFFIX_ICON[k])}<span class="grow"><b>${a.n}${a.nw?'<i class="aff-new">新</i>':''}</b><span class="small muted">${a.d}</span></span><span class="ec-rng">${a.min}～${a.max}%</span><span class="ec-p">${P(a.w)}</span></button>`).join('')}`}).join('');
+      return `<div class="ec-gl">${gn.replace(/（.*/,'')}<i>${P(xs.reduce((a,[k,x])=>a+x.w,0))}</i></div><div class="ec-g">${xs.map(([k,a])=>`<button class="ec-t" data-act="affinfo" data-k="${k}">${a.nw?'<i class="ec-nw">新</i>':''}${img(AFFIX_ICON[k])}<b>${a.n}</b><em>${P(a.w)}</em></button>`).join('')}</div>`}).join('');
     const lack=open&&(S.mats.shard<1?'符文碎片不足（熔解武器、村莊掉落、每日任務可以取得）':S.gold<c1?'金幣不足':'');
     const bar=`<div class="ev-bar">${btn(`${!open?'未開放':e?'重抽':'附魔'}第 ${s+1} 格<span class="small">1 符文碎片＋${fmt(c1)} 金幣</span>`,'enchant',{cls:'btn-primary big nv-b',attrs:`data-id="${id}" data-s="${s}"`,dis:!open||!!lack})}${lack?`<div class="small t-danger center">${lack}</div>`:''}</div>`;
-    return head+`<div class="ev ec">${mini}${slots}${cur}<div class="ec-pool"><div class="ec-ph"><b>可能出現的詞條</b><span class="small muted">點詞條看說明</span></div>${pool}</div>${bar}</div>`;
+    return head+`<div class="ev ec">${mini}${slots}${cur}<div class="ec-pool"><div class="ec-ph"><b>✦ 隨機詞條池</b><span class="small muted">點圖示看範圍與效果</span></div>${pool}</div>${bar}</div>`;
   }
   if(mode==='give'){const vs=VILLAGES.map((v,k)=>[v,k]).filter(([v,k])=>v.cat===b.cat&&S.villages[k].status!=='locked');
     return head+showcase('mini')+`<div class="ui-panel panel">${ptitle(`可交付的村莊（${CATS[b.cat]}類）`)}${vs.length?vs.map(([v,k])=>{const ok=eligible(k,w),st=S.villages[k],cur=st.weaponId!=null&&W(st.weaponId);
