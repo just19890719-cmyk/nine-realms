@@ -1370,4 +1370,13 @@ button.vv-d{font:inherit;font-size:11px;color:inherit;cursor:pointer}
 .evt-sn{flex:none;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:8px;border:1px dashed var(--line2);font-weight:700;color:var(--muted,#9a9)}
 .evt-w .btn{flex:none}
 .wt-post.boss{background:linear-gradient(transparent,rgba(120,30,20,.92));color:#ffd9cf}
+/* v3.87 首領排名：每位玩家駐守的武器，點了看詳情 */
+.evt-top{padding:4px 0;border-bottom:1px dashed var(--line2)}
+.evt-top:last-of-type{border-bottom:0}
+.evt-tws{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 2px 18px}
+.evt-tws.center{justify-content:center;margin:0 0 10px}
+.evt-tw{position:relative;width:42px;height:42px;padding:0;border-radius:8px;border:1px solid var(--line2);background:#0d0b09;overflow:hidden;cursor:pointer}
+.evt-tw .qimg{width:100%;height:100%}
+.evt-tw span,.evt-top.me .evt-tw span{position:absolute;z-index:2;right:3px;bottom:1px;font-size:10px;font-weight:700;color:#fff;text-shadow:0 0 3px #000,0 0 3px #000}
+.evt-tw.on{outline:2px solid var(--gold);outline-offset:1px}
 </style>
