@@ -1105,6 +1105,9 @@ html,body,button,[data-act],label,input,select{touch-action:manipulation}
 /* v3.35 取暱稱 */
 .gt-ttl{text-align:center;font-family:'Noto Serif TC',serif;font-weight:900;font-size:18px;color:#f3d9a0;margin-bottom:2px}.nick-row b{display:flex;align-items:center;gap:8px}.nick-row .chipbtn{padding:2px 10px;font-size:12px}
 .gate-name .gt-row>.btn:only-child{flex:1;width:100%}.kv.nick-row{align-items:center}
+
+/* v3.36 登入畫面：背景圖本身也有鐵匠，前景去背鐵匠改成與背景完全同步，避免錯位出現雙手殘影 */
+.gt-fg{transform:translate(calc(var(--mx) * -10px),calc(var(--my) * -6px));animation:gtZoom 20s ease-in-out infinite alternate}
 </style>
 <div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div></div>
 <main class="wrap" id="view"></main>
@@ -1440,12 +1443,13 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}CLOUD.dirty=true}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
+const BUILD='v3.36 封測';
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off'};
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
 function authSave(a){AUTH=a;try{a?localStorage.setItem(AUTH_KEY,JSON.stringify(a)):localStorage.removeItem(AUTH_KEY)}catch(e){}}
 function authFrom(r){return{access_token:r.access_token,refresh_token:r.refresh_token,expires_at:Date.now()+((r.expires_in||3600)-60)*1000,user:{id:r.user?.id,email:r.user?.email}}}
-const SB_ERR=m=>{m=String(m||'');return /duplicate key|unique|23505/i.test(m)?'這個暱稱已經有人用了，換一個吧':/invalid login/i.test(m)?'Email 或密碼錯誤':/already registered|already exists/i.test(m)?'這個 Email 已經註冊過，請直接登入':/at least 6|password should/i.test(m)?'密碼至少要 6 碼':/invalid.*email|email.*invalid|unable to validate email/i.test(m)?'Email 格式不正確':/rate limit|too many/i.test(m)?'嘗試太多次，請稍後再試':/failed to fetch|network/i.test(m)?'連不上伺服器，請檢查網路':m||'發生錯誤，請再試一次'};
+const SB_ERR=m=>{m=String(m||'');return /signups? (are )?(not allowed|disabled)/i.test(m)?'目前暫停開放註冊，請聯絡遊戲管理員':/duplicate key|unique|23505/i.test(m)?'這個暱稱已經有人用了，換一個吧':/invalid login/i.test(m)?'Email 或密碼錯誤':/already registered|already exists/i.test(m)?'這個 Email 已經註冊過，請直接登入':/at least 6|password should/i.test(m)?'密碼至少要 6 碼':/invalid.*email|email.*invalid|unable to validate email/i.test(m)?'Email 格式不正確':/rate limit|too many/i.test(m)?'嘗試太多次，請稍後再試':/failed to fetch|network/i.test(m)?'連不上伺服器，請檢查網路':m||'發生錯誤，請再試一次'};
 async function sbAuth(path,body){const r=await fetch(SB_URL+'/auth/v1/'+path,{method:'POST',headers:{apikey:SB_KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
   const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.msg||j.error_description||j.message||j.error||('HTTP '+r.status));return j}
 async function sbToken(){if(!AUTH)return null;if(Date.now()<AUTH.expires_at)return AUTH.access_token;
