@@ -166,7 +166,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='3.57';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='3.58';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -393,13 +393,17 @@ async function lbFetch(force){if(!AUTH||LBR.loading||(!force&&Date.now()-LBR.t<6
   catch(e){LBR.err=/relation|lb/.test(e.message)?'排行榜尚未啟用（伺服器還沒設定好）':SB_ERR(e.message)}finally{LBR.loading=false}
   const pend=[];VILLAGES.forEach((v,i)=>{const r=lbReward(i);if(r.length)pend.push(`${v.name}：${r.join('、')}`)});if(pend.length)toast('排行榜獎勵：<br>'+pend.join('<br>'),'ok');render()}
 // 其他玩家（不含自己），戰力高到低
-const lbOthers=i=>(LBR.rows[i]||[]).filter(x=>!AUTH||x.user_id!==AUTH.user.id).map(x=>({n:x.nick||'無名鐵匠',p:x.p,w:{traits:[],ench:[],...x.w}}));
+// v3.58 同戰力：先達成者（伺服器 updated_at 較早）排前面；t 是達成時間
+const lbOthers=i=>(LBR.rows[i]||[]).filter(x=>!AUTH||x.user_id!==AUTH.user.id).map(x=>({n:x.nick||'無名鐵匠',p:x.p,t:Date.parse(x.updated_at)||Infinity,w:{traits:[],ench:[],...x.w}}));
+// 自己紀錄的達成時間：伺服器上那筆戰力相同才算；還沒上傳就當作最晚
+const lbMyT=i=>{const b=S.best[i],r=AUTH&&(LBR.rows[i]||[]).find(x=>x.user_id===AUTH.user.id);return b&&r&&r.p===b.p&&Date.parse(r.updated_at)||Infinity};
+const lbAhead=(x,p,t)=>x.p>p||(x.p===p&&x.t<t);
 async function lbSync(){if(!AUTH||!CLOUD.ready)return;let n=0;for(const k in S.best){const b=S.best[k];if(!b||b.sub)continue;
   try{await sbRest('rpc/lb_submit',{method:'POST',body:JSON.stringify({p_village:+k,p_p:b.p,p_w:{b:b.b,q:b.q,lv:b.lv,traits:b.traits||[],ench:b.ench||[]},p_nick:S.nick||'無名鐵匠'})});b.sub=true;n++}catch(e){return}}
   if(n){save();lbFetch(true)}}
 if(typeof window!=='undefined')setInterval(()=>{if(AUTH&&CLOUD.ready&&!document.hidden){lbSync();if(ui.sheet&&/^lb/.test(ui.sheet.t))lbFetch()}},30000);
 function lbRecord(s,i,w){const p=power(w),b=s.best[i];if(!b||p>b.p){s.best[i]={p,b:w.b,q:w.q,lv:w.lv,traits:JSON.parse(JSON.stringify(w.traits||[])),ench:JSON.parse(JSON.stringify(w.ench||[])),sub:false};if(typeof window!=='undefined'&&s===S)setTimeout(lbSync,500)}}   // 存一份當時的武器內容，排行榜可以點開看
-const lbRank=i=>{const b=S.best[i];if(!b||(AUTH&&!LBR.t))return null;return lbOthers(i).filter(x=>x.p>b.p).length+1};
+const lbRank=i=>{const b=S.best[i];if(!b||(AUTH&&!LBR.t))return null;const t=lbMyT(i);return lbOthers(i).filter(x=>lbAhead(x,b.p,t)).length+1};
 // 第一次衝進前 10／前 3／第 1 名各領一次
 function lbReward(i){if(!AUTH||!LBR.t)return[];const rk=lbRank(i);if(!rk)return[];const got=S.lbRw[i]=S.lbRw[i]||[];const out=[];
   for(const [t,r,n] of LB_RW)if(rk<=t&&!got.includes(t)){got.push(t);for(const k in r)S.items[k]+=r[k];out.push(n+'：'+Object.entries(r).map(([k,c])=>itemName(k)+' ×'+c).join('、'))}
@@ -1276,7 +1280,7 @@ function sheetVillage(i){
 const gph=(i,w)=>{const v=VILLAGES[i],st=S.villages[i],gs=v.tag==='giant'?1+traitVal(w,'giantslayer')/100:1;return Math.round(3600000/gameDur(i,w)*v.gold*STRATS[st.strat].gold*gs*(1-eventChance(i,w)*.5))};
 const harvestMini=g=>Object.entries(g).filter(([k,n])=>n).slice(0,4).map(([k,n])=>`<span class="hm">${img(k==='gold'?'it_gold':MATART[k])}${fmt(n)}</span>`).join('');
 const harvestIcons=g=>Object.entries(g).filter(([k,n])=>n).map(([k,n])=>`<div class="hico">${img(k==='gold'?'it_gold':MATART[k]||ITEMS[k][1])}<span class="num">×${fmt(n)}</span></div>`).join('')||'<div class="small muted">沒有獎勵</div>';
-function lbRows(i){const b=S.best[i];return [...lbOthers(i).map(x=>({...x,me:false})),...(b?[{n:S.nick||'你',p:b.p,w:{b:b.b,q:b.q,lv:b.lv,traits:b.traits||[],ench:b.ench||[]},me:true}]:[])].sort((x,y)=>y.p-x.p||(y.me-x.me)).map((x,k)=>({...x,k}))}
+function lbRows(i){const b=S.best[i];return [...lbOthers(i).map(x=>({...x,me:false})),...(b?[{n:S.nick||'你',p:b.p,t:lbMyT(i),w:{b:b.b,q:b.q,lv:b.lv,traits:b.traits||[],ench:b.ench||[]},me:true}]:[])].sort((x,y)=>y.p-x.p||(x.t<y.t?-1:x.t>y.t?1:y.me-x.me)).map((x,k)=>({...x,k}))}
 // 排行榜武器詳情（唯讀）：對手或你的紀錄，內容跟武器詳情頁同一套排版
 function sheetLbW(i,k){const x=lbRows(i)[k];if(!x)return sheetLb(i);const w=x.w,b=BP[w.b],v=VILLAGES[i],el=affixVal(w,'flame')+affixVal(w,'frost'),rm=runicMul(w),nE=w.ench.filter(Boolean).length;
   const traits=[...(w.traits||[]).map(t=>`<button class="wd-chip tap" data-act="trinfo" data-k="${t.k}" data-v="${t.v}">${img(TRAIT_ICON[t.k])}${TRAITS[t.k].n} <b>+${t.v}%</b><i>ⓘ</i></button>`),...(b.inn?[`<span class="wd-chip inn">${img(AFFIX_ICON[b.inn[0]])}天生・${AFFIX[b.inn[0]].n} <b>+${b.inn[1]}%</b></span>`]:[])];
@@ -1406,7 +1410,7 @@ function sheetDev(){
      <div class="devgrid">${B('sfxaltclr','全部切回原版')}</div>`:''}
      <div class="label">登入與開場（v3.20）</div><div class="devgrid">${B('gtlogin','顯示登入畫面')}${B('gtstory','播放開場故事')}${B('gtreset','重設「已看過開場」')}</div>
      <div class="label">新手導覽（v3.20）</div><div class="devgrid">${B('tutnew','用新存檔從頭跑導覽（會清空目前進度）')}${B('tutrestart','保留存檔，從第 1 步重看')}${B('tutnext','導覽跳下一步')}${B('tipreset','重設各系統第一次說明')}</div>
-     <div class="label">排行榜（v3.46 真人版）</div><div class="devgrid">${B('lbtop','上傳我的紀錄並重新讀取')}${B('lbmid','重新讀取排行榜')}${B('lbreset','清除排行榜紀錄與獎勵')}</div>
+     <div class="label">排行榜（v3.46 真人版）</div><div class="devgrid">${B('lbtop','上傳我的紀錄並重新讀取')}${B('lbmid','重新讀取排行榜')}${B('lbreset','清除排行榜紀錄與獎勵')}${B('lbtie','測試同戰力名次（先達成在前）')}</div>
      <div class="label">2. 指定下一次強化結果（只對測試武器有效）</div>
      <div class="row">${[['ok','成功'],['fail','普通失敗'],['break','爆裝'],['saved','防爆'],['','不指定']].map(([k,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(DEV.force||'')===k?'on':''}" data-act="devforce" data-k="${k}">${n}</button>`).join('')}</div>
      <div class="small muted">目前：${DEV.force?{ok:'成功',fail:'普通失敗',break:'爆裝',saved:'防爆'}[DEV.force]:'不指定（照正常機率）'}</div>
@@ -1441,6 +1445,11 @@ function devdo(k){if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=
   if(k.startsWith('fxs_')){if(ui.busy)return;return testFx(k.slice(4),true)}
   if(k.startsWith('fxg_')){if(ui.busy)return;return testFx(k.slice(4),false,true)}
   if(k.startsWith('fx_')){if(ui.busy)return;return testFx(k.slice(3))}
+  if(k==='lbtie'){if(!AUTH)return toast('要先登入才能測試','bad');const R=LBR.rows,T=LBR.t,B0=S.best[0],me=AUTH.user.id,w={b:Object.keys(BP)[0],q:0,lv:0};
+    S.best[0]={p:5000,...w,traits:[],ench:[],sub:true};LBR.t=1;LBR.rows={0:[{user_id:'a',nick:'早到',p:5000,w,updated_at:'2026-01-01T00:00:00Z'},{user_id:me,nick:'我',p:5000,w,updated_at:'2026-01-02T00:00:00Z'},{user_id:'b',nick:'晚到',p:5000,w,updated_at:'2026-01-03T00:00:00Z'}]};
+    const r1=lbRank(0),o1=lbRows(0).map(x=>x.n).join('>');LBR.rows[0][1].p=4000;const r2=lbRank(0);   // 伺服器還沒更新到 5000 → 自己當作最晚
+    LBR.rows=R;LBR.t=T;if(B0)S.best[0]=B0;else delete S.best[0];
+    const ok=r1===2&&o1==='早到>'+(S.nick||'你')+'>晚到'&&r2===3;return toast(`同戰力測試${ok?'通過':'失敗'}：名次 ${r1}（應為 2）、未上傳 ${r2}（應為 3）<br>${o1}`,ok?'ok':'bad')}
   if(k==='lbtop'||k==='lbmid'){if(k==='lbtop'){lbSync().then(()=>lbFetch(true));toast('已上傳我的紀錄並重新讀取')}else{lbFetch(true);toast('重新讀取排行榜')}ui.sheet={t:'lb',i:0};return render()}
   if(k==='lbreset'){S.best={};S.lbRw={};save();toast('排行榜紀錄已清除');ui.sheet={t:'lb',i:0};return render()}
   if(k==='tutnew'){localStorage.removeItem(KEY);S=fresh();S.tut=0;save();ui.sheet=null;ui.tab='forge';ui.ftab='bp';render();return toast('已換成新存檔，從第 1 步開始導覽')}
