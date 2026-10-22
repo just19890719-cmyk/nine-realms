@@ -1,0 +1,331 @@
+/* ===================== 九界鐵匠 v3 自動測試 ===================== */
+/* 在沙盒狀態執行：會暫存玩家存檔，跑完還原，不會寫入 localStorage */
+function withSandbox(fn){
+  const keepS=S,keepClock=CLOCK.offset,keepQ=QUIET;QUIET=true;
+  try{return fn()}finally{S=keepS;CLOCK.offset=keepClock;QUIET=keepQ}
+}
+function T(name,pass,detail){return{name,pass:!!pass,detail:detail||''}}
+const near=(a,b,tol)=>Math.abs(a-b)<=tol;
+
+/* ---------- A. 關卡可行性 ---------- */
+function minUpgrade(b,req,needAffix){
+  // 回傳每個品質達標所需的最低強化等級（不靠烈焰/霜寒）
+  const out=[];for(let q=0;q<5;q++){if(b.t===3&&q<2){out.push(null);continue}let need=null;
+    for(let lv=0;lv<=15;lv++){const p=Math.round(b.base*TIERS[b.t].mult*QUAL[q].m*enhMult(lv));if(p>=req){need=lv;break}}out.push(need)}return out}
+function levelCheck(){
+  const res=[],rows=[];const sources=new Set(['iron','oak','leather']);
+  for(let i=0;i<VILLAGES.length;i++){
+    const v=VILLAGES[i],c=i; // 交付第 i 關時已收復 i 關
+    const avail=BPS.filter(b=>b.cat===v.cat&&c>=b.unlock&&b.t<3);
+    const affixOk=!v.need||[...sources].includes('shard');
+    const anv=i>=6?3:i>=3?2:1,keepA=S.anvil;S.anvil=anv;const opts=[];
+    for(const b of avail){const mats=Object.keys(recipe(b));if(!mats.every(m=>sources.has(m)))continue;
+      const ups=minUpgrade(b,v.req);
+      for(let q=0;q<5;q++){const lv=ups[q];if(lv==null)continue;const st=TIERS[b.t].stable,safe=lv<=st,dsteps=Math.max(0,lv-st);
+        let pReach=1;for(let n=st+1;n<=lv;n++)pReach*=RATE[n]; // 危險區連續成功的機率（失敗未必爆）
+        const pQ=qualWeights(false,b.t).slice(q).reduce((a,x)=>a+x,0)/1000,expForges=pQ?1/pQ:Infinity;
+        const ok=q<=2&&expForges<=10&&(safe||(i>=8&&dsteps<=4));
+        opts.push({b,q,lv,safe,dsteps,pReach,expForges,ok,score:dsteps*30+q*10+lv})}}
+    S.anvil=keepA;opts.sort((a,b)=>(b.ok-a.ok)||a.score-b.score);const best=opts[0]||null;const expForges=best?best.expForges:Infinity;
+    rows.push({i,v,best,affixOk,expForges});
+    const pass=best&&best.ok&&affixOk;
+    res.push(T(`A${i+1} 1-${i+1} ${v.name}`,pass,best?`${best.b.n}（${TIERS[best.b.t].n}）${QUAL[best.q].n} +${best.lv}${best.safe?'（安定區內）':'（需危險強化 '+best.dsteps+' 階，連續成功率 '+(best.pReach*100).toFixed(0)+'%）'}；鐵砧Lv${anv} 期望鍛造 ${expForges.toFixed(1)} 次${v.need?'；需附魔「'+AFFIX[v.need].n+'」'+(affixOk?'，碎片可取得':'，碎片尚無來源'):''}`:'沒有可用武器或材料無來源'));
+    v.drops.forEach(d=>sources.add(d[0]));
+  }
+  // 素材循環：每個圖紙的材料是否在其解鎖前就有來源
+  const src2=new Set(['iron','oak','leather']);const bad=[];
+  for(let i=0;i<=VILLAGES.length;i++){BPS.filter(b=>b.unlock===i).forEach(b=>{const ms=Object.keys(recipe(b)).filter(m=>!src2.has(m));if(ms.length)bad.push(b.n+'缺'+ms.map(m=>MATS[m]).join('、'))});if(VILLAGES[i])VILLAGES[i].drops.forEach(d=>src2.add(d[0]))}
+  res.push(T('A11 材料來源與解鎖順序（無循環、無無法取得素材）',!bad.length,bad.length?bad.join('；'):'所有圖紙在解鎖時，材料都已有來源'));
+  return{res,rows};
+}
+
+/* ---------- B. 鍛造 ---------- */
+function forgeTests(N=100000){
+  const res=[];
+  withSandbox(()=>{
+    S=fresh();
+    for(let a=1;a<=5;a++){S.anvil=a;const exp=qualWeights(false,0),sum=exp.reduce((x,y)=>x+y,0),cnt=[0,0,0,0,0];
+      for(let n=0;n<N;n++)cnt[rollQuality(false,0)]++;
+      const dev=cnt.map((c,i)=>Math.abs(c/N-exp[i]/1000));const ok=sum===1000&&Math.max(...dev)<Math.max(.003,4.5*Math.sqrt(.25/N))&&cnt.every((c,i)=>c>=0);
+      res.push(T(`B${a} 鐵砧 Lv${a} 品質機率（${N.toLocaleString()} 次）`,ok,`權重總和 ${sum}/1000；實測 ${cnt.map((c,i)=>QUAL[i].n+' '+(c/N*100).toFixed(2)+'%').join('、')}`))}
+    S.anvil=1;const tc=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];let dup=0,outRange=0;const perQ=Math.floor(N/5);
+    for(let q=0;q<5;q++)for(let n=0;n<perQ;n++){const t=rollTraits(q);tc[q][t.length]++;const ks=new Set(t.map(x=>x.k));if(ks.size!==t.length)dup++;
+      t.forEach(x=>{const d=TRAITS[x.k],lo=Math.round(d.min*(1+.2*q)),hi=Math.round(d.max*(1+.2*q));if(x.v<lo||x.v>hi)outRange++})}
+    res.push(T(`B6 先天特性數量與數值範圍（${(perQ*5).toLocaleString()} 次）`,!dup&&!outRange&&tc[0][0]>0&&tc[0][1]>0&&tc[4][3]>0&&!tc[0][2]&&!tc[4][1],
+      tc.map((r,q)=>QUAL[q].n+'：'+r.map((c,k)=>c?k+'個 '+(c/perQ*100).toFixed(1)+'%':'').filter(Boolean).join(' ')).join('；')+`；重複特性 ${dup}、超出範圍 ${outRange}`));
+    // 神器最低稀有、傳說圖紙
+    let low=0;for(let n=0;n<20000;n++)if(rollQuality(false,3)<2)low++;let bpOk=true;for(let n=0;n<1000;n++)if(rollQuality(true,0)!==4)bpOk=false;
+    res.push(T('B7 神器最低稀有、傳說圖紙必出傳說',!low&&bpOk,`神器低於稀有 ${low} 次；圖紙 ${bpOk?'全部傳說':'有非傳說'}`));
+    // 鍛造保底
+    S=fresh();S.villages.forEach(v=>v.status='cleared');S.furnace=5;S.slots=4;S.gold=1e9;S.mats.silver=1e6;S.mats.fang=1e6;S.mats.iron=1e6;let maxRun=0,run=0;
+    for(let n=0;n<300;n++){const j=forgeStart('t2_wolfaxe',10,false);j.end=0;tick();}
+    S.weapons.sort((a,b)=>a.id-b.id).forEach(w=>{if(w.q<2){run++;maxRun=Math.max(maxRun,run)}else run=0});
+    res.push(T('B9 霜銀以上鍛造保底（連續 9 把低於稀有，第 10 把保證稀有）',maxRun<=9,`3,000 把霜銀戰斧中，最長連續低於稀有 ${maxRun} 把`));
+    // 材料消耗、批量、取消
+    S=fresh();S.gold=99999;S.mats.iron=100;S.mats.oak=100;S.villages.forEach((v,i)=>{if(i<5)v.status='cleared'});S.slots=4;
+    const before={...S.mats},g0=S.gold;const j=forgeStart('t1_woodaxe',5,false);
+    const used=before.iron-S.mats.iron,usedOak=before.oak-S.mats.oak,ug=g0-S.gold;
+    cancelJob(S.jobs.indexOf(j));const back=S.mats.iron===before.iron&&S.mats.oak===before.oak&&S.gold===g0;
+    const j2=forgeStart('t1_woodaxe',10,false);j2.end=NOW()-1;const n0=S.weapons.length;tick();const n1=S.weapons.length;tick();
+    const ids=new Set(S.weapons.map(w=>w.id));
+    res.push(T('B8 批量鍛造扣料、取消全額退回、完成只發一次',used===recipe(BP.t1_woodaxe).iron*5&&usedOak===recipe(BP.t1_woodaxe).oak*5&&ug===goldOf(BP.t1_woodaxe)*5&&back&&n1-n0===10&&S.weapons.length===n1&&ids.size===S.weapons.length,
+      `×5 扣鐵礦 ${used}、橡木 ${usedOak}、金幣 ${ug}；取消後${back?'完全退回':'沒有退回'}；×10 完成產出 ${n1-n0} 把，ID 不重複 ${ids.size===S.weapons.length}`));
+  });
+  return res;
+}
+
+/* ---------- C. 強化 ---------- */
+function enhanceTests(N=100000){
+  const res=[];
+  // 純判定：各目標等級
+  const rows=[];let ok=true;
+  for(let next=1;next<=15;next++){const r=RATE[next],bc=next<=6?0:Math.min(.8,.35+.05*(next-7));let s=0,b=0;
+    for(let n=0;n<N;n++){const o=rollEnhance(r,bc);if(o==='ok')s++;else if(o==='break')b++}
+    const eb=(1-r)*bc;const tol=Math.max(.003,4.5*Math.sqrt(.25/N));const good=near(s/N,r,tol)&&near(b/N,eb,tol);if(!good)ok=false;rows.push(`+${next} 成功 ${(s/N*100).toFixed(1)}%/${Math.round(r*100)}%、爆 ${(b/N*100).toFixed(1)}%/${(eb*100).toFixed(1)}%`)}
+  res.push(T(`C1 強化判定（每級 ${N.toLocaleString()} 次，鐵製安定 +6）`,ok,rows.join('；')));
+  // 安定值與公式
+  withSandbox(()=>{S=fresh();const mk=b=>makeWeapon(b,0,0,[]);
+    const t1=mk('t1_woodaxe'),t2=mk('t2_wolfaxe'),t3=mk('t3_greataxe'),t4=mk('m_fenrir');
+    const st=[t1,t2,t3,t4].map(stable).join('/');const b4=breakChance(t4,1),b1=breakChance(t1,6),b1b=breakChance(t1,7);
+    const mul=[0,6,7,15].map(enhMult);
+    res.push(T('C2 安定值 6/5/3/0、神器 +0→+1 會判定爆裝、倍率加法',st==='6/5/3/0'&&b4===.35&&b1===0&&b1b===.35&&near(mul[1],1.6,1e-9)&&near(mul[2],1.78,1e-9)&&near(mul[3],3.22,1e-9),
+      `安定值 ${st}；神器 +1 失敗爆裝 ${b4*100}%；鐵製 +6 ${b1*100}%、+7 ${b1b*100}%；倍率 +0 ${mul[0]}、+6 ${mul[1]}、+7 ${mul[2]}、+15 ${mul[3].toFixed(2)}`));
+    // 防爆卷、殘渣、駐守保護
+    S.gold=1e9;const w=mk('t1_ironsword');w.lv=14;S.items.scroll=100000;let saved=0,lost=0,broke=0;
+    for(let n=0;n<3000;n++){const r=enhanceCore(w.id,{scroll:true});if(r.k==='saved')saved++;if(r.k==='broke')broke++;if(r.k==='ok'){w.lv=14}}
+    S.items.scroll=0;const slag0=S.slag;let brokeOne=null;for(let n=0;n<200&&!brokeOne;n++){const x=mk('t3_greataxe');x.lv=10;const r=enhanceCore(x.id,{});if(r.k==='broke')brokeOne=r;else S.weapons.splice(S.weapons.indexOf(x),1)}
+    const v=mk('t1_woodaxe');S.villages[0].weaponId=v.id;const g=S.gold;const r1=enhanceCore(v.id,{}),r2=meltCore(v.id),r3=enchantCore(v.id,0);
+    res.push(T('C3 防爆卷保住武器、爆裝回收殘渣、駐守武器不能強化/熔解/附魔',!broke&&saved>0&&brokeOne&&S.slag-slag0===10&&!W(brokeOne.before?0:0)&&r1.err&&r2===null&&r3.err&&S.gold===g,
+      `+14→+15 用防爆卷 3000 次：保住 ${saved}、爆裝 ${broke}；龍鱗爆裝回收殘渣 ${S.slag-slag0}；駐守武器：強化「${r1.err}」、熔解${r2===null?'被擋下':'成功(錯誤)'}、附魔「${r3.err}」`));
+  });
+  // 完整過程模擬
+  const journey=(tier,target,runs=4000)=>{let tries=0,gold=0,reach=0,broke=0;const st=TIERS[tier].stable,mult=TIERS[tier].mult;
+    for(let r=0;r<runs;r++){let lv=0;while(lv<target){tries++;gold+=Math.round(15*Math.pow(lv+1,1.8)*mult);const next=lv+1,bc=next<=st?0:Math.min(.8,.35+.05*(next-st-1));const o=rollEnhance(RATE[next],bc);
+      if(o==='ok')lv++;else if(o==='break'){broke++;break}}if(lv>=target)reach++}
+    return`${TIERS[tier].n} +0→+${target}：成功率 ${(reach/runs*100).toFixed(1)}%、平均嘗試 ${(tries/runs).toFixed(1)} 次、平均金幣 ${fmt(gold/runs)}`};
+  const lines=[];for(const t of [0,3])for(const g of [6,9,12,15])lines.push(journey(t,g));
+  res.push(T('C4 從 +0 衝到 +6/+9/+12/+15（不用防爆卷，每項 4,000 人）',true,lines.join('；')));
+  return res;
+}
+
+/* ---------- E. 存檔與漏洞 ---------- */
+function saveTests(){
+  const res=[];
+  withSandbox(()=>{
+    // 新存檔
+    S=fresh();res.push(T('E1 新存檔結構完整',S.v===3&&S.villages.length===10&&S.weapons.length===0&&S.stats&&S.items.scroll===1,'v'+S.v));
+    // v2 遷移
+    const o={gold:999,gems:50,mats:{iron:5,oak:5,leather:5,silver:2,fang:1,scale:0,rune:0,shard:3},items:{scroll:2,bless:0,blueprint:0},furnace:2,anvil:1,slots:1,nextId:3,
+      weapons:[{id:1,b:'t1_woodaxe',q:1,lv:3,ench:[{k:'swift',v:8}]},{id:1,b:'t1_farmspear',q:0,lv:2,ench:[]},{id:5,b:'xx_missing',q:0,lv:0}],jobs:[],
+      villages:VILLAGES.map((v,i)=>({status:i<2?'cleared':i===2?'open':'locked',weaponId:i===0?1:null,cycleStart:i===0?NOW():null,pending:i===0?5:0})),monthly:{until:0,last:''}};
+    S=sanitize(migrateV2(o));S.villages.forEach((st,i)=>{const n=st._pending||0;delete st._pending;const w=st.weaponId!=null&&W(st.weaponId);for(let c=0;c<n;c++)rollCycle(i,w,st)});
+    const ids=S.weapons.map(w=>w.id);
+    res.push(T('E2 v2 存檔遷移（重複 ID 修正、未知武器移除、累積輪數轉成獎勵）',S.gold===999&&S.weapons.length===2&&new Set(ids).size===2&&S.villages[0].bank.cycles===5&&S.weapons.every(w=>w.ench.length===4&&Array.isArray(w.traits))&&S.nextId>Math.max(...ids),
+      `武器 ${S.weapons.length} 把、ID ${ids.join(',')}、1-1 累積 ${S.villages[0].bank.cycles} 輪、nextId ${S.nextId}`));
+    // 序列化往返
+    const json=JSON.stringify(S),back=sanitize(JSON.parse(json));res.push(T('E3 重整網頁後狀態恢復（JSON 往返一致）',JSON.stringify(back)===json,json.length+' bytes'));
+    // 離線恢復、上限
+    S=fresh();S.speed=1;S.capH=12;const w=makeWeapon('t1_woodaxe',0,0,[]);deliverCore(0,w.id);const d=gameDur(0,w);
+    CLOCK.offset+=d*3+1000;tick();const c3=S.villages[0].bank.cycles;CLOCK.offset+=48*3600000;tick();const cap=S.villages[0].bank.cycles,expCap=capCycles(0,w);
+    res.push(T('E4 離線恢復與累積上限',c3===3&&cap===expCap,`經過 3 輪時間得到 ${c3} 輪；離線 48 小時封頂 ${cap}/${expCap} 輪（${S.capH} 小時）`));
+    // 重複領取
+    const r1=collectCore(0),r2=collectCore(0);res.push(T('E5 同一筆獎勵不能重複領取',r1&&r1.n===cap&&r2===null,`第一次 ${r1&&r1.n} 輪，第二次 ${r2===null?'沒有獎勵':'又領到(錯誤)'}`));
+    // 策略切換不刷新
+    CLOCK.offset+=d*2+1000;tick();const bk=JSON.stringify(S.villages[0].bank);setStrategy(0,'rare');setStrategy(0,'normal');setStrategy(0,'material');
+    res.push(T('E6 切換狩獵策略不會重算或刷新已累積獎勵',JSON.stringify(S.villages[0].bank)===bk,'切換三次後累積內容不變'));
+    // 收回不重複
+    const g0=S.gold,m0=JSON.stringify(S.mats);recallCore(0);recallCore(0);res.push(T('E7 收回武器不會取得材料',S.gold===g0&&JSON.stringify(S.mats)===m0,'收回兩次，金幣與材料不變'));
+    // 時間回撥
+    S=fresh();S.speed=1;const w2=makeWeapon('t1_woodaxe',0,0,[]);deliverCore(0,w2.id);const d2=gameDur(0,w2);CLOCK.offset+=d2*2+500;tick();const a=S.villages[0].bank.cycles;
+    CLOCK.offset-=3600000;tick();const b=S.villages[0].bank.cycles;CLOCK.offset+=3600000;tick();const c=S.villages[0].bank.cycles;
+    res.push(T('E8 裝置時間倒退再恢復，不會重複結算',a===2&&b===2&&c===2&&S.clockWarn===false,`倒退前 ${a} 輪、倒退中 ${b} 輪、恢復後 ${c} 輪。注意：時間往前調（作弊快轉）在沒有伺服器時間的單機版無法阻止，正式版需伺服器驗證。`));
+    // 隨機操作模糊測試：不會負數、ID 不重複、駐守唯一
+    S=fresh();S.speed=60;S.gold=3000;S.mats.iron=50;S.mats.oak=50;S.mats.leather=50;S.mats.shard=20;S.villages.forEach(v=>v.status='cleared');S.furnace=2;S.mats.silver=30;S.mats.fang=30;S.slots=4;let errs=0;
+    const acts=[()=>forgeStart(BPS[rnd(0,20)].id,[1,5,10][rnd(0,2)],false),()=>{S.jobs.forEach(j=>j.end=NOW())},()=>tick(),()=>{const w=S.weapons[rnd(0,S.weapons.length-1)];if(w)enhanceCore(w.id,{scroll:true,bless:true})},
+      ()=>{const w=S.weapons[rnd(0,S.weapons.length-1)];if(w)meltCore(w.id)},()=>{const w=S.weapons[rnd(0,S.weapons.length-1)];if(w)deliverCore(rnd(0,9),w.id)},()=>recallCore(rnd(0,9)),()=>collectCore(rnd(0,9)),
+      ()=>setStrategy(rnd(0,9),['normal','material','rare'][rnd(0,2)]),()=>{CLOCK.offset+=rnd(0,600000)},()=>cancelJob(0),()=>{const w=S.weapons[0];if(w)enchantCore(w.id,rnd(0,3),rnd(0,1)?'giant':null)},()=>slagTrade(rnd(0,2)),()=>pullCore(1)];
+    for(let n=0;n<3000;n++){acts[rnd(0,acts.length-1)]();
+      const neg=S.gold<0||S.gems<0||S.slag<0||Object.values(S.mats).some(x=>x<0)||Object.values(S.items).some(x=>x<0);
+      const ids=S.weapons.map(w=>w.id),posts=S.villages.map(v=>v.weaponId).filter(x=>x!=null);
+      if(neg||new Set(ids).size!==ids.length||new Set(posts).size!==posts.length||posts.some(id=>!W(id)))errs++}
+    res.push(T('E9 3,000 次隨機操作：無負數、ID 不重複、同一把武器不會同時駐守兩村、熔解後真正消失',!errs,`異常 ${errs} 次；最終武器 ${S.weapons.length} 把`));
+    // 附魔覆蓋與加成
+    S=fresh();S.gold=1e6;S.mats.shard=100;S.anvil=5;const x=makeWeapon('t2_wolfaxe',2,0,[{k:'runic',v:20},{k:'light',v:5}]);
+    for(let n=0;n<50;n++)enchantCore(x.id,rnd(0,3));const slots=x.ench.length,shard0=S.mats.shard,g1=S.gold;enchantCore(x.id,0,'giant');
+    x.ench=[{k:'loot',v:30},{k:'loot',v:30},{k:'loot',v:30},{k:'swift',v:40}];const tr=timeReduction(0,x),lo=Math.min(CAP.loot,affixVal(x,'loot'));
+    const y=makeWeapon('t3_greataxe',0,2,[]);y.ench[0]={k:'giant',v:20};const yOk=eligible(7,y),y2=makeWeapon('t3_greataxe',0,0,[]);
+    res.push(T('E10 附魔覆蓋不重複、扣費正確、符文親和不重複計算、迅捷/掠奪有上限、剋巨人判定',slots===4&&shard0-S.mats.shard===4&&g1-S.gold===enchCost(x,true)&&x.ench.length===4&&tr===CAP.time/100&&lo===CAP.loot&&yOk===(power(y)>=95)&&!eligible(7,y2),
+      `欄位數 ${slots}；指定附魔扣碎片 ${shard0-S.mats.shard}、金幣 ${g1-S.gold}；迅捷堆疊後時間縮短 ${tr*100}%（上限 ${CAP.time}%）；掠奪 ${lo}%（上限 ${CAP.loot}%）；有剋巨人可交 1-8：${yOk}，沒有：${eligible(7,y2)}`));
+    // 附魔欄位依鐵砧
+    S=fresh();S.gold=1e6;S.mats.shard=10;const z=makeWeapon('t1_woodaxe',0,0,[]);const e2=enchantCore(z.id,2);S.anvil=3;const e3=enchantCore(z.id,2),e4=enchantCore(z.id,3);S.anvil=5;const e5=enchantCore(z.id,3);
+    res.push(T('E11 附魔第 3 格鐵砧 Lv3、第 4 格鐵砧 Lv5 開放',e2.err&&!e3.err&&e4.err&&!e5.err,'Lv1 第3格擋下、Lv3 第3格可用第4格擋下、Lv5 第4格可用'));
+    // 祈願
+    const sum=GACHA.reduce((a,x)=>a+x[2],0);S=fresh();S.gems=1e7;let pityOk=true,nPity=0;for(let n=0;n<3000;n++){const r=pullCore(10);const hit9=r.slice(0,9).some(p=>p[2]<=PITY_MAX_W);if(!hit9){nPity++;if(r[9][2]>PITY_MAX_W)pityOk=false}}
+    res.push(T('E12 祈願機率總和 100%、十連保底生效',sum===1000&&pityOk,`權重總和 ${sum}/1000；3,000 次十連中觸發保底 ${nPity} 次（理論約 ${(Math.pow(1-GACHA.filter(x=>x[2]<=PITY_MAX_W).reduce((a,x)=>a+x[2],0)/1000,9)*100).toFixed(2)}%）`));
+    // 收藏鎖定與容量
+    S=fresh();S.gold=1e6;S.mats.iron=1e4;S.mats.oak=1e4;const lk=makeWeapon('t1_woodaxe',0,0,[]);lk.lock=true;const m1=meltCore(lk.id);
+    while(S.weapons.length<CAP_WEAPONS)makeWeapon('t1_woodaxe',0,0,[]);const f1=forgeStart('t1_woodaxe',1,false);
+    res.push(T('E14 收藏武器不能熔解、武器庫滿 200 把不能再鍛造',m1===null&&!!W(lk.id)&&typeof f1==='string',`收藏熔解${m1===null?'被擋下':'成功(錯誤)'}；滿倉鍛造：${typeof f1==='string'?f1:'成功(錯誤)'}`));
+    // 殘渣不能套利
+    const cost1=Object.entries(recipe(BP.t1_woodaxe)).reduce((a,[k,n])=>a+n*(k==='iron'?8:6),0)+TIERS[0].gold,slagVal=TIERS[0].slag*(4*8/3);
+    res.push(T('E13 爆裝殘渣價值低於武器成本（無法靠爆裝獲利）',slagVal<cost1*.3,`鐵製爆裝殘渣約值 ${slagVal.toFixed(1)} 金，鍛造成本約 ${cost1} 金（不含強化費）`));
+  });
+  return res;
+}
+
+/* ---------- D. 經濟模擬 ---------- */
+const PROFILES={
+  casual:{n:'A 免費休閒（每天 2 次）',logins:[8,21],session:10,risk:.15},
+  active:{n:'B 免費活躍（每天 5 次）',logins:[8,12,16,19,22],session:15,risk:.3},
+  monthly:{n:'C 月卡（每天 3 次）',logins:[8,13,21],session:15,risk:.3,monthly:true},
+  whale:{n:'D 高投入（每天 5 次＋大量鑽石）',logins:[8,12,16,19,22],session:20,risk:.6,monthly:true,whale:true}
+};
+function aiForgeFor(cat,M){
+  const cands=BPS.filter(b=>b.cat===cat&&cleared()>=b.unlock&&b.t<3).sort((a,b)=>b.base*TIERS[b.t].mult-a.base*TIERS[a.t].mult);
+  for(const b of cands){
+    if(S.furnace<TIERS[b.t].furnace){const c=FURNACE_COST[S.furnace];if(S.gold>=c){S.gold-=c;S.furnace++}else continue}
+    if(S.furnace<TIERS[b.t].furnace)continue;
+    const c=recipe(b);if(b.t===0){for(const k in c){const lack=c[k]-S.mats[k];if(lack>0){const p=SHOP_MATS.find(x=>x[0]===k)[1];if(S.gold>=lack*p+TIERS[0].gold){S.gold-=lack*p;S.mats[k]+=lack}}}}
+    if(S.jobs.length<S.slots&&hasMats(c)&&S.gold>=TIERS[b.t].gold){forgeStart(b.id,1,S.items.blueprint>0);M.forgedTry++;return true}
+    if(b.t>0)return false;// 高階材料不足就等
+  }
+  return false;
+}
+function aiSession(P,M){
+  // 收成、月卡、課金行為
+  S.villages.forEach((st,i)=>collectCore(i));
+  if(P.monthly){if(!monthlyOn()){S.monthly.until=NOW()+30*864e5;S.gems+=300;M.paid+=150}if(S.monthly.last!==today()){S.monthly.last=today();S.gems+=50}}
+  if(P.whale){if(!M.paidToday[today()]){M.paidToday[today()]=1;S.gems+=1280;M.paid+=590;const r=pullCore(10);}
+    if(S.items.scroll<3&&S.gems>=30){S.gems-=30;S.items.scroll++}
+    const hunting=S.villages.some(st=>st.weaponId!=null);if(hunting&&S.gems>=50){S.gems-=50;S.villages.forEach((st,i)=>{const w=st.weaponId!=null&&W(st.weaponId);if(w){const k=Math.min(capCycles(i,w)-st.bank.cycles,Math.max(1,Math.floor(1800000/gameDur(i,w))));for(let c=0;c<k;c++)rollCycle(i,w,st)}});S.villages.forEach((st,i)=>collectCore(i))}}
+  else if(P.monthly&&S.items.scroll<1&&S.gems>=230){S.gems-=30;S.items.scroll++}
+  ACH.forEach(a=>claimAch(a.id));
+  // 目標關卡
+  const i=S.villages.findIndex(v=>v.status==='open');
+  if(i>=0){const v=VILLAGES[i];
+    let ws=S.weapons.filter(w=>bpOf(w).cat===v.cat&&where(w)<0).sort((a,b)=>power(b)-power(a));
+    const ok=ws.find(w=>eligible(i,w));if(ok){deliverCore(i,ok.id);M.clearDay[i]=M.day}
+    else{
+      let w=ws[0];
+      // 先選有潛力的（安定區內能達標）
+      const pot=ws.find(x=>power(x,Math.max(x.lv,stable(x)))>=v.req*(v.need?1:1));if(pot)w=pot;
+      if(w&&power(w)<v.req){
+        while(w&&W(w.id)&&power(w)<v.req){
+          const next=w.lv+1,danger=next>stable(w),cost=enhCost(w);if(S.gold<cost)break;
+          if(danger){const canReach=power(w,Math.min(15,stable(w)+2))>=v.req;if(!canReach)break;
+            const useScroll=S.items.scroll>0;if(!useScroll&&Math.random()>P.risk)break;
+            const r=enhanceCore(w.id,{scroll:useScroll,bless:P.whale&&S.items.bless>0});if(r.k==='broke'){M.breaks++;break}if(r.k!=='ok')break}
+          else{const r=enhanceCore(w.id,{});if(r.err)break}
+        }
+      }
+      if(w&&W(w.id)&&power(w)>=v.req&&v.need&&!affixVal(w,v.need)){
+        if(S.mats.shard>=4)enchantCore(w.id,0,v.need);else if(S.mats.shard>=1)enchantCore(w.id,1);
+      }
+      const ok2=S.weapons.find(x=>eligible(i,x)&&where(x)<0);if(ok2){deliverCore(i,ok2.id);M.clearDay[i]=M.day}
+      else{const hopeless=!w||!W(w.id)||power(w,Math.max(w.lv,stable(w)))<v.req;if(hopeless||ws.length<2)aiForgeFor(v.cat,M)}
+      // 缺高階材料時改稀有追蹤
+      const needScale=BPS.some(b=>b.cat===v.cat&&b.t===2&&cleared()>=b.unlock);
+      S.villages.forEach((st,k)=>{if(st.weaponId==null)return;const hasRare=VILLAGES[k].drops.some(d=>d[1]<RARE_P&&['scale','rune','silver','fang'].includes(d[0]));
+        const want=(needScale&&hasRare&&(S.mats.scale<2||S.mats.rune<2))?'rare':'normal';if(st.strat!==want)setStrategy(k,want)});
+    }
+  }
+  // 用更強的閒置武器替換已收復村莊
+  S.villages.forEach((st,k)=>{if(st.status!=='cleared')return;const cur=st.weaponId!=null&&W(st.weaponId);const better=S.weapons.filter(x=>where(x)<0&&eligible(k,x)&&(!cur||power(x)>power(cur)*1.15)).sort((a,b)=>power(b)-power(a))[0];if(better)deliverCore(k,better.id)});
+  // 有餘裕時衝高已收復村莊的武器（收入、爆裝數據）
+  if(S.gold>20000){const cand=S.weapons.filter(w=>where(w)<0&&w.lv<12).sort((a,b)=>power(b)-power(a))[0];
+    if(cand){for(let n=0;n<6&&W(cand.id);n++){const next=cand.lv+1,danger=next>stable(cand);if(S.gold<enhCost(cand)+10000)break;
+      if(danger&&!(S.items.scroll>0)&&Math.random()>P.risk)break;const r=enhanceCore(cand.id,{scroll:danger&&S.items.scroll>0});if(r.k==='broke'){M.breaks++;break}}}}
+  // 賣掉多餘的一階材料
+  for(const k in SELL_PRICE){if(S.mats[k]>60){const n=S.mats[k]-60;S.mats[k]-=n;S.gold+=n*SELL_PRICE[k]}}
+  // 工坊投資（留下強化預算）
+  const needF=cleared()>=5&&S.furnace<4?FURNACE_COST[S.furnace]:0;const reserve=(i>=0?600:0)+needF;
+  if(needF&&S.gold>=needF){S.gold-=needF;S.furnace++}
+  if(S.anvil<5&&S.gold>=ANVIL_COST[S.anvil]+reserve&&cleared()>=2){S.gold-=ANVIL_COST[S.anvil];S.anvil++}
+  if(S.slots<4&&S.gold>=SLOT_COST[S.slots]+reserve&&cleared()>=4){S.gold-=SLOT_COST[S.slots];S.slots++}
+  // 中後期：批量鍛造＋熔解雜兵（大量鍛造需求）
+  if(bulkOn()&&S.gold>reserve+(i>=0?30000:5000)&&S.jobs.length<S.slots){const b=BPS.find(x=>x.id==='t1_woodaxe');forgeStart(b.id,5,false)}
+  S.weapons.filter(w=>w.q<=1&&w.lv===0&&where(w)<0&&!(w.traits||[]).length).slice(0,-2).forEach(w=>meltCore(w.id));
+}
+function simulate(key,days=30,capH=12){
+  return withSandbox(()=>{
+    const P=PROFILES[key];S=fresh();S.speed=1;S.capH=capH;const base=Date.now();CLOCK.offset=0;
+    const M={day:0,clearDay:{},breaks:0,forgedTry:0,paid:0,paidToday:{},snap:{}};const checkpoints=[1,3,7,14,30];let lastClear=0,stuck=0;
+    const setT=ms=>{CLOCK.offset=base+ms-Date.now()};
+    for(let d=0;d<days;d++){M.day=d+1;
+      for(const h of P.logins){for(let s=0;s<P.session;s+=5){setT(((d*24)+(h-8))*3600000+s*60000);tick();aiSession(P,M)}}
+      const c=cleared();if(c>lastClear){lastClear=c;stuck=0}else if(c<10)stuck++;M.maxStuck=Math.max(M.maxStuck||0,stuck);
+      if(checkpoints.includes(d+1)){const f=S.stats.forged;M.snap[d+1]={cleared:c,goldIn:S.stats.goldIn,gold:S.gold,forged:f.slice(),forgedSum:f.reduce((a,b)=>a+b,0),enhTry:S.stats.enhTry,enhFail:S.stats.enhFail,breaks:S.stats.breaks,
+        scrollUsed:S.stats.scrollUsed,maxLv:S.stats.maxLv,furnace:S.furnace,anvil:S.anvil,slots:S.slots,stuckDays:stuck,maxStuck:M.maxStuck=Math.max(M.maxStuck||0,stuck),mats:{...S.mats},paid:M.paid,harvest:S.stats.harvest}}
+    }
+    M.clearDays=Object.entries(M.clearDay).map(([i,d])=>'1-'+(+i+1)+':D'+d).join(' ');return M;
+  });
+}
+function econReport(capH=12){
+  const out={};for(const k in PROFILES)out[k]=simulate(k,30,capH);return out;
+}
+
+/* ---------- F. v3.2 強化規格驗證（固定隨機種子，可重現） ---------- */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function withSeed(seed,fn){const keep=Math.random;Math.random=mulberry32(seed);try{return fn()}finally{Math.random=keep}}
+function specTests(seed=20261020,N=200000){
+  const res=[],rows=[];
+  withSandbox(()=>withSeed(seed,()=>{
+    S=fresh();
+    const cases=[['鐵製','t1_ironsword',6,false],['鐵製','t1_ironsword',9,false],['霜銀','t2_longsword',5,false],['龍鱗','t3_greatsword',3,false],['神器','m_firegiant',0,false],['神器','m_firegiant',9,false],['鐵製','t1_ironsword',9,true]];
+    for(const[tn,bid,lv,bless] of cases){
+      const w={b:bid,q:2,lv,traits:[],ench:[null,null,null,null]};const next=lv+1;
+      const r=Math.min(1,RATE[next]+(bless?.1:0)),bc=breakChance(w,next),exp=(1-r)*bc;
+      let ok=0,br=0;for(let n=0;n<N;n++){const o=rollEnhance(r,bc);if(o==='ok')ok++;else if(o==='break')br++}
+      const tol=4.5*Math.sqrt(.25/N);const pass=near(ok/N,r,tol)&&near(br/N,exp,tol);
+      rows.push(`${tn} +${lv}→+${next}${bless?'（祝福石）':''}：成功 ${(ok/N*100).toFixed(2)}%（設定 ${(r*100).toFixed(1)}%）、失敗後爆裝 ${(bc*100).toFixed(0)}%、單次爆裝 ${(br/N*100).toFixed(2)}%（設定 ${(exp*100).toFixed(2)}%）`);
+      res.push(T(`F 機率 ${tn} +${lv}→+${next}${bless?' 祝福石':''}`,pass,rows[rows.length-1]));
+    }
+    // 安定區爆裝率必須為 0
+    const safe=[['t1_ironsword',6],['t2_longsword',5],['t3_greatsword',3],['m_firegiant',0]].every(([b,st])=>{for(let n=1;n<=st;n++)if(breakChance({b},n)!==0)return false;return breakChance({b},st+1)===.35});
+    res.push(T('F 安定值內爆裝率 0%，超過安定值第一階為 35%',safe,'鐵製 6、霜銀 5、龍鱗 3、神器 0 全部符合'));
+    // 倍率表
+    const tbl=[1,1.1,1.2,1.3,1.4,1.5,1.6,1.78,1.96,2.14,2.32,2.5,2.68,2.86,3.04,3.22];
+    res.push(T('F 強化倍率加法累積（+0～+15 對照規格表）',tbl.every((x,i)=>near(enhMult(i),x,1e-9)),tbl.map((x,i)=>'+'+i+' '+enhMult(i).toFixed(2)).join('、')));
+    // 費用、祝福石、防爆卷、道具不足
+    S=fresh();S.gold=1e7;S.items.bless=3;S.items.scroll=0;const w=makeWeapon('t1_ironsword',0,9,[]);
+    const c=enhCost(w),g0=S.gold,b0=S.items.bless;const r1=enhanceCore(w.id,{bless:true});const bUsed=b0-S.items.bless;
+    const costOk=g0-S.gold===c&&c===Math.round(ENH_COST[9]*1)&&bUsed===1;
+    const w2=makeWeapon('t1_ironsword',0,9,[]);const r2=enhanceCore(w2.id,{scroll:true}),g1=S.gold;
+    S.items.bless=0;const r3=enhanceCore(w2.id||0,{bless:true});
+    res.push(T('F 費用一致、祝福石必定消耗、道具不足直接拒絕（不扣費）',costOk&&r2.need==='scroll'&&(!W(w2.id)||r3.need==='bless')&&S.gold===g1,`+9 費用 ${c}（表定 ${ENH_COST[9]}）；祝福石扣 ${bUsed}；防爆卷不足：${r2.err}；祝福石不足：${r3.err||'—'}`));
+    // v3.14 規則：危險區勾選防爆卷，每次強化都消耗 1 張；判定爆裝時武器保留
+    S=fresh();S.gold=1e9;S.items.scroll=1e6;let used=0,saved=0,okN=0,failN=0,broken=0;
+    for(let n=0;n<20000;n++){const x=makeWeapon('t1_ironsword',0,9,[]);const s0=S.items.scroll;const o=enhanceCore(x.id,{scroll:true});used+=s0-S.items.scroll;
+      if(o.k==='saved')saved++;else if(o.k==='ok')okN++;else if(o.k==='broke')broken++;else failN++;S.weapons=[]}
+    let safeUsed=0;{const y=makeWeapon('t1_ironsword',0,0,[]);const s0=S.items.scroll;enhanceCore(y.id,{scroll:true});safeUsed=s0-S.items.scroll;S.weapons=[]}
+    res.push(T('F 危險區勾選防爆卷每次都消耗 1 張、爆裝時武器保留；安定區不消耗',used===20000&&saved>0&&broken===0&&safeUsed===0,`20,000 次 +9→+10：消耗 ${used} 張；防爆生效 ${saved}、成功 ${okN}、普通失敗 ${failN}、爆裝 ${broken}；安定區強化消耗 ${safeUsed} 張`));
+    // 戰力同步
+    S=fresh();S.gold=1e9;const y=makeWeapon('t2_longsword',3,5,[]);y.ench[0]={k:'flame',v:10};const pre=power(y,6);let o;do{o=enhanceCore(y.id,{scroll:true})}while(o.k!=='ok'&&W(y.id));
+    res.push(T('F 強化介面預估戰力＝成功後實際戰力',!W(y.id)||power(y)===pre||y.lv!==6,`預估 ${pre}，實際 ${W(y.id)?power(y):'—'}`));
+    // 測試武器與指定結果不動正式資源
+    S=fresh();S.gold=500;S.items.scroll=2;S.items.bless=2;const tw=makeWeapon('t3_greatsword',2,5,[]);tw.test=true;const snap=JSON.stringify([S.gold,S.items,S.stats]);
+    const f1=enhanceCore(tw.id,{force:'saved'}),f2=enhanceCore(tw.id,{force:'fail'}),f3=enhanceCore(tw.id,{force:'ok',bless:true}),f4=enhanceCore(tw.id,{force:'break',scroll:true});
+    res.push(T('F 開發工具指定結果只作用於測試武器，不扣正式資源',f1.k==='saved'&&f2.k==='fail'&&f3.k==='ok'&&f4.k==='broke'&&!W(tw.id)&&snap===JSON.stringify([S.gold,S.items,S.stats]),`指定 防爆→${f1.k}、失敗→${f2.k}、成功→${f3.k}、爆裝→${f4.k}；資源與統計${snap===JSON.stringify([S.gold,S.items,S.stats])?'完全沒變':'有變動(錯誤)'}`));
+    S.gold=1e9;let nb=0;for(let n=0;n<300;n++){const nw=makeWeapon('t1_ironsword',0,0,[]);if(enhanceCore(nw.id,{force:'break'}).k==='broke')nb++;S.weapons=[]}
+    res.push(T('F 正式武器忽略指定結果',nb===0,'正式 +0 武器指定「爆裝」300 次，實際爆裝 '+nb+' 次（安定區照規則不會爆）'));
+  }));
+  return{res,rows};
+}
+
+/* ---------- 執行 ---------- */
+function runAll(opts={}){
+  const t0=Date.now();const lv=levelCheck();
+  const res=[...lv.res,...forgeTests(opts.N||100000),...enhanceTests(opts.N||100000),...saveTests(),...specTests(20261020,opts.N?Math.max(opts.N,100000):200000).res];
+  return{res,lv,ms:Date.now()-t0};
+}
+function resHtml(res){return res.map(r=>`<div><b class="${r.pass?'p':'f'}">${r.pass?'通過':'未通過'}</b> ${r.name}<div class="muted">${r.detail}</div></div>`).join('')}
+function econHtml(capH){const e=econReport(capH);let h=`<div><b>30 天經濟模擬（離線上限 ${capH} 小時，正式時間 1×）</b></div>`;
+  for(const k in e){const m=e[k];h+=`<div style="margin-top:6px"><b>${PROFILES[k].n}</b>：收復時間 ${m.clearDays||'無'}</div>`;
+    h+='<table class="tbl"><tr><th>天</th><th>村莊</th><th>金幣收入</th><th>鍛造</th><th>強化/失敗/爆</th><th>最高</th><th>熔爐/鐵砧</th></tr>'+Object.entries(m.snap).map(([d,s])=>`<tr><td>${d}</td><td>${s.cleared}</td><td>${fmt(s.goldIn)}</td><td>${s.forgedSum}</td><td>${s.enhTry}/${s.enhFail}/${s.breaks}</td><td>+${s.maxLv}</td><td>${s.furnace}/${s.anvil}</td></tr>`).join('')+'</table>'}
+  return h}
+function runTests(mode){
+  if(mode==='econ')return econHtml(12)+econHtml(8);
+  const r=runAll({N:100000});const pass=r.res.filter(x=>x.pass).length;
+  return `<div><b>${pass}/${r.res.length} 通過</b>（${r.ms} 毫秒）</div>`+resHtml(r.res);
+}
+if(typeof module!=='undefined')module.exports={runAll,econReport,simulate,levelCheck};
