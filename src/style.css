@@ -1184,6 +1184,56 @@ button.matbox:active{border-color:var(--gold)}
 .new-tag{position:absolute;top:8%;left:8%;z-index:3;padding:0 4px;border-radius:3px;background:var(--danger-hi);color:#fff;font-size:10px;font-weight:800;line-height:14px;letter-spacing:.03em;pointer-events:none}
 .nobr{white-space:nowrap}   /* v3.65 月卡說明不要只剩一個「鑽」字換行 */
 @media (max-width:360px){.mq .mq-b{width:26px}.mrow .mr-ops{grid-template-columns:minmax(0,1.8fr) minmax(0,1fr) minmax(0,1fr)}.mrow .mr-t{font-size:13px}}   /* 320 寬也放得下 4 位數 */
+/* v3.71 鐵匠天賦：主畫面工具列變 4 顆、天賦視窗 */
+.hf-btn{position:relative;min-width:0;flex:0 1 76px}
+.hf-btn .dot{position:absolute;top:3px;right:5px}
+.hero.fv-2:not(.ft-queue) .hf-bar{grid-template-columns:repeat(2,1fr)}
+.tal-head .prog{margin:4px 0 2px}
+.tal-pts{margin:6px 0 2px;padding:6px 10px;border-radius:8px;border:1px solid var(--line2);font-size:13px;text-align:center}
+.tal-pts.on{border-color:var(--gold,#d8a64a);box-shadow:0 0 8px rgba(216,166,74,.35)}
+.tal-pts b{font-size:16px}
+.tal-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.tal-row{display:flex;align-items:center;gap:10px;padding:8px 10px}
+.tal-row .tal-ic{width:40px;height:40px;flex:none}
+.tal-row .grow{min-width:0}
+.tal-btn{flex:none;min-width:52px}
+.tal-max{flex:none;min-width:52px;text-align:center}
+/* v3.72 每週限時活動：村莊頁橫幅、首領討伐視窗 */
+.evt-ban{position:relative;display:flex;align-items:center;gap:10px;width:100%;margin:10px 0 0;padding:10px 12px;border-radius:12px;border:1px solid var(--line2);background:linear-gradient(90deg,rgba(60,38,12,.9),rgba(20,15,10,.92));color:var(--bone);text-align:left;font:inherit}
+.evt-ban.boss{background:linear-gradient(90deg,rgba(80,20,14,.92),rgba(20,15,10,.92))}
+.evt-ban .grow{min-width:0}
+.evt-ban b{display:block;font-size:14px}
+.evt-ic{width:40px;height:40px;flex:none}
+.evt-boss{width:52px;height:52px;flex:none;border-radius:8px;object-fit:cover;border:1px solid var(--line2)}
+.evt-ban .cb-bar{display:block;height:5px;border-radius:3px;background:#2a2118;overflow:hidden;margin:4px 0 2px}.evt-ban .cb-bar i{display:block;height:100%;background:linear-gradient(90deg,#c8742a,#f0c060)}
+.evt-go{flex:none;font-size:13px;color:var(--gold,#d8a64a);white-space:nowrap}
+.evt-ban .dot{position:absolute;top:6px;right:6px}
+.evt-hero{height:140px;border-radius:12px;background-size:cover;background-position:center;position:relative;overflow:hidden;margin-bottom:10px}
+.evt-mon{position:absolute;right:10px;top:10px;width:120px;height:120px;border-radius:10px;border:1px solid var(--line2);box-shadow:0 4px 14px rgba(0,0,0,.6);object-fit:cover}
+.evt-hero-in{position:absolute;left:0;right:0;bottom:0;padding:24px 140px 10px 12px;background:linear-gradient(transparent,rgba(0,0,0,.85));display:flex;flex-direction:column}
+.evt-hero-in b{font-size:18px}
+.evt-ws{display:flex;flex-direction:column;gap:8px}
+.evt-w{display:flex;align-items:center;gap:10px;padding:8px 10px}
+.evt-w .grow{min-width:0}
+.evt-w .qimg{width:44px;height:44px;flex:none}
+.evt-stages{display:flex;flex-direction:column;gap:6px}
+.evt-st{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;border:1px solid var(--line2)}
+.evt-st .num{flex:none;min-width:56px;font-weight:700}
+.evt-st.done{opacity:.6}
+.evt-ck{width:20px;height:20px;flex:none}
+.evt-global{display:flex;flex-direction:column;gap:6px}
+.evt-ban .cb-bar.hp i{background:linear-gradient(90deg,#8c1d14,#d8452c)}
+.evt-rk{position:relative;display:flex;align-items:center;gap:8px;width:100%;margin:6px 0 0;padding:8px 12px;border-radius:10px;border:1px solid var(--gold,#d8a64a);background:rgba(40,28,10,.9);color:var(--bone);font:inherit;font-size:13px;text-align:left}
+.evt-rk .grow{min-width:0}
+.evt-rk-ic{width:26px;height:26px;flex:none}
+.evt-rk .dot{position:absolute;top:4px;right:4px}
+@media (max-width:360px){.evt-mon{width:92px;height:92px}.evt-hero-in{padding-right:112px}.evt-go{font-size:12px}}
+.evt-hp{position:relative;height:22px;border-radius:6px;background:#2a2118;overflow:hidden;border:1px solid var(--line2)}
+.evt-hp i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#8c1d14,#d8452c)}
+.evt-hp span{position:relative;display:block;text-align:center;font-size:12px;line-height:20px;color:#fff;text-shadow:0 1px 2px #000}
+.evt-hp.dead{border-color:var(--gold,#d8a64a)}
+.evt-top{font-size:13px}
+.evt-top.me b,.evt-top.me span{color:var(--gold,#d8a64a)}
 
 /* v3.70 圖紙卡：未解鎖改成鎖頭小圖示＋下方文字，不蓋住武器圖 */
 .wt.bp.locked .wart-w{filter:grayscale(.85) brightness(.5)}
@@ -1256,4 +1306,19 @@ button.matbox:active{border-color:var(--gold)}
 .hp-t{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;gap:6px;padding:0 7px;font-size:11px;line-height:1;color:#fff;text-shadow:0 1px 2px #000,0 0 3px #000;pointer-events:none}
 .hp-n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(prefers-reduced-motion:reduce){.vmon *,.vmon:after{animation:none!important}}
+/* v3.76 第二界：地圖切換、巨人體重鍊 */
+button.arr{background:none;border:0;padding:0;cursor:pointer}
+button.arr.off{pointer-events:none}
+.rlm[data-act]{cursor:pointer}
+.rlm.cur span{color:var(--gold-hi);font-weight:700}
+.rlm.on:not(.cur) img{filter:none;opacity:.8}
+.wd-rf{display:flex;align-items:center;gap:8px;width:100%;margin:8px 0;padding:8px 12px;text-align:left;background:linear-gradient(#2a2016,#140f0a);border:1px solid #8a6a3a;border-radius:10px;color:var(--gold-hi);box-shadow:none}
+.wd-rf:disabled{opacity:.5}
+.wd-rf img{width:32px;height:32px;flex:none}
+.wd-rf .small{white-space:nowrap;color:var(--gold)}
+.rf-tag{display:inline-block;padding:1px 6px;border-radius:6px;font-size:11px;background:#1d2a36;color:#a9d4ff;border:1px solid #3d5a74;white-space:nowrap}
+.rf-box{display:flex;flex-direction:column;gap:8px;align-items:center}
+.rf-step{display:flex;gap:10px;align-items:center;font-size:16px;white-space:nowrap}
+.rf-box .mats{justify-content:center}
+@media (max-width:374px){.vcard .drops{flex-wrap:wrap;width:59px;justify-content:center}.vcard .drops .dico:nth-child(3){display:none}}   /* v3.76 窄螢幕：掉落只顯示 2 個，讓村莊名稱有位置 */
 </style>

@@ -26,7 +26,7 @@ function minUpgrade(b,req,needAffix){
     for(let lv=0;lv<=15;lv++){const p=Math.round(b.base*TIERS[b.t].mult*QUAL[q].m*enhMult(lv));if(p>=req){need=lv;break}}out.push(need)}return out}
 function levelCheck(){
   const res=[],rows=[];const sources=new Set(['iron','oak','leather']);
-  for(let i=0;i<VILLAGES.length;i++){
+  for(let i=0;i<10;i++){   // 第一界：不靠神器和重鍊；第二界另外在 A12 檢查
     const v=VILLAGES[i],c=i; // 交付第 i 關時已收復 i 關
     const avail=BPS.filter(b=>b.cat===v.cat&&c>=b.unlock&&b.t<3);
     const affixOk=!v.need||[...sources].includes('shard');
@@ -41,12 +41,19 @@ function levelCheck(){
     S.anvil=keepA;opts.sort((a,b)=>(b.ok-a.ok)||a.score-b.score);const best=opts[0]||null;const expForges=best?best.expForges:Infinity;
     rows.push({i,v,best,affixOk,expForges});
     const pass=best&&best.ok&&affixOk;
-    res.push(T(`A${i+1} 1-${i+1} ${v.name}`,pass,best?`${best.b.n}（${TIERS[best.b.t].n}）${QUAL[best.q].n} +${best.lv}${best.safe?'（安定區內）':'（需危險強化 '+best.dsteps+' 階，連續成功率 '+(best.pReach*100).toFixed(0)+'%）'}；鐵砧Lv${anv} 期望鍛造 ${expForges.toFixed(1)} 次${v.need?'；需附魔「'+AFFIX[v.need].n+'」'+(affixOk?'，碎片可取得':'，碎片尚無來源'):''}`:'沒有可用武器或材料無來源'));
+    res.push(T(`A${i+1} ${vNo(i)} ${v.name}`,pass,best?`${best.b.n}（${TIERS[best.b.t].n}）${QUAL[best.q].n} +${best.lv}${best.safe?'（安定區內）':'（需危險強化 '+best.dsteps+' 階，連續成功率 '+(best.pReach*100).toFixed(0)+'%）'}；鐵砧Lv${anv} 期望鍛造 ${expForges.toFixed(1)} 次${v.need?'；需附魔「'+AFFIX[v.need].n+'」'+(affixOk?'，碎片可取得':'，碎片尚無來源'):''}`:'沒有可用武器或材料無來源'));
     v.drops.forEach(d=>sources.add(d[0]));
   }
   // 素材循環：每個圖紙的材料是否在其解鎖前就有來源
   const src2=new Set(['iron','oak','leather']);const bad=[];
   for(let i=0;i<=VILLAGES.length;i++){BPS.filter(b=>b.unlock===i).forEach(b=>{const ms=Object.keys(recipe(b)).filter(m=>!src2.has(m));if(ms.length)bad.push(b.n+'缺'+ms.map(m=>MATS[m]).join('、'))});if(VILLAGES[i])VILLAGES[i].drops.forEach(d=>src2.add(d[0]))}
+  // v3.76 第二界：龍鱗／神器＋重鍊 5 級，每關找出最低品質和強化等級（安全標準：史詩以下 +8 內、或傳說 +6 內）
+  const r2=[];let ok2=true;
+  for(let i=10;i<VILLAGES.length;i++){const v=VILLAGES[i];let best=null;
+    for(let q=0;q<5&&!(best&&best.good);q++)for(const b of BPS.filter(b=>b.cat===v.cat&&b.t>=2&&b.unlock<=i&&(b.t<3||q>=2)))for(let lv=0;lv<=15;lv++){
+      if(Math.round(b.base*TIERS[b.t].mult*QUAL[q].m*enhMult(lv)*(1+RF_PER*RF_MAX))>=v.req){const good=q<=3?lv<=8:lv<=6;if(!best||(good&&!best.good)||(good===best.good&&lv<best.lv))best={b,q,lv,good};break}}
+    const good=best&&best.good;ok2=ok2&&good;r2.push(`${vNo(i)} ${v.req}：${best?`${QUAL[best.q].n}${best.b.n}+${best.lv}`:'無'}${good?'':'（太難）'}`)}
+  res.push(T('A12 第二界每關都打得過（龍鱗／神器／巨人＋重鍊 Lv5）',ok2,r2.join('；')));
   res.push(T('A11 材料來源與解鎖順序（無循環、無無法取得素材）',!bad.length,bad.length?bad.join('；'):'所有圖紙在解鎖時，材料都已有來源'));
   return{res,rows};
 }
@@ -125,7 +132,7 @@ function saveTests(){
   const res=[];
   withSandbox(()=>{
     // 新存檔
-    S=fresh();res.push(T('E1 新存檔結構完整',S.v===3&&S.villages.length===10&&S.weapons.length===0&&S.stats&&S.items.scroll===1,'v'+S.v));
+    S=fresh();res.push(T('E1 新存檔結構完整',S.v===3&&S.villages.length===VILLAGES.length&&S.weapons.length===0&&S.stats&&S.items.scroll===1,'v'+S.v));
     // v2 遷移
     const o={gold:999,gems:50,mats:{iron:5,oak:5,leather:5,silver:2,fang:1,scale:0,rune:0,shard:3},items:{scroll:2,bless:0,blueprint:0},furnace:2,anvil:1,slots:1,nextId:3,
       weapons:[{id:1,b:'t1_woodaxe',q:1,lv:3,ench:[{k:'swift',v:8}]},{id:1,b:'t1_farmspear',q:0,lv:2,ench:[]},{id:5,b:'xx_missing',q:0,lv:0}],jobs:[],
@@ -324,10 +331,65 @@ function specTests(seed=20261020,N=200000){
   return{res,rows};
 }
 
+/* ---------- I. v3.71 鐵匠聲望／天賦 ---------- */
+function repTests(){const res=[];
+  withSandbox(()=>{QUIET=false;repGain.mute=true;try{
+    S=fresh();S=sanitize(S);const g0=S.gold,b0=S.items.bless;let need=0;for(let l=1;l<5;l++)need+=repNeed(l);const up=repGain(need);
+    res.push(T('I1 聲望升級：經驗剛好升 4 級、天賦點 4、Lv5 寶箱有祝福石',up===4&&S.rep.lv===5&&S.rep.xp===0&&repPts()===4&&S.items.bless===b0+1&&S.gold===g0+100*(2+3+4+5),`Lv.${S.rep.lv}、點數 ${repPts()}、金幣 +${S.gold-g0}、祝福石 +${S.items.bless-b0}`));
+    let e1='';for(let n=0;n<4;n++)e1=talentUp('gold')||e1;const e2=talentUp('gold');
+    res.push(T('I2 天賦點用完不能再點、上限擋住',!e1&&e2==='天賦點不夠'&&S.rep.t.gold===4&&repPts()===0,`商隊議價 Lv${S.rep.t.gold}，第 5 次：${e2}`));
+    S.rep.t.qual=20;const q=qualWeights(false,0),sum=q.reduce((a,b)=>a+b,0);
+    res.push(T('I3 巨匠之手滿級：品質權重總和仍 1000、普通減 10%',Math.round(sum)===1000&&q[0]===QW[0]-100,`權重 ${q.map(x=>Math.round(x)).join('/')}，總和 ${Math.round(sum)}`));
+    S.rep.t.forge=30;const fs=forgeSec(BP.t1_woodaxe);
+    res.push(T('I4 熟練鍛造滿級：鍛造時間 −30%',near(fs,TIERS[0].sec*.7,1e-9),`伐木斧 ${fs.toFixed(2)} 秒（原 ${TIERS[0].sec} 秒）`));
+    const x=sanitize(JSON.parse(JSON.stringify({...S,rep:{lv:'abc',xp:-5,t:{gold:999,forge:-3,zz:5}}})));
+    res.push(T('I5 存檔修正：壞掉的聲望資料會被修好',x.rep.lv===1&&x.rep.xp===0&&x.rep.t.gold===TALENTS.gold.max&&x.rep.t.forge===0&&!('zz' in x.rep.t),JSON.stringify(x.rep)));
+  }finally{repGain.mute=false}});
+  return res}
+
+/* ---------- J. v3.72 每週限時活動 ---------- */
+// v3.76 第二界約頓海姆＋巨人體重鍊
+function realm2Tests(){const res=[];
+  withSandbox(()=>{
+    S=fresh();S.speed=1;
+    const o=JSON.parse(JSON.stringify(S));o.villages=o.villages.slice(0,10);o.villages.forEach(v=>v.status='cleared');o.weapons=[{id:1,b:'t3_greataxe',q:2,lv:3,rf:9,traits:[],ench:[null,null,null,null]},{id:2,b:'t1_woodaxe',q:0,lv:0,rf:3,traits:[],ench:[]}];o.nextId=3;
+    const s=sanitize(o);
+    res.push(T('K1 舊存檔補上第二界、收復 1-10 後 2-1 自動開放、重鍊等級夾在 0～5',s.villages.length===20&&s.villages[10].status==='open'&&s.villages[11].status==='locked'&&s.weapons[0].rf===5&&s.weapons[1].rf===0,`村莊 ${s.villages.length}；2-1 ${s.villages[10].status}；龍鱗 rf ${s.weapons[0].rf}、鐵製 rf ${s.weapons[1].rf}`));
+    res.push(T('K2 關卡編號 1-1／1-10／2-1／2-10',[0,9,10,19].map(vNo).join(',')==='1-1,1-10,2-1,2-10',[0,9,10,19].map(vNo).join(',')));
+    S=s;S.gold=100000;for(const k of ['giantbone','permafrost','thunderiron','elderroot'])S.mats[k]=100;
+    const w=makeWeapon('t3_greataxe',2,3,[]),p0=power(w),g0=S.gold,b0=S.mats.giantbone;
+    const r1=reforgeCore(w.id);
+    const okCost=r1&&S.gold===g0-5000&&S.mats.giantbone===b0-2&&Math.abs(power(w)-p0*1.12)<=1;
+    for(let k=0;k<6;k++)reforgeCore(w.id);
+    const iron=makeWeapon('t1_woodaxe',0,0,[]);deliverCore(10,w.id);
+    res.push(T('K3 重鍊扣材料金幣、戰力 +12%、最高 Lv5、鐵製不能重鍊',okCost&&w.rf===5&&Math.abs(power(w)-p0*1.6)<=1&&!reforgeCore(iron.id),`Lv1 戰力 ${p0}→${r1&&r1.p1}；滿級 Lv${w.rf} 戰力 ${power(w)}（×${(power(w)/p0).toFixed(2)}）`));
+    S.villages.forEach(v=>v.status=v===S.villages[0]?'open':'locked');
+    res.push(T('K4 第二界沒開放時不能重鍊',!reforgeCore(makeWeapon('t3_greataxe',2,0,[]).id)&&!rfOpen(),'1-10 未收復'));
+  });
+  return res}
+function evtTests(){const res=[];
+  withSandbox(()=>{const keepF=EVT_FORCE;try{EVT_FORCE=null;
+    const mon=Date.UTC(2026,9,19,0,30)-TZ8,thu=mon+3*DAY+23*3600e3,fri=mon+4*DAY,sun=mon+6*DAY+23*3600e3,nmon=mon+7*DAY;
+    const ks=[mon,thu,fri,sun].map(evtKind).join('/');
+    res.push(T('J1 台灣時間週一～四雙倍收成、週五～日首領討伐、週一換週',ks==='double/double/boss/boss'&&evtWeek(mon)===evtWeek(sun)&&evtWeek(nmon)===evtWeek(mon)+1,`一/四/五/日＝${ks}`));
+    S=fresh();S.villages[0].strat='normal';const st=S.villages[0];rollCycle(0,null,st,mon);const g1=st.bank.gold;st.bank={cycles:0,gold:0,mats:{},events:0};rollCycle(0,null,st,fri);const g2=st.bank.gold;
+    res.push(T('J2 雙倍收成時段金幣 ×2',g1===2*g2&&g2===VILLAGES[0].gold,`週一 ${g1}、週五 ${g2}`));
+    EVT_FORCE='boss';S=fresh();S.gold=0;const w=makeWeapon('t3_greatsword',3,8,[]);const b=evtNow().boss,d0=bossDmgOf(w,b);
+    const r=[1,2,3,4].map(()=>bossHit(w.id));const v=S.evt;
+    res.push(T('J3 首領討伐一天 3 次、傷害在戰力 ±10% 內',!r[0].err&&!r[2].err&&r[3].err&&v.hits===3&&r.slice(0,3).every(x=>x.dmg>=Math.floor(d0*.9)&&x.dmg<=Math.ceil(d0*1.1)),`預估 ${d0}，實際 ${r.slice(0,3).map(x=>x.dmg).join('/')}；第 4 次：${r[3].err||'沒擋住'}`));
+    S=fresh();S.gold=0;S.gems=0;const v4=evtSt(),kb=BOSS_G.b,kp=BOSS_G.prev;try{
+      BOSS_G.b={week:v4.wk,hp:1000,total:600,mine:10,rank:1,players:1,top:[]};const n1=bossStageN(),g1=bossClaimStages(),n2=bossStageN();
+      BOSS_G.b.total=1000;const n3=bossStageN();bossClaimStages();BOSS_G.b.mine=0;v4.gs=0;const n4=bossStageN();
+      BOSS_G.prev={week:evtWeek()-1,hp:1000,total:1000,mine:50,rank:2,players:3,top:[]};const r1=bossClaimRank(),r2=bossClaimRank();
+      res.push(T('J4 全服階段獎勵：60% 領 2 階、打倒再領 2 階、沒出擊不能領；上週第 2 名只能領一次',n1===2&&g1&&g1.gold===4500&&n2===0&&n3===2&&n4===0&&r1&&r1.t[1]==='第 2～3 名'&&!r2&&S.gems===120,`60%：${n1} 階（金幣 ${g1&&g1.gold}）；打倒：${n3} 階；沒出擊：${n4}；排名：${r1&&r1.t[1]}，鑽石 ${S.gems}，第二次 ${r2?'又領到':'擋住'}`));
+    }finally{BOSS_G.b=kb;BOSS_G.prev=kp}
+  }finally{EVT_FORCE=keepF}});
+  return res}
+
 /* ---------- 執行 ---------- */
 function runAll(opts={}){
   const t0=Date.now();const lv=levelCheck();
-  const res=[...lv.res,...forgeTests(opts.N||100000),...enhanceTests(opts.N||100000),...saveTests(),...dailyTests(),...specTests(20261020,opts.N?Math.max(opts.N,100000):200000).res];
+  const res=[...lv.res,...forgeTests(opts.N||100000),...enhanceTests(opts.N||100000),...saveTests(),...dailyTests(),...specTests(20261020,opts.N?Math.max(opts.N,100000):200000).res,...(typeof window!=='undefined'?repTests():[]),...evtTests(),...realm2Tests()];
   return{res,lv,ms:Date.now()-t0};
 }
 function resHtml(res){return res.map(r=>`<div><b class="${r.pass?'p':'f'}">${r.pass?'通過':'未通過'}</b> ${r.name}<div class="muted">${r.detail}</div></div>`).join('')}
@@ -340,7 +402,7 @@ function econHtml(capH){const e=econReport(capH);let h=`<div><b>30 天經濟模�
 // 只看文字本身有沒有跑出按鈕外框（紅點這類絕對定位的小圖示故意貼在框外，不算）
 function textOut(b){const br=b.getBoundingClientRect(),w=document.createTreeWalker(b,NodeFilter.SHOW_TEXT);let n;while((n=w.nextNode())){if(!n.textContent.trim())continue;const r=document.createRange();r.selectNodeContents(n);for(const q of r.getClientRects())if(q.left<br.left-1||q.right>br.right+1)return true}return false}
 function layoutTests(){if(typeof document==='undefined')return[];const res=[],keep=[ui.tab,ui.ftab];
-  const views=[['商城',()=>viewShop()],['武器庫',()=>viewArmory()],['村莊',()=>viewVillage()],['材料倉庫',()=>{ui.ftab='mat';return viewForge()}],['每日任務',()=>{ui.qTab='d';return sheetAch()}],['七日簽到',()=>{ui.qTab='s';return sheetAch()}]];
+  const views=[['商城',()=>viewShop()],['武器庫',()=>viewArmory()],['村莊',()=>viewVillage()],['材料倉庫',()=>{ui.ftab='mat';return viewForge()}],['每日任務',()=>{ui.qTab='d';return sheetAch()}],['七日簽到',()=>{ui.qTab='s';return sheetAch()}],['鐵匠天賦',()=>sheetTalent()]];
   const box=document.createElement('div');box.className='wrap';box.style.cssText='position:absolute;left:-10000px;top:0;visibility:hidden';document.body.appendChild(box);
   for(const[n,f]of views){const bad=[];
     for(const w of[320,360,375,393,414,430,480]){box.style.width=(w-24)+'px';box.innerHTML=f();
@@ -354,7 +416,7 @@ function layoutTests(){if(typeof document==='undefined')return[];const res=[],ke
 function monTests(){if(typeof document==='undefined')return[];const box=document.createElement('div');box.innerHTML=viewVillage();
   const hunting=S.villages.filter(st=>st.status!=='locked'&&st.status!=='open'&&st.weaponId!=null&&W(st.weaponId)).length;
   const ok=MONS.length===VILLAGES.length&&box.querySelectorAll('[data-mon]').length===hunting&&box.querySelectorAll('[data-vhp]').length===hunting;
-  return[T('H 村莊怪物：10 關都有怪物，駐守中的村莊都有怪物圖和血條',ok,`怪物 ${MONS.length} 種／村莊 ${VILLAGES.length}；駐守 ${hunting} 座，怪物圖 ${box.querySelectorAll('[data-mon]').length}、血條 ${box.querySelectorAll('[data-vhp]').length}`)]}
+  return[T('H 村莊怪物：每關都有怪物，駐守中的村莊都有怪物圖和血條',ok,`怪物 ${MONS.length} 種／村莊 ${VILLAGES.length}；駐守 ${hunting} 座，怪物圖 ${box.querySelectorAll('[data-mon]').length}、血條 ${box.querySelectorAll('[data-vhp]').length}`)]}
 function runTests(mode){
   if(mode==='econ')return econHtml(12)+econHtml(8);
   const r=runAll({N:100000});r.res.push(...layoutTests(),...monTests());const pass=r.res.filter(x=>x.pass).length;
