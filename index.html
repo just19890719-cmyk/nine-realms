@@ -1443,7 +1443,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}CLOUD.dirty=true}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD='v3.37 封測';
+const BUILD='v3.38 封測';
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off'};
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -1479,7 +1479,7 @@ async function cloudSetNick(n){const old=S.nick;S.nick=n;
   try{await sbRest('saves?on_conflict=user_id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({user_id:AUTH.user.id,nickname:n,data:S,updated_at:new Date().toISOString()})});save();CLOUD.dirty=false;CLOUD.last=Date.now()}
   catch(e){S.nick=old;throw e}}
 // 取暱稱畫面（註冊後、或之前沒取過暱稱時出現；頭像→鐵匠等級可改名）
-function showName(first){document.body.classList.add('gating');const g=gateEl();g.className='gate-login gate-name';
+function showName(first,preview){document.body.classList.add('gating');const g=gateEl();g.className='gate-login gate-name';
   g.innerHTML=`<div class="gt-scene"><img class="gt-ly gt-bg" src="${LG('key_bg')}" alt=""><img class="gt-ly gt-glow" src="${LG('key_glow')}" alt=""><div class="gt-fog"></div><div class="gt-embers">${gEmb(10)}</div><div class="gt-vig"></div></div>
    <img class="gt-logo" src="${LG('logo')}" alt="九界鐵匠">
    <form class="gt-box" onsubmit="return false"><div class="gt-ttl">${first?'為你的鐵匠取個名字':'修改暱稱'}</div>
@@ -1490,6 +1490,7 @@ function showName(first){document.body.classList.add('gating');const g=gateEl();
   g.onclick=e=>{const b=e.target.closest('[data-gn]');if(!b)return;snd('ui_click');
     if(b.dataset.gn==='cancel'){gateClose();return}
     const n=(g.querySelector('#gtNick').value||'').trim(),bad=NICK_OK(n);if(bad)return say(bad,1);if(n===S.nick){gateClose();return}
+    if(preview){if(n==='冰脊'||n==='測試重複')return say('這個暱稱已經有人用了，換一個吧（預覽：模擬重複）',1);gateClose();toast(`（預覽）歡迎，${n}！實際登入時會存到雲端`,'ok');setTimeout(showStory,350);return}
     if(g.dataset.busy)return;g.dataset.busy='1';b.disabled=true;say('確認中…');
     cloudSetNick(n).then(()=>{gateClose();toast(first?`歡迎，${n}！`:`暱稱已改為「${n}」`,'ok');render();if(first&&!S.introSeen)setTimeout(showStory,350)})
       .catch(e=>say(SB_ERR(e.message),1)).finally(()=>{delete g.dataset.busy;b.disabled=false})}}
@@ -2520,7 +2521,8 @@ function sheetDev(){
      <div class="small muted">危險區（約 2.8 秒）</div><div class="devgrid">${B('fx_ok','危險區・成功')}${B('fx_fail','危險區・失敗')}${B('fx_broke','危險區・爆裝')}${B('fx_saved','危險區・防爆')}</div>`,
    test:`<div class="devgrid">${B('tquick','執行快速測試')}${B('tecon','執行 30 天經濟模擬')}</div>${ui.testOut?`<div class="test-out">${ui.testOut}</div>`:''}`,
    ui:tab==='ui'?uiGallery():'',
-   save:`<div class="label">雲端存檔（v3.34）</div><div class="small" style="margin-bottom:6px">${AUTH?`帳號：${AUTH.user.email}<br>狀態：${CLOUD.busy?'同步中…':CLOUD.err?'⚠ '+CLOUD.err:CLOUD.last?'已同步 '+new Date(CLOUD.last).toLocaleTimeString():'尚未同步'}${CLOUD.dirty?'（有未上傳的變更）':''}`:'目前是訪客（只存在這支手機）'}</div>
+   save:`<div class="label">取暱稱預覽（v3.38，不用登入、不連伺服器）</div><div class="devgrid">${B('cnameprev','預覽「註冊後取名」流程')}</div><div class="small muted" style="margin:4px 0 8px">輸入「冰脊」或「測試重複」可看重複暱稱的提示；確定後會接著播開場故事。</div>
+     <div class="label">雲端存檔（v3.34）</div><div class="small" style="margin-bottom:6px">${AUTH?`帳號：${AUTH.user.email}<br>狀態：${CLOUD.busy?'同步中…':CLOUD.err?'⚠ '+CLOUD.err:CLOUD.last?'已同步 '+new Date(CLOUD.last).toLocaleTimeString():'尚未同步'}${CLOUD.dirty?'（有未上傳的變更）':''}`:'目前是訪客（只存在這支手機）'}</div>
      <div class="devgrid">${AUTH?B('cpush','立即上傳到雲端')+B('cpull','從雲端下載（覆蓋本機）')+B('clogout','登出')+B('cname','開啟取名畫面'):B('gtlogin','開啟登入畫面')}</div>
      <div class="devgrid">${B('v2','載入 v2 測試存檔（遷移）')}${B('reset',ui.confirmReset?'再按一次確認重置':'重置存檔','btn-danger')}</div>
      <div class="label">開發者模式</div><div class="devgrid"><button class="ui-btn ui-btn--secondary btn btn-sec sm" data-act="devoff">關閉開發者模式</button></div><div class="small muted">再次開啟：連點左上角鐵匠徽章 5 下，或在網址後加上 #dev。</div>`}[tab];
@@ -2532,6 +2534,7 @@ let forceEvent=-1;
 function devdo(k){if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?'上傳失敗：'+CLOUD.err:'已上傳到雲端',CLOUD.err?'bad':'ok');render()});return}
   if(k==='cpull'){cloudPull().then(()=>toast('已從雲端下載','ok')).catch(e=>toast('下載失敗：'+SB_ERR(e.message),'bad'));return}
   if(k==='clogout'){ui.sheet=null;return cloudLogout()}
+  if(k==='cnameprev'){ui.sheet=null;render();return showName(true,true)}
   if(k==='cname'){ui.sheet=null;render();return showName(!S.nick)}if(k==='sfxaltclr'){SFX_VAR_KEYS.forEach(n=>{if(SFX_ALT[n])sfxSetAlt(n,'')});toast('音效已全部切回原版');return render()}
   const m=S.mats,give=(b,q,lv,ench,traits)=>{makeWeapon(b,q,lv,traits,ench);toast('已放入武器庫')};
   if(k.startsWith('fxs_')){if(ui.busy)return;return testFx(k.slice(4),true)}
