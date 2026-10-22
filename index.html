@@ -1196,7 +1196,7 @@ button.matbox:active{border-color:var(--gold)}
 .give-dot{z-index:4;pointer-events:none;animation:givePulse 1.6s ease-in-out infinite}
 .wt .give-dot{top:3px;right:3px;width:11px;height:11px;border:1.5px solid #1a0d04}
 .vcard .give-dot{top:5px;right:5px;width:11px;height:11px;border:1.5px solid #1a0d04}
-.btn .give-dot{top:-3px;right:-3px}
+.btn .give-dot{top:3px;right:3px}   /* 放在按鈕內，不要超出按鈕（版面測試會抓） */
 @keyframes givePulse{50%{opacity:.55}}
 .nav .dot.hot{width:13px;height:13px;top:2px;border:2px solid #1a0d04;box-shadow:0 0 10px 2px var(--danger)}
 .new-tag{position:absolute;top:8%;left:8%;z-index:3;padding:0 4px;border-radius:3px;background:var(--danger-hi);color:#fff;font-size:10px;font-weight:800;line-height:14px;letter-spacing:.03em;pointer-events:none}
@@ -1540,7 +1540,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='3.64';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='3.65';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
