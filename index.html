@@ -1489,7 +1489,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='3.50';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='3.51';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -1518,6 +1518,7 @@ async function cloudAfterLogin(){const uid=AUTH.user.id;SID=Math.random().toStri
   const keepMem=CLOUD.reauth&&S.uid===uid&&row&&Date.parse(row.updated_at)<=(CLOUD.pushAt||0)+3000;   // 登入過期重登：雲端沒被別台改過 → 保留目前畫面上的進度
   if(keepMem){}else if(row&&row.data&&row.data.villages){S=sanitize(row.data);if(row.nickname&&!S.nick)S.nick=row.nickname}else if(CLOUD_ONLY)S=sanitize(fresh());
   S.uid=uid;CLOUD.reauth=false;
+  if(S.tut==null)S.tut=(!S.weapons.length&&!S.jobs.length&&cleared()===0)?0:99;   // v3.51 登入後換成雲端存檔，新帳號要重新判斷是否開始新手導覽
   if(!row)await sbRest('rpc/create_save',{method:'POST',body:JSON.stringify({p_sid:SID,p_data:S})});
   try{localStorage.setItem('nrs-sid',SID)}catch(e){}
   CLOUD.ready=true;CLOUD.dirty=!!keepMem;CLOUD.last=Date.now();CLOUD.state='ok';CLOUD.err='';if(!CLOUD_ONLY)try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
@@ -1562,11 +1563,11 @@ function showName(first,preview){document.body.classList.add('gating');const g=g
   g.onclick=e=>{const b=e.target.closest('[data-gn]');if(!b)return;snd('ui_click');
     if(b.dataset.gn==='cancel'){gateClose();return}
     const n=(g.querySelector('#gtNick').value||'').trim(),bad=NICK_OK(n);if(bad)return say(bad,1);if(n===S.nick){gateClose();return}
-    if(preview){if(n==='冰脊'||n==='測試重複')return say('這個暱稱已經有人用了，換一個吧（預覽：模擬重複）',1);gateClose();toast(`（預覽）歡迎，${n}！實際登入時會存到雲端`,'ok');setTimeout(showStory,350);return}
+    if(preview){if(n==='冰脊'||n==='測試重複')return say('這個暱稱已經有人用了，換一個吧（預覽：模擬重複）',1);toast(`（預覽）歡迎，${n}！實際登入時會存到雲端`,'ok');showStory();return}
     if(g.dataset.busy)return;g.dataset.busy='1';b.disabled=true;say('確認中…');
-    cloudSetNick(n).then(()=>{if(AUTH)sbRest('rpc/lb_rename',{method:'POST',body:JSON.stringify({p_nick:n})}).then(()=>lbFetch(true)).catch(()=>{});gateClose();toast(first?`歡迎，${n}！`:`暱稱已改為「${n}」`,'ok');render();if(first&&!S.introSeen)setTimeout(showStory,350)})
+    cloudSetNick(n).then(()=>{if(AUTH)sbRest('rpc/lb_rename',{method:'POST',body:JSON.stringify({p_nick:n})}).then(()=>lbFetch(true)).catch(()=>{});toast(first?`歡迎，${n}！`:`暱稱已改為「${n}」`,'ok');render();if(first&&!S.introSeen)showStory();else gateClose()})
       .catch(e=>say(SB_ERR(e.message),1)).finally(()=>{delete g.dataset.busy;b.disabled=false})}}
-function afterAuthEnter(){setTimeout(()=>mkSettle(true),1500);setTimeout(()=>{lbSync().finally(()=>lbFetch(true))},2000);if(AUTH&&!S.nick)return showName(true);gateClose();if(!S.introSeen)setTimeout(showStory,350)}
+function afterAuthEnter(){setTimeout(()=>mkSettle(true),1500);setTimeout(()=>{lbSync().finally(()=>lbFetch(true))},2000);if(AUTH&&!S.nick)return showName(true);if(!S.introSeen)return showStory();gateClose()}   // v3.51 直接從登入畫面切到故事，不先露出遊戲畫面
 async function cloudPull(){const r=await sbRest('saves?select=data,updated_at&user_id=eq.'+AUTH.user.id);if(!r||!r[0])throw new Error('雲端還沒有存檔');S=sanitize(r[0].data);S.uid=AUTH.user.id;if(!CLOUD_ONLY)try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}CLOUD.last=Date.now();render()}
 if(typeof window!=='undefined'){setInterval(()=>{if(AUTH&&CLOUD.dirty)cloudPush()},10000);setInterval(()=>{if(AUTH&&!document.hidden)syncClock()},600000);
   // 雲端存檔連續失敗超過 30 秒：畫面上方顯示紅色提示（避免玩家玩了很久卻沒存到）
@@ -2937,7 +2938,7 @@ function showLogin(msg){document.body.classList.add('gating');const g=gateEl();g
     <div class="gt-msg small ${msg?'bad':''}">${msg?esc(msg):''}</div>${CLOUD_ONLY?'':'<button type="button" class="gt-guest" data-gt="guest">訪客進入（測試版，存檔只在這支手機）</button>'}
     <div class="gt-ver small"><button type="button" class="gt-replay" data-gt="story">重看開場故事</button>・${typeof BUILD!=='undefined'?BUILD:'v3.20'}</div></form>`;
   g.onclick=e=>{const b=e.target.closest('[data-gt]');if(!b)return;const k=b.dataset.gt;snd('ui_click');
-    if(k==='guest'){gateClose();if(!S.introSeen)setTimeout(showStory,350);return}
+    if(k==='guest'){if(!S.introSeen)return showStory();gateClose();return}
     if(k==='story'){return showStory()}
     if(k==='login'||k==='signup'){const em=(g.querySelector('#gtMail').value||'').trim(),pw=g.querySelector('#gtPw').value||'',msg=g.querySelector('.gt-msg');
       const say=(t,bad)=>{if(msg){msg.textContent=t;msg.className='gt-msg'+(bad?' bad':'')}};
@@ -2976,6 +2977,7 @@ const TUT=[
  // 五、其他系統
  {t:'鐵匠鋪的<b>工坊升級</b>：熔爐越高能打越高階的材質，鐵砧越高品質越好。<b>學徒</b>可以同時鍛造多把，<b>熔解</b>能把不要的武器換回材料。',go:()=>{ui.sheet=null;ui.tab='forge';scrollTo(0,0)},sel:()=>'.hf-bar',ok:'知道了'},
  {t:'缺材料時到<b>商城</b>：旅行商人用金幣賣一階材料；鑽石可以買防爆卷、祝福石和加速道具。',go:()=>{ui.sheet=null;ui.tab='shop';scrollTo(0,0)},sel:()=>'.nav [data-act=tab][data-k=shop]',ok:'知道了'},
+ {t:'封測期間<b>北境月卡免費</b>！按「<b>免費領取</b>」立刻拿 <b>300 鑽石</b>，之後 30 天每天回來還能再領 50 鑽。',go:()=>{ui.sheet=null;ui.result=null;ui.tab='shop';scrollTo(0,0)},sel:()=>ui.result?'.modal-card [data-act=rclose]':ui.tab!=='shop'?'.nav [data-act=tab][data-k=shop]':monthlyOn()?null:'[data-act=monthly]',done:()=>monthlyOn()},
  {t:'村莊頁的<b>委託成就</b>可以免費領防爆卷和祝福石；<b>排行榜</b>比你交給每座村莊最強的武器，衝進前 10 名有獎勵。',go:()=>{ui.sheet=null;ui.tab='village';scrollTo(0,0)},sel:()=>'.vbar',ok:'知道了'},
  {go:()=>{ui.sheet=null;ui.tab='forge';scrollTo(0,0)},t:'基本就是這樣：<b>鍛造 → 交付 → 收成 → 強化 → 附魔</b>，一路收復九界！送你 <b>防爆卷 ×1、祝福石 ×1</b> 當開工禮。',sel:()=>null,ok:'開始冒險',end:1}];
 // 各系統第一次打開時的說明（導覽結束後才會出現，每個只出現一次）
