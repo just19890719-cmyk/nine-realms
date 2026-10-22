@@ -50,10 +50,10 @@ function levelCheck(){
   // v3.76 第二界：龍鱗／神器＋重鍊 5 級，每關找出最低品質和強化等級（安全標準：史詩以下 +8 內、或傳說 +6 內）
   const r2=[];let ok2=true;
   for(let i=10;i<VILLAGES.length;i++){const v=VILLAGES[i];let best=null;
-    for(let q=0;q<5&&!(best&&best.good);q++)for(const b of BPS.filter(b=>b.cat===v.cat&&b.t>=2&&(b.t<3||q>=2)))for(let lv=0;lv<=15;lv++){
+    for(let q=0;q<5&&!(best&&best.good);q++)for(const b of BPS.filter(b=>b.cat===v.cat&&b.t>=2&&b.unlock<=i&&(b.t<3||q>=2)))for(let lv=0;lv<=15;lv++){
       if(Math.round(b.base*TIERS[b.t].mult*QUAL[q].m*enhMult(lv)*(1+RF_PER*RF_MAX))>=v.req){const good=q<=3?lv<=8:lv<=6;if(!best||(good&&!best.good)||(good===best.good&&lv<best.lv))best={b,q,lv,good};break}}
     const good=best&&best.good;ok2=ok2&&good;r2.push(`${vNo(i)} ${v.req}：${best?`${QUAL[best.q].n}${best.b.n}+${best.lv}`:'無'}${good?'':'（太難）'}`)}
-  res.push(T('A12 第二界每關都打得過（龍鱗／神器＋重鍊 Lv5）',ok2,r2.join('；')));
+  res.push(T('A12 第二界每關都打得過（龍鱗／神器／巨人＋重鍊 Lv5）',ok2,r2.join('；')));
   res.push(T('A11 材料來源與解鎖順序（無循環、無無法取得素材）',!bad.length,bad.length?bad.join('；'):'所有圖紙在解鎖時，材料都已有來源'));
   return{res,rows};
 }

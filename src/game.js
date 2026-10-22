@@ -3,7 +3,8 @@
 const VERSION=3;
 const ART_V='?v=3';  // 武器顯示圖改過透明度：加版本號，避免瀏覽器沿用舊快取
 // v3.76 第二界的 AI 圖還沒到：先借第一界的圖顯示，圖到了刪掉對應那一項就好
-const ART_WAIT={v11:'v8',v12:'v3',v13:'v6',v14:'v7',v15:'v5',v16:'v7',v17:'v4',v18:'v8',v19:'v9',v20:'v10',mat_giantbone:'mat_fang',mat_permafrost:'mat_icecore',mat_thunderiron:'mat_iron',mat_elderroot:'mat_oak',ic_reforge:'nav_forge'};
+const ART_WAIT={t4_axe:'m_fenrir',t4_axe_disp:'m_fenrir_disp',t4_sword:'m_firegiant',t4_sword_disp:'m_firegiant_disp',t4_bow:'m_iceraven',t4_bow_disp:'m_iceraven_disp',t4_crossbow:'t3_crossbow',t4_crossbow_disp:'t3_crossbow_disp',
+  t4_hammer:'m_frostgiant',t4_hammer_disp:'m_frostgiant_disp',t4_polearm:'m_nidhogg',t4_polearm_disp:'m_nidhogg_disp',t4_dagger:'t3_dagger',t4_dagger_disp:'t3_dagger_disp',t4_shield:'t3_shield',t4_shield_disp:'t3_shield_disp',};
 const A=n=>(n=ART_WAIT[n]||n,(typeof UI_ART!=='undefined'&&UI_ART[n])||'art/'+n+'.webp'+(n.endsWith('_disp')?ART_V:''));  // UI_ART（skin.js）可把既有圖示換成新素材路徑；預設空白＝不變
 const MATS={iron:'鐵礦',oak:'橡木',leather:'皮革',silver:'霜銀',fang:'狼牙',scale:'龍鱗',rune:'符文石',shard:'符文碎片',fur:'魔狼黑毛',icecore:'霜巨人冰核',fireheart:'火巨人焰心',serpent:'海蛇鱗',giantbone:'巨人骨',permafrost:'永凍霜晶',thunderiron:'雷鳴鐵',elderroot:'世界樹古根'};
 const MATART={iron:'mat_iron',oak:'mat_oak',leather:'mat_leather',silver:'mat_silver',fang:'mat_fang',scale:'mat_scale',rune:'mat_rune',shard:'mat_shard',fur:'mat_fur',icecore:'mat_icecore',fireheart:'mat_fireheart',serpent:'mat_serpent',giantbone:'mat_giantbone',permafrost:'mat_permafrost',thunderiron:'mat_thunderiron',elderroot:'mat_elderroot'};
@@ -13,7 +14,8 @@ const TIERS=[
   {n:'鐵製',mult:1,stable:6,sec:6,gold:10,furnace:1,unlock:0,slag:1},
   {n:'霜銀',mult:2.5,stable:5,sec:30,gold:60,furnace:2,unlock:4,slag:4},
   {n:'龍鱗',mult:6,stable:3,sec:90,gold:250,furnace:4,unlock:7,slag:10},
-  {n:'神器',mult:11,stable:0,sec:240,gold:800,furnace:5,unlock:8,slag:25}
+  {n:'神器',mult:11,stable:0,sec:240,gold:800,furnace:5,unlock:8,slag:25},
+  {n:'巨人',mult:16,stable:0,sec:600,gold:2500,furnace:6,unlock:13,slag:40}   // v3.76 第五階：收復 2-3、熔爐 Lv6
 ];
 const BPS=[
  ['t1_woodaxe','伐木斧','axe',0,14,0],['t1_handaxe','手斧','axe',0,12,0],
@@ -31,8 +33,10 @@ const BPS=[
  ['m_firegiant','火巨人焰劍','sword',3,15,9,{fireheart:3,scale:3,rune:2},['flame',20]],
  ['m_nidhogg','尼德霍格龍矛','polearm',3,14,8,{scale:5,rune:3,fur:1},['dragon',35]],
  ['m_iceraven','冰鴉長弓','bow',3,12,8,{icecore:2,fang:6,rune:2},['frost',20]],
- ['m_serpent','海蛇三叉戟','polearm',3,13,8,{serpent:3,silver:4,rune:2},['loot',30]]
-].map(([id,n,cat,t,base,unlock,r,inn])=>({id,n,cat,t,base,unlock:unlock??TIERS[t].unlock,r,inn}));
+ ['m_serpent','海蛇三叉戟','polearm',3,13,8,{serpent:3,silver:4,rune:2},['loot',30]],
+ ['t4_axe','霜巨人戰斧','axe',4,16,13,null,['giant',20]],['t4_sword','巨人王劍','sword',4,15],['t4_bow','風暴巨弓','bow',4,12],['t4_crossbow','雷鳴攻城弩','crossbow',4,14],
+ ['t4_hammer','熔岩巨錘','hammer',4,17],['t4_polearm','狂風巨戟','polearm',4,14],['t4_dagger','霜晶獠刃','dagger',4,11],['t4_shield','巨骨塔盾','shield',4,12]
+].map(([id,n,cat,t,base,unlock,r,inn])=>({id,n,cat,t,base,unlock:unlock??TIERS[t].unlock,r:r||undefined,inn}));
 const BP=Object.fromEntries(BPS.map(b=>[b.id,b]));
 // v3.20 同階同類只保留一把圖紙；移除的圖紙在存檔裡自動換成保留的那把
 const BP_ALIAS={t1_handaxe:'t1_woodaxe',t1_shortspear:'t1_farmspear',t2_daneaxe:'t2_wolfaxe',t2_broadsword:'t2_longsword',t2_warspear:'t2_glaive',t2_seax:'t2_twindagger',t3_doubleaxe:'t3_greataxe',t3_saber:'t3_greatsword',t3_spear:'t3_halberd',t3_scythe:'t3_halberd'};
@@ -40,7 +44,7 @@ for(const k in BP_ALIAS){const i=BPS.findIndex(b=>b.id===k);if(i>=0)BPS.splice(i
 const bpId=id=>BP_ALIAS[id]||id;
 const goldOf=b=>TIERS[b.t].gold;
 function recipe(b){if(b.r)return b.r;if(b.t===0){const sec={axe:'oak',polearm:'oak',bow:'oak',crossbow:'oak',throw:'leather',tool:'oak',sword:'leather',dagger:'leather',shield:'oak',hammer:'iron'}[b.cat];return add({iron:3},{[sec]:2})}
-  if(b.t===1)return{silver:3,fang:2,iron:2};return{scale:2,rune:2,silver:2}}
+  if(b.t===1)return{silver:3,fang:2,iron:2};if(b.t===4)return{giantbone:3,permafrost:2,thunderiron:2,rune:2};return{scale:2,rune:2,silver:2}}
 const QUAL=[{n:'普通',m:1},{n:'精良',m:1.2},{n:'稀有',m:1.45},{n:'史詩',m:1.8},{n:'傳說',m:2.3}];
 // 品質權重用整數（千分比），每級鐵砧位移加總為 0，總和恆為 1000
 const QW=[550,280,120,40,10],QSHIFT=[-70,30,25,11,4];
@@ -87,14 +91,14 @@ const VILLAGES=[
  {name:'冰川裂谷',who:'遠征軍・獵兵隊',cat:'bow',req:280,sec:4200,gold:1250,danger:.16,tag:'beast',drops:[['permafrost',.4,1,1],['fang',.6,1,2],['icecore',.15,1,1]],txt:'冰川狼群在裂谷邊緣出沒，獵兵要能遠射的長弓。'},
  {name:'雷鳴峽谷',who:'遠征軍・弩兵團',cat:'crossbow',req:320,sec:4800,gold:1400,danger:.17,tag:'beast',drops:[['thunderiron',.35,1,1],['scale',.4,1,1],['rune',.35,1,1]],txt:'雷鳴巨鷹盤旋在峽谷上空，弩兵團要射得穿風暴的重弩。'},
  {name:'巨骨墓場',who:'遠征軍・重裝隊',cat:'hammer',req:380,sec:5400,gold:1550,danger:.17,tag:'giant',drops:[['giantbone',.5,1,2],['rune',.4,1,1],['shard',.5,1,2]],txt:'古代巨人的骸骨站起來了，得用戰錘把它們砸回土裡。'},
- {name:'永凍湖',who:'湖畔漁村・守衛',cat:'shield',req:340,sec:6000,gold:1700,danger:.18,tag:'beast',drops:[['permafrost',.5,1,2],['icecore',.2,1,1],['serpent',.15,1,1]],txt:'冰湖巨蛇撞破湖面，漁村守衛需要擋得住冰刺的盾。'},
- {name:'霜晶礦坑',who:'礦工公會・護衛',cat:'dagger',req:320,sec:6000,gold:1800,danger:.18,tag:'beast',drops:[['permafrost',.45,1,1],['thunderiron',.35,1,1]],txt:'礦坑深處的霜晶潛獸躲在窄道裡，只有短刃施展得開。'},
- {name:'狂風高原',who:'遠征軍・長槍陣',cat:'polearm',req:520,sec:6600,gold:2000,danger:.19,tag:'giant',drops:[['thunderiron',.45,1,1],['giantbone',.45,1,1]],txt:'風暴巨人在暴風雪裡行軍，長槍陣要能刺穿巨人的長柄武器。'},
- {name:'冰巨人王庭',who:'遠征軍・王家騎士',cat:'sword',req:620,sec:7200,gold:2300,danger:.2,tag:'giant',drops:[['elderroot',.25,1,1],['icecore',.25,1,1]],txt:'冰巨人王衛守著王座大廳，騎士們要最鋒利的劍。'},
- {name:'熔岩裂口',who:'遠征軍・攻城隊',cat:'hammer',req:740,sec:7200,gold:2600,danger:.2,tag:'giant',drops:[['elderroot',.3,1,1],['fireheart',.2,1,1],['thunderiron',.45,1,1]],txt:'火巨人戰將越過熔岩裂口，攻城隊要砸得碎熔岩盔甲的戰錘。'},
- {name:'烏特加德城',who:'遠征軍・總指揮',cat:'axe',req:880,sec:7200,gold:3000,danger:.2,tag:'giant',need:'giant',drops:[['elderroot',.35,1,1],['giantbone',.5,1,2],['rune',.4,1,1]],txt:'巨人之王烏特加德洛基坐鎮城中。斧頭必須帶有「剋巨人」。'}
+ {name:'永凍湖',who:'湖畔漁村・守衛',cat:'shield',req:360,sec:6000,gold:1700,danger:.18,tag:'beast',drops:[['permafrost',.5,1,2],['icecore',.2,1,1],['serpent',.15,1,1]],txt:'冰湖巨蛇撞破湖面，漁村守衛需要擋得住冰刺的盾。'},
+ {name:'霜晶礦坑',who:'礦工公會・護衛',cat:'dagger',req:360,sec:6000,gold:1800,danger:.18,tag:'beast',drops:[['permafrost',.45,1,1],['thunderiron',.35,1,1]],txt:'礦坑深處的霜晶潛獸躲在窄道裡，只有短刃施展得開。'},
+ {name:'狂風高原',who:'遠征軍・長槍陣',cat:'polearm',req:600,sec:6600,gold:2000,danger:.19,tag:'giant',drops:[['thunderiron',.45,1,1],['giantbone',.45,1,1]],txt:'風暴巨人在暴風雪裡行軍，長槍陣要能刺穿巨人的長柄武器。'},
+ {name:'冰巨人王庭',who:'遠征軍・王家騎士',cat:'sword',req:720,sec:7200,gold:2300,danger:.2,tag:'giant',drops:[['elderroot',.25,1,1],['icecore',.25,1,1]],txt:'冰巨人王衛守著王座大廳，騎士們要最鋒利的劍。'},
+ {name:'熔岩裂口',who:'遠征軍・攻城隊',cat:'hammer',req:860,sec:7200,gold:2600,danger:.2,tag:'giant',drops:[['elderroot',.3,1,1],['fireheart',.2,1,1],['thunderiron',.45,1,1]],txt:'火巨人戰將越過熔岩裂口，攻城隊要砸得碎熔岩盔甲的戰錘。'},
+ {name:'烏特加德城',who:'遠征軍・總指揮',cat:'axe',req:1000,sec:7200,gold:3000,danger:.2,tag:'giant',need:'giant',drops:[['elderroot',.35,1,1],['giantbone',.5,1,2],['rune',.4,1,1]],txt:'巨人之王烏特加德洛基坐鎮城中。斧頭必須帶有「剋巨人」。'}
 ];
-const REALM_N=[['米德加德','人類之境','v4'],['約頓海姆','巨人之境','v14']];   // [名稱, 副標, 背景圖]
+const REALM_N=[['米德加德','人類之境','v4'],['約頓海姆','巨人之境','v20']];   // [名稱, 副標, 背景圖]
 const vRealm=i=>i<10?0:1,vNo=i=>(vRealm(i)+1)+'-'+(i%10+1);   // 關卡編號：0→1-1，10→2-1
 // v3.76 巨人體重鍊：龍鱗／神器武器每級戰力 +12%（加法，滿 5 級 ×1.6），一定成功、不會爆，不影響強化成功率
 const RF_MAX=5,RF_PER=.12;
@@ -102,7 +106,7 @@ const RF_COST=[null,[{giantbone:2},5000],[{giantbone:3,permafrost:2},8000],[{gia
 const rfOk=w=>bpOf(w).t>=2;
 const rfOpen=()=>S.villages.length>10&&S.villages[10].status!=='locked';
 const TAGN={labor:'勞務',beast:'野獸',giant:'巨人',dragon:'龍族'};
-const FURNACE_COST=[0,3000,6000,15000,40000],ANVIL_COST=[0,2000,8000,25000,50000],SLOT_COST=[0,3000,15000,40000];
+const FURNACE_COST=[0,3000,6000,15000,40000,150000],ANVIL_COST=[0,2000,8000,25000,50000],SLOT_COST=[0,3000,15000,40000];
 const SHOP_MATS=[['iron',8],['oak',6],['leather',10]];
 const SELL_PRICE={iron:1,oak:1,leather:1}; // 商人收購價，低於售價，不能套利
 const SLAG_SHOP=[['iron',4,3],['silver',1,10],['shard',1,25]]; // [材料, 數量, 殘渣成本]
@@ -122,7 +126,7 @@ const ACH=[
   {id:'f50',n:'鍛造 50 把武器',g:'f',ic:'nav_forge',p:()=>[S.stats.forged.reduce((a,b)=>a+b,0),50],test:()=>S.stats.forged.reduce((a,b)=>a+b,0)>=50,r:{bless:1,shard:3}}
 ];
 // v3.71 鐵匠聲望與天賦（不封頂長線養成）：收成、鍛造、強化成功、收復村莊、熔解都累積聲望；每升 1 級得 1 天賦點和聲望寶箱，等級沒有上限
-const REP_XP={harvest:1,forge:[1,3,8,20],first:50,melt:1};   // 強化成功：經驗＝強化後等級
+const REP_XP={harvest:1,forge:[1,3,8,20,40],first:50,melt:1};   // 強化成功：經驗＝強化後等級
 const repNeed=l=>Math.round(30*Math.pow(l,1.4));   // Lv.l 升到 Lv.l+1 需要的經驗
 const TALENTS={
   forge:{n:'熟練鍛造',ic:'nav_forge',per:1,max:30,l:'鍛造時間',sg:'−'},
@@ -570,7 +574,7 @@ function enhCost(w){return Math.round(ENH_COST[Math.min(14,w.lv)]*TIERS[bpOf(w).
 function enchCost(w,directed){return 40*TIERS[bpOf(w).t].mult*(directed?3:1)}
 function qualWeights(useBp,t){if(useBp)return[0,0,0,0,1000];const s=S.anvil-1;const q=QW.map((x,i)=>x+QSHIFT[i]*s);
   const x=Math.round(tal('qual')*10);if(x){q[0]-=x;q[1]+=x*.6;q[2]+=x*.3;q[3]+=x*.1}   // 天賦「巨匠之手」：普通的權重移給精良以上，總和不變
-  if(t===3){q[0]=0;q[1]=0}return q}
+  if(t>=3){q[0]=0;q[1]=0}return q}
 const forgeSec=b=>TIERS[b.t].sec*(1-.1*(S.furnace-1))*(1-tal('forge')/100);
 const hasMats=c=>Object.entries(c).every(([k,n])=>S.mats[k]>=n);
 // v3.59 列出缺少的材料／金幣（鍛造按鈕、提示共用）
@@ -579,7 +583,7 @@ const lackList=(need,g)=>{const hv=k=>DEV_LACK>Date.now()?0:S.mats[k]||0;const l
 const lackStr=l=>l.map(([k,n])=>(k==='gold'?'金幣':MATS[k])+' ×'+fmt(n)).join('、');
 const monthlyOn=()=>S.monthly.until>NOW();
 const slotOpen=s=>S.anvil>=SLOT_ANVIL[s];
-function bpLock(b){if(cleared()<b.unlock)return'收復 1-'+b.unlock+' 解鎖';if(S.furnace<TIERS[b.t].furnace)return'熔爐 Lv'+TIERS[b.t].furnace;return''}
+function bpLock(b){if(cleared()<b.unlock)return'收復 '+vNo(b.unlock-1)+' 解鎖';if(S.furnace<TIERS[b.t].furnace)return'熔爐 Lv'+TIERS[b.t].furnace;return''}
 const bulkOn=()=>cleared()>=5;
 function dropChance(i,w,d,strat){const st=STRATS[strat];const loot=w?Math.min(CAP.loot,affixVal(w,'loot'))/100:0;const rare=d[1]<RARE_P;
   let p=d[1]*(1+loot)*(rare?st.rare*(1+(w?Math.min(CAP.treasure,traitVal(w,'treasure')):0)/100)*(1+tal('rare')/100):st.common*(1+tal('mats')/100));return Math.min(rare?.6:1,p)}
@@ -750,7 +754,7 @@ function showLevel(){const c=cleared(),lv=smithLv();
   const nb=BPS.filter(b=>b.unlock===c+1),nx=VILLAGES[c],nt=TIERS.find(t=>t.furnace>S.furnace);
   const next=[nx?`收復 ${vNo(c)} ${nx.name}${nb.length?`：解鎖 ${nb.length} 張新圖紙`:''}`:'',c<5?`收復 5 座村莊：開放批量鍛造`:'',nt?`熔爐升到 Lv${nt.furnace}：可鍛造${nt.n}武器`:'',S.anvil<5?`升級鐵砧：開放更多附魔欄`:'',repPts()?`你有 ${repPts()} 個天賦點還沒分配（鐵匠鋪 →「鐵匠天賦」）`:''].filter(Boolean);
   ui.result={t:'info',icon:'ui_player_emblem',title:`鐵匠等級 Lv.${lv}`,html:`${AUTH?`<div class="kv nick-row"><span>暱稱</span><b>${S.nick||'（尚未取名）'} <button class="ui-btn ui-btn--chip chipbtn" data-act="rename">改名</button></b></div>`:''}<div class="small muted">等級代表你的整體進度。收復村莊、升級熔爐、鐵砧、附魔欄，每一項都會讓等級 +1。</div>
-   <div class="lv-rows">${row('收復村莊',c,VILLAGES.length)}${row('熔爐','Lv'+S.furnace,'Lv5')}${row('鐵砧','Lv'+S.anvil,'Lv5')}${row('附魔欄',S.slots,4)}${row('鐵匠聲望','Lv.'+S.rep.lv,'不封頂')}</div>
+   <div class="lv-rows">${row('收復村莊',c,VILLAGES.length)}${row('熔爐','Lv'+S.furnace,'Lv'+furnaceMax())}${row('鐵砧','Lv'+S.anvil,'Lv5')}${row('附魔欄',S.slots,4)}${row('鐵匠聲望','Lv.'+S.rep.lv,'不封頂')}</div>
    <div class="label">下一步可以做</div><ul class="lv-next">${next.map(t=>`<li>${t}</li>`).join('')}</ul>`};render()}
 const smithLv=()=>1+cleared()+(S.furnace-1)+(S.anvil-1)+(S.slots-1);
 const queuedQty=()=>S.jobs.reduce((a,j)=>a+(j.qty||1),0);
@@ -812,7 +816,8 @@ function mqUpdate(k){const row=document.querySelector(`.mrow[data-mk="${k}"]`),s
   [['.mr-buy',b.buy,b.buyDis],['.mr-sell',b.sell,b.sellDis]].forEach(([sel,h,dis])=>{const e=row.querySelector(sel);if(!e)return;e.innerHTML=h;e.dataset.n=b.q;e.disabled=dis})}
 function buyMat(k,p,n){if(S.gold<p*n)return toast('金幣不夠。','bad');S.gold-=p*n;S.mats[k]+=n;snd('ui_buy');toast(`買入 ${MATS[k]} ×${n}`);save();render()}
 function sellMat(k,n){n=Math.min(n,S.mats[k]);if(!n||!SELL_PRICE[k])return toast('沒有可賣的'+MATS[k]+'。');S.mats[k]-=n;S.gold+=n*SELL_PRICE[k];snd('coin');toast(`賣出 ${MATS[k]} ×${n}，得到 ${n*SELL_PRICE[k]} 金`);save();render()}
-function upgrade(kind){const lv=S[kind],tbl=kind==='furnace'?FURNACE_COST:ANVIL_COST;if(lv>=5)return;const c=tbl[lv];if(S.gold<c)return toast('金幣不夠。','bad');
+const furnaceMax=()=>rfOpen()?6:5;   // v3.76 熔爐 Lv6（巨人武器）在第二界開放後才能升
+function upgrade(kind){const lv=S[kind],tbl=kind==='furnace'?FURNACE_COST:ANVIL_COST;if(lv>=(kind==='furnace'?furnaceMax():5))return;const c=tbl[lv];if(S.gold<c)return toast('金幣不夠。','bad');
   S.gold-=c;S[kind]++;snd('upgrade');toast((kind==='furnace'?'熔爐':'鐵砧')+' 升到 Lv'+S[kind]+(kind==='anvil'&&(S.anvil===3||S.anvil===5)?'，開放新的附魔欄位':''),'ok');save();render()}
 function hire(){if(S.slots>=4)return;const c=SLOT_COST[S.slots];if(S.gold<c)return toast('金幣不夠。','bad');S.gold-=c;S.slots++;snd('upgrade');toast('新學徒報到，可同時鍛造 '+S.slots+' 批。','ok');save();render()}
 function buyItem(k,n){if(!spendGems(n))return;S.items[k]++;snd('ui_buy');toast('獲得 '+ITEMS[k][0],'ok');save();render()}
@@ -839,6 +844,7 @@ const vfxSrc=(v,i)=>A(`vfx16_${v.set}_${String(i).padStart(2,'0')}`);
 const FX_START=.03,FX_END=.97,peakAt=v=>FX_START+(v.peak-.5)*(FX_END-FX_START)/v.N;
 // 統一武器顯示元件：武器圖已裁到實際可見範圍；有品質框時用逐把計算的比例（離框 10%、四角花飾額外避讓、離卡片外緣 10%），武器與框是獨立圖層
 const WFIT={"t1_woodaxe":0.615,"t1_huntbow":0.595,"t1_huntknife":0.61,"t1_farmspear":0.615,"t1_ironsword":0.605,"t1_roundshield":0.635,"t1_ironhammer":0.635,"t1_handaxe":0.645,"t1_shortspear":0.615,"t1_sling":0.625,"t1_crossbow":0.63,"t1_pickaxe":0.605,"t2_wolfaxe":0.62,"t2_longsword":0.59,"t2_daneaxe":0.595,"t2_longbow":0.595,"t2_warspear":0.615,"t2_twindagger":0.61,"t2_broadsword":0.585,"t2_warhammer":0.615,"t2_glaive":0.615,"t2_throwaxe":0.635,"t2_seax":0.625,"t2_kiteshield":0.575,"t3_greataxe":0.595,"t3_greatsword":0.565,"t3_bow":0.595,"t3_spear":0.615,"t3_hammer":0.64,"t3_dagger":0.59,"t3_halberd":0.615,"t3_saber":0.62,"t3_crossbow":0.625,"t3_shield":0.565,"t3_doubleaxe":0.57,"t3_scythe":0.605,"m_fenrir":0.605,"m_frostgiant":0.575,"m_firegiant":0.565,"m_nidhogg":0.615,"m_iceraven":0.595,"m_serpent":0.62,"t2_crossbow":0.66};
+for(const k in ART_WAIT)if(k.endsWith('_disp')){const id=k.slice(0,-5),src=ART_WAIT[k].slice(0,-5);if(WFIT[id]==null&&WFIT[src]!=null)WFIT[id]=WFIT[src]}   // v3.76 借圖的武器沿用原圖的安全距離
 // 2026-10-20 已換成單張重新生成的完整圖（原本柄尾被截斷的 10 把）
 const WREGEN=['t1_farmspear','t1_shortspear','t2_warspear','t2_glaive','t3_spear','t3_halberd','t3_crossbow','t3_scythe','m_nidhogg','m_serpent'];
 // 開發工具：一次產生指定武器的測試版（品質、等級可輪替），並切到武器庫只看測試武器
@@ -1199,7 +1205,7 @@ let NAV_H='';function renderNav(){const N=document.getElementById('nav'),h=TABS.
 
 /* ---------- 鐵匠鋪 ---------- */
 function commissionCard(){const i=S.villages.findIndex(v=>v.status==='open');
-  if(i<0)return `<div class="ui-card comm">${ptitle('目前委託')}<div class="small center">米德加德已全部收復</div></div>`;
+  if(i<0)return `<div class="ui-card comm">${ptitle('目前委託')}<div class="small center">所有村莊都已收復</div></div>`;
   const v=VILLAGES[i],best=S.weapons.filter(w=>bpOf(w).cat===v.cat).reduce((m,w)=>Math.max(m,power(w)),0);
   return `<div class="ui-card comm">${ptitle('目前委託')}<div class="comm-in">${img('v'+(i+1),'comm-img')}<div><b>${vNo(i)} ${v.name}</b><div class="small muted">${CATS[v.cat]}類・戰力 ${v.req}${v.need?'＋'+AFFIX[v.need].n:''}</div></div></div>
    <div class="ui-prog prog sm"><i style="width:${Math.min(100,best/v.req*100)}%"></i></div><div class="small muted">最強${CATS[v.cat]} ${best}/${v.req}</div>
@@ -1273,8 +1279,8 @@ function sheetWorkshop(kind){
   if(kind==='m'){const l=cheapList();return head('熔解回收')+`<div class="ui-panel panel"><div class="small">一鍵熔解只會處理：+0、普通或精良、沒有先天特性、沒有收藏、閒置中的武器。</div>
     <div class="kv"><span>符合條件</span><b>${l.length} 把</b></div>${btn(l.length?`熔解 ${l.length} 把`:'沒有可熔解的武器','meltCheap',{cls:'btn-danger',dis:!l.length})}
     <div class="small muted">熔解可回收 30% 材料、一半鍛造金幣，25% 機率得到符文碎片。單把熔解請到武器詳細頁。</div></div>`}
-  return head('工坊升級')+`<div class="ui-panel panel"><div class="row">${img('nav_forge','big-ico')}<div class="grow"><b>熔爐 Lv${S.furnace}</b><div class="small muted">Lv2 霜銀、Lv4 龍鱗、Lv5 神器；每級鍛造時間 −10%</div></div></div>
-    ${S.furnace<5?btn(`升級熔爐（${fmt(FURNACE_COST[S.furnace])} 金）`,'up',{cls:'btn-primary',attrs:'data-k="furnace"',dis:S.gold<FURNACE_COST[S.furnace]}):'<div class="small t-ok">已滿級</div>'}</div>
+  return head('工坊升級')+`<div class="ui-panel panel"><div class="row">${img('nav_forge','big-ico')}<div class="grow"><b>熔爐 Lv${S.furnace}</b><div class="small muted">Lv2 霜銀、Lv4 龍鱗、Lv5 神器${rfOpen()?'、Lv6 巨人':''}；每級鍛造時間 −10%</div></div></div>
+    ${S.furnace<furnaceMax()?btn(`升級熔爐（${fmt(FURNACE_COST[S.furnace])} 金）`,'up',{cls:'btn-primary',attrs:'data-k="furnace"',dis:S.gold<FURNACE_COST[S.furnace]}):'<div class="small t-ok">已滿級</div>'}</div>
    <div class="ui-panel panel"><div class="row">${img('nav_armory','big-ico')}<div class="grow"><b>鐵砧 Lv${S.anvil}</b><div class="small muted">提高高品質機率；Lv3 開附魔第 3 格、Lv5 開第 4 格</div></div></div>
     <div class="qbar">${qualWeights(false,0).map((x,i)=>`<span class="q${i}" style="flex:1">${QUAL[i].n}<br>${x/10}%</span>`).join('')}</div>
     ${S.anvil<5?btn(`升級鐵砧（${fmt(ANVIL_COST[S.anvil])} 金）`,'up',{cls:'btn-primary',attrs:'data-k="anvil"',dis:S.gold<ANVIL_COST[S.anvil]}):'<div class="small t-ok">已滿級</div>'}</div>`;
@@ -1473,7 +1479,7 @@ function vState(i){const st=S.villages[i];if(st.status==='locked')return['locked
   if(st.weaponId==null)return st.bank.cycles?['ready','可收成']:['pause','暫停・無武器'];const w=W(st.weaponId);if(w&&st.bank.cycles>=capCycles(i,w))return['full','倉庫滿'];if(st.bank.cycles)return['ready','可收成'];return['hunt','狩獵中']}
 /* v3.73 村莊怪物血條：狩獵一輪＝打倒一隻怪物（純畫面效果，狩獵時間與收成都不變） */
 const MONS=['枯木樹精','獠牙野豬','灰狼','霜狼','冰鴉','海蛇','雪怪','霜巨人','火巨人斥候','尼德霍格','霜巨人哨兵','冰川狼王','雷鳴巨鷹','骸骨巨人','冰湖巨蛇','霜晶潛獸','風暴巨人','冰巨人王衛','火巨人戰將','烏特加德洛基'];
-const MON_ART=[0,1,2,3,4,5,6,7,8,9];   // 已有 AI 怪物圖的關卡（0 起算，圖在 art/mon_N.webp）；沒圖的先用村莊圖
+const MON_ART=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19];   // 已有 AI 怪物圖的關卡（0 起算，圖在 art/mon_N.webp）；沒圖的先用村莊圖
 const MONFX={kills:{},next:{}};
 function vMon(i,k){const art=MON_ART.includes(i);return `<div class="vmon ${k} ${art?'has-art':''}" data-mon="${i}">${art?img('mon_'+(i+1),'vthumb vmon-m',MONS[i]):img('v'+(i+1),'vthumb vmon-bg')}</div>`}
 function monPop(el,kind,txt){el.classList.remove('hit','kill');void el.offsetWidth;el.classList.add(kind);
@@ -1681,7 +1687,7 @@ function sheetDev(){
      <div class="label">材料與道具</div><div class="devgrid">${B('t1','一階材料 +30')}${B('t2','霜銀、狼牙 +20')}${B('t3','龍鱗、符文石 +10')}${B('mon','怪物素材各 +5')}${B('shard','符文碎片 +10')}${B('items','防爆卷、祝福石 +5')}${B('bp','傳說圖紙 +1')}</div>
      <div class="label">v3.71 鐵匠聲望／天賦</div><div class="devgrid">${B('rep1','聲望升 1 級')}${B('rep10','聲望升 10 級')}${B('represet','天賦點全部退回')}${B('repzero','聲望歸零（Lv.1）')}${B('repopen','打開鐵匠天賦')}</div>
      <div class="label">v3.72 每週活動（目前：${EVT_FORCE?'強制':'依日期'}${evtNow().k==='double'?'雙倍收成':'首領討伐'}・${evtNow().boss.n}）</div><div class="devgrid">${B('evtdbl','強制雙倍收成')}${B('evtboss','強制首領討伐')}${B('evtoff','依日期（取消強制）')}${B('evtnext','換下一隻首領')}${B('evthits','今天挑戰次數重置')}${B('evtdmg','我的傷害 +5,000（只改顯示）')}${B('evtreset','本週首領進度清空')}${B('evtgdead','模擬全服打倒首領')}${B('evtgalive','模擬全服血量剩 45%')}${B('evtgrank','模擬上週排名第 2')}</div>
-     <div class="label">v3.76 第二界約頓海姆／巨人體重鍊（目前：${rfOpen()?'已開放':'未開放'}・收復 ${cleared()}/${VILLAGES.length}）</div><div class="devgrid">${B('r2open','開放第二界（收復 1-1～1-10）')}${B('r2mats','第二界材料各 +30、金幣 +20 萬')}${B('r2wpn','送史詩神器斧＋剋巨人（開重鍊頁）')}${B('r2all','第二界全部收復')}${B('r2lock','第二界改回未開放')}</div>
+     <div class="label">v3.76 第二界約頓海姆／巨人體重鍊（目前：${rfOpen()?'已開放':'未開放'}・收復 ${cleared()}/${VILLAGES.length}）</div><div class="devgrid">${B('r2open','開放第二界（收復 1-1～1-10）')}${B('r2mats','第二界材料各 +30、金幣 +20 萬')}${B('r2wpn','送史詩神器斧＋剋巨人（開重鍊頁）')}${B('r2all','第二界全部收復')}${B('r2lock','第二界改回未開放')}${B('r2fur','熔爐升到 Lv6（可鍛造巨人武器）')}${B('r2t4','顯示 8 把巨人武器（測試）')}</div>
      <div class="label">全部武器顯示測試（測試武器：不扣資源、不能交付村莊）</div>
      <div class="small muted">品質</div><div class="row">${[[-1,'輪替'],[0,'普通'],[1,'精良'],[2,'稀有'],[3,'史詩'],[4,'傳說']].map(([v,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devAllQ??-1)===v?'on':''}" data-act="devset" data-k="devAllQ" data-v="${v}">${n}</button>`).join('')}</div>
      <div class="small muted">強化等級</div><div class="row">${[[-1,'輪替'],[0,'+0'],[6,'+6'],[7,'+7'],[10,'+10'],[15,'+15']].map(([v,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devAllLv??-1)===v?'on':''}" data-act="devset" data-k="devAllLv" data-v="${v}">${n}</button>`).join('')}</div>
@@ -1729,6 +1735,8 @@ let forceEvent=-1;
 function devdo(k){if(k.startsWith('r2')){
     if(k==='r2open'||k==='r2all'){S.villages.forEach((st,i)=>{if(i<10||k==='r2all')st.status='cleared'});if(S.villages[10].status==='locked')S.villages[10].status='open';ui.realm=1}
     else if(k==='r2lock'){S.villages.forEach((st,i)=>{if(i>=10){if(st.weaponId!=null)recallCore(i);st.status='locked'}});ui.realm=0}
+    else if(k==='r2fur'){S.furnace=6;S.gold+=0}
+    else if(k==='r2t4')return devAllWeapons(BPS.filter(b=>b.t===4).map(b=>b.id));
     else if(k==='r2mats'){for(const m of ['giantbone','permafrost','thunderiron','elderroot'])S.mats[m]+=30;S.gold+=200000}
     else if(k==='r2wpn'){const w=makeWeapon('m_fenrir',3,6,[]);w.ench[0]={k:'giant',v:30};ui.sheet={t:'w',id:w.id,m:rfOpen()?'rf':'main'};save();render();return toast(rfOpen()?'已送出，這是重鍊頁':'已送出（第二界還沒開放，先按「開放第二界」才看得到重鍊）','ok')}
     save();if(k!=='r2wpn'){ui.sheet=null;ui.tab='village'}render();return toast('完成','ok')}

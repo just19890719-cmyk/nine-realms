@@ -4,6 +4,7 @@
 -- 2) lb_power：戰力算進重鍊（排行榜和首領傷害都用這個）
 -- 3) lb_submit：20 座村莊、重鍊等級要和雲端存檔一樣
 -- 4) market_list：上架的武器重鍊等級要和雲端存檔一樣
+-- 5) 第五階「巨人」武器（t4_）：階級倍率 16、安定值 0；熔爐可以升到 Lv6（150,000 金）
 
 create or replace function public.ac_version() returns text language sql immutable as $$ select '3.76'::text $$;
 grant execute on function public.ac_version() to anon, authenticated;
@@ -12,6 +13,44 @@ grant execute on function public.ac_version() to anon, authenticated;
 create or replace function public.ac_rf_gold(a int, b int) returns float8 language sql immutable as $$
   select coalesce(sum(c), 0)::float8 from (values (1,5000),(2,8000),(3,12000),(4,18000),(5,25000)) x(l, c) where l > greatest(0, a) and l <= least(5, b) $$;
 revoke all on function public.ac_rf_gold(int, int) from public;
+
+-- 第五階「巨人」武器：階級倍率、安定值、工坊升級費用（與遊戲 TIERS、FURNACE_COST 相同）
+create or replace function public.ac_mult(p_b text) returns float8 language sql immutable as $$
+  select case when p_b like 't2\_%' then 2.5 when p_b like 't3\_%' then 6 when p_b like 'm\_%' then 11 when p_b like 't4\_%' then 16 else 1 end::float8 $$;
+create or replace function public.ac_stable(p_b text) returns int language sql immutable as $$
+  select case when p_b like 't2\_%' then 5 when p_b like 't3\_%' then 3 when p_b like 'm\_%' then 0 when p_b like 't4\_%' then 0 else 6 end $$;
+create or replace function public.ac_ws_cost(p_kind text, a int, b int) returns float8 language sql immutable as $$
+  select coalesce(sum(case p_kind when 'furnace' then (array[0,3000,6000,15000,40000,150000])[lv + 1]
+                                  when 'anvil' then (array[0,2000,8000,25000,50000])[lv + 1]
+                                  else (array[0,3000,15000,40000])[lv + 1] end), 0)::float8
+  from generate_series(greatest(1, a), least(case p_kind when 'slots' then 4 when 'furnace' then 6 else 5 end, b) - 1) lv $$;
+revoke all on function public.ac_mult(text) from public;
+revoke all on function public.ac_stable(text) from public;
+revoke all on function public.ac_ws_cost(text,int,int) from public;
+
+create or replace function public.lb_bpid(p_b text) returns text language sql immutable as $$
+  select case p_b when 't1_handaxe' then 't1_woodaxe' when 't1_shortspear' then 't1_farmspear' when 't2_daneaxe' then 't2_wolfaxe'
+    when 't2_broadsword' then 't2_longsword' when 't2_warspear' then 't2_glaive' when 't2_seax' then 't2_twindagger'
+    when 't3_doubleaxe' then 't3_greataxe' when 't3_saber' then 't3_greatsword' when 't3_spear' then 't3_halberd' when 't3_scythe' then 't3_halberd'
+    else p_b end $$;
+
+drop function if exists public.lb_bp(text);
+create or replace function public.lb_bp(p_b text) returns table(base float8, mult float8, cat text, inn_k text, inn_v float8) language sql immutable as $$
+  -- mult：階級倍率（鐵製 1、霜銀 2.5、龍鱗 6、神器 11，與遊戲 TIERS.mult 相同）
+  select x.base::float8, (case when x.id like 't2\_%' then 2.5 when x.id like 't3\_%' then 6 when x.id like 'm\_%' then 11 when x.id like 't4\_%' then 16 else 1 end)::float8, x.cat, x.inn_k, x.inn_v::float8 from (values
+    ('t1_woodaxe',14,'axe',null,0),('t1_farmspear',11,'polearm',null,0),('t1_pickaxe',11,'tool',null,0),('t1_huntbow',10,'bow',null,0),
+    ('t1_sling',7,'throw',null,0),('t1_huntknife',9,'dagger',null,0),('t1_ironsword',12,'sword',null,0),('t1_roundshield',10,'shield',null,0),
+    ('t1_crossbow',13,'crossbow',null,0),('t1_ironhammer',16,'hammer',null,0),
+    ('t2_wolfaxe',15,'axe',null,0),('t2_longsword',13,'sword',null,0),('t2_longbow',11,'bow',null,0),('t2_crossbow',13,'crossbow',null,0),
+    ('t2_glaive',13,'polearm',null,0),('t2_twindagger',10,'dagger',null,0),('t2_warhammer',16,'hammer',null,0),('t2_throwaxe',9,'throw',null,0),
+    ('t2_kiteshield',11,'shield',null,0),
+    ('t3_greataxe',16,'axe',null,0),('t3_greatsword',15,'sword',null,0),('t3_bow',12,'bow',null,0),('t3_crossbow',14,'crossbow',null,0),
+    ('t3_halberd',14,'polearm',null,0),('t3_hammer',17,'hammer',null,0),('t3_dagger',10,'dagger',null,0),('t3_shield',12,'shield',null,0),
+    ('m_fenrir',16,'axe','swift',15),('m_frostgiant',17,'hammer','giant',30),('m_firegiant',15,'sword','flame',20),
+    ('m_nidhogg',14,'polearm','dragon',35),('m_iceraven',12,'bow','frost',20),('m_serpent',13,'polearm','loot',30),
+    ('t4_axe',16,'axe','giant',20),('t4_sword',15,'sword',null,0),('t4_bow',12,'bow',null,0),('t4_crossbow',14,'crossbow',null,0),
+    ('t4_hammer',17,'hammer',null,0),('t4_polearm',14,'polearm',null,0),('t4_dagger',11,'dagger',null,0),('t4_shield',12,'shield',null,0)
+  ) x(id, base, cat, inn_k, inn_v) where x.id = public.lb_bpid(p_b) $$;
 
 create or replace function public.lb_power(w jsonb) returns int language plpgsql immutable set search_path = public as $$
 declare bp record; lv int := coalesce((w->>'lv')::int, 0); qm float8; em float8; rm float8; fl float8; fr float8; rf int := least(5, greatest(0, coalesce((w->>'rf')::int, 0)));
@@ -157,7 +196,7 @@ begin
         end if;
       end if;
     end loop;
-    if coalesce((n->>'furnace')::int, 1) > 5 or coalesce((n->>'anvil')::int, 1) > 5 or coalesce((n->>'slots')::int, 1) > 4
+    if coalesce((n->>'furnace')::int, 1) > 6 or coalesce((n->>'anvil')::int, 1) > 5 or coalesce((n->>'slots')::int, 1) > 4
       then reason := coalesce(reason, 'workshop'); end if;
 
     if o is not null then
