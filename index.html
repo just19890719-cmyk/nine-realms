@@ -1489,7 +1489,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='3.51';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='3.52';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -2967,7 +2967,8 @@ const TUT=[
  {t:'收成會一直累積，<b>離線</b>也照樣狩獵（最多 8 小時）。之後記得常回來收成。',sel:()=>null,ok:'知道了'},
  // 三、重型／輕型
  {t:'回<b>鐵匠鋪</b>再打一把<b>伐木斧</b>，這把拿來練習<b>強化</b>。',sel:()=>ui.result?'.modal-card [data-act=rclose]':ui.sheet?'.sheet [data-act=close]':ui.tab!=='forge'?'.nav [data-act=tab][data-k=forge]':ui.ftab!=='bp'?'[data-act=ftab][data-k=bp]':ui.bp!=='t1_woodaxe'?'[data-act=bp][data-k=t1_woodaxe]':'[data-act=forge]',done:()=>S.jobs.length>0||!!tutW()},
- {t:'打好後會放進武器庫，打開<b>武器庫</b>。',sel:()=>!tutW()?'[data-act=ftab][data-k=queue]':'.nav [data-act=tab][data-k=armory]',done:()=>!!tutW()&&ui.tab==='armory'},
+ {t:'鍛造中…看下方的<b>進度條</b>，打好後會自動放進武器庫。',tf:()=>{const j=S.jobs[0];return j&&!tutW()?`鍛造中…剩 <b>${Math.max(0,Math.ceil((j.end-NOW())/1000))} 秒</b>。看下方的<b>進度條</b>，打好後會自動放進武器庫。`:'打好了！打開<b>武器庫</b>看看這把新的伐木斧。'},
+  sel:()=>{if(!tutW()&&!S.jobs.length&&tutOn()){setTimeout(()=>{if(!tutW()&&!S.jobs.length)tutStep(S.tut-1)},0);return null}return !tutW()?(ui.tab!=='forge'?'.nav [data-act=tab][data-k=forge]':ui.ftab!=='queue'?'[data-act=ftab][data-k=queue]':'.qrow'):'.nav [data-act=tab][data-k=armory]'},done:()=>!!tutW()&&ui.tab==='armory'},
  // 四、強化
  {t:'點這把<b>新的伐木斧</b>打開武器詳情。',sel:()=>ui.tab!=='armory'?'.nav [data-act=tab][data-k=armory]':tutW()?`[data-act=wopen][data-id="${tutW().id}"]`:null,done:()=>ui.sheet&&ui.sheet.t==='w'},
  {t:'這裡看得到武器的<b>戰力、特性、附魔</b>。按「<b>強化</b>」。',sel:()=>ui.sheet&&ui.sheet.t==='w'?'.sheet [data-act=wmode][data-m=enh]':null,done:()=>ui.sheet&&ui.sheet.t==='w'&&ui.sheet.m==='enh'},
@@ -3011,6 +3012,7 @@ function tutDraw(force){let o=document.getElementById('tut');
     o.addEventListener('click',e=>{const b=e.target.closest('[data-tut]');if(!b)return;e.stopPropagation();snd('ui_click');if(b.dataset.tut==='skip'){S.tut=99;save();tutDraw()}else tutStep(S.tut+1)})}
   if(force||o.dataset.k!==String(S.tut)){o.dataset.k=S.tut;o.querySelector('.tut-txt').innerHTML=st.t;
     o.querySelector('.tut-btns').innerHTML=`<span class="small muted">${S.tut+1}／${TUT.length}</span>${st.ok?`<button class="ui-btn ui-btn--primary btn btn-primary sm" data-tut="next">${st.ok}</button>`:''}${st.end?'':'<button class="tut-skip" data-tut="skip">略過導覽</button>'}`}
+  if(st.tf){const x=st.tf();if(o.dataset.tx!==x){o.dataset.tx=x;o.querySelector('.tut-txt').innerHTML=x}}   // v3.52 動態說明（例如鍛造倒數）
   const sel=st.sel&&st.sel(),el=sel&&[...document.querySelectorAll(sel)].find(x=>{const r=x.getBoundingClientRect();return r.width>0&&r.height>0}),ring=o.querySelector('.tut-ring'),box=o.querySelector('.tut-box');
   if(el){const r=el.getBoundingClientRect(),p=6;Object.assign(ring.style,{display:'block',left:r.left-p+'px',top:r.top-p+'px',width:r.width+p*2+'px',height:r.height+p*2+'px'});
     const below=r.top+r.height/2<innerHeight/2;box.style.top=below?Math.min(innerHeight-170,r.bottom+14)+'px':'auto';box.style.bottom=below?'auto':Math.max(90,innerHeight-r.top+14)+'px';o.classList.remove('nohole')}
