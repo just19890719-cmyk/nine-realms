@@ -5,6 +5,18 @@ function withSandbox(fn){
   try{return fn()}finally{S=keepS;CLOCK.offset=keepClock;QUIET=keepQ}
 }
 function T(name,pass,detail){return{name,pass:!!pass,detail:detail||''}}
+// v3.70 每日任務／活躍度寶箱／七日簽到
+function dailyTests(){return withSandbox(()=>{const res=[];S=sanitize(fresh());
+  dailyRoll();const p0=dailyPts();S.stats.enhTry+=5;S.stats.melted+=1;const p1=dailyPts();
+  const g0=S.gold,r0=claimBox(0),again=claimBox(0),b2=claimBox(2);
+  res.push(T('H1 每日任務進度與活躍度寶箱只領一次',p0===10&&p1===60&&r0&&!again&&!b2&&S.gold===g0+r0.gold,`登入 ${p0} 點；強化＋熔解後 ${p1} 點；40 寶箱 ${r0?rwText(r0):'沒領到'}；重領 ${again?'可以（錯）':'擋下'}；100 寶箱未達成 ${b2?'可領（錯）':'擋下'}`));
+  S.daily.d='2000-01-01';const p2=dailyPts();
+  res.push(T('H2 換日後每日任務重置',p2===10&&S.daily.box.length===0,`換日後活躍度 ${p2}、已領寶箱 ${S.daily.box.length}`));
+  const gems0=S.gems,got=[];for(let d=0;d<8;d++){S.sign.last='';got.push(claimSign())}S.sign.last=today();const dup=claimSign();
+  res.push(T('H3 七日簽到每天一次、第 7 天後回到第 1 天',got[3].gems===50&&got[6].gems===100&&got[7].gold===1000&&!dup&&S.gems===gems0+150,`第 4 天 ${rwText(got[3])}；第 7 天 ${rwText(got[6])}；第 8 次 ${rwText(got[7])}；同一天重領 ${dup?'可以（錯）':'擋下'}`));
+  const n0=NEWS.out.length;newsQueue('t2_longsword',12,true);
+  res.push(T('H4 測試中強化不會送出跑馬燈公告',NEWS.out.length===n0,`排隊 ${NEWS.out.length-n0} 則`));
+  return res})}
 const near=(a,b,tol)=>Math.abs(a-b)<=tol;
 
 /* ---------- A. 關卡可行性 ---------- */
@@ -347,7 +359,7 @@ function evtTests(){const res=[];
 /* ---------- 執行 ---------- */
 function runAll(opts={}){
   const t0=Date.now();const lv=levelCheck();
-  const res=[...lv.res,...forgeTests(opts.N||100000),...enhanceTests(opts.N||100000),...saveTests(),...specTests(20261020,opts.N?Math.max(opts.N,100000):200000).res,...(typeof window!=='undefined'?repTests():[]),...evtTests()];
+  const res=[...lv.res,...forgeTests(opts.N||100000),...enhanceTests(opts.N||100000),...saveTests(),...dailyTests(),...specTests(20261020,opts.N?Math.max(opts.N,100000):200000).res,...(typeof window!=='undefined'?repTests():[]),...evtTests()];
   return{res,lv,ms:Date.now()-t0};
 }
 function resHtml(res){return res.map(r=>`<div><b class="${r.pass?'p':'f'}">${r.pass?'通過':'未通過'}</b> ${r.name}<div class="muted">${r.detail}</div></div>`).join('')}
@@ -360,7 +372,7 @@ function econHtml(capH){const e=econReport(capH);let h=`<div><b>30 天經濟模�
 // 只看文字本身有沒有跑出按鈕外框（紅點這類絕對定位的小圖示故意貼在框外，不算）
 function textOut(b){const br=b.getBoundingClientRect(),w=document.createTreeWalker(b,NodeFilter.SHOW_TEXT);let n;while((n=w.nextNode())){if(!n.textContent.trim())continue;const r=document.createRange();r.selectNodeContents(n);for(const q of r.getClientRects())if(q.left<br.left-1||q.right>br.right+1)return true}return false}
 function layoutTests(){if(typeof document==='undefined')return[];const res=[],keep=[ui.tab,ui.ftab];
-  const views=[['商城',()=>viewShop()],['武器庫',()=>viewArmory()],['村莊',()=>viewVillage()],['材料倉庫',()=>{ui.ftab='mat';return viewForge()}],['鐵匠天賦',()=>sheetTalent()]];
+  const views=[['商城',()=>viewShop()],['武器庫',()=>viewArmory()],['村莊',()=>viewVillage()],['材料倉庫',()=>{ui.ftab='mat';return viewForge()}],['每日任務',()=>{ui.qTab='d';return sheetAch()}],['七日簽到',()=>{ui.qTab='s';return sheetAch()}],['鐵匠天賦',()=>sheetTalent()]];
   const box=document.createElement('div');box.className='wrap';box.style.cssText='position:absolute;left:-10000px;top:0;visibility:hidden';document.body.appendChild(box);
   for(const[n,f]of views){const bad=[];
     for(const w of[320,360,375,393,414,430,480]){box.style.width=(w-24)+'px';box.innerHTML=f();
@@ -369,7 +381,7 @@ function layoutTests(){if(typeof document==='undefined')return[];const res=[],ke
         if(r.width<fs*2.2&&r.height>fs*3.5)bad.push(`${w}px「${t.slice(0,8)}」直排`)});
       box.querySelectorAll('button').forEach(b=>{if(b.textContent.trim().length>1&&b.offsetWidth&&textOut(b))bad.push(`${w}px 按鈕「${b.textContent.trim().slice(0,10)}」字超出`)})}
     res.push(T('G 版面 '+n+'（320～480px 寬）沒有直排或字超出按鈕',!bad.length,bad.length?[...new Set(bad)].slice(0,4).join('；'):'7 種寬度都正常'))}
-  box.remove();[ui.tab,ui.ftab]=keep;return res}
+  box.remove();[ui.tab,ui.ftab]=keep;ui.qTab=null;return res}
 // v3.73 村莊怪物血條：每關都有怪物名稱，有武器的村莊卡顯示怪物縮圖與血條
 function monTests(){if(typeof document==='undefined')return[];const box=document.createElement('div');box.innerHTML=viewVillage();
   const hunting=S.villages.filter(st=>st.status!=='locked'&&st.status!=='open'&&st.weaponId!=null&&W(st.weaponId)).length;
