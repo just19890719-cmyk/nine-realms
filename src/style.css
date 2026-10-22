@@ -1198,4 +1198,26 @@ button.matbox:active{border-color:var(--gold)}
 .tal-row .grow{min-width:0}
 .tal-btn{flex:none;min-width:52px}
 .tal-max{flex:none;min-width:52px;text-align:center}
+/* v3.72 每週限時活動：村莊頁橫幅、首領討伐視窗 */
+.evt-ban{position:relative;display:flex;align-items:center;gap:10px;width:100%;margin:10px 0 0;padding:10px 12px;border-radius:12px;border:1px solid var(--line2);background:linear-gradient(90deg,rgba(60,38,12,.9),rgba(20,15,10,.92));color:var(--bone);text-align:left;font:inherit}
+.evt-ban.boss{background:linear-gradient(90deg,rgba(80,20,14,.92),rgba(20,15,10,.92))}
+.evt-ban .grow{min-width:0}
+.evt-ban b{display:block;font-size:14px}
+.evt-ic{width:40px;height:40px;flex:none}
+.evt-boss{width:52px;height:52px;flex:none;border-radius:8px;object-fit:cover;border:1px solid var(--line2)}
+.evt-ban .cb-bar{display:block;height:5px;border-radius:3px;background:#2a2118;overflow:hidden;margin:4px 0 2px}.evt-ban .cb-bar i{display:block;height:100%;background:linear-gradient(90deg,#c8742a,#f0c060)}
+.evt-go{flex:none;font-size:13px;color:var(--gold,#d8a64a);white-space:nowrap}
+.evt-ban .dot{position:absolute;top:6px;right:6px}
+.evt-hero{height:140px;border-radius:12px;background-size:cover;background-position:center;position:relative;overflow:hidden;margin-bottom:10px}
+.evt-hero-in{position:absolute;left:0;right:0;bottom:0;padding:24px 12px 10px;background:linear-gradient(transparent,rgba(0,0,0,.85));display:flex;flex-direction:column}
+.evt-hero-in b{font-size:18px}
+.evt-ws{display:flex;flex-direction:column;gap:8px}
+.evt-w{display:flex;align-items:center;gap:10px;padding:8px 10px}
+.evt-w .grow{min-width:0}
+.evt-w .qimg{width:44px;height:44px;flex:none}
+.evt-stages{display:flex;flex-direction:column;gap:6px}
+.evt-st{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;border:1px solid var(--line2)}
+.evt-st .num{flex:none;min-width:56px;font-weight:700}
+.evt-st.done{opacity:.6}
+.evt-ck{width:20px;height:20px;flex:none}
 </style>

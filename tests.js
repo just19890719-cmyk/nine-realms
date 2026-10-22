@@ -328,10 +328,26 @@ function repTests(){const res=[];
   }finally{repGain.mute=false}});
   return res}
 
+/* ---------- J. v3.72 每週限時活動 ---------- */
+function evtTests(){const res=[];
+  withSandbox(()=>{const keepF=EVT_FORCE;try{EVT_FORCE=null;
+    const mon=Date.UTC(2026,9,19,0,30)-TZ8,thu=mon+3*DAY+23*3600e3,fri=mon+4*DAY,sun=mon+6*DAY+23*3600e3,nmon=mon+7*DAY;
+    const ks=[mon,thu,fri,sun].map(evtKind).join('/');
+    res.push(T('J1 台灣時間週一～四雙倍收成、週五～日首領討伐、週一換週',ks==='double/double/boss/boss'&&evtWeek(mon)===evtWeek(sun)&&evtWeek(nmon)===evtWeek(mon)+1,`一/四/五/日＝${ks}`));
+    S=fresh();S.villages[0].strat='normal';const st=S.villages[0];rollCycle(0,null,st,mon);const g1=st.bank.gold;st.bank={cycles:0,gold:0,mats:{},events:0};rollCycle(0,null,st,fri);const g2=st.bank.gold;
+    res.push(T('J2 雙倍收成時段金幣 ×2',g1===2*g2&&g2===VILLAGES[0].gold,`週一 ${g1}、週五 ${g2}`));
+    EVT_FORCE='boss';S=fresh();S.gold=0;const w=makeWeapon('t3_greatsword',3,8,[]);const b=evtNow().boss,d0=bossDmgOf(w,b);
+    const r=[1,2,3,4].map(()=>bossHit(w.id));const v=S.evt;
+    res.push(T('J3 首領討伐一天 3 次、傷害在戰力 ±10% 內',!r[0].err&&!r[2].err&&r[3].err&&v.hits===3&&r.slice(0,3).every(x=>x.dmg>=Math.floor(d0*.9)&&x.dmg<=Math.ceil(d0*1.1)),`預估 ${d0}，實際 ${r.slice(0,3).map(x=>x.dmg).join('/')}；第 4 次：${r[3].err||'沒擋住'}`));
+    S=fresh();S.gold=0;evtSt().dmg=BOSS_STAGE[2][0];const gr=bossGrant(S.evt,b),gr2=bossGrant(S.evt,b);
+    res.push(T('J4 累積傷害獎勵：跨過幾個門檻發幾次、不重複發',gr.st===3&&gr2.st===0&&S.gold===500+1500+3000&&S.mats[b.mat]===2,`發了 ${gr.st} 階，金幣 ${S.gold}、${MATS[b.mat]} ${S.mats[b.mat]}`));
+  }finally{EVT_FORCE=keepF}});
+  return res}
+
 /* ---------- 執行 ---------- */
 function runAll(opts={}){
   const t0=Date.now();const lv=levelCheck();
-  const res=[...lv.res,...forgeTests(opts.N||100000),...enhanceTests(opts.N||100000),...saveTests(),...specTests(20261020,opts.N?Math.max(opts.N,100000):200000).res,...(typeof window!=='undefined'?repTests():[])];
+  const res=[...lv.res,...forgeTests(opts.N||100000),...enhanceTests(opts.N||100000),...saveTests(),...specTests(20261020,opts.N?Math.max(opts.N,100000):200000).res,...(typeof window!=='undefined'?repTests():[]),...evtTests()];
   return{res,lv,ms:Date.now()-t0};
 }
 function resHtml(res){return res.map(r=>`<div><b class="${r.pass?'p':'f'}">${r.pass?'通過':'未通過'}</b> ${r.name}<div class="muted">${r.detail}</div></div>`).join('')}
