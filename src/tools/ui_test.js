@@ -86,7 +86,7 @@ const {chromium}=require('playwright');
   await closeAll();
   // 容量
   await p.evaluate(()=>{devdo('fill');devdo('t1');QUIET=true;while(S.weapons.length<200)makeWeapon('t1_woodaxe',0,0,[]);QUIET=false;save()});await closeAll();await p.evaluate(()=>{ui.tab='forge';ui.ftab='bp';ui.bp='t1_woodaxe';ui.qty=10;render()});
-  const ftxt=await p.$eval('.forge-bar',b=>b.textContent+'|'+b.querySelector('[data-act=forge]').disabled);R(/已滿/.test(ftxt)&&/true$/.test(ftxt),'武器庫容量上限擋下鍛造（'+ftxt+'）');
+  const ftxt=await p.$eval('.forge-bar',b=>b.textContent+'|'+b.querySelector('[data-act=forge]').classList.contains('is-disabled'));R(/已滿/.test(ftxt)&&/true$/.test(ftxt),'武器庫容量上限擋下鍛造（'+ftxt+'）');
   // 商店 & 工坊入口
   await p.click('[data-act=tab][data-k=shop]');await ov('商店');R(!(await p.evaluate(()=>document.getElementById('view').textContent.includes('升級熔爐'))),'工坊升級已移出商店');
   await p.click('[data-act=tab][data-k=forge]');await p.click('[data-act=sheetW]');R(await p.evaluate(()=>document.querySelector('.sheet').textContent.includes('熔爐')),'鐵匠鋪內的工坊升級入口');await closeAll();
