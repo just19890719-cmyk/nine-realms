@@ -1175,4 +1175,13 @@ button.matbox:active{border-color:var(--gold)}
 .mrow .mr-act{display:block}
 .mrow .mr-sub{display:block;font-size:12px;font-weight:500;color:var(--ash)}
 .pgrid.three .pc-buy{white-space:nowrap;padding-left:4px;padding-right:4px}   /* v3.62 窄螢幕「25 殘渣」不要斷成兩行 */
+/* v3.64 紅點提醒：導覽列、武器卡、村莊卡、「交給村莊」按鈕 */
+.nav .dot{z-index:2}
+.give-dot{z-index:4;pointer-events:none;animation:givePulse 1.6s ease-in-out infinite}
+.wt .give-dot{top:3px;right:3px;width:11px;height:11px;border:1.5px solid #1a0d04}
+.vcard .give-dot{top:5px;right:5px;width:11px;height:11px;border:1.5px solid #1a0d04}
+.btn .give-dot{top:-3px;right:-3px}
+@keyframes givePulse{50%{opacity:.55}}
+.nav .dot.hot{width:13px;height:13px;top:2px;border:2px solid #1a0d04;box-shadow:0 0 10px 2px var(--danger)}
+.new-tag{position:absolute;top:8%;left:8%;z-index:3;padding:0 4px;border-radius:3px;background:var(--danger-hi);color:#fff;font-size:10px;font-weight:800;line-height:14px;letter-spacing:.03em;pointer-events:none}
 </style>
