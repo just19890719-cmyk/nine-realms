@@ -1775,7 +1775,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='3.82';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='3.83';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -2396,13 +2396,20 @@ const SFX_VAR_KEYS=[],SFX_VARS={},SFX_NO={unlock:11,enchant:13,enh_spoke:16,enh_
 let SFX_ALT={};try{SFX_ALT=JSON.parse(localStorage.getItem('nrs-sfxalt')||'{}')||{}}catch(e){}
 const sfxUrl=n=>SFX_VAR_KEYS.includes(n)&&SFX_VARS[n].includes(SFX_ALT[n])&&SFX_ALT[n]?`sfx/var/${n}_${SFX_ALT[n]}.mp3?v=1`:'sfx/'+n+'.mp3'+SFX_VER;
 function sfxSetAlt(n,v){if(v)SFX_ALT[n]=v;else delete SFX_ALT[n];try{localStorage.setItem('nrs-sfxalt',JSON.stringify(SFX_ALT))}catch(e){}delete SFXBUF[n];delete sfxPool[n];sfxLoadAll()}let ACX=null;const SFXBUF={};
-function sfxCtx(){if(!ACX){const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;ACX=new C()}if(ACX.state==='suspended')ACX.resume();return ACX}
+// v3.83 iPhone 切到背景再回來，AudioContext 會變成 interrupted／suspended，甚至顯示 running 卻沒聲音：
+// 回前景後標記 ACX_DIRTY，下一次觸控時關掉舊的、重建新的（已解碼的音檔可以直接沿用）
+let ACX_DIRTY=false;
+function sfxCtx(){if(ACX&&ACX_DIRTY){ACX_DIRTY=false;try{ACX.close()}catch(e){}ACX=null}
+  if(!ACX){const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;try{ACX=new C()}catch(e){return null}}
+  if(ACX.state!=='running'&&ACX.state!=='closed'){try{const r=ACX.resume();r&&r.catch&&r.catch(()=>{})}catch(e){}}return ACX}
+// 在觸控（使用者手勢）裡喚醒：resume＋播一段無聲音，iOS 才會真的放行
+function sfxWake(){const c=sfxCtx();if(!c)return;try{const s=c.createBufferSource();s.buffer=c.createBuffer(1,1,22050);s.connect(c.destination);s.start(0)}catch(e){}}
 function sfxLoadAll(){const c=sfxCtx();if(!c)return;Object.keys(SFXV).forEach(n=>{if(SFXBUF[n])return;SFXBUF[n]='loading';
   const u=sfxUrl(n);fetch(u).then(r=>r.arrayBuffer()).then(ab=>new Promise((ok,no)=>c.decodeAudioData(ab,ok,no))).then(buf=>{if(sfxUrl(n)===u)SFXBUF[n]=sfxTrim(buf)}).catch(()=>{if(sfxUrl(n)===u)SFXBUF[n]=null})})}
 // 去掉 MP3 開頭的靜音（編碼器會補一小段空白）
 function sfxTrim(buf){const d=buf.getChannelData(0);let i=0;while(i<d.length&&Math.abs(d[i])<0.004)i++;return{buf,off:Math.max(0,i-32)/buf.sampleRate}}
 function snd(n,rate=1,vol){if(QUIET||S.mute||!(n in SFXV))return;vol=(vol??1)*(S.vol??1);if(vol<=0)return;try{const c=sfxCtx(),b=SFXBUF[n];
-  if(c&&b&&b!=='loading'){const s=c.createBufferSource(),g=c.createGain();s.buffer=b.buf;s.playbackRate.value=rate;g.gain.value=Math.min(1,(vol??1)*SFXV[n]);s.connect(g).connect(c.destination);s.start(0,b.off);return}
+  if(c&&b&&b!=='loading'&&c.state==='running'){const s=c.createBufferSource(),g=c.createGain();s.buffer=b.buf;s.playbackRate.value=rate;g.gain.value=Math.min(1,(vol??1)*SFXV[n]);s.connect(g).connect(c.destination);s.start(0,b.off);return}
   if(typeof Audio==='undefined')return;const base=sfxPool[n]||(sfxPool[n]=new Audio(sfxUrl(n)));const a=base.cloneNode();a.volume=Math.min(1,(vol??1)*SFXV[n]);a.preservesPitch=false;a.playbackRate=rate;a.play().catch(()=>{})}catch(e){}}
 const ENH_SND={ok:'enh_ok',fail:'enh_fail',broke:'enh_break',saved:'enh_saved'};
 function playSfx(n){if(n==='sfx_enh_charge')return snd('enh_start');const k=n.replace('sfx_enh_','');snd(ENH_SND[k]||n)}
@@ -3243,6 +3250,7 @@ function sheetDev(){
      <div class="devgrid">${B('testw','送出並開啟強化頁','btn-primary')}${B('cleartest','清除所有測試武器')}</div>
      <div class="devgrid">${B('autoenh','一鍵強化到安定值（新增 +0 鐵錘並執行）')}</div>
      <div class="label">音效試聽（目前正式音效）</div><div class="row" style="flex-wrap:wrap;gap:6px">${Object.keys(SFXV).map(n=>`<button class="ui-btn ui-btn--chip chipbtn" data-act="sndtest" data-k="${n}">${SFX_NAME[n]||n}</button>`).join('')}<button class="ui-btn ui-btn--chip chipbtn" data-act="sndtest" data-k="_spokes">8 道符文連續</button></div>
+     <div class="label">切回遊戲音效（v3.83）：目前狀態 ${ACX?ACX.state:'尚未啟動'}${ACX_DIRTY?'（待重建）':''}</div><div class="row" style="flex-wrap:wrap;gap:6px"><button class="ui-btn ui-btn--chip chipbtn" data-act="devdo" data-k="sfxbg">模擬切到背景再回來</button><button class="ui-btn ui-btn--chip chipbtn" data-act="sndtest" data-k="coin">試播金幣聲</button></div>
      ${SFX_VAR_KEYS.length?`<div class="label">音效試用（v3.32，只是試聽，選定後再正式換）</div><div class="sfxalt">${SFX_VAR_KEYS.map(n=>`<div class="sfxalt-r"><span>${SFX_NO[n]}. ${SFX_NAME[n]}</span>${SFX_VARS[n].map(v=>`<button class="ui-btn ui-btn--chip chipbtn ${(SFX_VARS[n].includes(SFX_ALT[n])?SFX_ALT[n]||'':'')===v?'on':''}" data-act="sfxalt" data-k="${n}" data-v="${v}">${v||'原'}</button>`).join('')}</div>`).join('')}</div>
      <div class="devgrid">${B('sfxaltclr','全部切回原版')}</div>`:''}
      <div class="label">登入與開場（v3.20）</div><div class="devgrid">${B('gtlogin','顯示登入畫面')}${B('gtstory','播放開場故事')}${B('gtreset','重設「已看過開場」')}</div>
@@ -3268,7 +3276,8 @@ function sheetDev(){
 }
 
 let forceEvent=-1;
-function devdo(k){if(k.startsWith('r2')){
+function devdo(k){if(k==='sfxbg'){if(ACX){try{ACX.suspend()}catch(e){}ACX_DIRTY=true}toast('已模擬切到背景（音效暫停），按「試播金幣聲」應該要有聲音');return render()}
+  if(k.startsWith('r2')){
     if(k==='r2open'||k==='r2all'){S.villages.forEach((st,i)=>{if(i<10||k==='r2all')st.status='cleared'});if(S.villages[10].status==='locked')S.villages[10].status='open';ui.realm=1}
     else if(k==='r2lock'){S.villages.forEach((st,i)=>{if(i>=10){if(st.weaponId!=null)recallCore(i);st.status='locked'}});ui.realm=0}
     else if(k==='r2fur'){S.furnace=6;S.gold+=0}
@@ -3461,6 +3470,9 @@ function toast(html,kind){if(QUIET)return;if(kind==='bad')snd('ui_error');const 
 
 function bindUI(){
 ['pointerdown','touchstart'].forEach(ev=>document.addEventListener(ev,()=>{sfxPreload()},{passive:true,once:false}));
+['touchend','click'].forEach(ev=>document.addEventListener(ev,()=>{if(ACX_DIRTY||(ACX&&ACX.state!=='running'))sfxWake()},{passive:true,capture:true}));
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){if(ACX)ACX_DIRTY=true}else if(ACX&&ACX.state!=='running')sfxCtx()});
+window.addEventListener('pageshow',e=>{if(e.persisted&&ACX)ACX_DIRTY=true});
 const uiSndOf=a=>a==='tab'||a==='ftab'||a==='cat'||a==='acat'?'ui_tab':['close','scrim','rclose','backArmory'].includes(a)?'ui_close':['wopen','vopen','sheetW','sheetM','sheetT','evtopen','dev','achopen','wmode','player'].includes(a)?'ui_open':'ui_click';
 let PD_SND=0;
 // v3.25 橫向捲動列（圖紙、分類）在 iPhone 上：慣性滑動中的第一下、或手指微晃，系統會把點擊吃掉 → 自己判斷「點一下」
