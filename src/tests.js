@@ -17,6 +17,20 @@ function dailyTests(){return withSandbox(()=>{const res=[];S=sanitize(fresh());
   const n0=NEWS.out.length;newsQueue('t2_longsword',12,true);
   res.push(T('H4 測試中強化不會送出跑馬燈公告',NEWS.out.length===n0,`排隊 ${NEWS.out.length-n0} 則`));
   return res})}
+// v3.88 世界聊天：輸入檢查、錯誤訊息、封鎖過濾、新訊息不重複計算
+function chatTests(){return withSandbox(()=>{const res=[];S=sanitize(fresh());
+  const cs=[['大家好',0],['https://abc.com',1],['www.abc.tw',1],['加我 line id abc',1],['0912-345-678',1],['12345678',1],['   ',1],['字'.repeat(61),1],['字'.repeat(60),0],['+12 長劍 3000 金幣',0]];
+  const bad=cs.filter(([t,e])=>!!chatPre(t)!==!!e);
+  res.push(T('I1 聊天輸入檢查（網址、電話、LINE、字數）',!bad.length,bad.length?'沒擋好：'+bad.map(x=>x[0].slice(0,12)).join('、'):`${cs.length} 項都正確`));
+  const m=[chatErrText('slow:3'),chatErrText('muted:10/23 05:58'),chatErrText('lv'),chatErrText('xyz')];
+  res.push(T('I2 伺服器回應轉成中文提示',m[0].includes('3 秒')&&m[1].includes('10/23 05:58')&&m[2].includes('Lv.3')&&m[3].includes('失敗'),m.join('／')));
+  const keep={rows:CHAT.rows,last:CHAT.last,unread:CHAT.unread};CHAT.rows=[];CHAT.last=0;
+  const r=[{id:1,uid:'a',nick:'甲',lv:5,body:'x',mine:false,at:''},{id:2,uid:'b',nick:'乙',lv:5,body:'y',mine:false,at:''},{id:3,uid:'me',nick:'我',lv:5,body:'z',mine:true,at:''}];
+  const n1=chatAdd(r),n2=chatAdd(r);S.cbl=[{u:'b',n:'乙'}];const n3=chatAdd([{id:4,uid:'b',nick:'乙',lv:5,body:'w',mine:false,at:''}]);
+  const shown=CHAT.rows.filter(x=>!chatBlocked(x.uid)).length;
+  res.push(T('I3 新訊息計數不重複、不算自己和封鎖的人',n1===2&&n2===0&&n3===0&&CHAT.last===4&&shown===2,`第一次 ${n1}、重複 ${n2}、封鎖者 ${n3}、顯示 ${shown} 則`));
+  Object.assign(CHAT,keep);
+  return res})}
 const near=(a,b,tol)=>Math.abs(a-b)<=tol;
 
 /* ---------- A. 關卡可行性 ---------- */
@@ -399,7 +413,7 @@ function evtTests(){const res=[];
 /* ---------- 執行 ---------- */
 function runAll(opts={}){
   const t0=Date.now();const lv=levelCheck();
-  const res=[...lv.res,...forgeTests(opts.N||100000),...enhanceTests(opts.N||100000),...saveTests(),...dailyTests(),...specTests(20261020,opts.N?Math.max(opts.N,100000):200000).res,...(typeof window!=='undefined'?repTests():[]),...evtTests(),...realm2Tests()];
+  const res=[...lv.res,...forgeTests(opts.N||100000),...enhanceTests(opts.N||100000),...saveTests(),...dailyTests(),...chatTests(),...specTests(20261020,opts.N?Math.max(opts.N,100000):200000).res,...(typeof window!=='undefined'?repTests():[]),...evtTests(),...realm2Tests()];
   res.push(T('圖紙底圖：圖紙卡用統一圖紙底圖、不用品質外框',typeof document==='undefined'||wArt(BPS[0].id,{frame:'bp'}).includes('bp_paper2')&&!wArt(BPS[0].id,{frame:'bp'}).includes('wart-f'),'frame:bp'));
   return{res,lv,ms:Date.now()-t0};
 }
