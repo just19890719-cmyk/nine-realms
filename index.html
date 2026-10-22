@@ -1370,13 +1370,15 @@ button.vv-d{font:inherit;font-size:11px;color:inherit;cursor:pointer}
 .ec-k{font-size:10px;color:var(--gold);letter-spacing:.05em}.ec-w{font-size:10px;color:var(--ember,#e08a4a);white-space:nowrap;flex:0 0 auto}
 .ec-cur.none{border-style:dashed;background:#0d0b09}.ec-cur.locked{border-color:var(--line);background:#0d0b09;opacity:.85}
 .ec-q{width:32px;height:32px;flex:0 0 32px;border-radius:50%;display:grid;place-items:center;font-size:17px;font-weight:700;color:var(--gold);border:1px dashed var(--gold)}
-.ec-pool{margin-top:10px;padding:8px 8px 10px;border-radius:12px;border:1px solid var(--line);background:radial-gradient(120% 80% at 50% 0,rgba(232,184,92,.08),rgba(13,11,9,.95))}
+.ec-pool{margin-top:10px;padding:8px 10px 6px;border-radius:12px;border:1px solid var(--line);background:radial-gradient(120% 80% at 50% 0,rgba(232,184,92,.08),rgba(13,11,9,.95))}
 .ec-ph{display:flex;justify-content:space-between;align-items:baseline;gap:6px;margin:0 2px 4px}.ec-ph b{color:var(--gold);font-size:13px;letter-spacing:.05em;white-space:nowrap}.ec-ph .small{font-size:11px}
 .ec-gl{display:flex;align-items:center;gap:6px;margin:6px 2px 4px;font-size:11px;color:var(--gold);font-weight:700}.ec-gl:after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(232,184,92,.45),transparent)}.ec-gl i{order:2;font-style:normal;font-weight:400;color:var(--ash)}
-.ec-g{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
-.ec-t{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0;padding:5px 1px 4px;border-radius:9px;border:1px solid var(--line);background:#0d0b09;color:var(--bone);font:inherit;line-height:1.15;cursor:pointer}
-.ec-t:active{border-color:var(--gold)}.ec-t img{width:30px;height:30px;border-radius:50%;object-fit:cover}.ec-t b{font-size:11px;white-space:nowrap}.ec-t em{font-style:normal;font-weight:700;color:var(--gold-hi);font-size:12px}
-.ec-nw{position:absolute;top:2px;right:2px;font-style:normal;font-size:8px;line-height:12px;color:#fff;background:#c0392b;border-radius:6px;padding:0 3px}
+.ec-g{display:grid;grid-template-columns:1fr 1fr;column-gap:10px}
+.ec-t{display:flex;align-items:center;gap:6px;min-width:0;height:40px;padding:0 2px;border:0;border-bottom:1px dashed rgba(255,255,255,.08);background:none;color:var(--bone);font:inherit;text-align:left;cursor:pointer}
+.ec-t:active{background:rgba(232,184,92,.08)}.ec-t img{width:26px;height:26px;flex:0 0 26px;border-radius:50%;object-fit:cover}
+.ec-t .grow{display:flex;flex-direction:column;min-width:0;line-height:1.2}.ec-t b{font-size:12px;white-space:nowrap}.ec-t .grow>span{font-size:10px;color:var(--ash);white-space:nowrap}
+.ec-t em{flex:0 0 auto;font-style:normal;font-weight:700;color:var(--gold-hi);font-size:13px}
+.ec-nw{display:inline-block;vertical-align:1px;margin-left:3px;font-style:normal;font-size:8px;line-height:12px;color:#fff;background:#c0392b;border-radius:5px;padding:0 3px}
 </style>
 <div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div><div class="news" id="news" aria-live="polite"></div></div>
 <main class="wrap" id="view"></main>
@@ -3015,7 +3017,7 @@ function sheetWeapon(id,mode){
       <div class="small"><b>強化倍率</b>：+0～+6 為 1 + 0.1 × 等級；+7～+15 為 1.6 + 0.18 ×（等級 − 6）。+${next} 倍率 ${enhMult(next).toFixed(2)}。</div>
       <div class="small"><b>規則</b>：失敗不會降級。目標等級超過安定值時，失敗才會判定爆裝，機率為 35% + 5% ×（目標等級 − 安定值 − 1），最高 80%。祝福石與防爆卷：只要勾選，每次強化都會消耗 1 張（防爆卷只在危險區使用）。</div></details>`;
   }
-  if(mode==='ench'){   // v3.84 附魔頁改版（Mochi 2026-10-22）：只能隨機；欄位 → 目前詞條 → 詞條池與機率 → 底部單一按鈕
+  if(mode==='ench'){   // v3.84 附魔頁改版（Mochi 2026-10-22，精簡版選方案 B 雙欄清單）：只能隨機；欄位 → 目前詞條 → 詞條池（範圍、機率）→ 底部單一按鈕
     const s=ui.enchSlot,open=slotOpen(s),c1=enchCost(w),e=w.ench[s],rm=runicMul(w),tw=Object.values(AFFIX).reduce((a,x)=>a+x.w,0),P=x=>Math.round(x/tw*100)+'%';
     const mini=`<div class="nv-head">${wArt(b.id,{frame:w.q,cls:'nv-art'})}<div class="grow"><b class="q${w.q}">${b.n} +${w.lv}</b><div class="ec-have">${img('mat_shard')}<b>${S.mats.shard}</b>${img('it_gold')}<b>${fmt(S.gold)}</b></div>${traitVal(w,'runic')?`<div class="small t-ok">符文親和：附魔數值 ×${rm.toFixed(2)}</div>`:''}</div></div>`;
     const slots=`<div class="nv-sec"><span class="nv-k">選擇欄位</span><div class="slots nv-slots">${[0,1,2,3].map(k=>slotHtml(w,k,true)).join('')}</div></div>`;
@@ -3023,10 +3025,10 @@ function sheetWeapon(id,mode){
       :e?`<div class="ec-cur">${img(AFFIX_ICON[e.k])}<div class="grow"><span class="ec-k">第 ${s+1} 格目前詞條</span><b>${AFFIX[e.k].n} <i>+${r1(e.v*rm)}%</i><span class="ec-e">${AFF_EFF[e.k](r1(e.v*rm))}</span></b></div><span class="ec-w">重抽會覆蓋</span></div>`
       :`<div class="ec-cur none"><span class="ec-q">?</span><div class="grow"><span class="ec-k">第 ${s+1} 格・空欄位</span><b>隨機獲得 1 種詞條</b></div></div>`;
     const pool=AFF_G.map(([g,gn])=>{const xs=Object.entries(AFFIX).filter(([k,a])=>a.g===g);
-      return `<div class="ec-gl">${gn.replace(/（.*/,'')}<i>${P(xs.reduce((a,[k,x])=>a+x.w,0))}</i></div><div class="ec-g">${xs.map(([k,a])=>`<button class="ec-t" data-act="affinfo" data-k="${k}">${a.nw?'<i class="ec-nw">新</i>':''}${img(AFFIX_ICON[k])}<b>${a.n}</b><em>${P(a.w)}</em></button>`).join('')}</div>`}).join('');
+      return `<div class="ec-gl">${gn.replace(/（.*/,'')}<i>${P(xs.reduce((a,[k,x])=>a+x.w,0))}</i></div><div class="ec-g">${xs.map(([k,a])=>`<button class="ec-t" data-act="affinfo" data-k="${k}">${img(AFFIX_ICON[k])}<span class="grow"><b>${a.n}${a.nw?'<i class="ec-nw">新</i>':''}</b><span>${a.min}～${a.max}%</span></span><em>${P(a.w)}</em></button>`).join('')}</div>`}).join('');
     const lack=open&&(S.mats.shard<1?'符文碎片不足（熔解武器、村莊掉落、每日任務可以取得）':S.gold<c1?'金幣不足':'');
-    const bar=`<div class="ev-bar">${btn(`${!open?'未開放':e?'重抽':'附魔'}第 ${s+1} 格<span class="small">1 符文碎片＋${fmt(c1)} 金幣</span>`,'enchant',{cls:'btn-primary big nv-b',attrs:`data-id="${id}" data-s="${s}"`,dis:!open||!!lack})}${lack?`<div class="small t-danger center">${lack}</div>`:''}</div>`;
-    return head+`<div class="ev ec">${mini}${slots}${cur}<div class="ec-pool"><div class="ec-ph"><b>✦ 隨機詞條池</b><span class="small muted">點圖示看範圍與效果</span></div>${pool}</div>${bar}</div>`;
+    const bar=`<div class="ev-bar">${btn(`${!open?'欄位未開放':'附魔'}<span class="small">1 符文碎片＋${fmt(c1)} 金幣</span>`,'enchant',{cls:'btn-primary big nv-b',attrs:`data-id="${id}" data-s="${s}"`,dis:!open||!!lack})}${lack?`<div class="small t-danger center">${lack}</div>`:''}</div>`;
+    return head+`<div class="ev ec">${mini}${slots}${cur}<div class="ec-pool"><div class="ec-ph"><b>✦ 隨機詞條池</b><span class="small muted">範圍・機率（點詞條看效果）</span></div>${pool}</div>${bar}</div>`;
   }
   if(mode==='give'){const vs=VILLAGES.map((v,k)=>[v,k]).filter(([v,k])=>v.cat===b.cat&&S.villages[k].status!=='locked');
     return head+showcase('mini')+`<div class="ui-panel panel">${ptitle(`可交付的村莊（${CATS[b.cat]}類）`)}${vs.length?vs.map(([v,k])=>{const ok=eligible(k,w),st=S.villages[k],cur=st.weaponId!=null&&W(st.weaponId);
