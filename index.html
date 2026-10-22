@@ -1108,6 +1108,7 @@ html,body,button,[data-act],label,input,select{touch-action:manipulation}
 
 /* v3.36 登入畫面：背景圖本身也有鐵匠，前景去背鐵匠改成與背景完全同步，避免錯位出現雙手殘影 */
 .gt-fg{transform:translate(calc(var(--mx) * -10px),calc(var(--my) * -6px));animation:gtZoom 20s ease-in-out infinite alternate}
+.gate-name .gt-row>.btn:only-child{grid-column:1/-1;width:100%}
 </style>
 <div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div></div>
 <main class="wrap" id="view"></main>
@@ -1443,7 +1444,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}CLOUD.dirty=true}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD='v3.38 封測';
+const BUILD='v3.39 封測';
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off'};
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -1456,7 +1457,7 @@ async function sbToken(){if(!AUTH)return null;if(Date.now()<AUTH.expires_at)retu
   try{const j=await sbAuth('token?grant_type=refresh_token',{refresh_token:AUTH.refresh_token});authSave({...authFrom(j),user:AUTH.user});return AUTH.access_token}catch(e){CLOUD.err='登入已過期，請重新登入';return null}}
 async function sbRest(path,opt={}){const t=await sbToken();if(!t)throw new Error('尚未登入');
   const r=await fetch(SB_URL+'/rest/v1/'+path,{...opt,headers:{apikey:SB_KEY,Authorization:'Bearer '+t,'Content-Type':'application/json',...(opt.headers||{})}});
-  if(!r.ok){const j=await r.json().catch(()=>({}));throw new Error(j.message||('HTTP '+r.status))}return r.status===204||r.status===201?null:r.json()}
+  if(!r.ok){const j=await r.json().catch(()=>({}));throw new Error(j.message||('HTTP '+r.status))}const tx=await r.text();if(!tx)return null;try{return JSON.parse(tx)}catch(e){return null}}
 async function cloudSignup(email,pw){const j=await sbAuth('signup',{email,password:pw});
   if(!j.access_token){const k=await sbAuth('token?grant_type=password',{email,password:pw});authSave(authFrom(k))}else authSave(authFrom(j));return cloudAfterLogin(true)}
 async function cloudLogin(email,pw){authSave(authFrom(await sbAuth('token?grant_type=password',{email,password:pw})));return cloudAfterLogin(false)}
