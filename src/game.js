@@ -166,7 +166,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='3.66';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='3.67';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -1446,6 +1446,7 @@ function sheetDev(){
      <div class="label">測試武器</div><div class="devgrid">${B('wt','3 把帶特性的傳說武器')}${B('w6','+6 霜銀長劍（安定 5）')}${B('wm','神器尼德霍格龍矛（安定 0）')}${B('w8','+8 龍鱗戟')}${B('fill','武器庫塞到 195 把')}</div>`,
    prog:`<div class="label">v3.61 介面測試</div><div class="devgrid">${B('uiv','村莊：跳到待交付關卡')}${B('uiarm','武器庫：往下捲看分類置頂')}${B('uiforge','鐵匠鋪：圖紙區上下滑')}${B('uimat','材料倉庫：點材料看用途')}${B('uishop','旅行商人：輸入數量買賣')}</div>
    <div class="label">v3.64 紅點提醒</div><div class="devgrid">${B('uigive','送一把可交付的武器')}${B('uidot_w','武器庫：最新一把標 NEW')}${B('uidot_bp','鐵匠鋪：最新圖紙標 NEW')}${B('uidot_full','村莊倉庫滿（醒目紅點）')}${B('uidot_mk','交易所：模擬有成交')}${B('uidot_mon','商城：月卡今天可領')}${B('uidot_st','目前哪些紅點會亮')}</div>
+     <div class="label">v3.67 分頁美術預熱</div><div class="devgrid">${B('uiwarm','預熱狀態')}${B('uiwarmrun','連切 5 個分頁測出圖')}</div>
      <div class="label">時間流速（正式版 1×）</div><div class="row">${[1,10,30,60].map(n=>`<button class="ui-btn ui-btn--chip chipbtn ${S.speed===n?'on':''}" data-act="speed" data-k="${n}">${n}×</button>`).join('')}</div>
      <div class="label">離線累積上限</div><div class="row">${[8,12].map(n=>`<button class="ui-btn ui-btn--chip chipbtn ${S.capH===n?'on':''}" data-act="cap" data-k="${n}">${n} 小時</button>`).join('')}</div>
      <div class="label">村莊與鍛造</div><div class="devgrid">${B('hunt','所有村莊立即 +10 輪')}${B('offline','模擬離線 8 小時')}${B('forge','鍛造立即完成')}${B('unlock','解鎖全部村莊與圖紙')}${B('maxup','工坊、學徒滿級')}${B('danger','1-2 下一輪必定受襲')}${B('tlack','缺料鍛造提示（獵弓）')}${B('tharvest','2 秒後完成一輪（看收成按鈕）')}${B('achall','達成全部成就條件')}${B('daily','重置月卡今日領取')}</div>
@@ -1499,6 +1500,13 @@ function devdo(k){if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=
     const L=[['村莊：可收成',S.villages.some(v=>v.bank.cycles)],['村莊：倉庫滿',S.villages.some((x,i)=>vState(i)[0]==='full')],['村莊／武器庫：可交付或可換更強',anyGive()],['村莊：成就可領 '+achReadyN(),achReadyN()>0],
       ['武器庫：新武器',S.weapons.some(wNew)],['鐵匠鋪：學徒有空可開工',forgeIdle()],['鐵匠鋪：新圖紙',BPS.some(bpNew)],['交易所：有成交／退回',S.mkNew>0],['商城：月卡可領',monthlyDot()]];
     ui.result={t:'info',title:'目前的紅點',html:L.map(([n,v])=>`<div class="kv"><span>${n}</span><b class="${v?'t-danger':'muted'}">${v?'亮':'—'}</b></div>`).join('')};return render()}
+  if(k==='uiwarm'){const L=[...WARM.values()],ok=L.filter(i=>i.complete&&i.naturalWidth).length;   // v3.67 分頁美術預熱測試
+    ui.result={t:'info',title:'分頁美術預熱',html:`<div class="kv"><span>已預熱圖片</span><b>${L.length} 張</b></div><div class="kv"><span>已載入完成</span><b class="${ok===L.length?'t-ok':'t-danger'}">${ok} 張</b></div><div class="kv"><span>鐵匠鋪大背景暫存</span><b>${HERO_KEEP||document.querySelector('#view > section.hero')?'有':'—'}</b></div>`};return render()}
+  if(k==='uiwarmrun'){ui.sheet=null;ui.result=null;const back=ui.tab,out=[];(async()=>{for(const t of ['armory','village','shop','market','forge',back]){ui.tab=t;const t0=performance.now();render();
+      await new Promise(r=>requestAnimationFrame(()=>r()));const ims=[...document.querySelectorAll('#view img')],miss=ims.filter(i=>!(i.complete&&i.naturalWidth)).length;
+      let ms=0;if(miss){await Promise.all(ims.map(i=>i.decode?i.decode().catch(()=>{}):0));ms=Math.round(performance.now()-t0)}out.push([t,ims.length,miss,ms])}
+    out.pop();const N={forge:'鐵匠鋪',armory:'武器庫',village:'村莊',shop:'商城',market:'交易所'};
+    ui.result={t:'info',title:'切分頁出圖測試',html:out.map(([t,n,m,ms])=>`<div class="kv"><span>${N[t]}（${n} 張圖）</span><b class="${m?'t-danger':'t-ok'}">${m?`${m} 張晚 ${ms}ms`:'全部立刻顯示'}</b></div>`).join('')};render()})();return}
   if(k==='uigive'){const gm=giveMin(),nv=gm.map((m,i)=>m===-1?i:-1).filter(i=>i>=0);if(!nv.length)return toast('目前沒有村莊在等武器（全部都有駐守）','bad');   // v3.64 可交付紅點測試
     const i=nv[0],v=VILLAGES[i],b=Object.values(BP).filter(x=>x.cat===v.cat).sort((a,c)=>c.t-a.t)[0],w=makeWeapon(b.id,4,0,[],v.need?[{k:v.need,v:AFFIX[v.need].max},null,null,null]:undefined);
     while(!eligible(i,w)&&w.lv<15)w.lv++;ui.sheet=null;ui.result=null;ui.tab='armory';ui.acat='all';ui.aq=ui.ast='all';save();render();scrollTo(0,0);
@@ -1571,10 +1579,19 @@ function devdo(k){if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=
 const _eventChance=eventChance;
 eventChance=function(i,w){if(forceEvent===i){forceEvent=-1;return 1}return _eventChance(i,w)};
 
+// v3.67 分頁美術預熱：各分頁會用到的圖先下載＋解碼並留在記憶體，切換分頁時不用再等（iPhone 主畫面 App 常晚 1 秒才出圖）
+let HERO_KEEP=null;const WARM=new Map();
+function warmArt(html){(String(html).match(/art\/[\w\/.-]+?\.(?:webp|png)(?:\?v=\d+)?/g)||[]).forEach(u=>{if(WARM.has(u)||WARM.size>=400)return;const im=new Image();im.src=u;WARM.set(u,im);if(im.decode)im.decode().catch(()=>{})})}
+let WARM_T=0;function warmTabs(){clearTimeout(WARM_T);WARM_T=setTimeout(()=>{if(QUIET)return;const ft=ui.ftab;
+  [['bp'],['mat'],['queue']].forEach(([f])=>{ui.ftab=f;try{warmArt(viewForge())}catch(e){}});ui.ftab=ft;
+  [viewArmory,viewVillage,viewShop].forEach(f=>{try{warmArt(f())}catch(e){}});warmArt('art/dp/fog_band.webp art/bg_forge.webp')},400)}
 function render(){
   if(QUIET)return;renderRes();renderNav();
   const hs=[...document.querySelectorAll('#view .hscroll,#view .catbar')].map(e=>e.scrollLeft);   // 保留橫向捲動位置（點圖紙不會跳回最前面）
-  const V=document.getElementById('view'),y=scrollY,oldHero=V.querySelector(':scope > section.hero'),html=({forge:viewForge,armory:viewArmory,village:viewVillage,shop:viewShop,market:viewMarketPage})[ui.tab]();
+  const V=document.getElementById('view'),y=scrollY,html=({forge:viewForge,armory:viewArmory,village:viewVillage,shop:viewShop,market:viewMarketPage})[ui.tab]();
+  // v3.67 離開鐵匠鋪時把上方 hero（大背景、鐵匠、道具圖）整塊收起來，回來直接放回去，不用重新載入和解碼圖片
+  let oldHero=V.querySelector(':scope > section.hero');if(oldHero&&ui.tab!=='forge'){HERO_KEEP=oldHero;oldHero.remove();oldHero=null}
+  else if(!oldHero&&ui.tab==='forge'&&HERO_KEEP){V.prepend(HERO_KEEP);oldHero=HERO_KEEP;HERO_KEEP=null}
   // v3.26 鐵匠鋪上方區塊整塊留在原地（搬動節點也會讓動畫重跑），只更新裡面的委託橫條、工具列等
   let kept=false;if(oldHero){const T=document.createElement('div');T.innerHTML=html;const nh=T.querySelector(':scope > section.hero');
     if(nh){kept=true;oldHero.className=nh.className;[...oldHero.children].forEach(c=>{if(!c.matches('.dp,.smith'))c.remove()});[...nh.children].forEach(c=>{if(!c.matches('.dp,.smith'))oldHero.appendChild(c)});
@@ -1634,7 +1651,7 @@ document.addEventListener('click',e=>{
   if(!['enhance','fxskip','devdo','mute','sndtest','sfxalt'].includes(a)&&Date.now()-PD_SND>700)snd(uiSndOf(a));
   if((a==='scrim'||a==='rclose')&&e.target!==b&&!e.target.matches('button'))return;
   if(a!=='melt')ui.meltArm=null;
-  ({tab:()=>{if(ui.busy&&ui.fxDone)ui.fxDone();if(ui.tab==='armory'&&d.k!=='armory'&&S.weapons.some(wNew)){S.seenW=S.nextId-1;save()}if(d.k==='market'&&S.mkNew){S.mkNew=0;save()}ui.tab=d.k;if(d.k==='market'&&(AUTH||mkMock())&&Date.now()-MK.t>20000)setTimeout(mkLoad,0);ui.sheet=null;ui.enhLast=null;render();d.k==='village'?scrollToNextVillage():scrollTo(0,0)},close:()=>{if(ui.busy)return;ui.sheet=null;ui.enhLast=null;ui.riskArm=null;ui.riskOk=null;render()},scrim:()=>{if(ui.busy)return;ui.sheet=null;ui.enhLast=null;render()},dev:()=>{ui.sheet={t:'d'};render()},achopen:()=>{ui.sheet={t:'a'};render()},
+  ({tab:()=>{if(ui.busy&&ui.fxDone)ui.fxDone();if(ui.tab==='armory'&&d.k!=='armory'&&S.weapons.some(wNew)){S.seenW=S.nextId-1;save()}if(d.k==='market'&&S.mkNew){S.mkNew=0;save()}ui.tab=d.k;if(d.k==='market'&&(AUTH||mkMock())&&Date.now()-MK.t>20000)setTimeout(mkLoad,0);ui.sheet=null;ui.enhLast=null;render();warmTabs();d.k==='village'?scrollToNextVillage():scrollTo(0,0)},close:()=>{if(ui.busy)return;ui.sheet=null;ui.enhLast=null;ui.riskArm=null;ui.riskOk=null;render()},scrim:()=>{if(ui.busy)return;ui.sheet=null;ui.enhLast=null;render()},dev:()=>{ui.sheet={t:'d'};render()},achopen:()=>{ui.sheet={t:'a'};render()},
    sheetW:()=>{ui.sheet={t:'ws',k:'w'};render()},sheetA:()=>{ui.sheet={t:'ws',k:'a'};render()},sheetM:()=>{ui.sheet={t:'ws',k:'m'};render()},
    devdo:()=>devdo(d.k),speed:()=>{tick();const t=NOW(),old=S.speed,nw=+d.k;
      S.villages.forEach(st=>{if(st.cycleStart!=null)st.cycleStart=t-(t-st.cycleStart)*old/nw});S.jobs.forEach(j=>{j.start=t-(t-j.start)*old/nw;j.end=t+(j.end-t)*old/nw});S.speed=nw;save();render()},
@@ -1818,7 +1835,7 @@ function start(){try{if(localStorage.getItem('nrs-dpv')!=='0')document.body.clas
   const migrated=loadState();applySkin();
   if(typeof window!=='undefined')window.claude?.hot?.snapshot?.(()=>({S}));
   const before=S.villages.reduce((s,v)=>s+v.bank.cycles,0);tick();const after=S.villages.reduce((s,v)=>s+v.bank.cycles,0);
-  bindUI();preloadVfx();render();save();
+  bindUI();preloadVfx();render();save();warmTabs();
   tutInit();
   try{if(/gate/.test(location.hash)||!(navigator.webdriver||/nogate/.test(location.hash))){   // 自動測試（webdriver）預設跳過登入，網址加 #gate 才顯示
     showLoading('檢查版本…');verCheck().then(old=>{if(old)return;
