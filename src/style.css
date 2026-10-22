@@ -902,7 +902,7 @@ html.scrimmed,html.scrimmed body{overflow:hidden;overscroll-behavior:none}
 .ev-more{margin-top:6px}.ev-more summary{min-height:36px}
 /* 底部固定按鈕列 */
 .ev-bar{position:sticky;bottom:calc(-18px - env(safe-area-inset-bottom,0px));z-index:6;display:grid;gap:8px;margin:8px calc(-1 * max(12px,env(safe-area-inset-left,0px))) calc(-18px - env(safe-area-inset-bottom,0px));padding:8px max(12px,env(safe-area-inset-left,0px)) calc(10px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,#0f0c09 14px);}
-.ev-bar.two{grid-template-columns:1.4fr 1fr}
+.ev-bar.two{grid-template-columns:1fr 1fr}
 .ev-bar .btn{width:100%;margin:0}
 .ev-auto{margin:0;min-height:52px}
 /* 版型 1：石碑縮小 */
@@ -1338,4 +1338,16 @@ button.vv-d{font:inherit;font-size:11px;color:inherit;cursor:pointer}
 .forge-why{margin-top:4px;text-align:right}
 @media (max-width:420px){.qtyrow{flex-wrap:nowrap}.qtyrow .qchip{min-width:44px;padding:0 6px}.qtyrow .forge-go{min-width:100px;padding:4px 10px}}
 @media (max-width:360px){.qtyrow>.label{display:none}.qtyrow .qchip{min-width:40px;padding:0 4px}.qtyrow .forge-go{min-width:96px;padding:4px 8px}}
+
+/* v3.84 特性／附魔一行一個、直接寫效果；附魔頁詞條分組 */
+.eff-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:2px 0 -2px}.eff-h b{color:var(--gold);font-size:13px}.eff-h .small{text-align:right}
+.eff-row{display:flex;align-items:center;gap:8px;width:100%;padding:5px 8px;border-radius:10px;background:#0d0b09;border:1px solid var(--line);color:var(--bone);font:inherit;text-align:left;cursor:pointer;min-height:44px}
+.eff-row:active{border-color:var(--gold)}.eff-row img{width:30px;height:30px;border-radius:50%;flex:0 0 30px;object-fit:cover}
+.eff-row .grow{display:flex;flex-direction:column;min-width:0}.eff-row b{font-size:13px}.eff-row b i{font-style:normal;color:var(--gold-hi)}.eff-row.inn b i{color:var(--q4,#f2aa3c)}
+.eff-row em{font-style:normal;color:var(--gold);font-size:13px;flex:0 0 auto}
+.aff-gn{font-size:12px;font-weight:700;color:var(--gold);margin:8px 0 4px}
+.aff-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:6px}
+.aff-g .affpick{position:relative;min-height:84px;padding:4px 2px}
+.aff-d{font-size:10px;line-height:1.2;color:var(--bone);text-align:center}
+.aff-new{position:absolute;top:2px;right:3px;font-style:normal;font-size:9px;line-height:14px;color:#fff;background:#c0392b;border-radius:6px;padding:0 4px}
 </style>

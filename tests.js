@@ -420,9 +420,15 @@ function monTests(){if(typeof document==='undefined')return[];const box=document
   const hunting=S.villages.filter(st=>st.status!=='locked'&&st.status!=='open'&&st.weaponId!=null&&W(st.weaponId)).length;
   const ok=MONS.length===VILLAGES.length&&box.querySelectorAll('[data-mon]').length===hunting&&box.querySelectorAll('[data-vhp]').length===hunting;
   return[T('H 村莊怪物：每關都有怪物，駐守中的村莊都有怪物圖和血條',ok,`怪物 ${MONS.length} 種／村莊 ${VILLAGES.length}；駐守 ${hunting} 座，怪物圖 ${box.querySelectorAll('[data-mon]').length}、血條 ${box.querySelectorAll('[data-vhp]').length}`)]}
+// v3.84 新附魔：貪婪／尋珍／守護／剋巨人金幣都有作用，而且不超過上限
+function enchTests(){const mk=(e,t)=>({id:-1,b:'t3_greataxe',q:0,lv:0,traits:t||[],ench:[...e,null,null,null,null].slice(0,4)});const gi=VILLAGES.findIndex(v=>v.tag==='giant'),bi=VILLAGES.findIndex(v=>v.tag==='beast'&&v.danger>0&&v.drops.some(d=>d[1]<RARE_P));
+  const a=goldMul(bi,mk([{k:'greed',v:15}])),b=goldMul(gi,mk([{k:'giant',v:40}])),c=eventChance(bi,mk([{k:'ward',v:25}]))/VILLAGES[bi].danger,cc=eventChance(bi,mk([{k:'ward',v:25}],[{k:'sturdy',v:45}]))/VILLAGES[bi].danger,g=goldMul(bi,mk([{k:'greed',v:15},{k:'greed',v:15},{k:'greed',v:15}]));
+  const rd=VILLAGES[bi].drops.find(d=>d[1]<RARE_P),sk=rd?dropChance(bi,mk([{k:'seek',v:20}]),rd,'normal')/dropChance(bi,mk([]),rd,'normal'):1.2;
+  const ok=Object.keys(AFFIX).length===9&&Math.abs(a-1.15)<1e-9&&Math.abs(b-1.4)<1e-9&&Math.abs(c-.75)<1e-9&&Math.abs(cc-.4)<1e-9&&Math.abs(g-1.4)<1e-9&&Math.abs(sk-1.2)<1e-6&&Object.values(AFFIX).every(x=>x.max<=40&&AFF_G.some(([k])=>k===x.g));
+  return[T('I 新附魔：貪婪 +15%、剋巨人金幣 +40%、守護降受襲、尋珍提升稀有、上限正常',ok,`貪婪×${a.toFixed(2)}、剋巨人×${b.toFixed(2)}、守護受襲×${c.toFixed(2)}（＋堅固×${cc.toFixed(2)}）、貪婪上限×${g.toFixed(2)}、尋珍稀有×${sk.toFixed(2)}`)]}
 function runTests(mode){
   if(mode==='econ')return econHtml(12)+econHtml(8);
-  const r=runAll({N:100000});r.res.push(...layoutTests(),...monTests());const pass=r.res.filter(x=>x.pass).length;
+  const r=runAll({N:100000});r.res.push(...layoutTests(),...monTests(),...enchTests());const pass=r.res.filter(x=>x.pass).length;
   return `<div><b>${pass}/${r.res.length} 通過</b>（${r.ms} 毫秒）</div>`+resHtml(r.res);
 }
 if(typeof module!=='undefined')module.exports={runAll,econReport,simulate,levelCheck};
