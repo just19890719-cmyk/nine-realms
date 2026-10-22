@@ -1220,4 +1220,11 @@ button.matbox:active{border-color:var(--gold)}
 .evt-st .num{flex:none;min-width:56px;font-weight:700}
 .evt-st.done{opacity:.6}
 .evt-ck{width:20px;height:20px;flex:none}
+.evt-global{display:flex;flex-direction:column;gap:6px}
+.evt-hp{position:relative;height:22px;border-radius:6px;background:#2a2118;overflow:hidden;border:1px solid var(--line2)}
+.evt-hp i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#8c1d14,#d8452c)}
+.evt-hp span{position:relative;display:block;text-align:center;font-size:12px;line-height:20px;color:#fff;text-shadow:0 1px 2px #000}
+.evt-hp.dead{border-color:var(--gold,#d8a64a)}
+.evt-top{font-size:13px}
+.evt-top.me b,.evt-top.me span{color:var(--gold,#d8a64a)}
 </style>
