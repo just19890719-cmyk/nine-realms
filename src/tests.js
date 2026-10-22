@@ -350,9 +350,14 @@ function layoutTests(){if(typeof document==='undefined')return[];const res=[],ke
       box.querySelectorAll('button').forEach(b=>{if(b.textContent.trim().length>1&&b.offsetWidth&&textOut(b))bad.push(`${w}px 按鈕「${b.textContent.trim().slice(0,10)}」字超出`)})}
     res.push(T('G 版面 '+n+'（320～480px 寬）沒有直排或字超出按鈕',!bad.length,bad.length?[...new Set(bad)].slice(0,4).join('；'):'7 種寬度都正常'))}
   box.remove();[ui.tab,ui.ftab]=keep;ui.qTab=null;return res}
+// v3.73 村莊怪物血條：每關都有怪物名稱，有武器的村莊卡顯示怪物縮圖與血條
+function monTests(){if(typeof document==='undefined')return[];const box=document.createElement('div');box.innerHTML=viewVillage();
+  const hunting=S.villages.filter(st=>st.status!=='locked'&&st.status!=='open'&&st.weaponId!=null&&W(st.weaponId)).length;
+  const ok=MONS.length===VILLAGES.length&&box.querySelectorAll('[data-mon]').length===hunting&&box.querySelectorAll('[data-vhp]').length===hunting;
+  return[T('H 村莊怪物：10 關都有怪物，駐守中的村莊都有怪物圖和血條',ok,`怪物 ${MONS.length} 種／村莊 ${VILLAGES.length}；駐守 ${hunting} 座，怪物圖 ${box.querySelectorAll('[data-mon]').length}、血條 ${box.querySelectorAll('[data-vhp]').length}`)]}
 function runTests(mode){
   if(mode==='econ')return econHtml(12)+econHtml(8);
-  const r=runAll({N:100000});r.res.push(...layoutTests());const pass=r.res.filter(x=>x.pass).length;
+  const r=runAll({N:100000});r.res.push(...layoutTests(),...monTests());const pass=r.res.filter(x=>x.pass).length;
   return `<div><b>${pass}/${r.res.length} 通過</b>（${r.ms} 毫秒）</div>`+resHtml(r.res);
 }
 if(typeof module!=='undefined')module.exports={runAll,econReport,simulate,levelCheck};
