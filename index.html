@@ -1443,7 +1443,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}CLOUD.dirty=true}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD='v3.36 封測';
+const BUILD='v3.37 封測';
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off'};
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -2774,7 +2774,9 @@ function tutDraw(force){let o=document.getElementById('tut');
   else{ring.style.display='none';box.style.top='auto';box.style.bottom='120px';o.classList.add('nohole')}}
 function tutInit(){if(S.tut==null)S.tut=(!S.weapons.length&&!S.jobs.length&&cleared()===0)?0:99;
   if(navigator.webdriver&&!/tut/.test(location.hash)){if(S.tut<TUT.length)S.tut=99;S.tips=Object.fromEntries(Object.keys(TIPS).map(k=>[k,1]))}   // 自動測試預設不跑導覽，網址加 #tut 才顯示
-  setInterval(()=>{tutDraw();tipDraw()},250)}
+  setInterval(()=>{nickGuard();tutDraw();tipDraw()},250)}
+// v3.37 保險：只要是登入帳號、還沒取暱稱、目前沒有其他全螢幕畫面，就跳出取名（不管是從哪條路徑進遊戲）
+let NICK_ASK=0;function nickGuard(){if(!AUTH||!AUTH.user||S.nick||document.body.classList.contains('gating')||Date.now()-NICK_ASK<4000)return;NICK_ASK=Date.now();showName(true)}
 function start(){try{if(localStorage.getItem('nrs-dpv')!=='0')document.body.classList.add('dpv')}catch(e){document.body.classList.add('dpv')}dpInit();
   const migrated=loadState();applySkin();
   if(typeof window!=='undefined')window.claude?.hot?.snapshot?.(()=>({S}));
