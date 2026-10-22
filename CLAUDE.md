@@ -54,6 +54,7 @@ git add -A && git commit -m "v3.57 …" && git push    # GitHub Pages 約 1 分�
 
 ## 架構重點
 - **速度**：v3.69 起原本的封測 10 倍速已直接寫進狩獵／鍛造時間（`GAME_SPEED=1`，只剩開發者工具的加速按鈕會改它），畫面時間＝真實時間；離線上限 `OFFLINE_H=12` 小時（伺服器 save_game 也固定 12）；`BETA=true` 時商城隱藏鑽石儲值、月卡免費。
+- **鍛造（v3.78）**：武器學徒已拿掉，鍛造一律 `FORGE_SEC=5` 秒、一次一批（批量也是 5 秒）；舊存檔的 `S.slots` 只留著算鐵匠等級。熟練鍛造天賦、鍛造沙漏已移除。
 - **雲端（Supabase）**：專案 `bzvilstgpjkztrydjwlt`（東京），前端只用 publishable key（已寫在 game.js）。
   **絕對不要索取或使用 service_role / secret key。**
   - 一律雲端存檔、沒有訪客模式（網站上）、同帳號只能一支手機登入（`claim_session`）。
