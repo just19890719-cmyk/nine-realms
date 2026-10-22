@@ -1322,6 +1322,20 @@ button.matbox:active{border-color:var(--gold)}
 .hp-t{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;gap:6px;padding:0 7px;font-size:11px;line-height:1;color:#fff;text-shadow:0 1px 2px #000,0 0 3px #000;pointer-events:none}
 .hp-n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(prefers-reduced-motion:reduce){.vmon *,.vmon:after{animation:none!important}}
+/* v3.76 第二界：地圖切換、巨人體重鍊 */
+button.arr{background:none;border:0;padding:0;cursor:pointer}
+button.arr.off{pointer-events:none}
+.rlm[data-act]{cursor:pointer}
+.rlm.cur span{color:var(--gold-hi);font-weight:700}
+.rlm.on:not(.cur) img{filter:none;opacity:.8}
+.wd-rf{display:flex;align-items:center;gap:8px;width:100%;margin:8px 0;padding:8px 12px;text-align:left;background:linear-gradient(#2a2016,#140f0a);border:1px solid #8a6a3a;border-radius:10px;color:var(--gold-hi);box-shadow:none}
+.wd-rf:disabled{opacity:.5}
+.wd-rf img{width:32px;height:32px;flex:none}
+.wd-rf .small{white-space:nowrap;color:var(--gold)}
+.rf-tag{display:inline-block;padding:1px 6px;border-radius:6px;font-size:11px;background:#1d2a36;color:#a9d4ff;border:1px solid #3d5a74;white-space:nowrap}
+.rf-box{display:flex;flex-direction:column;gap:8px;align-items:center}
+.rf-step{display:flex;gap:10px;align-items:center;font-size:16px;white-space:nowrap}
+.rf-box .mats{justify-content:center}
 </style>
 <div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div><div class="news" id="news" aria-live="polite"></div></div>
 <main class="wrap" id="view"></main>
@@ -1498,9 +1512,11 @@ const UI_ART_PREVIEW={
 /* ---------- 資料表 ---------- */
 const VERSION=3;
 const ART_V='?v=3';  // 武器顯示圖改過透明度：加版本號，避免瀏覽器沿用舊快取
-const A=n=>(typeof UI_ART!=='undefined'&&UI_ART[n])||'art/'+n+'.webp'+(n.endsWith('_disp')?ART_V:'');  // UI_ART（skin.js）可把既有圖示換成新素材路徑；預設空白＝不變
-const MATS={iron:'鐵礦',oak:'橡木',leather:'皮革',silver:'霜銀',fang:'狼牙',scale:'龍鱗',rune:'符文石',shard:'符文碎片',fur:'魔狼黑毛',icecore:'霜巨人冰核',fireheart:'火巨人焰心',serpent:'海蛇鱗'};
-const MATART={iron:'mat_iron',oak:'mat_oak',leather:'mat_leather',silver:'mat_silver',fang:'mat_fang',scale:'mat_scale',rune:'mat_rune',shard:'mat_shard',fur:'mat_fur',icecore:'mat_icecore',fireheart:'mat_fireheart',serpent:'mat_serpent'};
+// v3.76 第二界的 AI 圖還沒到：先借第一界的圖顯示，圖到了刪掉對應那一項就好
+const ART_WAIT={v11:'v8',v12:'v3',v13:'v6',v14:'v7',v15:'v5',v16:'v7',v17:'v4',v18:'v8',v19:'v9',v20:'v10',mat_giantbone:'mat_fang',mat_permafrost:'mat_icecore',mat_thunderiron:'mat_iron',mat_elderroot:'mat_oak',ic_reforge:'nav_forge'};
+const A=n=>(n=ART_WAIT[n]||n,(typeof UI_ART!=='undefined'&&UI_ART[n])||'art/'+n+'.webp'+(n.endsWith('_disp')?ART_V:''));  // UI_ART（skin.js）可把既有圖示換成新素材路徑；預設空白＝不變
+const MATS={iron:'鐵礦',oak:'橡木',leather:'皮革',silver:'霜銀',fang:'狼牙',scale:'龍鱗',rune:'符文石',shard:'符文碎片',fur:'魔狼黑毛',icecore:'霜巨人冰核',fireheart:'火巨人焰心',serpent:'海蛇鱗',giantbone:'巨人骨',permafrost:'永凍霜晶',thunderiron:'雷鳴鐵',elderroot:'世界樹古根'};
+const MATART={iron:'mat_iron',oak:'mat_oak',leather:'mat_leather',silver:'mat_silver',fang:'mat_fang',scale:'mat_scale',rune:'mat_rune',shard:'mat_shard',fur:'mat_fur',icecore:'mat_icecore',fireheart:'mat_fireheart',serpent:'mat_serpent',giantbone:'mat_giantbone',permafrost:'mat_permafrost',thunderiron:'mat_thunderiron',elderroot:'mat_elderroot'};
 const CATS={axe:'斧',sword:'劍',dagger:'短刃',polearm:'長柄',hammer:'錘',bow:'弓',crossbow:'弩',shield:'盾',throw:'投擲',tool:'工具'};
 // sec = 正式版 1× 秒數；試玩可在測試工具調整時間流速
 const TIERS=[
@@ -1575,8 +1591,26 @@ const VILLAGES=[
  {name:'雪峰營地',who:'軍隊・山地軍團',cat:'hammer',req:75,sec:1440,gold:280,danger:.1,tag:'beast',drops:[['silver',.6,1,2],['fang',.6,1,2],['scale',.15,1,1],['rune',.15,1,1],['fur',.1,1,1],['shard',.15,1,1]],txt:'雪怪的甲殼太硬，軍團要能砸碎它的戰錘。'},
  {name:'巨人足跡',who:'軍隊・王國先鋒',cat:'axe',req:110,sec:2160,gold:450,danger:.12,tag:'giant',need:'giant',drops:[['rune',.3,1,1],['scale',.2,1,1],['shard',.5,1,2],['icecore',.15,1,1]],txt:'霜巨人走下山了。武器必須帶有「剋巨人」。'},
  {name:'灰燼要塞',who:'軍隊・要塞騎士',cat:'sword',req:160,sec:2880,gold:700,danger:.14,tag:'giant',drops:[['scale',.3,1,1],['rune',.3,1,1],['shard',.3,1,1],['fireheart',.15,1,1]],txt:'火巨人的斥候燒毀了外牆，騎士要更強的劍。'},
- {name:'世界樹根穴',who:'軍隊・屠龍軍',cat:'polearm',req:200,sec:3600,gold:1000,danger:.16,tag:'dragon',need:'dragon',drops:[['scale',.35,1,2],['rune',.3,1,1],['shard',.5,1,2]],txt:'尼德霍格啃咬著世界樹根。長柄武器必須帶有「剋龍」。'}
+ {name:'世界樹根穴',who:'軍隊・屠龍軍',cat:'polearm',req:200,sec:3600,gold:1000,danger:.16,tag:'dragon',need:'dragon',drops:[['scale',.35,1,2],['rune',.3,1,1],['shard',.5,1,2]],txt:'尼德霍格啃咬著世界樹根。長柄武器必須帶有「剋龍」。'},
+ // v3.76 第二界約頓海姆（收復 1-10 後開放）：要龍鱗／神器武器加「巨人體重鍊」
+ {name:'霜巨人前哨',who:'遠征軍・斥候隊',cat:'axe',req:240,sec:3600,gold:1100,danger:.16,tag:'giant',drops:[['giantbone',.4,1,1],['silver',.6,1,2],['shard',.5,1,2]],txt:'巨人的哨站擋住了進入約頓海姆的路，斥候隊要劈得開巨木柵欄的斧。'},
+ {name:'冰川裂谷',who:'遠征軍・獵兵隊',cat:'bow',req:280,sec:4200,gold:1250,danger:.16,tag:'beast',drops:[['permafrost',.4,1,1],['fang',.6,1,2],['icecore',.15,1,1]],txt:'冰川狼群在裂谷邊緣出沒，獵兵要能遠射的長弓。'},
+ {name:'雷鳴峽谷',who:'遠征軍・弩兵團',cat:'crossbow',req:320,sec:4800,gold:1400,danger:.17,tag:'beast',drops:[['thunderiron',.35,1,1],['scale',.4,1,1],['rune',.35,1,1]],txt:'雷鳴巨鷹盤旋在峽谷上空，弩兵團要射得穿風暴的重弩。'},
+ {name:'巨骨墓場',who:'遠征軍・重裝隊',cat:'hammer',req:380,sec:5400,gold:1550,danger:.17,tag:'giant',drops:[['giantbone',.5,1,2],['rune',.4,1,1],['shard',.5,1,2]],txt:'古代巨人的骸骨站起來了，得用戰錘把它們砸回土裡。'},
+ {name:'永凍湖',who:'湖畔漁村・守衛',cat:'shield',req:340,sec:6000,gold:1700,danger:.18,tag:'beast',drops:[['permafrost',.5,1,2],['icecore',.2,1,1],['serpent',.15,1,1]],txt:'冰湖巨蛇撞破湖面，漁村守衛需要擋得住冰刺的盾。'},
+ {name:'霜晶礦坑',who:'礦工公會・護衛',cat:'dagger',req:320,sec:6000,gold:1800,danger:.18,tag:'beast',drops:[['permafrost',.45,1,1],['thunderiron',.35,1,1]],txt:'礦坑深處的霜晶潛獸躲在窄道裡，只有短刃施展得開。'},
+ {name:'狂風高原',who:'遠征軍・長槍陣',cat:'polearm',req:520,sec:6600,gold:2000,danger:.19,tag:'giant',drops:[['thunderiron',.45,1,1],['giantbone',.45,1,1]],txt:'風暴巨人在暴風雪裡行軍，長槍陣要能刺穿巨人的長柄武器。'},
+ {name:'冰巨人王庭',who:'遠征軍・王家騎士',cat:'sword',req:620,sec:7200,gold:2300,danger:.2,tag:'giant',drops:[['elderroot',.25,1,1],['icecore',.25,1,1]],txt:'冰巨人王衛守著王座大廳，騎士們要最鋒利的劍。'},
+ {name:'熔岩裂口',who:'遠征軍・攻城隊',cat:'hammer',req:740,sec:7200,gold:2600,danger:.2,tag:'giant',drops:[['elderroot',.3,1,1],['fireheart',.2,1,1],['thunderiron',.45,1,1]],txt:'火巨人戰將越過熔岩裂口，攻城隊要砸得碎熔岩盔甲的戰錘。'},
+ {name:'烏特加德城',who:'遠征軍・總指揮',cat:'axe',req:880,sec:7200,gold:3000,danger:.2,tag:'giant',need:'giant',drops:[['elderroot',.35,1,1],['giantbone',.5,1,2],['rune',.4,1,1]],txt:'巨人之王烏特加德洛基坐鎮城中。斧頭必須帶有「剋巨人」。'}
 ];
+const REALM_N=[['米德加德','人類之境','v4'],['約頓海姆','巨人之境','v14']];   // [名稱, 副標, 背景圖]
+const vRealm=i=>i<10?0:1,vNo=i=>(vRealm(i)+1)+'-'+(i%10+1);   // 關卡編號：0→1-1，10→2-1
+// v3.76 巨人體重鍊：龍鱗／神器武器每級戰力 +12%（加法，滿 5 級 ×1.6），一定成功、不會爆，不影響強化成功率
+const RF_MAX=5,RF_PER=.12;
+const RF_COST=[null,[{giantbone:2},5000],[{giantbone:3,permafrost:2},8000],[{giantbone:4,thunderiron:2},12000],[{permafrost:4,thunderiron:3},18000],[{giantbone:5,thunderiron:4,elderroot:3},25000]];
+const rfOk=w=>bpOf(w).t>=2;
+const rfOpen=()=>S.villages.length>10&&S.villages[10].status!=='locked';
 const TAGN={labor:'勞務',beast:'野獸',giant:'巨人',dragon:'龍族'};
 const FURNACE_COST=[0,3000,6000,15000,40000],ANVIL_COST=[0,2000,8000,25000,50000],SLOT_COST=[0,3000,15000,40000];
 const SHOP_MATS=[['iron',8],['oak',6],['leather',10]];
@@ -1694,6 +1728,9 @@ function sanitize(s){
   for(const w of s.weapons){if(seen.has(w.id))w.id=null;else seen.add(w.id);maxId=Math.max(maxId,w.id||0);w.lock=!!w.lock;w.test=!!w.test;w.traits=w.traits||[];w.ench=[0,1,2,3].map(i=>(w.ench||[])[i]||null);w.created=w.created||NOW()}
   for(const w of s.weapons)if(w.id==null)w.id=++maxId;
   s.nextId=Math.max(s.nextId||1,maxId+1);
+  s.villages=(s.villages||[]).slice(0,VILLAGES.length);while(s.villages.length<VILLAGES.length)s.villages.push(freshVillage(s.villages.length));   // v3.76 舊存檔補上第二界
+  s.villages.forEach((v,i)=>{if(i&&v.status==='locked'&&s.villages[i-1].status==='cleared')v.status='open'});
+  for(const w of s.weapons)w.rf=BP[w.b].t>=2?Math.max(0,Math.min(RF_MAX,Math.floor(+w.rf||0))):0;
   const used=new Set();
   s.villages.forEach(v=>{if(v.weaponId!=null&&(!s.weapons.some(w=>w.id===v.weaponId)||used.has(v.weaponId))){v.weaponId=null;v.cycleStart=null}if(v.weaponId!=null)used.add(v.weaponId);
     v.strat=STRATS[v.strat]?v.strat:'normal';v.bank=v.bank||{cycles:0,gold:0,mats:{},events:0}});
@@ -1718,7 +1755,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='3.75';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='3.76';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -1940,7 +1977,7 @@ function mkWeaponBox(w){const b=BP[bpId(w.b)],rm=runicMul(w),nE=(w.ench||[]).fil
   const traits=(w.traits||[]).map(t=>`<button class="wd-chip tap" data-act="trinfo" data-k="${t.k}" data-v="${t.v}">${img(TRAIT_ICON[t.k])}${TRAITS[t.k].n} <b>+${t.v}%</b><i>ⓘ</i></button>`);
   const slots=[0,1,2,3].map(s=>{const e=(w.ench||[])[s];return `<div class="ui-card ui-card--slot eslot">${e?`${img(AFFIX_ICON[e.k])}<span>${AFFIX[e.k].n}</span><span class="small t-gold">+${Math.round(e.v*rm*10)/10}%</span>`:'<span class="small muted">空欄位</span>'}</div>`}).join('');
   return `<div class="ui-card ui-card--feature wd-head q${w.q}b"><div class="wd-art">${wArt(b.id,{frame:w.q})}</div>
-    <div class="wd-info"><h2 class="q${w.q}">${b.n} <span class="lvt">+${w.lv}</span></h2><div class="wd-tags"><span class="qpill q${w.q}b">${QUAL[w.q].n}</span></div>
+    <div class="wd-info"><h2 class="q${w.q}">${b.n} <span class="lvt">+${w.lv}</span></h2><div class="wd-tags"><span class="qpill q${w.q}b">${QUAL[w.q].n}</span>${w.rf?`<span class="rf-tag">重鍊 Lv${w.rf}</span>`:''}</div>
      <div class="small muted">${TIERS[b.t].n}・${CATS[b.cat]}・<span class="nw">安定值 <b class="${TIERS[b.t].stable?'t-ok':'t-danger'}">+${TIERS[b.t].stable}</b></span></div>
      <div class="wd-pow"><span class="small muted">戰力</span><b>${fmt(power({...w,b:b.id}))}</b></div></div></div>
    <div class="ui-panel panel wd-sub"><div class="wd-row"><span class="wd-k">特性</span><div class="wd-chips">${traits.length?traits.join(''):'<span class="small muted">沒有先天特性</span>'}</div></div>
@@ -1978,12 +2015,12 @@ const lbOthers=i=>(LBR.rows[i]||[]).filter(x=>!AUTH||x.user_id!==AUTH.user.id).m
 const lbMyT=i=>{const b=S.best[i],r=AUTH&&(LBR.rows[i]||[]).find(x=>x.user_id===AUTH.user.id);return b&&r&&r.p===b.p&&Date.parse(r.updated_at)||Infinity};
 const lbAhead=(x,p,t)=>x.p>p||(x.p===p&&x.t<t);
 async function lbSync(){if(!AUTH||!CLOUD.ready)return;let n=0;for(const k in S.best){const b=S.best[k];if(!b||b.sub)continue;
-  try{const p=await sbRest('rpc/lb_submit',{method:'POST',body:JSON.stringify({p_village:+k,p_p:b.p,p_w:{b:b.b,q:b.q,lv:b.lv,traits:b.traits||[],ench:b.ench||[]},p_nick:S.nick||'無名鐵匠'})});if(typeof p==='number')b.p=p;b.sub=true;n++}
+  try{const p=await sbRest('rpc/lb_submit',{method:'POST',body:JSON.stringify({p_village:+k,p_p:b.p,p_w:{b:b.b,q:b.q,lv:b.lv,rf:b.rf||0,traits:b.traits||[],ench:b.ench||[]},p_nick:S.nick||'無名鐵匠'})});if(typeof p==='number')b.p=p;b.sub=true;n++}
     // v3.65 伺服器自己算戰力，武器要先存進雲端；還沒存到就等下一輪，10 分鐘都找不到（已熔解）或類別不符就放棄
     catch(e){if(/weapon not saved/.test(e.message)){if(Date.now()-(b.at||0)>6e5)b.sub=true;continue}if(/bad weapon|bad village/.test(e.message)){b.sub=true;continue}return}}
   if(n){save();lbFetch(true)}}
 if(typeof window!=='undefined')setInterval(()=>{if(AUTH&&CLOUD.ready&&!document.hidden){lbSync();if(ui.sheet&&/^lb/.test(ui.sheet.t))lbFetch()}},30000);
-function lbRecord(s,i,w){const p=power(w),b=s.best[i];if(!b||p>b.p){s.best[i]={p,b:w.b,q:w.q,lv:w.lv,traits:JSON.parse(JSON.stringify(w.traits||[])),ench:JSON.parse(JSON.stringify(w.ench||[])),sub:false,at:Date.now()};if(typeof window!=='undefined'&&s===S)setTimeout(lbSync,500)}}   // 存一份當時的武器內容，排行榜可以點開看
+function lbRecord(s,i,w){const p=power(w),b=s.best[i];if(!b||p>b.p){s.best[i]={p,b:w.b,q:w.q,lv:w.lv,rf:w.rf||0,traits:JSON.parse(JSON.stringify(w.traits||[])),ench:JSON.parse(JSON.stringify(w.ench||[])),sub:false,at:Date.now()};if(typeof window!=='undefined'&&s===S)setTimeout(lbSync,500)}}   // 存一份當時的武器內容，排行榜可以點開看
 const lbRank=i=>{const b=S.best[i];if(!b||(AUTH&&!LBR.t))return null;const t=lbMyT(i);return lbOthers(i).filter(x=>lbAhead(x,b.p,t)).length+1};
 // 第一次衝進前 10／前 3／第 1 名各領一次
 function lbReward(i){if(!AUTH||!LBR.t)return[];const rk=lbRank(i);if(!rk)return[];const got=S.lbRw[i]=S.lbRw[i]||[];const out=[];
@@ -1999,7 +2036,7 @@ const traitVal=(w,k)=>(w.traits||[]).filter(t=>t.k===k).reduce((a,t)=>a+t.v,0);
 const runicMul=w=>1+Math.min(CAP.runic,traitVal(w,'runic'))/100;
 function enchVal(w,k){return(w.ench||[]).filter(e=>e&&e.k===k).reduce((a,e)=>a+e.v,0)*runicMul(w)}
 function affixVal(w,k){const b=bpOf(w);return((b.inn&&b.inn[0]===k)?b.inn[1]:0)+enchVal(w,k)}
-function power(w,lv){const b=bpOf(w);return Math.round(b.base*TIERS[b.t].mult*QUAL[w.q].m*enhMult(lv??w.lv)*(1+(affixVal(w,'flame')+affixVal(w,'frost'))/100))}
+function power(w,lv){const b=bpOf(w);return Math.round(b.base*TIERS[b.t].mult*QUAL[w.q].m*enhMult(lv??w.lv)*(1+(affixVal(w,'flame')+affixVal(w,'frost'))/100)*(1+RF_PER*(w.rf||0)))}
 const stable=w=>TIERS[bpOf(w).t].stable;
 const where=w=>S.villages.findIndex(v=>v.weaponId===w.id);
 function timeReduction(i,w){const v=VILLAGES[i];let r=affixVal(w,'swift')+traitVal(w,'light');if(v.tag==='beast')r+=traitVal(w,'sharp');if(v.tag==='giant')r+=traitVal(w,'giantslayer');return Math.min(CAP.time,r)/100}
@@ -2115,7 +2152,7 @@ function collectCore(i){const st=S.villages[i],b=st.bank;if(!b.cycles)return nul
   save();return{got,n,ev}}
 function setStrategy(i,k){const st=S.villages[i];if(!STRATS[k]||st.strat===k)return false;tick();st.strat=k;if(st.cycleStart!=null)st.cycleStart=NOW();save();return true}
 // v3.50 第一次收復村莊的金幣獎勵（伺服器存檔檢查有同一張表）
-const FIRST_GOLD=[300,500,800,1200,2000,3000,5000,8000,12000,0];
+const FIRST_GOLD=[300,500,800,1200,2000,3000,5000,8000,12000,0,15000,18000,21000,24000,27000,30000,35000,40000,45000,50000];
 function deliverCore(i,id){
   const w=W(id);if(!w||!eligible(i,w)||S.villages[i].status==='locked')return null;
   const old=where(w);if(old>=0&&old!==i){tick();S.villages[old].weaponId=null;S.villages[old].cycleStart=null}
@@ -2159,6 +2196,10 @@ function bossRankTier(){const g=BOSS_G.prev;if(!g||!g.mine||S.evtRk===g.week||g.
   const b=EVT_BOSS[((g.week%EVT_BOSS.length)+EVT_BOSS.length)%EVT_BOSS.length];return{t,b,g,gift:stageGift(t[2],b)}}
 function bossClaimRank(){const r=bossRankTier();if(!r)return null;S.evtRk=r.g.week;giveGift(r.gift);save();return r}
 function recallCore(i){const st=S.villages[i];if(st.weaponId==null)return false;tick();st.weaponId=null;st.cycleStart=null;save();return true}
+// v3.76 巨人體重鍊：一定成功；測試武器免費
+function reforgeCore(id){const w=W(id);if(!w||!rfOk(w)||!rfOpen()||where(w)>=0||(w.rf||0)>=RF_MAX)return null;const[m,g]=RF_COST[(w.rf||0)+1];
+  if(!w.test){if(lackList(m,g).length)return null;for(const k in m)S.mats[k]-=m[k];S.gold-=g}
+  const p0=power(w);w.rf=(w.rf||0)+1;S.stats.reforge=(S.stats.reforge||0)+1;save();return{p0,p1:power(w),lv:w.rf}}
 function meltCore(id){const w=W(id);if(!w||where(w)>=0||w.lock)return null;if(w.test){S.weapons.splice(S.weapons.indexOf(w),1);save();return{}}const b=bpOf(w),c=recipe(b),got={gold:Math.round(goldOf(b)*.5)};
   for(const k in c){const n=Math.floor(c[k]*.3*(1+tal('melt')/100));if(n){S.mats[k]+=n;got[k]=n}}if(Math.random()<.25){S.mats.shard++;got.shard=1}
   S.gold+=got.gold;S.weapons.splice(S.weapons.indexOf(w),1);S.stats.melted++;repGain(REP_XP.melt);save();return got}
@@ -2217,7 +2258,7 @@ function sndSettings(){const v=Math.round((S.vol??1)*100);
 function showLevel(){const c=cleared(),lv=smithLv();
   const row=(k,v,m)=>`<div class="kv"><span>${k}</span><b>${v}${m?` <span class="small muted">／${m}</span>`:''}</b></div>`;
   const nb=BPS.filter(b=>b.unlock===c+1),nx=VILLAGES[c],nt=TIERS.find(t=>t.furnace>S.furnace);
-  const next=[nx?`收復 1-${c+1} ${nx.name}${nb.length?`：解鎖 ${nb.length} 張新圖紙`:''}`:'',c<5?`收復 5 座村莊：開放批量鍛造`:'',nt?`熔爐升到 Lv${nt.furnace}：可鍛造${nt.n}武器`:'',S.anvil<5?`升級鐵砧：開放更多附魔欄`:'',repPts()?`你有 ${repPts()} 個天賦點還沒分配（鐵匠鋪 →「鐵匠天賦」）`:''].filter(Boolean);
+  const next=[nx?`收復 ${vNo(c)} ${nx.name}${nb.length?`：解鎖 ${nb.length} 張新圖紙`:''}`:'',c<5?`收復 5 座村莊：開放批量鍛造`:'',nt?`熔爐升到 Lv${nt.furnace}：可鍛造${nt.n}武器`:'',S.anvil<5?`升級鐵砧：開放更多附魔欄`:'',repPts()?`你有 ${repPts()} 個天賦點還沒分配（鐵匠鋪 →「鐵匠天賦」）`:''].filter(Boolean);
   ui.result={t:'info',icon:'ui_player_emblem',title:`鐵匠等級 Lv.${lv}`,html:`${AUTH?`<div class="kv nick-row"><span>暱稱</span><b>${S.nick||'（尚未取名）'} <button class="ui-btn ui-btn--chip chipbtn" data-act="rename">改名</button></b></div>`:''}<div class="small muted">等級代表你的整體進度。收復村莊、升級熔爐、鐵砧、附魔欄，每一項都會讓等級 +1。</div>
    <div class="lv-rows">${row('收復村莊',c,VILLAGES.length)}${row('熔爐','Lv'+S.furnace,'Lv5')}${row('鐵砧','Lv'+S.anvil,'Lv5')}${row('附魔欄',S.slots,4)}${row('鐵匠聲望','Lv.'+S.rep.lv,'不封頂')}</div>
    <div class="label">下一步可以做</div><ul class="lv-next">${next.map(t=>`<li>${t}</li>`).join('')}</ul>`};render()}
@@ -2237,7 +2278,7 @@ function collectAll(){tick();let tot={},cnt=0,ev=0;S.villages.forEach((st,i)=>{c
 function showHarvest(title,got,ev){ui.result={t:'h',title,got,ev};render()}
 function deliver(i,id){const r=deliverCore(i,id);if(!r)return toast('這把武器不符合委託條件。','bad');const lbr=lbReward(i);if(lbr.length)setTimeout(()=>toast(`${VILLAGES[i].name}排行榜 第 ${lbRank(i)} 名！<br>`+lbr.join('<br>'),'ok'),400);snd(r.first?'unlock':'deliver');if(r.fg)setTimeout(()=>toast(`首次收復 ${VILLAGES[i].name}：獲得 ${fmt(r.fg)} 金幣`,'ok'),200);
   if(r.first){const nb=BPS.filter(b=>b.unlock===cleared()).map(b=>b.n);const nx=VILLAGES[i+1];
-    toast(nx?`委託完成！解鎖 1-${i+2} ${nx.name}`+(nb.length?`，新圖紙：${nb.slice(0,4).join('、')}${nb.length>4?' 等 '+nb.length+' 張':''}`:''):'米德加德全部收復！','ok')}
+    toast(nx?`委託完成！解鎖 ${vNo(i+1)} ${nx.name}`+(nb.length?`，新圖紙：${nb.slice(0,4).join('、')}${nb.length>4?' 等 '+nb.length+' 張':''}`:''):'約頓海姆全部收復！','ok');if(i===9){ui.realm=1;setTimeout(()=>toast('米德加德全部收復！第二界「約頓海姆」開放了，龍鱗和神器武器也能做「巨人體重鍊」','ok'),700)}}
   else toast(`${bpOf(W(id)).n} 已駐守 ${VILLAGES[i].name}`,'ok');ui.sheet=null;render()}
 function recall(i){if(recallCore(i))toast(`武器已收回，${VILLAGES[i].name} 暫停狩獵。`);render()}
 const cheapList=()=>S.weapons.filter(w=>w.q<=1&&w.lv===0&&where(w)<0&&!w.lock&&!(w.traits||[]).length);
@@ -2642,16 +2683,16 @@ const ptitle=t=>`<div class="ui-title ptitle"><span>${t}</span></div>`;
 const kv=(k,v)=>`<div class="kv"><span>${k}</span><b>${v}</b></div>`;
 function wTile(w,act,dot){const b=bpOf(w),i=where(w);
   return `<button class="wt q${w.q}b ${i>=0?'posted':''} ${w.lock?'locked-fav':''}" ${act}>${dot?'<i class="dot give-dot" title="可以交付村莊"></i>':''}<span class="wt-art">${wArt(b.id,{frame:w.q})}
-   ${i>=0?`<span class="wt-post">駐守 1-${i+1}</span>`:''}${wNew(w)?'<span class="new-tag">NEW</span>':''}</span>
+   ${i>=0?`<span class="wt-post">駐守 ${vNo(i)}</span>`:''}${wNew(w)?'<span class="new-tag">NEW</span>':''}</span>
    <span class="wt-name q${w.q}"><span class="wt-lv">+${w.lv}</span>${b.n}${w.lock?img('ic_lock','wt-lk','已收藏'):''}</span><span class="wt-meta"><span class="wt-q q${w.q}">${QUAL[w.q].n}${(w.traits||[]).length?`<span class="wt-tr">特性${w.traits.length}</span>`:''}${w.test?'<span class="wt-tst">測試</span>':''}</span><span class="wt-pow">${fmt(power(w))}</span></span></button>`}
 function bpTile(b,on){const l=bpLock(b);return `<button class="wt bp ${on?'on':''} ${l?'locked':''}" data-act="bp" data-k="${b.id}"><span class="wt-art">${wArt(b.id,{frame:TIER_FRAME[b.t]})}${l?`<span class="wt-lock">${img('ic_lock')}</span>`:''}${bpNew(b)?'<span class="new-tag">NEW</span>':''}</span><span class="wt-name">${b.n}</span>${l?`<span class="wt-pow wt-lockline">${l}</span>`:`<span class="wt-pow">${TIERS[b.t].n}・${CATS[b.cat]}</span>`}</button>`}
 const matBox=(k,need)=>need==null?`<button class="matbox mb-tap" data-act="matinfo" data-k="${k}">${img(MATART[k])}<span class="mb-n">${MATS[k]}</span><span class="mb-c">${fmt(S.mats[k])}</span></button>`
   :`<div class="matbox need ${S.mats[k]<need?'lack':'ok'}">${img(MATART[k])}<span class="mb-n">${MATS[k]}</span><span class="mb-have">持有 ${fmt(S.mats[k])}</span><span class="mb-need">需要 ${fmt(need)}</span></div>`;
 // v3.61 材料倉庫：點材料顯示用途（哪些材質的圖紙會用到）與取得方式，直接從圖紙配方、村莊掉落、商店資料算出來
 function matInfo(k){const tiers=[...new Set(BPS.filter(b=>recipe(b)[k]).map(b=>TIERS[b.t].n))],named=BPS.filter(b=>b.r&&b.r[k]).map(b=>b.n);
-  const use=[];if(tiers.length)use.push(`鍛造 <b>${tiers.join('、')}</b> 武器${named.length?`（神器：${named.join('、')}）`:''}`);if(k==='shard')use.push('武器<b>附魔</b>（一般 1 個、指定 4 個）');
+  const use=[];if(tiers.length)use.push(`鍛造 <b>${tiers.join('、')}</b> 武器${named.length?`（神器：${named.join('、')}）`:''}`);if(k==='shard')use.push('武器<b>附魔</b>（一般 1 個、指定 4 個）');if(RF_COST.some(c=>c&&c[0][k]))use.push('龍鱗／神器武器<b>巨人體重鍊</b>');
   const shop=SHOP_MATS.find(x=>x[0]===k),src=[];if(shop)src.push(`商城旅行商人 ${shop[1]} 金／個`);
-  const vs=VILLAGES.map((v,i)=>v.drops.some(d=>d[0]===k)?'1-'+(i+1)+' '+v.name:null).filter(Boolean);if(vs.length)src.push('村莊狩獵：'+vs.join('、'));
+  const vs=VILLAGES.map((v,i)=>v.drops.some(d=>d[0]===k)?vNo(i)+' '+v.name:null).filter(Boolean);if(vs.length)src.push('村莊狩獵：'+vs.join('、'));
   if(SLAG_SHOP.some(x=>x[0]===k))src.push('殘渣兌換');if(k==='shard')src.push('熔解武器有機率得到');
   return {icon:MATART[k],title:MATS[k],html:`持有 <b>${fmt(S.mats[k])}</b> 個<br><br><b>用途</b>：${use.join('；')||'—'}<br><br><b>取得</b>：${src.join('；')||'—'}`}}
 const traitHtml=w=>(w.traits||[]).map(t=>`<span class="trait">${TRAITS[t.k].n} +${t.v}%</span>`).join('');
@@ -2670,23 +2711,23 @@ let NAV_H='';function renderNav(){const N=document.getElementById('nav'),h=TABS.
 function commissionCard(){const i=S.villages.findIndex(v=>v.status==='open');
   if(i<0)return `<div class="ui-card comm">${ptitle('目前委託')}<div class="small center">米德加德已全部收復</div></div>`;
   const v=VILLAGES[i],best=S.weapons.filter(w=>bpOf(w).cat===v.cat).reduce((m,w)=>Math.max(m,power(w)),0);
-  return `<div class="ui-card comm">${ptitle('目前委託')}<div class="comm-in">${img('v'+(i+1),'comm-img')}<div><b>1-${i+1} ${v.name}</b><div class="small muted">${CATS[v.cat]}類・戰力 ${v.req}${v.need?'＋'+AFFIX[v.need].n:''}</div></div></div>
+  return `<div class="ui-card comm">${ptitle('目前委託')}<div class="comm-in">${img('v'+(i+1),'comm-img')}<div><b>${vNo(i)} ${v.name}</b><div class="small muted">${CATS[v.cat]}類・戰力 ${v.req}${v.need?'＋'+AFFIX[v.need].n:''}</div></div></div>
    <div class="ui-prog prog sm"><i style="width:${Math.min(100,best/v.req*100)}%"></i></div><div class="small muted">最強${CATS[v.cat]} ${best}/${v.req}</div>
    ${btn('前往村莊 »','tab',{cls:'btn-sec sm',attrs:'data-k="village"'})}</div>`}
 // 版型 E 場景互動：場景裡的物件本身就是按鈕（炭火桶＝熔解、鐵砧＝工坊升級、工具架＝學徒），委託做成用鐵鍊吊著的告示牌
 function heroScene(){const i=S.villages.findIndex(v=>v.status==='open'),D=n=>A('dp/'+n);
   const obj=(cls,src,act,label,ic)=>`<button class="hs-obj ${cls}" data-act="${act}" aria-label="${label}"><img class="hs-img" src="${D(src)}" alt=""><span class="hs-tag">${img(ic)}${label}</span></button>`;
   let board='';if(i>=0){const v=VILLAGES[i],best=S.weapons.filter(w=>bpOf(w).cat===v.cat).reduce((m,w)=>Math.max(m,power(w)),0),f=Math.min(1,best/v.req);
-    board=`<button class="hs-board ${f>=1?'ok':''}" data-act="tab" data-k="village"><img class="hs-chain l" src="${D('prop_chains')}" alt=""><img class="hs-chain r" src="${D('prop_chains')}" alt=""><span class="hs-bin"><span class="hs-bt">目前委託</span>${img('v'+(i+1),'hs-vimg')}<b>1-${i+1} ${v.name}</b><span class="small">${CATS[v.cat]}・戰力 ${v.req}</span><i class="cb-bar"><i style="width:${f*100}%"></i></i><span class="small">${f>=1?'可以交付了 ›':'最強 '+best+'/'+v.req}</span></span></button>`}
+    board=`<button class="hs-board ${f>=1?'ok':''}" data-act="tab" data-k="village"><img class="hs-chain l" src="${D('prop_chains')}" alt=""><img class="hs-chain r" src="${D('prop_chains')}" alt=""><span class="hs-bin"><span class="hs-bt">目前委託</span>${img('v'+(i+1),'hs-vimg')}<b>${vNo(i)} ${v.name}</b><span class="small">${CATS[v.cat]}・戰力 ${v.req}</span><i class="cb-bar"><i style="width:${f*100}%"></i></i><span class="small">${f>=1?'可以交付了 ›':'最強 '+best+'/'+v.req}</span></span></button>`}
   return obj('hs-rack','prop_rack','sheetA','學徒管理','nav_armory')+obj('hs-anvil','prop_anvil','sheetW','工坊升級','nav_forge')+obj('hs-coal','prop_coal','sheetM','熔解回收','mat_shard')+board}
 // 版型 F 上橫幅＋下工具列：委託一行橫幅貼在上緣，三顆功能鈕排在下緣霧氣上
 function heroRibbon(){const i=S.villages.findIndex(v=>v.status==='open');let rb='';
   if(i>=0){const v=VILLAGES[i],best=S.weapons.filter(w=>bpOf(w).cat===v.cat).reduce((m,w)=>Math.max(m,power(w)),0),f=Math.min(1,best/v.req);
-    rb=`<button class="hf-rib ${f>=1?'ok':''}" data-act="tab" data-k="village">${img('v'+(i+1),'hf-img')}<span class="hf-t"><span class="small">目前委託</span><b>1-${i+1} ${v.name}・${CATS[v.cat]} ${best}/${v.req}</b></span><i class="cb-bar"><i style="width:${f*100}%"></i></i><span class="hf-go">前往 ›</span></button>`}
+    rb=`<button class="hf-rib ${f>=1?'ok':''}" data-act="tab" data-k="village">${img('v'+(i+1),'hf-img')}<span class="hf-t"><span class="small">目前委託</span><b>${vNo(i)} ${v.name}・${CATS[v.cat]} ${best}/${v.req}</b></span><i class="cb-bar"><i style="width:${f*100}%"></i></i><span class="hf-go">前往 ›</span></button>`}
   return rb+`<div class="hf-bar">${btn(img('nav_forge')+'<span>工坊升級</span>','sheetW',{cls:'hf-btn'})}${btn(img('nav_armory')+'<span>學徒管理</span>','sheetA',{cls:'hf-btn'})}${btn(img('mat_shard')+'<span>熔解回收</span>','sheetM',{cls:'hf-btn'})}${btn(img('ic_star')+'<span>鐵匠天賦</span>'+(repPts()?'<i class="dot"></i>':''),'sheetT',{cls:'hf-btn hf-tal'})}</div>`}
 // 委託縮小成徽章（版型 B）：村莊縮圖＋進度，點一下前往村莊
 function commBadge(){const i=S.villages.findIndex(v=>v.status==='open');if(i<0)return '';const v=VILLAGES[i],best=S.weapons.filter(w=>bpOf(w).cat===v.cat).reduce((m,w)=>Math.max(m,power(w)),0),f=Math.min(1,best/v.req);
-  return `<button class="comm-badge ${f>=1?'ok':''}" data-act="tab" data-k="village">${img('v'+(i+1),'cb-img')}<span class="cb-t"><b>1-${i+1} ${v.name}</b><span class="small">${CATS[v.cat]} ${best}/${v.req}</span></span><i class="cb-bar"><i style="width:${f*100}%"></i></i></button>`}
+  return `<button class="comm-badge ${f>=1?'ok':''}" data-act="tab" data-k="village">${img('v'+(i+1),'cb-img')}<span class="cb-t"><b>${vNo(i)} ${v.name}</b><span class="small">${CATS[v.cat]} ${best}/${v.req}</span></span><i class="cb-bar"><i style="width:${f*100}%"></i></i></button>`}
 function viewForge(){
   const done=S.jobs.filter(j=>NOW()>=j.end).length;
   const tabs=[['bp','圖紙'],['mat','材料'],['queue',`鍛造中 (${S.jobs.length}/${S.slots})`]];
@@ -2813,13 +2854,13 @@ function sheetWeapon(id,mode){
       +`<div class="acts3">${btn('回武器庫','backArmory',{cls:'btn-primary big'})}${btn('去鐵匠鋪','tab',{cls:'btn-sec big',attrs:'data-k="forge"'})}</div>`;
     return`<div class="sheet-head"><h2>武器詳情</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img'})}</div><div class="empty">這把武器已經不在了。</div>`}
   const b=bpOf(w),i=where(w),highValue=w.lock||w.q>=2||w.lv>=3||b.t>=2||(w.traits||[]).length>=2;
-  const title={main:'武器詳情',enh:'強化',ench:'附魔',give:'交給村莊'}[mode];
+  const title={main:'武器詳情',enh:'強化',ench:'附魔',give:'交給村莊',rf:'巨人體重鍊'}[mode];
   const head=`<div class="sheet-head">${mode==='main'?'<span style="width:44px"></span>':btn(img('ic_back'),'wmode',{cls:'icon-btn img',attrs:`data-m="main" data-id="${id}" aria-label="返回"`})}<h2>${title}</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>`;
   const showcase=(extra='')=>`<div class="ui-card ui-card--feature showcase q${w.q}b ${extra}">
    <div class="sc-top"><div><h2 class="q${w.q}">${b.n} <span class="lvt">+${w.lv}</span></h2><span class="qpill q${w.q}b">${QUAL[w.q].n}</span></div>
     <button class="ui-iconbtn icon-btn img" data-act="lock" data-id="${id}" aria-label="${w.lock?'取消收藏':'收藏'}">${img(w.lock?'ic_lock':'ic_unlock')}</button></div>
    <div class="sc-art">${wArt(b.id,{cls:'sc-w'})}</div>
-   <div class="sc-bot"><span class="small">${TIERS[b.t].n}・${CATS[b.cat]}・安定值 <b class="${stable(w)?'t-ok':'t-danger'}">+${stable(w)}</b>${i>=0?`・<span class="t-ok">駐守 1-${i+1}</span>`:''}</span><div class="powbox"><span class="small muted">戰力</span><b>${fmt(power(w))}</b></div></div></div>`;
+   <div class="sc-bot"><span class="small">${TIERS[b.t].n}・${CATS[b.cat]}・安定值 <b class="${stable(w)?'t-ok':'t-danger'}">+${stable(w)}</b>${i>=0?`・<span class="t-ok">駐守 ${vNo(i)}</span>`:''}</span><div class="powbox"><span class="small muted">戰力</span><b>${fmt(power(w))}</b></div></div></div>`;
   if(mode==='main'){
     // v3.15 精簡版：上方橫式武器卡＋特性／附魔一張面板＋按鈕；數值明細收進「詳細資訊」
     const el=affixVal(w,'flame')+affixVal(w,'frost'),s=stable(w),nE=w.ench.filter(Boolean).length;
@@ -2829,7 +2870,7 @@ function sheetWeapon(id,mode){
     return head+`<div class="ui-card ui-card--feature wd-head q${w.q}b">
       <div class="wd-art">${wArt(b.id,{frame:w.q})}</div>
       <div class="wd-info"><h2 class="q${w.q}">${b.n} <span class="lvt">+${w.lv}</span></h2>
-       <div class="wd-tags"><span class="qpill q${w.q}b">${QUAL[w.q].n}</span>${i>=0?`<span class="t-ok small">駐守 1-${i+1}</span>`:''}</div>
+       <div class="wd-tags"><span class="qpill q${w.q}b">${QUAL[w.q].n}</span>${w.rf?`<span class="rf-tag">重鍊 Lv${w.rf}</span>`:''}${i>=0?`<span class="t-ok small">駐守 ${vNo(i)}</span>`:''}</div>
        <div class="small muted">${TIERS[b.t].n}・${CATS[b.cat]}・<span class="nw">安定值 <b class="${s?'t-ok':'t-danger'}">+${s}</b></span></div>
        <div class="wd-pow"><span class="small muted">戰力</span><b>${fmt(power(w))}</b></div></div>
       <button class="ui-iconbtn icon-btn img wd-lock" data-act="lock" data-id="${id}" aria-label="${w.lock?'取消收藏':'收藏'}">${img(w.lock?'ic_lock':'ic_unlock')}</button></div>
@@ -2837,16 +2878,27 @@ function sheetWeapon(id,mode){
       <div class="wd-row"><span class="wd-k">特性</span><div class="wd-chips">${traits.length?traits.join(''):'<span class="small muted">沒有先天特性</span>'}</div></div>
       <div class="wd-row"><span class="wd-k">附魔 ${nE}/4</span><div class="slots wd-slots">${[0,1,2,3].map(x=>slotHtml(w,x,false)).join('')}</div></div>
       <details class="wd-more"><summary>詳細資訊</summary>
-       <div class="kvgrid">${kv('基礎戰力',b.base)}${kv('品質倍率','×'+QUAL[w.q].m)}${kv('材質階級',TIERS[b.t].n+' ×'+TIERS[b.t].mult)}${kv('強化倍率','×'+enhMult(w.lv).toFixed(2))}${kv('元素加成',el?'+'+Math.round(el*10)/10+'%':'—')}${kv('最終戰力','<span class="t-gold">'+fmt(power(w))+'</span>')}</div>
+       <div class="kvgrid">${kv('基礎戰力',b.base)}${kv('品質倍率','×'+QUAL[w.q].m)}${kv('材質階級',TIERS[b.t].n+' ×'+TIERS[b.t].mult)}${kv('強化倍率','×'+enhMult(w.lv).toFixed(2))}${rfOk(w)&&w.rf?kv('重鍊倍率','×'+(1+RF_PER*w.rf).toFixed(2)):''}${kv('元素加成',el?'+'+Math.round(el*10)/10+'%':'—')}${kv('最終戰力','<span class="t-gold">'+fmt(power(w))+'</span>')}</div>
        ${(w.traits||[]).map(t=>`<div class="small"><b>${TRAITS[t.k].n}</b>：<span class="muted">${TRAITS[t.k].d}</span></div>`).join('')}
        ${b.inn?'<div class="small"><b>天生詞條</b>：<span class="muted">怪物素材打造的神器詞條</span></div>':''}</details></div>
      ${canAuto?(()=>{const lack=!w.test&&S.gold<enhCost(w);return `<button class="ui-btn ui-btn--accent btn wd-auto" data-act="autoEnh" data-id="${id}" ${lack?'disabled':''}><span>${lack?'金幣不足，無法一鍵強化':'一鍵強化到安定值 <b>+'+s+'</b>'}</span><span class="small">${w.test?'測試武器免費':'約 '+fmt(autoEnhCost(w))+' 金・持有 '+fmt(S.gold)}${lack?'':'・不會爆裝'}</span></button>`})():''}
      <div class="acts2">${btn('強化','wmode',{cls:'btn-primary big',attrs:`data-m="enh" data-id="${id}"`,dis:i>=0})}${btn('附魔','wmode',{cls:'btn-primary big',attrs:`data-m="ench" data-id="${id}"`,dis:i>=0})}</div>
+     ${rfOk(w)&&rfOpen()?`<button class="ui-btn btn wd-rf" data-act="wmode" data-m="rf" data-id="${id}" ${i>=0?'disabled':''}>${img('ic_reforge')}<span class="grow">巨人體重鍊 <b>Lv${w.rf||0}/${RF_MAX}</b></span><span class="small">${(w.rf||0)>=RF_MAX?'已滿級':'一定成功・戰力 +12%'}</span></button>`:''}
      <div class="acts3">${i>=0?btn('收回','recall',{attrs:`data-i="${i}"`}):btn('交給村莊'+(canGive(w)?'<i class="dot give-dot"></i>':''),'wmode',{attrs:`data-m="give" data-id="${id}"`})}
       ${btn(ui.meltArm===id?'再按一次確認':'熔解','melt',{cls:'btn-danger',attrs:`data-id="${id}"`,dis:i>=0||w.lock})}</div>
      <div class="small muted center">${i>=0?'駐守中的武器要先收回，才能強化、附魔或熔解。':w.lock?'已收藏的武器不能熔解，先點右上角鎖頭解除收藏。':highValue?'高價值武器，熔解後無法復原。':'熔解回收 30% 材料與一半鍛造金幣。'}</div>`;
   }
   if(i>=0&&mode!=='give')return head+showcase()+`<div class="goal">這把武器正在 ${VILLAGES[i].name} 駐守，要先收回。</div>${btn('從村莊收回','recall',{cls:'btn-primary big',attrs:`data-i="${i}"`})}`;
+  if(mode==='rf'){const lv=w.rf||0;if(!rfOk(w))return head+showcase()+'<div class="goal">只有龍鱗和神器武器可以重鍊。</div>';
+    if(lv>=RF_MAX)return head+showcase()+`<div class="goal">已達重鍊最高等級 Lv${RF_MAX}（戰力 ×${(1+RF_PER*RF_MAX).toFixed(2)}）。</div>`;
+    const[m,g]=RF_COST[lv+1],lack=w.test?[]:lackList(m,g),p1=power({...w,rf:lv+1});
+    return head+showcase()+`<div class="ui-panel panel rf-box"><div class="rf-step"><span>重鍊 Lv${lv}</span><b>→</b><span class="t-gold">Lv${lv+1}</span></div>
+      <div class="rf-step"><span>戰力 ${fmt(power(w))}</span><b>→</b><span class="t-gold">${fmt(p1)}</span></div>
+      <div class="small muted center">一定成功、不會爆裝，跟強化成功率無關。每級戰力 +12%（加法），最高 Lv${RF_MAX}。</div>
+      <div class="mats">${Object.entries(m).map(([k,n])=>matBox(k,n)).join('')}</div>
+      <div class="small center ${S.gold<g&&!w.test?'t-danger':'muted'}">${img('it_gold','fg-ic')} ${fmt(g)} 金幣・持有 ${fmt(S.gold)}${w.test?'（測試武器免費）':''}</div></div>
+     ${btn(lack.length?'不足：'+lackStr(lack):`重鍊到 Lv${lv+1}`,'reforge',{cls:'btn-primary big',attrs:`data-id="${id}"`,dis:lack.length>0})}
+     <div class="small muted center">新材料在第二界約頓海姆的村莊掉落，到材料倉庫點材料可以看哪裡掉。</div>`}
   if(mode==='enh'){
     const last=ui.enhLast&&ui.enhLast.id===id?ui.enhLast:null,rib=last?`<b>${last.t}</b><span>${last.d}</span>`:'';
     const nameRow=`<div class="enh-name"><b class="q${w.q}">${b.n}</b><span class="qpill q${w.q}b">${QUAL[w.q].n}</span>${w.test?'<span class="testtag">測試</span>':''}</div>`;
@@ -2918,7 +2970,7 @@ function sheetWeapon(id,mode){
   }
   if(mode==='give'){const vs=VILLAGES.map((v,k)=>[v,k]).filter(([v,k])=>v.cat===b.cat&&S.villages[k].status!=='locked');
     return head+showcase('mini')+`<div class="ui-panel panel">${ptitle(`可交付的村莊（${CATS[b.cat]}類）`)}${vs.length?vs.map(([v,k])=>{const ok=eligible(k,w),st=S.villages[k],cur=st.weaponId!=null&&W(st.weaponId);
-      return `<button class="ui-card ui-card--row vrow ${ok?'':'dim'}" data-act="deliver" data-i="${k}" data-id="${id}" ${ok?'':'disabled'}>${img('v'+(k+1),'vthumb')}<div class="grow"><b>1-${k+1} ${v.name}</b>
+      return `<button class="ui-card ui-card--row vrow ${ok?'':'dim'}" data-act="deliver" data-i="${k}" data-id="${id}" ${ok?'':'disabled'}>${img('v'+(k+1),'vthumb')}<div class="grow"><b>${vNo(k)} ${v.name}</b>
       <div class="small ${ok?'muted':'t-danger'}">${ok?(cur?'替換 '+bpOf(cur).n+'（'+power(cur)+'）':'需求 '+v.req)+'・每輪 '+fmtT(gameDur(k,w,st.strat)):(power(w)<v.req?'戰力不足 '+v.req:'缺少「'+AFFIX[v.need].n+'」')}</div></div><span class="pill ${ok?'gold':''}">${ok?'交付':'不符'}</span></button>`}).join(''):'<div class="empty">目前沒有村莊需要這類武器。</div>'}</div>`;
   }
 }
@@ -2930,7 +2982,7 @@ function betterIdle(i){const st=S.villages[i],cur=st.weaponId!=null&&W(st.weapon
 function vState(i){const st=S.villages[i];if(st.status==='locked')return['locked','未解鎖'];if(st.status==='open')return['open','等待交付'];
   if(st.weaponId==null)return st.bank.cycles?['ready','可收成']:['pause','暫停・無武器'];const w=W(st.weaponId);if(w&&st.bank.cycles>=capCycles(i,w))return['full','倉庫滿'];if(st.bank.cycles)return['ready','可收成'];return['hunt','狩獵中']}
 /* v3.73 村莊怪物血條：狩獵一輪＝打倒一隻怪物（純畫面效果，狩獵時間與收成都不變） */
-const MONS=['枯木樹精','獠牙野豬','灰狼','霜狼','冰鴉','海蛇','雪怪','霜巨人','火巨人斥候','尼德霍格'];
+const MONS=['枯木樹精','獠牙野豬','灰狼','霜狼','冰鴉','海蛇','雪怪','霜巨人','火巨人斥候','尼德霍格','霜巨人哨兵','冰川狼王','雷鳴巨鷹','骸骨巨人','冰湖巨蛇','霜晶潛獸','風暴巨人','冰巨人王衛','火巨人戰將','烏特加德洛基'];
 const MON_ART=[0,1,2,3,4,5,6,7,8,9];   // 已有 AI 怪物圖的關卡（0 起算，圖在 art/mon_N.webp）；沒圖的先用村莊圖
 const MONFX={kills:{},next:{}};
 function vMon(i,k){const art=MON_ART.includes(i);return `<div class="vmon ${k} ${art?'has-art':''}" data-mon="${i}">${art?img('mon_'+(i+1),'vthumb vmon-m',MONS[i]):img('v'+(i+1),'vthumb vmon-bg')}</div>`}
@@ -2943,22 +2995,25 @@ function monFx(i,st,w,full){const c=st.bank.cycles,pk=MONFX.kills[i];MONFX.kills
   if(full)return;const now=performance.now();if(MONFX.next[i]==null)MONFX.next[i]=now+Math.random()*1500;if(now<MONFX.next[i])return;MONFX.next[i]=now+1400+Math.random()*600;
   monPop(el,'hit','-'+fmt(Math.max(1,Math.round(power(w)*(.8+Math.random()*.4)))))}
 const clock=(ms,ref)=>{const s=Math.max(0,Math.ceil(ms/1000)),long=(ref??ms)>=3600000;return(long?[Math.floor(s/3600),Math.floor(s%3600/60),s%60]:[Math.floor(s/60),s%60]).map(x=>String(x).padStart(2,'0')).join(':')};
+// v3.76 地圖切換：沒選過就顯示目前進度所在的那一界
+const realmNow=()=>Math.max(0,Math.min(rfOpen()?1:0,ui.realm??(rfOpen()?1:0)));
 function viewVillage(){
   const achReady=ACH.filter(a=>!S.ach[a.id]&&a.test()).length,ready=S.villages.filter(v=>v.bank.cycles).length;
-  return `<section class="realm" style="background-image:url(${A('v4')})"><div class="realm-in"><span class="arr off">${ic('arrow-left')}</span><div class="center"><h1>米德加德</h1><div class="small">人類之境</div></div><span class="arr off">${ic('arrow-right')}</span></div>
-   <div class="realms">${REALMS.map((r,i)=>`<div class="rlm ${i?'off':'on'}">${img('realm_'+(i+1),i?'locked':'')}${i?img('ic_lock','rl'):''}<span>${r}</span></div>`).join('')}</div></section>${evtBanner()}
+  const rm=realmNow(),[rn,rs,rbg]=REALM_N[rm],r0=rm*10,r1=r0+10,rOk=i=>i===0||(i===1&&rfOpen());
+  return `<section class="realm" style="background-image:url(${A(rbg)})"><div class="realm-in"><button class="arr ${rm>0?'':'off'}" data-act="realm" data-k="${rm-1}" aria-label="上一界">${ic('arrow-left')}</button><div class="center"><h1>${rn}</h1><div class="small">${rs}</div></div><button class="arr ${rm<1&&rfOpen()?'':'off'}" data-act="realm" data-k="${rm+1}" aria-label="下一界">${ic('arrow-right')}</button></div>
+   <div class="realms">${REALMS.map((r,i)=>`<div class="rlm ${rOk(i)?'on':'off'} ${i===rm?'cur':''}" ${i<2?`data-act="realm" data-k="${i}" role="button"`:''}>${img('realm_'+(i+1),rOk(i)?'':'locked')}${rOk(i)?'':img('ic_lock','rl')}<span>${r}</span></div>`).join('')}</div></section>${evtBanner()}
   <div class="row vbar">${btn(`全部收成${ready?` <span class="ui-badge badge">${ready}</span>`:''}`,'collectAll',{cls:'btn-primary grow',dis:!ready})}${btn(`任務${questDotN()?` <span class="ui-badge badge">${questDotN()}</span>`:''}`,'achopen')}${btn('排行榜','lbopen',{attrs:`data-i="${Math.max(0,cleared()-1)}"`})}</div>
-  <div class="vlist">${VILLAGES.map((v,i)=>{const[k,lab]=vState(i),st=S.villages[i],w=st.weaponId!=null&&W(st.weaponId);
-   if(k==='locked'){const first=S.villages.findIndex(x=>x.status==='locked')===i;if(!first)return '';const left=S.villages.filter(x=>x.status==='locked').length;
-     return `<div class="vlocked">${img('ic_lock','lk')}<div class="grow"><b>1-${i+1} ${v.name}</b>${left>1?` 等 ${left} 座村莊`:''}<div class="small muted">完成 1-${i} ${VILLAGES[i-1].name} 的委託後解鎖</div></div></div>`}
+  <div class="vlist">${VILLAGES.map((v,i)=>{if(i<r0||i>=r1)return'';const[k,lab]=vState(i),st=S.villages[i],w=st.weaponId!=null&&W(st.weaponId);
+   if(k==='locked'){const first=S.villages.findIndex(x=>x.status==='locked')===i;if(!first)return '';const left=S.villages.slice(r0,r1).filter(x=>x.status==='locked').length;
+     return `<div class="vlocked">${img('ic_lock','lk')}<div class="grow"><b>${vNo(i)} ${v.name}</b>${left>1?` 等 ${left} 座村莊`:''}<div class="small muted">完成 ${vNo(i-1)} ${VILLAGES[i-1].name} 的委託後解鎖</div></div></div>`}
    const drops=v.drops.slice(0,3).map(d=>img(MATART[d[0]],'dico')).join('');
    if(k==='open'){let has;
      has=S.weapons.filter(x=>eligible(i,x)&&where(x)<0).sort((a,b)=>power(b)-power(a))[0]||null;
-     return `<div class="ui-card vcard open next" data-act="vopen" data-i="${i}" role="button" tabindex="0"><span class="next-tag">下一個挑戰</span>${has?'<i class="dot give-dot"></i>':''}${img('v'+(i+1),'vthumb')}<div class="grow"><div class="row nowrap"><b class="grow">1-${i+1} ${v.name}</b><span class="vst open">${lab}</span></div>
+     return `<div class="ui-card vcard open next" data-act="vopen" data-i="${i}" role="button" tabindex="0"><span class="next-tag">下一個挑戰</span>${has?'<i class="dot give-dot"></i>':''}${img('v'+(i+1),'vthumb')}<div class="grow"><div class="row nowrap"><b class="grow">${vNo(i)} ${v.name}</b><span class="vst open">${lab}</span></div>
       <div class="small">${v.who}需要 <b>${CATS[v.cat]}</b>・戰力 ${v.req}${v.need?`＋<b class="t-danger">${AFFIX[v.need].n}</b>`:''}</div>${st.status!=='cleared'&&FIRST_GOLD[i]?`<div class="small t-gold">首次收復獎勵 ${img('it_gold','fg-ic')} ${fmt(FIRST_GOLD[i])} 金幣</div>`:''}
       <div class="small ${has?'t-ok':'muted'}">${has?`可交付 ${S.weapons.filter(x=>eligible(i,x)&&where(x)<0).length} 把，最強：${bpOf(has).n}（${power(has)}）`:'武器庫還沒有符合的武器'}</div></div>
       <div class="vside">${has?btn('交付','deliver',{cls:'btn-primary sm',attrs:`data-i="${i}" data-id="${has.id}"`}):btn('去鍛造','forgeCat',{cls:'btn-sec sm',attrs:`data-k="${v.cat}"`})}</div></div>`}
-   return `<div class="ui-card vcard ${k}" data-act="vopen" data-i="${i}" role="button" tabindex="0">${vGiveDot(i)||st.bank.cycles?'<i class="dot give-dot"></i>':''}${w?vMon(i,k):img('v'+(i+1),'vthumb')}<div class="grow"><div class="row nowrap"><b class="grow">1-${i+1} ${v.name}</b><span class="vst ${k}">${lab}</span></div>
+   return `<div class="ui-card vcard ${k}" data-act="vopen" data-i="${i}" role="button" tabindex="0">${vGiveDot(i)||st.bank.cycles?'<i class="dot give-dot"></i>':''}${w?vMon(i,k):img('v'+(i+1),'vthumb')}<div class="grow"><div class="row nowrap"><b class="grow">${vNo(i)} ${v.name}</b><span class="vst ${k}">${lab}</span></div>
     ${w?`<div class="row nowrap small"><span class="wchip q${w.q}b">${wArt(w.b,{cls:'wmini'})}<span class="q${w.q}">${bpOf(w).n} +${w.lv}</span></span><span class="num grow right" data-vclock="${i}"></span></div><div class="ui-prog prog hpbar"><i data-vhp="${i}"></i><span class="hp-t"><b class="hp-n">${MONS[i]}</b><b data-vhpt="${i}"></b></span></div>
      ${k==='full'?`<div class="small t-danger">已達離線上限 ${S.capH} 小時，暫停累積，請收成</div>`:st.bank.cycles?`<div class="vbank">${harvestMini({gold:st.bank.gold,...st.bank.mats})}</div>`:`<div class="small muted">預估 ${fmt(gph(i,w))} 金／小時</div>`}${betterIdle(i)?'<span class="tag-up">武器庫有更強的可以換</span>':''}`
      :`<div class="small muted">沒有駐守武器，狩獵暫停。點開指派武器。</div>`}</div>
@@ -2969,14 +3024,14 @@ function scrollToNextVillage(){const el=document.querySelector('#view .vcard.nex
   if(r.bottom<=innerHeight-(nav?nav.offsetHeight:0))return;scrollTo(0,Math.max(0,r.top-(bar?bar.offsetHeight:0)-12))}
 function sheetVillage(i){
   const v=VILLAGES[i],st=S.villages[i],w=st.weaponId!=null&&W(st.weaponId),bk=st.bank;
-  const head=`<div class="sheet-head"><span style="width:44px"></span><h2>1-${i+1} ${v.name}</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>
+  const head=`<div class="sheet-head"><span style="width:44px"></span><h2>${vNo(i)} ${v.name}</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>
    <div class="banner" style="background-image:url(${A('v'+(i+1))})"><span class="small">${v.who}</span><span>${v.txt}</span></div>
    ${st.status!=='locked'?`<button class="lb-link" data-act="lbopen" data-i="${i}">${img('ic_star')}<span class="grow">本村排行榜</span><b>${lbRank(i)?'第 '+lbRank(i)+' 名':'尚未上榜'}</b><span class="muted">›</span></button>`:''}`;
   const drops=s=>`<div class="mats">${v.drops.map(d=>`<div class="matbox">${img(MATART[d[0]])}<span class="mb-n">${MATS[d[0]]}${d[1]<RARE_P?' <span class="ui-badge badge">稀有</span>':''}</span><span class="mb-c">${pct(dropChance(i,w||null,d,s))}</span></div>`).join('')}</div>`;
   const bank=bk.cycles?`<div class="ui-panel panel">${ptitle(`已累積 ${bk.cycles} 輪${bk.events?`（受襲 ${bk.events} 次）`:''}`)}<div class="mats">${harvestIcons({gold:bk.gold,...bk.mats})}</div>${btn('收成','collect',{cls:'btn-primary big',attrs:`data-i="${i}"`})}</div>`:'';
   if(w){const gd=gameDur(i,w),gs=v.tag==='giant'?1+traitVal(w,'giantslayer')/100:1,ev=eventChance(i,w),gph=Math.round(3600000/gd*v.gold*STRATS[st.strat].gold*gs*(1-ev*.5));
     const vv=ui.villV||'2';   // v3.19 村莊詳細頁版型預覽：O 原版／1 分頁／2 精簡一頁
-    if(vv!=='O'){const hd=`<div class="sheet-head"><span style="width:44px"></span><h2>1-${i+1} ${v.name}</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>`;
+    if(vv!=='O'){const hd=`<div class="sheet-head"><span style="width:44px"></span><h2>${vNo(i)} ${v.name}</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>`;
       const top=`<div class="vv-top" style="background-image:url(${A('v'+(i+1))})"><div class="vv-w" data-act="wopen" data-id="${w.id}" role="button">${wArt(w.b,{frame:w.q})}</div><div class="grow"><b class="q${w.q}">${bpOf(w).n} +${w.lv}</b><div class="small">戰力 ${fmt(power(w))}・需求 ${v.req}</div><div class="small t-ok">狩獵時間 ${Math.round(gd/(v.sec*1000)*100)}%</div></div>
         <button class="vv-lb" data-act="lbopen" data-i="${i}">${img('ic_star')}<span>${lbRank(i)?'第 '+lbRank(i)+' 名':'排行榜'}</span></button></div>
         ${betterIdle(i)?'<div class="goal">武器庫裡有更強的同類武器，換上來能加快狩獵。</div>':''}
@@ -3013,15 +3068,15 @@ function sheetLbW(i,k){const x=lbRows(i)[k];if(!x)return sheetLb(i);const w=x.w,
   const traits=[...(w.traits||[]).map(t=>`<button class="wd-chip tap" data-act="trinfo" data-k="${t.k}" data-v="${t.v}">${img(TRAIT_ICON[t.k])}${TRAITS[t.k].n} <b>+${t.v}%</b><i>ⓘ</i></button>`),...(b.inn?[`<span class="wd-chip inn">${img(AFFIX_ICON[b.inn[0]])}天生・${AFFIX[b.inn[0]].n} <b>+${b.inn[1]}%</b></span>`]:[])];
   const slots=[0,1,2,3].map(s=>{const e=w.ench[s];return `<div class="ui-card ui-card--slot eslot">${e?`${img(AFFIX_ICON[e.k])}<span>${AFFIX[e.k].n}</span><span class="small t-gold">+${Math.round(e.v*rm*10)/10}%</span>`:'<span class="small muted">空欄位</span>'}</div>`}).join('');
   const head=`<div class="sheet-head">${btn(img('ic_back'),'lbopen',{cls:'icon-btn img',attrs:`data-i="${i}" aria-label="返回排行榜"`})}<h2>${x.me?'你的紀錄':'對手武器'}</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>`;
-  return head+`<div class="lbw-owner"><span class="lb-no r${Math.min(k+1,4)}">${k+1}</span><div class="grow"><b>${x.n}</b><div class="small muted">1-${i+1} ${v.name}排行榜・第 ${k+1} 名</div></div></div>
+  return head+`<div class="lbw-owner"><span class="lb-no r${Math.min(k+1,4)}">${k+1}</span><div class="grow"><b>${x.n}</b><div class="small muted">${vNo(i)} ${v.name}排行榜・第 ${k+1} 名</div></div></div>
    <div class="ui-card ui-card--feature wd-head q${w.q}b"><div class="wd-art">${wArt(b.id,{frame:w.q})}</div>
-    <div class="wd-info"><h2 class="q${w.q}">${b.n} <span class="lvt">+${w.lv}</span></h2><div class="wd-tags"><span class="qpill q${w.q}b">${QUAL[w.q].n}</span></div>
+    <div class="wd-info"><h2 class="q${w.q}">${b.n} <span class="lvt">+${w.lv}</span></h2><div class="wd-tags"><span class="qpill q${w.q}b">${QUAL[w.q].n}</span>${w.rf?`<span class="rf-tag">重鍊 Lv${w.rf}</span>`:''}</div>
      <div class="small muted">${TIERS[b.t].n}・${CATS[b.cat]}・<span class="nw">安定值 <b class="${TIERS[b.t].stable?'t-ok':'t-danger'}">+${TIERS[b.t].stable}</b></span></div>
      <div class="wd-pow"><span class="small muted">戰力</span><b>${fmt(x.p)}</b></div></div></div>
    <div class="ui-panel panel wd-sub">
     <div class="wd-row"><span class="wd-k">特性</span><div class="wd-chips">${traits.length?traits.join(''):'<span class="small muted">沒有先天特性</span>'}</div></div>
     <div class="wd-row"><span class="wd-k">附魔 ${nE}/4</span><div class="slots wd-slots">${slots}</div></div>
-    <div class="kvgrid">${kv('基礎戰力',b.base)}${kv('品質倍率','×'+QUAL[w.q].m)}${kv('材質階級',TIERS[b.t].n+' ×'+TIERS[b.t].mult)}${kv('強化倍率','×'+enhMult(w.lv).toFixed(2))}${kv('元素加成',el?'+'+Math.round(el*10)/10+'%':'—')}${kv('最終戰力','<span class="t-gold">'+fmt(x.p)+'</span>')}</div>
+    <div class="kvgrid">${kv('基礎戰力',b.base)}${kv('品質倍率','×'+QUAL[w.q].m)}${kv('材質階級',TIERS[b.t].n+' ×'+TIERS[b.t].mult)}${kv('強化倍率','×'+enhMult(w.lv).toFixed(2))}${rfOk(w)&&w.rf?kv('重鍊倍率','×'+(1+RF_PER*w.rf).toFixed(2)):''}${kv('元素加成',el?'+'+Math.round(el*10)/10+'%':'—')}${kv('最終戰力','<span class="t-gold">'+fmt(x.p)+'</span>')}</div>
     ${(w.traits||[]).map(t=>`<div class="small"><b>${TRAITS[t.k].n}</b>：<span class="muted">${TRAITS[t.k].d}</span></div>`).join('')}</div>
    ${x.me?'':`<div class="small muted center">${S.best[i]?(x.p>S.best[i].p?`比你的紀錄高 <b class="t-gold">${fmt(x.p-S.best[i].p)}</b> 戰力`:`你的紀錄比他高 <b class="t-ok">${fmt(S.best[i].p-x.p)}</b> 戰力`):'你還沒有交付武器給這座村莊'}</div>`}
    ${btn('回排行榜','lbopen',{cls:'btn-sec big',attrs:`data-i="${i}"`})}`}
@@ -3030,7 +3085,7 @@ function sheetLb(i){i=Math.max(0,Math.min(VILLAGES.length-1,i));const pend=lbRew
   if(AUTH)setTimeout(()=>lbFetch(),0);const v=VILLAGES[i],st=S.villages[i],b=S.best[i],rk=lbRank(i),npc=lbOthers(i),got=S.lbRw[i]||[];
   const rows=lbRows(i);
   const head=`<div class="sheet-head"><span style="width:44px"></span><h2>排行榜</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>`;
-  const tabs=`<div class="lb-tabs">${VILLAGES.map((x,k)=>{const lk=S.villages[k].status==='locked',r=lbRank(k);return `<button class="lb-tab ${k===i?'on':''} ${lk?'lk':''}" data-act="lbopen" data-i="${k}" ${lk?'disabled':''}><img src="${A('v'+(k+1))}" alt=""><span>1-${k+1}</span>${r&&r<=10?`<i class="lb-rk r${Math.min(r,4)}">${r}</i>`:''}${lk?img('ic_lock','lb-lk'):''}</button>`}).join('')}</div>`;
+  const tabs=`<div class="lb-tabs">${VILLAGES.map((x,k)=>{if(k>=10&&!rfOpen())return'';const lk=S.villages[k].status==='locked',r=lbRank(k);return `<button class="lb-tab ${k===i?'on':''} ${lk?'lk':''}" data-act="lbopen" data-i="${k}" ${lk?'disabled':''}><img src="${A('v'+(k+1))}" alt=""><span>${vNo(k)}</span>${r&&r<=10?`<i class="lb-rk r${Math.min(r,4)}">${r}</i>`:''}${lk?img('ic_lock','lb-lk'):''}</button>`}).join('')}</div>`;
   const me=b?`<div class="lb-me" data-act="lbw" data-i="${i}" data-k="${rows.findIndex(x=>x.me)}" role="button">${wArt(b.b,{frame:b.q})}<div class="grow"><div class="small muted">你的最佳紀錄</div><b class="q${b.q}">${BP[b.b].n} +${b.lv}</b><div class="small">戰力 <b class="t-gold">${fmt(b.p)}</b></div></div><div class="lb-mypos"><span class="small muted">名次</span><b>${rk||'…'}</b><span class="small muted">／${npc.length+1}</span></div></div>`
     :`<div class="lb-me empty"><div class="grow"><b>還沒有交付武器</b><div class="small muted">交付${CATS[v.cat]}類、戰力 ${v.req} 以上的武器就會上榜</div></div></div>`;
   const nxt=b&&rk>1?npc.filter(x=>x.p>b.p).slice(-1)[0]:null;
@@ -3038,7 +3093,7 @@ function sheetLb(i){i=Math.max(0,Math.min(VILLAGES.length-1,i));const pend=lbRew
   const rws=`<div class="lb-rws">${LB_RW.map(([t,r,n])=>{const ok=got.includes(t);return `<div class="lb-rw ${ok?'ok':''}"><span class="small">${n}</span>${Object.entries(r).map(([k,c])=>`${img(ITEMS[k][1])}<b>×${c}</b>`).join('')}<span class="small ${ok?'t-ok':'muted'}">${ok?'已領取':'未達成'}</span></div>`}).join('')}</div>`;
   const myIx=rows.findIndex(x=>x.me),show=rows.map((x,k)=>({...x,k})).filter(x=>x.k<10||x.me);
   const row=x=>`<button class="lb-row ${x.me?'me':''} ${x.k<3?'top':''}" data-act="lbw" data-i="${i}" data-k="${x.k}"><span class="lb-no r${Math.min(x.k+1,4)}">${x.k+1}</span>${wArt(x.w.b,{frame:x.w.q,cls:'lb-art'})}<div class="grow"><b>${x.n}</b><div class="small q${x.w.q}">${BP[x.w.b].n} +${x.w.lv}</div></div><b class="lb-p">${fmt(x.p)}</b><span class="muted lb-more">›</span></button>`;
-  return head+tabs+`<div class="lb-vh"><b>1-${i+1} ${v.name}</b><span class="small muted">${CATS[v.cat]}類・委託需求 ${v.req}${v.need?'・需'+AFFIX[v.need].n:''}</span></div>`+me+goal+rws
+  return head+tabs+`<div class="lb-vh"><b>${vNo(i)} ${v.name}</b><span class="small muted">${CATS[v.cat]}類・委託需求 ${v.req}${v.need?'・需'+AFFIX[v.need].n:''}</span></div>`+me+goal+rws
     +`<div class="ui-panel panel lb-list">${show.map((x,k)=>(k>0&&x.k-show[k-1].k>1?'<div class="lb-gap">⋯</div>':'')+row(x)).join('')}</div>
     <div class="small muted center">${!AUTH?'登入後才會顯示其他玩家（測試版）':LBR.err?'⚠ '+LBR.err:LBR.loading&&!LBR.t?'讀取中…':'封測玩家真實紀錄，每分鐘更新'}</div>`}
 // v3.15 委託成就：正式版型 A（進度清單）；開發模式下可切換原版／B／C／D 比較
@@ -3136,6 +3191,7 @@ function sheetDev(){
      <div class="label">材料與道具</div><div class="devgrid">${B('t1','一階材料 +30')}${B('t2','霜銀、狼牙 +20')}${B('t3','龍鱗、符文石 +10')}${B('mon','怪物素材各 +5')}${B('shard','符文碎片 +10')}${B('items','防爆卷、祝福石 +5')}${B('bp','傳說圖紙 +1')}</div>
      <div class="label">v3.71 鐵匠聲望／天賦</div><div class="devgrid">${B('rep1','聲望升 1 級')}${B('rep10','聲望升 10 級')}${B('represet','天賦點全部退回')}${B('repzero','聲望歸零（Lv.1）')}${B('repopen','打開鐵匠天賦')}</div>
      <div class="label">v3.72 每週活動（目前：${EVT_FORCE?'強制':'依日期'}${evtNow().k==='double'?'雙倍收成':'首領討伐'}・${evtNow().boss.n}）</div><div class="devgrid">${B('evtdbl','強制雙倍收成')}${B('evtboss','強制首領討伐')}${B('evtoff','依日期（取消強制）')}${B('evtnext','換下一隻首領')}${B('evthits','今天挑戰次數重置')}${B('evtdmg','我的傷害 +5,000（只改顯示）')}${B('evtreset','本週首領進度清空')}${B('evtgdead','模擬全服打倒首領')}${B('evtgalive','模擬全服血量剩 45%')}${B('evtgrank','模擬上週排名第 2')}</div>
+     <div class="label">v3.76 第二界約頓海姆／巨人體重鍊（目前：${rfOpen()?'已開放':'未開放'}・收復 ${cleared()}/${VILLAGES.length}）</div><div class="devgrid">${B('r2open','開放第二界（收復 1-1～1-10）')}${B('r2mats','第二界材料各 +30、金幣 +20 萬')}${B('r2wpn','送史詩神器斧＋剋巨人（開重鍊頁）')}${B('r2all','第二界全部收復')}${B('r2lock','第二界改回未開放')}</div>
      <div class="label">全部武器顯示測試（測試武器：不扣資源、不能交付村莊）</div>
      <div class="small muted">品質</div><div class="row">${[[-1,'輪替'],[0,'普通'],[1,'精良'],[2,'稀有'],[3,'史詩'],[4,'傳說']].map(([v,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devAllQ??-1)===v?'on':''}" data-act="devset" data-k="devAllQ" data-v="${v}">${n}</button>`).join('')}</div>
      <div class="small muted">強化等級</div><div class="row">${[[-1,'輪替'],[0,'+0'],[6,'+6'],[7,'+7'],[10,'+10'],[15,'+15']].map(([v,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devAllLv??-1)===v?'on':''}" data-act="devset" data-k="devAllLv" data-v="${v}">${n}</button>`).join('')}</div>
@@ -3180,7 +3236,13 @@ function sheetDev(){
 }
 
 let forceEvent=-1;
-function devdo(k){if(k.startsWith('evt')){const v=evtSt();
+function devdo(k){if(k.startsWith('r2')){
+    if(k==='r2open'||k==='r2all'){S.villages.forEach((st,i)=>{if(i<10||k==='r2all')st.status='cleared'});if(S.villages[10].status==='locked')S.villages[10].status='open';ui.realm=1}
+    else if(k==='r2lock'){S.villages.forEach((st,i)=>{if(i>=10){if(st.weaponId!=null)recallCore(i);st.status='locked'}});ui.realm=0}
+    else if(k==='r2mats'){for(const m of ['giantbone','permafrost','thunderiron','elderroot'])S.mats[m]+=30;S.gold+=200000}
+    else if(k==='r2wpn'){const w=makeWeapon('m_fenrir',3,6,[]);w.ench[0]={k:'giant',v:30};ui.sheet={t:'w',id:w.id,m:rfOpen()?'rf':'main'};save();render();return toast(rfOpen()?'已送出，這是重鍊頁':'已送出（第二界還沒開放，先按「開放第二界」才看得到重鍊）','ok')}
+    save();if(k!=='r2wpn'){ui.sheet=null;ui.tab='village'}render();return toast('完成','ok')}
+if(k.startsWith('evt')){const v=evtSt();
     if(k==='evtdbl')EVT_FORCE='double';else if(k==='evtboss')EVT_FORCE='boss';else if(k==='evtoff')EVT_FORCE=null;else if(k==='evtnext')EVT_WK++;
     else if(k==='evthits')v.hits=0;else if(k==='evtdmg'){v.dmg+=5000}
     else if(k==='evtgrank'){ui.bossSim=true;BOSS_G.t=Date.now()+600000;S.evtRk=null;BOSS_G.prev={week:evtWeek()-1,hp:100000,total:100000,players:12,mine:8800,rank:2,top:[]}}
@@ -3218,7 +3280,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='uigive'){const gm=giveMin(),nv=gm.map((m,i)=>m===-1?i:-1).filter(i=>i>=0);if(!nv.length)return toast('目前沒有村莊在等武器（全部都有駐守）','bad');   // v3.64 可交付紅點測試
     const i=nv[0],v=VILLAGES[i],b=Object.values(BP).filter(x=>x.cat===v.cat).sort((a,c)=>c.t-a.t)[0],w=makeWeapon(b.id,4,0,[],v.need?[{k:v.need,v:AFFIX[v.need].max},null,null,null]:undefined);
     while(!eligible(i,w)&&w.lv<15)w.lv++;ui.sheet=null;ui.result=null;ui.tab='armory';ui.acat='all';ui.aq=ui.ast='all';save();render();scrollTo(0,0);
-    return toast(`已送出 ${b.n} +${w.lv}（可交付 1-${i+1} ${v.name}），武器卡、武器庫和村莊分頁應該都有紅點`,'ok')}
+    return toast(`已送出 ${b.n} +${w.lv}（可交付 ${vNo(i)} ${v.name}），武器卡、武器庫和村莊分頁應該都有紅點`,'ok')}
   if(/^ui(v|arm|forge|mat|shop)$/.test(k)){ui.sheet=null;ui.result=null;   // v3.61 介面修正的測試按鈕
     if(k==='uiv'){ui.tab='village';render();return scrollToNextVillage()}
     if(k==='uiarm'){ui.tab='armory';render();return scrollTo(0,500)}
@@ -3247,10 +3309,10 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='gtreset'){S.introSeen=0;save();return toast('下次登入後會再播放開場故事')}
   if(k==='tlack'){DEV_LACK=Date.now()+15000;ui.sheet=null;ui.tab='forge';ui.ftab='bp';ui.cat='all';ui.bp='t1_huntbow';ui.qty=1;render();setTimeout(()=>{startForge();setTimeout(render,15100)},400);return toast('測試：15 秒內當作材料不夠，按「開始鍛造」會顯示缺什麼')}   // v3.59
   if(k==='tharvest'){const i=S.villages.findIndex(st=>st.weaponId!=null&&st.cycleStart!=null&&W(st.weaponId));if(i<0)return toast('先交付一把武器到村莊','bad');const w=W(S.villages[i].weaponId);
-    S.villages[i].cycleStart=NOW()-dur(i,w)+2000;ui.sheet=null;ui.tab='village';render();return toast(`1-${i+1} 兩秒後完成一輪，停在這頁看「收成」按鈕會不會自己出現`)}   // v3.59
+    S.villages[i].cycleStart=NOW()-dur(i,w)+2000;ui.sheet=null;ui.tab='village';render();return toast(`${vNo(i)} 兩秒後完成一輪，停在這頁看「收成」按鈕會不會自己出現`)}   // v3.59
   if(k==='tmon'){const i=S.villages.findIndex(st=>st.weaponId!=null&&st.cycleStart!=null&&W(st.weaponId));if(i<0)return toast('先交付一把武器到村莊','bad');const w=W(S.villages[i].weaponId);   // v3.73
     S.villages[i].cycleStart=NOW()-dur(i,w)+3000;ui.sheet=null;ui.tab='village';render();setTimeout(()=>{const c=document.querySelector(`#view .vcard[data-i="${i}"]`);if(c)c.scrollIntoView({block:'center'})},50);
-    return toast(`1-${i+1} ${MONS[i]}剩一點血，3 秒後擊倒（看血條歸零、「擊倒！」和收成按鈕）`)}
+    return toast(`${vNo(i)} ${MONS[i]}剩一點血，3 秒後擊倒（看血條歸零、「擊倒！」和收成按鈕）`)}
   if(k==='autoenh'){const w=makeWeapon('t1_ironhammer',1,0);S.gold=Math.max(S.gold,5000);ui.sheet={t:'w',id:w.id,m:'main'};autoEnhance(w.id);return}   // 測試一鍵強化：放一把 +0 鐵錘、補到 5000 金後執行
   
   if(k==='tsec'){ui.testOut='檢查中…';render();   // v3.63 確認開發者工具、伺服器防作弊已更新
@@ -3391,7 +3453,7 @@ document.addEventListener('click',e=>{
    lock:()=>{const w=W(+d.id);if(w){w.lock=!w.lock;save();toast(w.lock?'已收藏，這把武器不會被熔解。':'已取消收藏。')}render()},eslot:()=>{ui.enchSlot=+d.k;render()},
    collect:()=>{tick();collect(+d.i);render()},collectAll,deliver:()=>deliver(+d.i,+d.id),recall:()=>recall(+d.i),strat:()=>{if(setStrategy(+d.i,d.k))toast('已切換為「'+STRATS[d.k].n+'」');render()},
    melt:()=>{const id=+d.id;if(ui.meltArm!==id){ui.meltArm=id;return render()}ui.meltArm=null;const g=meltCore(id);if(g){snd('melt');toast('熔解完成：'+gotText(g),'ok');ui.sheet=null}render()},meltCheap,
-   enhance:()=>enhance(+d.id),achv:()=>{ui.achV=d.k;render()},lbw:()=>{ui.sheet={t:'lbw',i:+d.i,k:+d.k};render()},lbopen:()=>{ui.sheet={t:'lb',i:+(d.i??S.villages.findIndex(v=>v.status!=='cleared')-1)};render()},achtab:()=>{ui.achTab=d.k;render()},qtab:()=>{ui.qTab=d.k;render()},qbox:()=>{const r=claimBox(+d.i);if(r){snd('coin');toast('活躍度寶箱：'+rwText(r),'ok')}render()},qsign:()=>{const r=claimSign();if(r){snd('coin');toast('簽到獎勵：'+rwText(r),'ok')}render()},achAll:claimAllAch,autoEnh:()=>autoEnhance(+d.id),enchant:()=>enchant(+d.id,+d.s,false),enchantD:()=>enchant(+d.id,+d.s,true),dkey:()=>{ui.directKey=d.k;render()},
+   enhance:()=>enhance(+d.id),reforge:()=>{const r=reforgeCore(+d.id);if(!r)return toast('材料或金幣不足。','bad');snd('enh_ok');toast(`重鍊成功！Lv${r.lv}，戰力 ${fmt(r.p0)} → <b>${fmt(r.p1)}</b>`,'ok');render()},achv:()=>{ui.achV=d.k;render()},lbw:()=>{ui.sheet={t:'lbw',i:+d.i,k:+d.k};render()},realm:()=>{const k=+d.k;if(k<0||k>1)return;if(k===1&&!rfOpen())return toast(`收復 ${vNo(9)} ${VILLAGES[9].name}後開放約頓海姆`);ui.realm=k;render();scrollTo(0,0)},lbopen:()=>{ui.sheet={t:'lb',i:+(d.i??S.villages.findIndex(v=>v.status!=='cleared')-1)};render()},achtab:()=>{ui.achTab=d.k;render()},qtab:()=>{ui.qTab=d.k;render()},qbox:()=>{const r=claimBox(+d.i);if(r){snd('coin');toast('活躍度寶箱：'+rwText(r),'ok')}render()},qsign:()=>{const r=claimSign();if(r){snd('coin');toast('簽到獎勵：'+rwText(r),'ok')}render()},achAll:claimAllAch,autoEnh:()=>autoEnhance(+d.id),enchant:()=>enchant(+d.id,+d.s,false),enchantD:()=>enchant(+d.id,+d.s,true),dkey:()=>{ui.directKey=d.k;render()},
    ach:()=>{if(claimAch(d.k))toast('成就獎勵已領取','ok');render()},slag:()=>{if(slagTrade(+d.i))toast('兌換完成','ok');render()},rclose:()=>{ui.result=null;render()},
    fxskip:()=>{ui.fxDone&&ui.fxDone()},fxclose:()=>{ui.busy=false;render()},backArmory:()=>{ui.sheet=null;ui.enhLast=null;ui.tab='armory';render()},
    uiskinp2:()=>p2Toggle(),

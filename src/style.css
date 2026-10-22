@@ -1306,4 +1306,18 @@ button.matbox:active{border-color:var(--gold)}
 .hp-t{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;gap:6px;padding:0 7px;font-size:11px;line-height:1;color:#fff;text-shadow:0 1px 2px #000,0 0 3px #000;pointer-events:none}
 .hp-n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(prefers-reduced-motion:reduce){.vmon *,.vmon:after{animation:none!important}}
+/* v3.76 第二界：地圖切換、巨人體重鍊 */
+button.arr{background:none;border:0;padding:0;cursor:pointer}
+button.arr.off{pointer-events:none}
+.rlm[data-act]{cursor:pointer}
+.rlm.cur span{color:var(--gold-hi);font-weight:700}
+.rlm.on:not(.cur) img{filter:none;opacity:.8}
+.wd-rf{display:flex;align-items:center;gap:8px;width:100%;margin:8px 0;padding:8px 12px;text-align:left;background:linear-gradient(#2a2016,#140f0a);border:1px solid #8a6a3a;border-radius:10px;color:var(--gold-hi);box-shadow:none}
+.wd-rf:disabled{opacity:.5}
+.wd-rf img{width:32px;height:32px;flex:none}
+.wd-rf .small{white-space:nowrap;color:var(--gold)}
+.rf-tag{display:inline-block;padding:1px 6px;border-radius:6px;font-size:11px;background:#1d2a36;color:#a9d4ff;border:1px solid #3d5a74;white-space:nowrap}
+.rf-box{display:flex;flex-direction:column;gap:8px;align-items:center}
+.rf-step{display:flex;gap:10px;align-items:center;font-size:16px;white-space:nowrap}
+.rf-box .mats{justify-content:center}
 </style>
