@@ -1434,7 +1434,8 @@ const itemName=k=>MATS[k]||ITEMS[k][0];
 const KEY='nine-realms-smith-v3',KEY_V2='nine-realms-smith-v2';
 function freshStats(){return{harvest:0,forged:[0,0,0,0,0],enhTry:0,enhOk:0,enhFail:0,breaks:0,scrollUsed:0,maxLv:0,melted:0,goldIn:0,events:0}}
 function freshVillage(i){return{status:i===0?'open':'locked',weaponId:null,cycleStart:null,strat:'normal',bank:{cycles:0,gold:0,mats:{},events:0}}}
-function fresh(){return{v:VERSION,gold:120,gems:100,slag:0,speed:30,capH:8,pity:0,
+const GAME_SPEED=10;   // v3.45 封測速度（狩獵／鍛造 10 倍）
+function fresh(){return{v:VERSION,gold:120,gems:100,slag:0,speed:GAME_SPEED,capH:8,pity:0,
   mats:{iron:8,oak:6,leather:3,silver:0,fang:0,scale:0,rune:0,shard:1,fur:0,icecore:0,fireheart:0,serpent:0},
   items:{scroll:1,bless:1,blueprint:0},furnace:1,anvil:1,slots:1,weapons:[],nextId:1,jobs:[],
   villages:VILLAGES.map((v,i)=>freshVillage(i)),monthly:{until:0,last:''},stats:freshStats(),ach:{},best:{},lbRw:{},lastSeen:NOW(),clockWarn:false}}
@@ -1450,7 +1451,7 @@ function sanitize(s){
   for(const k in MATS)s.mats[k]=Math.max(0,Math.floor(+s.mats[k]||0));
   for(const k in ITEMS)s.items[k]=Math.max(0,Math.floor(+s.items[k]||0));
   s.gold=Math.max(0,Math.floor(+s.gold||0));s.gems=Math.max(0,Math.floor(+s.gems||0));s.slag=Math.max(0,Math.floor(+s.slag||0));
-  s.stats=Object.assign(freshStats(),s.stats||{});s.ach=s.ach||{};s.best=s.best||{};s.lbRw=s.lbRw||{};s.speed=s.speed||30;s.capH=s.capH||8;s.pity=s.pity||0;
+  s.stats=Object.assign(freshStats(),s.stats||{});s.ach=s.ach||{};s.best=s.best||{};s.lbRw=s.lbRw||{};s.speed=GAME_SPEED;s.capH=s.capH||8;s.pity=s.pity||0;
   s.weapons.forEach(w=>w.b=bpId(w.b));(s.jobs||[]).forEach(j=>j.b=bpId(j.b));for(const k in (s.best||{}))if(s.best[k])s.best[k].b=bpId(s.best[k].b);
   const seen=new Set();s.weapons=s.weapons.filter(w=>BP[w.b]);let maxId=0;
   for(const w of s.weapons){if(seen.has(w.id))w.id=null;else seen.add(w.id);maxId=Math.max(maxId,w.id||0);w.lock=!!w.lock;w.test=!!w.test;w.traits=w.traits||[];w.ench=[0,1,2,3].map(i=>(w.ench||[])[i]||null);w.created=w.created||NOW()}
@@ -1479,7 +1480,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD='v3.44 封測';const BETA=true;
+const BUILD='v3.45 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
