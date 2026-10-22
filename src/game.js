@@ -748,7 +748,7 @@ function devMode(){if(CLOUD_ONLY&&!CLOUD.admin)return false;   // v3.63 正式�
 function setDev(on){try{on?localStorage.setItem(DEV_KEY,'1'):localStorage.removeItem(DEV_KEY)}catch(e){};if(!on&&ui.sheet&&ui.sheet.t==='d')ui.sheet=null;render()}
 const ui={tab:'forge',sheet:null,ftab:'bp',cat:'all',acat:'all',asort:'power',aidle:false,alock:false,bp:'t1_woodaxe',qty:1,useScroll:false,useBless:false,useBp:false,confirmReset:false,meltArm:null,enchSlot:0,testOut:'',busy:false,result:null};
 const CAT_ICON=Object.fromEntries(['axe','sword','dagger','polearm','hammer','bow','crossbow','shield','throw','tool'].map(k=>[k,'cat_'+k]));
-const AFFIX_ICON={flame:'mat_fireheart',frost:'mat_icecore',swift:'it_hourglass',loot:'it_gold',thunder:'mat_thunderiron',venom:'mat_serpent',holy:'it_bless',greed:'it_gold',seek:'mat_rune',harvest:'mat_oak',giant:'m_frostgiant',dragon:'mat_scale'};
+const AFFIX_ICON={flame:'mat_fireheart',frost:'mat_icecore',swift:'it_hourglass',loot:'it_gold',thunder:'af_thunder',venom:'af_venom',holy:'af_holy',greed:'af_greed',seek:'af_seek',harvest:'af_harvest',giant:'m_frostgiant',dragon:'mat_scale'};
 const TRAIT_ICON={sharp:'tr_sharp',sturdy:'tr_sturdy',light:'tr_light',treasure:'tr_treasure',giantslayer:'tr_giantslayer',runic:'tr_runic'};
 const STRAT_ICON={normal:'it_gold',material:'mat_iron',rare:'mat_scale'};
 const TIER_FRAME=[0,2,3,4,4]; // 各材質對應的外框顏色（v3.77 起圖紙改用統一的圖紙底圖 frame:'bp'，這裡留給其他地方參考）
