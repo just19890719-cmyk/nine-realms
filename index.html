@@ -1480,7 +1480,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD='v3.45 封測';const BETA=true;
+const BUILD='v3.46 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -1537,9 +1537,9 @@ function showName(first,preview){document.body.classList.add('gating');const g=g
     const n=(g.querySelector('#gtNick').value||'').trim(),bad=NICK_OK(n);if(bad)return say(bad,1);if(n===S.nick){gateClose();return}
     if(preview){if(n==='冰脊'||n==='測試重複')return say('這個暱稱已經有人用了，換一個吧（預覽：模擬重複）',1);gateClose();toast(`（預覽）歡迎，${n}！實際登入時會存到雲端`,'ok');setTimeout(showStory,350);return}
     if(g.dataset.busy)return;g.dataset.busy='1';b.disabled=true;say('確認中…');
-    cloudSetNick(n).then(()=>{gateClose();toast(first?`歡迎，${n}！`:`暱稱已改為「${n}」`,'ok');render();if(first&&!S.introSeen)setTimeout(showStory,350)})
+    cloudSetNick(n).then(()=>{if(AUTH)sbRest('rpc/lb_rename',{method:'POST',body:JSON.stringify({p_nick:n})}).then(()=>lbFetch(true)).catch(()=>{});gateClose();toast(first?`歡迎，${n}！`:`暱稱已改為「${n}」`,'ok');render();if(first&&!S.introSeen)setTimeout(showStory,350)})
       .catch(e=>say(SB_ERR(e.message),1)).finally(()=>{delete g.dataset.busy;b.disabled=false})}}
-function afterAuthEnter(){setTimeout(()=>mkSettle(true),1500);if(AUTH&&!S.nick)return showName(true);gateClose();if(!S.introSeen)setTimeout(showStory,350)}
+function afterAuthEnter(){setTimeout(()=>mkSettle(true),1500);setTimeout(()=>{lbSync().finally(()=>lbFetch(true))},2000);if(AUTH&&!S.nick)return showName(true);gateClose();if(!S.introSeen)setTimeout(showStory,350)}
 async function cloudPull(){const r=await sbRest('saves?select=data,updated_at&user_id=eq.'+AUTH.user.id);if(!r||!r[0])throw new Error('雲端還沒有存檔');S=sanitize(r[0].data);S.uid=AUTH.user.id;if(!CLOUD_ONLY)try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}CLOUD.last=Date.now();render()}
 if(typeof window!=='undefined'){setInterval(()=>{if(AUTH&&CLOUD.dirty)cloudPush()},10000);setInterval(()=>{if(!document.hidden)cloudCheckSession()},30000);
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&AUTH){save();cloudPush(true,true)}else if(AUTH)cloudCheckSession()})}
@@ -1654,23 +1654,23 @@ function sheetMk(s){const head=t=>`<div class="sheet-head"><span></span><h2>${t}
 const LB_NAMES=['霜錘・埃里克','鐵顎・博格','灰燼・西格麗','渡鴉・烏爾夫','熔心・托爾芬','狼牙・英格麗','寒鋼・哈康','冰脊・阿斯特麗','雷砧・比約恩','黑爐・古納',
  '火鬃・芙蕾雅','鹿角・奧拉夫','碎岩・斯凱','鷹眼・希爾達','北風・拉格納','銀鬚・瓦爾德','血斧・凱爾','霧峽・露恩','石心・哈爾德','星鐵・伊娃'];
 const LB_RW=[[10,{bless:1},'前 10 名'],[3,{scroll:1},'前 3 名'],[1,{scroll:2},'第 1 名']];
-function lbSeed(i){let s=(i+1)*2654435761>>>0;return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296}}
-const LB_CACHE={};
-// 對手武器：先決定特性、附魔，再從該類圖紙／品質／等級中挑出戰力最接近目標的組合 → 戰力與武器內容完全一致，可以點開看詳情
-function lbNpc(i){if(LB_CACHE[i])return LB_CACHE[i];const v=VILLAGES[i],r=lbSeed(i),names=[...LB_NAMES].sort(()=>r()-.5),bps=BPS.filter(b=>b.cat===v.cat);
-  const pick=a=>a[Math.floor(r()*a.length)],TK=Object.keys(TRAITS),EK=['flame','frost','swift','loot'];
-  return LB_CACHE[i]=names.map((n,k)=>{const T=v.req*8*Math.pow(1.05/8,k/19)*(0.96+r()*.08);
-    const nE=k<3?3:k<8?2:k<14?1:0,ench=[null,null,null,null];if(v.need)ench[0]={k:v.need,v:Math.round(20+r()*20)};
-    for(let s=v.need?1:0;s<nE+(v.need?1:0)&&s<4;s++){const ek=pick(EK);ench[s]={k:ek,v:Math.round(AFFIX[ek].min+r()*(AFFIX[ek].max-AFFIX[ek].min))}}
-    let best=null,near=[];
-    for(const b of bps)for(let q=0;q<5;q++)for(let lv=0;lv<=15;lv++){const p=power({b:b.id,q,lv,traits:[],ench});const d=Math.abs(p-T)/T;if(!best||d<best.d)best={b:b.id,q,lv,d};if(d<.04)near.push({b:b.id,q,lv,d})}
-    const c=near.length?pick(near):best,tn=[0,1,1+Math.floor(r()*2),2,2+Math.floor(r()*2)][c.q];
-    const traits=[...TK].sort(()=>r()-.5).slice(0,tn).map(t=>({k:t,v:Math.round((TRAITS[t].min+r()*(TRAITS[t].max-TRAITS[t].min))*(1+.2*c.q))}));
-    const w={b:c.b,q:c.q,lv:c.lv,traits,ench};return{n,w,p:power(w)}}).sort((a,b)=>b.p-a.p)}
-function lbRecord(s,i,w){const p=power(w),b=s.best[i];if(!b||p>b.p)s.best[i]={p,b:w.b,q:w.q,lv:w.lv,traits:JSON.parse(JSON.stringify(w.traits||[])),ench:JSON.parse(JSON.stringify(w.ench||[]))}}   // 存一份當時的武器內容，排行榜可以點開看
-const lbRank=i=>{const b=S.best[i];return b?lbNpc(i).filter(x=>x.p>b.p).length+1:null};
+// v3.46 真人排行榜：伺服器 lb 表（每位玩家每座村莊一筆最佳紀錄）；電腦對手已移除
+const LBR={rows:{},t:0,loading:false,err:''};
+async function lbFetch(force){if(!AUTH||LBR.loading||(!force&&Date.now()-LBR.t<60000))return;LBR.loading=true;
+  try{const r=await sbRest('lb?select=user_id,village,nick,p,w,updated_at&order=p.desc,updated_at.asc&limit=1000');const g={};
+    (r||[]).forEach(x=>{if(!VILLAGES[x.village]||!x.w||!BP[bpId(x.w.b)])return;x.w.b=bpId(x.w.b);(g[x.village]=g[x.village]||[]).push(x)});LBR.rows=g;LBR.t=Date.now();LBR.err=''}
+  catch(e){LBR.err=/relation|lb/.test(e.message)?'排行榜尚未啟用（伺服器還沒設定好）':SB_ERR(e.message)}finally{LBR.loading=false}
+  const pend=[];VILLAGES.forEach((v,i)=>{const r=lbReward(i);if(r.length)pend.push(`${v.name}：${r.join('、')}`)});if(pend.length)toast('排行榜獎勵：<br>'+pend.join('<br>'),'ok');render()}
+// 其他玩家（不含自己），戰力高到低
+const lbOthers=i=>(LBR.rows[i]||[]).filter(x=>!AUTH||x.user_id!==AUTH.user.id).map(x=>({n:x.nick||'無名鐵匠',p:x.p,w:{traits:[],ench:[],...x.w}}));
+async function lbSync(){if(!AUTH||!CLOUD.ready)return;let n=0;for(const k in S.best){const b=S.best[k];if(!b||b.sub)continue;
+  try{await sbRest('rpc/lb_submit',{method:'POST',body:JSON.stringify({p_village:+k,p_p:b.p,p_w:{b:b.b,q:b.q,lv:b.lv,traits:b.traits||[],ench:b.ench||[]},p_nick:S.nick||'無名鐵匠'})});b.sub=true;n++}catch(e){return}}
+  if(n){save();lbFetch(true)}}
+if(typeof window!=='undefined')setInterval(()=>{if(AUTH&&CLOUD.ready&&!document.hidden){lbSync();if(ui.sheet&&/^lb/.test(ui.sheet.t))lbFetch()}},30000);
+function lbRecord(s,i,w){const p=power(w),b=s.best[i];if(!b||p>b.p){s.best[i]={p,b:w.b,q:w.q,lv:w.lv,traits:JSON.parse(JSON.stringify(w.traits||[])),ench:JSON.parse(JSON.stringify(w.ench||[])),sub:false};if(typeof window!=='undefined'&&s===S)setTimeout(lbSync,500)}}   // 存一份當時的武器內容，排行榜可以點開看
+const lbRank=i=>{const b=S.best[i];if(!b||(AUTH&&!LBR.t))return null;return lbOthers(i).filter(x=>x.p>b.p).length+1};
 // 第一次衝進前 10／前 3／第 1 名各領一次
-function lbReward(i){const rk=lbRank(i);if(!rk)return[];const got=S.lbRw[i]=S.lbRw[i]||[];const out=[];
+function lbReward(i){if(!AUTH||!LBR.t)return[];const rk=lbRank(i);if(!rk)return[];const got=S.lbRw[i]=S.lbRw[i]||[];const out=[];
   for(const [t,r,n] of LB_RW)if(rk<=t&&!got.includes(t)){got.push(t);for(const k in r)S.items[k]+=r[k];out.push(n+'：'+Object.entries(r).map(([k,c])=>itemName(k)+' ×'+c).join('、'))}
   if(out.length)save();return out}
 
@@ -2541,7 +2541,7 @@ function sheetVillage(i){
 const gph=(i,w)=>{const v=VILLAGES[i],st=S.villages[i],gs=v.tag==='giant'?1+traitVal(w,'giantslayer')/100:1;return Math.round(3600000/gameDur(i,w)*v.gold*STRATS[st.strat].gold*gs*(1-eventChance(i,w)*.5))};
 const harvestMini=g=>Object.entries(g).filter(([k,n])=>n).slice(0,4).map(([k,n])=>`<span class="hm">${img(k==='gold'?'it_gold':MATART[k])}${fmt(n)}</span>`).join('');
 const harvestIcons=g=>Object.entries(g).filter(([k,n])=>n).map(([k,n])=>`<div class="hico">${img(k==='gold'?'it_gold':MATART[k]||ITEMS[k][1])}<span class="num">×${fmt(n)}</span></div>`).join('')||'<div class="small muted">沒有獎勵</div>';
-function lbRows(i){const b=S.best[i];return [...lbNpc(i).map(x=>({...x,me:false})),...(b?[{n:'你',p:b.p,w:{b:b.b,q:b.q,lv:b.lv,traits:b.traits||[],ench:b.ench||[]},me:true}]:[])].sort((x,y)=>y.p-x.p||(y.me-x.me)).map((x,k)=>({...x,k}))}
+function lbRows(i){const b=S.best[i];return [...lbOthers(i).map(x=>({...x,me:false})),...(b?[{n:S.nick||'你',p:b.p,w:{b:b.b,q:b.q,lv:b.lv,traits:b.traits||[],ench:b.ench||[]},me:true}]:[])].sort((x,y)=>y.p-x.p||(y.me-x.me)).map((x,k)=>({...x,k}))}
 // 排行榜武器詳情（唯讀）：對手或你的紀錄，內容跟武器詳情頁同一套排版
 function sheetLbW(i,k){const x=lbRows(i)[k];if(!x)return sheetLb(i);const w=x.w,b=BP[w.b],v=VILLAGES[i],el=affixVal(w,'flame')+affixVal(w,'frost'),rm=runicMul(w),nE=w.ench.filter(Boolean).length;
   const traits=[...(w.traits||[]).map(t=>`<button class="wd-chip tap" data-act="trinfo" data-k="${t.k}" data-v="${t.v}">${img(TRAIT_ICON[t.k])}${TRAITS[t.k].n} <b>+${t.v}%</b><i>ⓘ</i></button>`),...(b.inn?[`<span class="wd-chip inn">${img(AFFIX_ICON[b.inn[0]])}天生・${AFFIX[b.inn[0]].n} <b>+${b.inn[1]}%</b></span>`]:[])];
@@ -2561,20 +2561,20 @@ function sheetLbW(i,k){const x=lbRows(i)[k];if(!x)return sheetLb(i);const w=x.w,
    ${btn('回排行榜','lbopen',{cls:'btn-sec big',attrs:`data-i="${i}"`})}`}
 // v3.16 排行榜：每個村莊（委託）一個榜，比的是你交付過最高戰力的武器
 function sheetLb(i){i=Math.max(0,Math.min(VILLAGES.length-1,i));const pend=lbReward(i);if(pend.length)setTimeout(()=>toast('上榜獎勵：<br>'+pend.join('<br>'),'ok'),50);   // 舊存檔已駐守的武器：打開排行榜時補發
-  const v=VILLAGES[i],st=S.villages[i],b=S.best[i],rk=lbRank(i),npc=lbNpc(i),got=S.lbRw[i]||[];
+  if(AUTH)setTimeout(()=>lbFetch(),0);const v=VILLAGES[i],st=S.villages[i],b=S.best[i],rk=lbRank(i),npc=lbOthers(i),got=S.lbRw[i]||[];
   const rows=lbRows(i);
   const head=`<div class="sheet-head"><span style="width:44px"></span><h2>排行榜</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>`;
   const tabs=`<div class="lb-tabs">${VILLAGES.map((x,k)=>{const lk=S.villages[k].status==='locked',r=lbRank(k);return `<button class="lb-tab ${k===i?'on':''} ${lk?'lk':''}" data-act="lbopen" data-i="${k}" ${lk?'disabled':''}><img src="${A('v'+(k+1))}" alt=""><span>1-${k+1}</span>${r&&r<=10?`<i class="lb-rk r${Math.min(r,4)}">${r}</i>`:''}${lk?img('ic_lock','lb-lk'):''}</button>`}).join('')}</div>`;
-  const me=b?`<div class="lb-me" data-act="lbw" data-i="${i}" data-k="${rows.findIndex(x=>x.me)}" role="button">${wArt(b.b,{frame:b.q})}<div class="grow"><div class="small muted">你的最佳紀錄</div><b class="q${b.q}">${BP[b.b].n} +${b.lv}</b><div class="small">戰力 <b class="t-gold">${fmt(b.p)}</b></div></div><div class="lb-mypos"><span class="small muted">名次</span><b>${rk}</b><span class="small muted">／${npc.length+1}</span></div></div>`
+  const me=b?`<div class="lb-me" data-act="lbw" data-i="${i}" data-k="${rows.findIndex(x=>x.me)}" role="button">${wArt(b.b,{frame:b.q})}<div class="grow"><div class="small muted">你的最佳紀錄</div><b class="q${b.q}">${BP[b.b].n} +${b.lv}</b><div class="small">戰力 <b class="t-gold">${fmt(b.p)}</b></div></div><div class="lb-mypos"><span class="small muted">名次</span><b>${rk||'…'}</b><span class="small muted">／${npc.length+1}</span></div></div>`
     :`<div class="lb-me empty"><div class="grow"><b>還沒有交付武器</b><div class="small muted">交付${CATS[v.cat]}類、戰力 ${v.req} 以上的武器就會上榜</div></div></div>`;
-  const nxt=b&&rk>1?npc[rk-2]:null;
-  const goal=nxt?`<div class="small muted center lb-goal">再提升 <b class="t-gold">${fmt(nxt.p-b.p+1)}</b> 戰力就能超越第 ${rk-1} 名 ${nxt.n}</div>`:b?'<div class="small t-ok center lb-goal">你是這座村莊最強的鐵匠！</div>':'';
+  const nxt=b&&rk>1?npc.filter(x=>x.p>b.p).slice(-1)[0]:null;
+  const goal=AUTH&&!LBR.t?'<div class="small muted center lb-goal">讀取排行榜中…</div>':nxt?`<div class="small muted center lb-goal">再提升 <b class="t-gold">${fmt(nxt.p-b.p+1)}</b> 戰力就能超越第 ${rk-1} 名 ${nxt.n}</div>`:b?'<div class="small t-ok center lb-goal">你是這座村莊最強的鐵匠！</div>':'';
   const rws=`<div class="lb-rws">${LB_RW.map(([t,r,n])=>{const ok=got.includes(t);return `<div class="lb-rw ${ok?'ok':''}"><span class="small">${n}</span>${Object.entries(r).map(([k,c])=>`${img(ITEMS[k][1])}<b>×${c}</b>`).join('')}<span class="small ${ok?'t-ok':'muted'}">${ok?'已領取':'未達成'}</span></div>`}).join('')}</div>`;
   const myIx=rows.findIndex(x=>x.me),show=rows.map((x,k)=>({...x,k})).filter(x=>x.k<10||x.me);
   const row=x=>`<button class="lb-row ${x.me?'me':''} ${x.k<3?'top':''}" data-act="lbw" data-i="${i}" data-k="${x.k}"><span class="lb-no r${Math.min(x.k+1,4)}">${x.k+1}</span>${wArt(x.w.b,{frame:x.w.q,cls:'lb-art'})}<div class="grow"><b>${x.n}</b><div class="small q${x.w.q}">${BP[x.w.b].n} +${x.w.lv}</div></div><b class="lb-p">${fmt(x.p)}</b><span class="muted lb-more">›</span></button>`;
   return head+tabs+`<div class="lb-vh"><b>1-${i+1} ${v.name}</b><span class="small muted">${CATS[v.cat]}類・委託需求 ${v.req}${v.need?'・需'+AFFIX[v.need].n:''}</span></div>`+me+goal+rws
     +`<div class="ui-panel panel lb-list">${show.map((x,k)=>(k>0&&x.k-show[k-1].k>1?'<div class="lb-gap">⋯</div>':'')+row(x)).join('')}</div>
-    <div class="small muted center">電腦對手為北境鐵匠公會紀錄；正式上架後改為真人玩家。</div>`}
+    <div class="small muted center">${!AUTH?'登入後才會顯示其他玩家（測試版）':LBR.err?'⚠ '+LBR.err:LBR.loading&&!LBR.t?'讀取中…':'封測玩家真實紀錄，每分鐘更新'}</div>`}
 // v3.15 委託成就：正式版型 A（進度清單）；開發模式下可切換原版／B／C／D 比較
 const ACH_G={v:['收復村莊','nav_village'],h:['村莊收成','it_gold'],f:['鍛造與強化','nav_forge']};
 const achSt=a=>S.ach[a.id]?'done':a.test()?'ready':'todo';
@@ -2671,7 +2671,7 @@ function sheetDev(){
      <div class="devgrid">${B('sfxaltclr','全部切回原版')}</div>`:''}
      <div class="label">登入與開場（v3.20）</div><div class="devgrid">${B('gtlogin','顯示登入畫面')}${B('gtstory','播放開場故事')}${B('gtreset','重設「已看過開場」')}</div>
      <div class="label">新手導覽（v3.20）</div><div class="devgrid">${B('tutnew','用新存檔從頭跑導覽（會清空目前進度）')}${B('tutrestart','保留存檔，從第 1 步重看')}${B('tutnext','導覽跳下一步')}${B('tipreset','重設各系統第一次說明')}</div>
-     <div class="label">排行榜（v3.16）</div><div class="devgrid">${B('lbtop','1-1 紀錄衝到第 1 名（測試上榜獎勵）')}${B('lbmid','1-1 紀錄設為第 12 名')}${B('lbreset','清除排行榜紀錄與獎勵')}</div>
+     <div class="label">排行榜（v3.46 真人版）</div><div class="devgrid">${B('lbtop','上傳我的紀錄並重新讀取')}${B('lbmid','重新讀取排行榜')}${B('lbreset','清除排行榜紀錄與獎勵')}</div>
      <div class="label">2. 指定下一次強化結果（只對測試武器有效）</div>
      <div class="row">${[['ok','成功'],['fail','普通失敗'],['break','爆裝'],['saved','防爆'],['','不指定']].map(([k,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(DEV.force||'')===k?'on':''}" data-act="devforce" data-k="${k}">${n}</button>`).join('')}</div>
      <div class="small muted">目前：${DEV.force?{ok:'成功',fail:'普通失敗',break:'爆裝',saved:'防爆'}[DEV.force]:'不指定（照正常機率）'}</div>
@@ -2706,7 +2706,7 @@ function devdo(k){if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=
   if(k.startsWith('fxs_')){if(ui.busy)return;return testFx(k.slice(4),true)}
   if(k.startsWith('fxg_')){if(ui.busy)return;return testFx(k.slice(4),false,true)}
   if(k.startsWith('fx_')){if(ui.busy)return;return testFx(k.slice(3))}
-  if(k==='lbtop'||k==='lbmid'){const n=lbNpc(0),p=k==='lbtop'?n[0].p+1:n[11].p-1;S.best[0]={p,b:'t1_woodaxe',q:4,lv:k==='lbtop'?15:9};const r=lbReward(0);ui.sheet={t:'lb',i:0};render();if(r.length)toast('上榜獎勵：<br>'+r.join('<br>'),'ok');return}
+  if(k==='lbtop'||k==='lbmid'){if(k==='lbtop'){lbSync().then(()=>lbFetch(true));toast('已上傳我的紀錄並重新讀取')}else{lbFetch(true);toast('重新讀取排行榜')}ui.sheet={t:'lb',i:0};return render()}
   if(k==='lbreset'){S.best={};S.lbRw={};save();toast('排行榜紀錄已清除');ui.sheet={t:'lb',i:0};return render()}
   if(k==='tutnew'){localStorage.removeItem(KEY);S=fresh();S.tut=0;save();ui.sheet=null;ui.tab='forge';ui.ftab='bp';render();return toast('已換成新存檔，從第 1 步開始導覽')}
   if(k==='tutrestart'){S.tut=0;save();ui.sheet=null;ui.tab='forge';ui.ftab='bp';render();return}
