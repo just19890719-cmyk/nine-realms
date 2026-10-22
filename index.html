@@ -1200,6 +1200,55 @@ button.matbox:active{border-color:var(--gold)}
 .new-tag{position:absolute;top:8%;left:8%;z-index:3;padding:0 4px;border-radius:3px;background:var(--danger-hi);color:#fff;font-size:10px;font-weight:800;line-height:14px;letter-spacing:.03em;pointer-events:none}
 .nobr{white-space:nowrap}   /* v3.65 月卡說明不要只剩一個「鑽」字換行 */
 @media (max-width:360px){.mq .mq-b{width:26px}.mrow .mr-ops{grid-template-columns:minmax(0,1.8fr) minmax(0,1fr) minmax(0,1fr)}.mrow .mr-t{font-size:13px}}   /* 320 寬也放得下 4 位數 */
+
+/* v3.70 圖紙卡：未解鎖改成鎖頭小圖示＋下方文字，不蓋住武器圖 */
+.wt.bp.locked .wart-w{filter:grayscale(.85) brightness(.5)}
+.wt.bp .wt-lock{right:12%;top:12%}
+.wt.bp .wt-lock img{width:18px;height:18px}
+.wt-lockline{color:var(--ash)!important;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* v3.70 全服跑馬燈（疊在上方資源列下緣，不推動版面） */
+.ui-topbar.bar .news{position:absolute;left:0;right:0;top:100%;height:24px;overflow:hidden;pointer-events:none;opacity:0;transition:opacity .3s;background:linear-gradient(90deg,transparent,rgba(12,9,7,.92) 12%,rgba(12,9,7,.92) 88%,transparent);border-bottom:1px solid rgba(232,184,92,.25)}
+.ui-topbar.bar .news.on{opacity:1}
+.nw-tx{position:absolute;left:0;top:0;line-height:24px;white-space:nowrap;font-size:13px;color:var(--bone);transform:translateX(var(--nw-from,100vw));animation:nwRun linear forwards;will-change:transform}
+.nw-tx b{color:var(--gold-hi)}.nw-tx .nw-lv{color:#ffd76a}.nw-tx.bad b.nw-w{color:#e8796b}
+@keyframes nwRun{from{transform:translateX(var(--nw-from,100vw))}to{transform:translateX(var(--nw-to,-100%))}}
+@media (prefers-reduced-motion:reduce){.nw-tx{animation:nwStay 6s linear forwards;transform:none;left:8px;right:8px;overflow:hidden;text-overflow:ellipsis}@keyframes nwStay{to{opacity:1}}}
+/* v3.70 每日任務 */
+.dq-sum{display:flex;align-items:center;gap:12px;padding:10px 12px;margin-bottom:10px;border-radius:var(--r);background:linear-gradient(180deg,#1b150f,#120e0a);border:1px solid var(--line2)}
+.dq-pts{display:flex;flex-direction:column;align-items:center;flex:none;line-height:1.1}
+.dq-pts b{font-family:var(--display);font-size:26px;color:var(--gold-hi)}
+.dq-track{position:relative;flex:1;min-width:0}
+.dq-track .prog{margin:0}
+.dq-mk{position:absolute;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#2a2119;border:1.5px solid var(--line2)}
+.dq-mk:last-child{margin-left:-10px}
+.dq-mk.on{background:var(--gold-hi);border-color:#fff3c4}
+.dq-boxes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.dq-box{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 6px;border-radius:var(--r);border:1px solid var(--line);background:linear-gradient(#17120e,#0d0a08);min-width:0}
+.dq-box.ready{border-color:var(--gold);box-shadow:0 0 0 1px rgba(232,184,92,.35) inset}
+.dq-box.done{opacity:.55}
+.dq-need{font-size:12px;color:var(--ash)}
+.dq-rws{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;min-height:28px}
+.dq-box .ui-btn{width:100%}
+.dq-list{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.dq-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r);border:1px solid var(--line);background:#120e0a}
+.dq-row.done{border-color:rgba(130,204,143,.35)}
+.dq-ic{width:30px;height:30px;flex:none;object-fit:contain}
+.dq-t{display:flex;justify-content:space-between;gap:8px;margin-bottom:4px}
+.dq-t b{font-size:14px;min-width:0}
+.dq-t .small{flex:none;color:var(--ash)}
+.dq-row.done .dq-t .small{color:#82cc8f}
+.dq-pt{flex:none;font-family:var(--display);font-weight:700;color:var(--gold-hi);font-size:14px}
+/* v3.70 七日簽到 */
+.sg-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.sg-day{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 4px;border-radius:var(--r);border:1px solid var(--line);background:linear-gradient(#17120e,#0d0a08);min-width:0}
+.sg-day.big{grid-column:span 2;border-color:rgba(232,184,92,.45)}
+.sg-day.today{border-color:var(--gold-hi);box-shadow:0 0 10px rgba(232,184,92,.35),0 0 0 1px rgba(232,184,92,.5) inset}
+.sg-day.done .sg-rws{opacity:.4}
+.sg-n{font-size:12px;color:var(--ash)}
+.sg-day.today .sg-n{color:var(--gold-hi);font-weight:700}
+.sg-rws{display:flex;flex-wrap:wrap;justify-content:center;gap:4px}
+.sg-ok{position:absolute;right:4px;top:4px;width:18px;height:18px}
+.q-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}
 /* v3.73 村莊怪物血條（方案 B）：縮圖換成怪物、進度條換成血條；動畫只用 transform／opacity */
 .vcard .vmon{position:relative;width:64px;height:64px;flex:none}
 .vcard .vmon .vthumb{display:block}
@@ -1224,7 +1273,7 @@ button.matbox:active{border-color:var(--gold)}
 .hp-n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(prefers-reduced-motion:reduce){.vmon *,.vmon:after{animation:none!important}}
 </style>
-<div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div></div>
+<div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div><div class="news" id="news" aria-live="polite"></div></div>
 <main class="wrap" id="view"></main>
 <nav class="ui-navbar nav"><div class="nav-in" id="nav"></div></nav>
 <div id="layer"></div>
@@ -1498,6 +1547,16 @@ const ACH=[
   {id:'m30',n:'熔解 30 把武器',g:'f',ic:'mat_shard',p:()=>[S.stats.melted,30],test:()=>S.stats.melted>=30,r:{bless:2}},
   {id:'f50',n:'鍛造 50 把武器',g:'f',ic:'nav_forge',p:()=>[S.stats.forged.reduce((a,b)=>a+b,0),50],test:()=>S.stats.forged.reduce((a,b)=>a+b,0)>=50,r:{bless:1,shard:3}}
 ];
+// v3.70 每日任務（每天 0 點換日，進度＝今天的統計增加量）＋活躍度寶箱＋7 日簽到
+const DAILY=[
+  {id:'login',n:'今天登入遊戲',pt:10,m:1,ic:'ic_check',p:()=>1},
+  {id:'harv',n:'村莊收成 5 輪',pt:20,m:5,ic:'it_gold',p:()=>S.stats.harvest-S.daily.b.harvest},
+  {id:'forge',n:'鍛造 3 把武器',pt:20,m:3,ic:'nav_forge',p:()=>forgedN()-S.daily.b.forged},
+  {id:'enh',n:'強化武器 5 次',pt:25,m:5,ic:'mat_rune',p:()=>S.stats.enhTry-S.daily.b.enhTry},
+  {id:'melt',n:'熔解 1 把武器',pt:25,m:1,ic:'mat_shard',p:()=>S.stats.melted-S.daily.b.melted}
+];
+const DAILY_BOX=[[40,()=>({gold:200+200*cleared(),shard:2})],[70,()=>({bless:1})],[100,()=>({gems:30,scroll:1})]];
+const SIGN=[{gold:1000},{shard:3},{bless:1},{gems:50},{silver:3},{scroll:1},{gems:100,scroll:2}];
 
 /* ---------- 工具 ---------- */
 let QUIET=false;
@@ -1521,7 +1580,7 @@ const OFFLINE_H=12;    // v3.69 離線累積上限（真實時間 12 小時）
 function fresh(){return{v:VERSION,gold:500,fcRw:true,gems:100,slag:0,speed:GAME_SPEED,capH:OFFLINE_H,pity:0,
   mats:{iron:8,oak:6,leather:3,silver:0,fang:0,scale:0,rune:0,shard:1,fur:0,icecore:0,fireheart:0,serpent:0},
   items:{scroll:1,bless:1,blueprint:0},furnace:1,anvil:1,slots:1,weapons:[],nextId:1,jobs:[],
-  villages:VILLAGES.map((v,i)=>freshVillage(i)),monthly:{until:0,last:''},stats:freshStats(),ach:{},best:{},lbRw:{},lastSeen:NOW(),clockWarn:false}}
+  villages:VILLAGES.map((v,i)=>freshVillage(i)),monthly:{until:0,last:''},daily:null,sign:{n:0,last:''},stats:freshStats(),ach:{},best:{},lbRw:{},lastSeen:NOW(),clockWarn:false}}
 function migrateV2(o){
   const s=fresh();s.gold=o.gold||0;s.gems=o.gems||0;Object.assign(s.mats,o.mats||{});Object.assign(s.items,o.items||{});
   s.mute=!!o.mute;s.furnace=o.furnace||1;s.anvil=o.anvil||1;s.slots=o.slots||1;s.monthly=o.monthly||s.monthly;
@@ -1534,7 +1593,7 @@ function sanitize(s){
   for(const k in MATS)s.mats[k]=Math.max(0,Math.floor(+s.mats[k]||0));
   for(const k in ITEMS)s.items[k]=Math.max(0,Math.floor(+s.items[k]||0));
   s.gold=Math.max(0,Math.floor(+s.gold||0));s.gems=Math.max(0,Math.floor(+s.gems||0));s.slag=Math.max(0,Math.floor(+s.slag||0));
-  s.stats=Object.assign(freshStats(),s.stats||{});s.ach=s.ach||{};s.best=s.best||{};s.lbRw=s.lbRw||{};s.speed=GAME_SPEED;s.capH=OFFLINE_H;s.pity=s.pity||0;
+  s.stats=Object.assign(freshStats(),s.stats||{});s.ach=s.ach||{};s.sign=s.sign&&typeof s.sign==='object'?{n:Math.max(0,Math.min(SIGN.length,s.sign.n|0)),last:String(s.sign.last||'')}:{n:0,last:''};if(s.daily&&!(s.daily.b&&Array.isArray(s.daily.box)))s.daily=null;s.best=s.best||{};s.lbRw=s.lbRw||{};s.speed=GAME_SPEED;s.capH=OFFLINE_H;s.pity=s.pity||0;
   s.weapons.forEach(w=>w.b=bpId(w.b));(s.jobs||[]).forEach(j=>j.b=bpId(j.b));for(const k in (s.best||{}))if(s.best[k])s.best[k].b=bpId(s.best[k].b);
   const seen=new Set();s.weapons=s.weapons.filter(w=>BP[w.b]);let maxId=0;
   for(const w of s.weapons){if(seen.has(w.id))w.id=null;else seen.add(w.id);maxId=Math.max(maxId,w.id||0);w.lock=!!w.lock;w.test=!!w.test;w.traits=w.traits||[];w.ench=[0,1,2,3].map(i=>(w.ench||[])[i]||null);w.created=w.created||NOW()}
@@ -1564,7 +1623,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='3.73';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='3.74';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -1608,7 +1667,7 @@ async function cloudPush(force,leaving){if(!AUTH||!CLOUD.ready||CLOUD.busy||CLOU
   try{const body=JSON.stringify({p_sid:SID,p_data:S,p_nick:S.nick||null});
     const r=await sbRest('rpc/save_game',{method:'POST',keepalive:!!leaving&&body.length<60000,body});   // v3.49 存檔一律經過伺服器檢查
     if(typeof r==='string'&&r.startsWith('cheat')){CLOUD.busy=false;return cloudCheat(r)}
-    CLOUD.last=CLOUD.pushAt=Date.now();CLOUD.err='';CLOUD.state='ok'}
+    CLOUD.last=CLOUD.pushAt=Date.now();CLOUD.err='';CLOUD.state='ok';if(NEWS.out.length)setTimeout(newsFlush,0)}
   catch(e){if(/session/i.test(e.message)){CLOUD.busy=false;return cloudKicked()}CLOUD.dirty=true;CLOUD.err=SB_ERR(e.message);CLOUD.state='err'}finally{CLOUD.busy=false}}
 // 伺服器判定存檔異常（數值增加超過合理範圍）：還原到雲端上最後一次正常的進度
 async function cloudCheat(r){console.warn('save rejected',r);CLOUD.dirty=false;try{const x=await sbRest('saves?select=data&user_id=eq.'+AUTH.user.id);if(x&&x[0]&&x[0].data&&x[0].data.villages){S=sanitize(x[0].data);S.uid=AUTH.user.id}}catch(e){}
@@ -1623,6 +1682,26 @@ function showKickTab(){document.body.classList.add('gating');const g=gateEl();g.
   g.innerHTML=`<div class="gt-scene"><img class="gt-ly gt-bg" src="${LG('key_bg')}" alt=""><div class="gt-vig"></div></div><img class="gt-logo" src="${LG('logo')}" alt="九界鐵匠"><div class="gt-box gt-load"><div class="gt-ttl">遊戲已在另一個分頁開啟</div><div class="small muted center">同一個帳號一次只能在一個地方玩。要在這裡繼續，請按下方按鈕（另一個分頁會自動停止）。</div><button type="button" class="ui-btn ui-btn--primary btn btn-primary big" data-gk="1">在這裡繼續玩</button></div>`}
 if(typeof window!=='undefined')window.addEventListener('storage',e=>{if(e.key==='nrs-sid'&&CLOUD.ready&&e.newValue&&e.newValue!==SID)cloudKicked()});
 async function cloudCheckSession(){if(!AUTH||!CLOUD.ready||CLOUD.kicked)return;try{const r=await sbRest('saves?select=session_id&user_id=eq.'+AUTH.user.id);if(r&&r[0]&&r[0].session_id&&r[0].session_id!==SID)cloudKicked()}catch(e){}}
+/* ---------- v3.70 全服強化跑馬燈：+10 以上成功或爆裝 → 存檔上傳後交給伺服器核對再公告；每 30 秒拿別人的公告 ---------- */
+const NEWS={out:[],q:[],busy:false,last:0,t:0,on:false};
+const NEWS_MIN=10;
+function newsQueue(b,lv,ok){if(QUIET||lv<NEWS_MIN)return;NEWS.out.push({b,lv,ok});setTimeout(()=>newsShow({nick:S.nick||'你',bp:b,lv,ok,me:true}),2500)}
+async function newsFlush(){if(!AUTH||!CLOUD.ready||NEWS.busy)return;NEWS.busy=true;
+  try{while(NEWS.out.length){const n=NEWS.out.shift();try{await sbRest('rpc/news_post',{method:'POST',body:JSON.stringify({p_sid:SID,p_bp:n.b,p_lv:n.lv,p_ok:n.ok})})}catch(e){}
+    if(NEWS.out.length)await new Promise(r=>setTimeout(r,2100))}}finally{NEWS.busy=false}}
+async function newsFetch(){if(!AUTH||!CLOUD.ready||document.hidden)return;NEWS.t=Date.now();
+  try{const r=await sbRest('rpc/news_list',{method:'POST',body:JSON.stringify({p_after:NEWS.last})});if(!Array.isArray(r))return;
+    for(const x of r){NEWS.last=Math.max(NEWS.last,+x.id||0);if(!x.mine)newsShow(x)}}catch(e){}}
+function newsText(n){const b=BP[bpId(n.bp)];if(!b)return'';const nm=esc(n.nick||'無名鐵匠'),w=`<b class="nw-w">${esc(b.n)}</b>`;
+  return n.ok?`恭喜 <b>${nm}</b> 把 ${w} 強化到 <b class="nw-lv">+${n.lv}</b>！`:`<b>${nm}</b> 的 ${w} 衝 <b>+${n.lv}</b> 失敗，武器化為殘渣……`}
+function newsShow(n){const h=newsText(n);if(!h)return;NEWS.q.push({h,ok:n.ok});if(NEWS.q.length>5)NEWS.q.shift();if(!NEWS.on)newsNext()}
+function newsNext(){const el=typeof document!=='undefined'&&document.getElementById('news');if(!el)return;const n=NEWS.q.shift();
+  if(!n){NEWS.on=false;el.classList.remove('on');return}NEWS.on=true;
+  if(typeof tutOn==='function'&&tutOn()){NEWS.q.length=0;NEWS.on=false;el.classList.remove('on');return}   // 新手導覽中不打擾
+  el.innerHTML=`<span class="nw-tx ${n.ok?'ok':'bad'}">${n.h}</span>`;el.classList.add('on');const tx=el.firstChild,W=el.clientWidth,dist=W+tx.offsetWidth;
+  tx.style.setProperty('--nw-from',W+'px');tx.style.setProperty('--nw-to',-tx.offsetWidth+'px');tx.style.animationDuration=Math.max(6,dist/70)+'s';
+  tx.addEventListener('animationend',()=>setTimeout(newsNext,400),{once:true})}
+if(typeof window!=='undefined')setInterval(()=>{if(Date.now()-NEWS.t>30000)newsFetch()},5000);
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const NICK_OK=n=>{const c=Array.from(n);return c.length<2?'暱稱至少 2 個字':c.length>8?'暱稱最多 8 個字':/^[\p{L}\p{N}_]+$/u.test(n)?'':'暱稱只能用中文、英文、數字或底線'};
 async function cloudSetNick(n){const old=S.nick;S.nick=n;
@@ -1848,6 +1927,20 @@ const bpNew=b=>!bpLock(b)&&!bpSeen().includes(b.id);
 const forgeIdle=()=>S.jobs.length<S.slots&&S.weapons.length+queuedQty()<CAP_WEAPONS&&BPS.some(b=>!bpLock(b)&&!lackList(recipe(b),goldOf(b)).length);
 const monthlyDot=()=>monthlyOn()?S.monthly.last!==today():BETA;
 const achReadyN=()=>ACH.filter(a=>!S.ach[a.id]&&a.test()).length;
+const forgedN=()=>S.stats.forged.reduce((a,b)=>a+b,0);
+function dailyRoll(){if(S.daily&&S.daily.d===today())return;S.daily={d:today(),b:{harvest:S.stats.harvest,forged:forgedN(),enhTry:S.stats.enhTry,melted:S.stats.melted},box:[]}}
+const dailyP=q=>{dailyRoll();return Math.max(0,Math.min(q.m,q.p()))};
+const dailyPts=()=>DAILY.reduce((a,q)=>a+(dailyP(q)>=q.m?q.pt:0),0);
+const boxReady=i=>dailyPts()>=DAILY_BOX[i][0]&&!S.daily.box.includes(i);
+const boxReadyN=()=>DAILY_BOX.filter((b,i)=>boxReady(i)).length;
+const signReady=()=>S.sign.last!==today();
+const questDotN=()=>achReadyN()+boxReadyN()+(signReady()?1:0);
+function giveRw(r){for(const k in r){if(k==='gold')S.gold+=r[k];else if(k==='gems')S.gems+=r[k];else if(MATS[k])S.mats[k]+=r[k];else if(ITEMS[k])S.items[k]+=r[k]}}
+const rwName=k=>k==='gold'?'金幣':k==='gems'?'鑽石':itemName(k);
+const rwIcon=k=>k==='gold'?'it_gold':k==='gems'?'it_gems':MATS[k]?MATART[k]:ITEMS[k][1];
+const rwText=r=>Object.entries(r).map(([k,n])=>rwName(k)+' ×'+fmt(n)).join('、');
+function claimBox(i){if(!boxReady(i))return null;const r=DAILY_BOX[i][1]();S.daily.box.push(i);giveRw(r);save();return r}
+function claimSign(){if(!signReady())return null;const r=SIGN[S.sign.n%SIGN.length];S.sign.n=S.sign.n%SIGN.length+1;S.sign.last=today();giveRw(r);save();return r}
 function breakChance(w,next){const s=stable(w);return next<=s?0:Math.min(.8,.35+.05*(next-s-1))}
 // v3.50 平衡：安全區（+1～+6）便宜好衝，危險區有代價，高等級是長期目標；再乘材質倍率
 const ENH_COST=[5,10,18,30,45,65,160,240,340,480,650,900,1250,1700,2300];
@@ -1951,11 +2044,11 @@ function enhanceCore(id,opt={}){
   let usedBless=false;if(opt.bless){if(!test)S.items.bless--;r=Math.min(1,r+.1);usedBless=true}
   const f=test?opt.force:null;
   const out=f==='ok'?'ok':f==='fail'?'fail':(f==='break'||f==='saved')?'break':rollEnhance(r,bc),before={art:A(w.b),name:bpOf(w).n,q:w.q,from:w.lv,tier:bpOf(w).t};
-  if(out==='ok'){w.lv=next;if(!test){S.stats.enhOk++;S.stats.maxLv=Math.max(S.stats.maxLv,next)}save();return{k:'ok',next,danger,before,usedBless,usedScroll,w,test}}
+  if(out==='ok'){w.lv=next;if(!test){S.stats.enhOk++;S.stats.maxLv=Math.max(S.stats.maxLv,next);newsQueue(w.b,next,true)}save();return{k:'ok',next,danger,before,usedBless,usedScroll,w,test}}
   if(!test)S.stats.enhFail++;
   if(out==='break'){
     if(f==='saved'||(f!=='break'&&opt.scroll&&danger)){save();return{k:'saved',next,danger,before,usedBless,usedScroll,test}}
-    S.weapons.splice(S.weapons.indexOf(w),1);let slag=0;if(!test){S.stats.breaks++;slag=TIERS[before.tier].slag;S.slag+=slag}save();return{k:'broke',next,danger,before,slag,usedBless,test}}
+    S.weapons.splice(S.weapons.indexOf(w),1);let slag=0;if(!test){S.stats.breaks++;slag=TIERS[before.tier].slag;S.slag+=slag;newsQueue(w.b,next,false)}save();return{k:'broke',next,danger,before,slag,usedBless,test}}
   save();return{k:'fail',next,danger,before,usedBless,usedScroll,test};
 }
 function enchantCore(id,slot,directKey){
@@ -2418,7 +2511,7 @@ function wTile(w,act,dot){const b=bpOf(w),i=where(w);
   return `<button class="wt q${w.q}b ${i>=0?'posted':''} ${w.lock?'locked-fav':''}" ${act}>${dot?'<i class="dot give-dot" title="可以交付村莊"></i>':''}<span class="wt-art">${wArt(b.id,{frame:w.q})}
    ${i>=0?`<span class="wt-post">駐守 1-${i+1}</span>`:''}${wNew(w)?'<span class="new-tag">NEW</span>':''}</span>
    <span class="wt-name q${w.q}"><span class="wt-lv">+${w.lv}</span>${b.n}${w.lock?img('ic_lock','wt-lk','已收藏'):''}</span><span class="wt-meta"><span class="wt-q q${w.q}">${QUAL[w.q].n}${(w.traits||[]).length?`<span class="wt-tr">特性${w.traits.length}</span>`:''}${w.test?'<span class="wt-tst">測試</span>':''}</span><span class="wt-pow">${fmt(power(w))}</span></span></button>`}
-function bpTile(b,on){const l=bpLock(b);return `<button class="wt bp ${on?'on':''} ${l?'locked':''}" data-act="bp" data-k="${b.id}"><span class="wt-art">${wArt(b.id,{frame:TIER_FRAME[b.t]})}${l?`<span class="wt-locktxt">${l}</span>`:''}${bpNew(b)?'<span class="new-tag">NEW</span>':''}</span><span class="wt-name">${b.n}</span><span class="wt-pow">${TIERS[b.t].n}・${CATS[b.cat]}</span></button>`}
+function bpTile(b,on){const l=bpLock(b);return `<button class="wt bp ${on?'on':''} ${l?'locked':''}" data-act="bp" data-k="${b.id}"><span class="wt-art">${wArt(b.id,{frame:TIER_FRAME[b.t]})}${l?`<span class="wt-lock">${img('ic_lock')}</span>`:''}${bpNew(b)?'<span class="new-tag">NEW</span>':''}</span><span class="wt-name">${b.n}</span>${l?`<span class="wt-pow wt-lockline">${l}</span>`:`<span class="wt-pow">${TIERS[b.t].n}・${CATS[b.cat]}</span>`}</button>`}
 const matBox=(k,need)=>need==null?`<button class="matbox mb-tap" data-act="matinfo" data-k="${k}">${img(MATART[k])}<span class="mb-n">${MATS[k]}</span><span class="mb-c">${fmt(S.mats[k])}</span></button>`
   :`<div class="matbox need ${S.mats[k]<need?'lack':'ok'}">${img(MATART[k])}<span class="mb-n">${MATS[k]}</span><span class="mb-have">持有 ${fmt(S.mats[k])}</span><span class="mb-need">需要 ${fmt(need)}</span></div>`;
 // v3.61 材料倉庫：點材料顯示用途（哪些材質的圖紙會用到）與取得方式，直接從圖紙配方、村莊掉落、商店資料算出來
@@ -2436,7 +2529,7 @@ let RES_H='';function renderRes(){const el=document.getElementById('res');if(!el
   <button class="ui-iconbtn mute" data-act="mute" aria-label="${S.mute?'開啟音效':'關閉音效'}">${img(S.mute?'ic_sound_off':'ic_sound_on')}</button><span class="chip">${img('it_gold')}<b class="num">${fmtS(S.gold)}</b></span><span class="chip">${img('it_gems')}<b class="num">${fmtS(S.gems)}</b><button class="ui-iconbtn plus" data-act="tab" data-k="shop" aria-label="儲值">${img('ic_plus')}</button></span>${devMode()?`<button class="ui-iconbtn gear" data-act="dev" aria-label="開發工具">${img('ic_gear')}</button>`:''}`;if(h!==RES_H||!el.firstChild){RES_H=h;el.innerHTML=h}}
 const ART_HAS_NAV_MARKET=true;    // 交易所分頁圖示（AI 美術）到位後改 true
 const TABS=[['village','村莊','nav_village'],['forge','鐵匠鋪','nav_forge'],['armory','武器庫','nav_armory'],['market','交易所',ART_HAS_NAV_MARKET?'nav_market':'it_gold'],['shop','商城','nav_shop']];
-let NAV_H='';function renderNav(){const N=document.getElementById('nav'),h=TABS.map(([k,n,ic])=>{const dot=k==='village'?S.villages.some(v=>v.bank.cycles)||anyGive()||achReadyN()>0:k==='armory'?anyGive()||ui.tab!=='armory'&&S.weapons.some(wNew)
+let NAV_H='';function renderNav(){const N=document.getElementById('nav'),h=TABS.map(([k,n,ic])=>{const dot=k==='village'?S.villages.some(v=>v.bank.cycles)||anyGive()||questDotN()>0:k==='armory'?anyGive()||ui.tab!=='armory'&&S.weapons.some(wNew)
     :k==='forge'?forgeIdle()||BPS.some(bpNew):k==='market'?S.mkNew>0&&ui.tab!=='market':k==='shop'?monthlyDot():false,hot=k==='village'&&S.villages.some((st,i)=>vState(i)[0]==='full');
   return `<button data-act="tab" data-k="${k}" class="ui-navtab ${ui.tab===k?'on':''}">${img(ic)}<span>${n}</span>${dot||hot?`<i class="dot give-dot${hot?' hot':''}"></i>`:''}</button>`}).join('');if(h!==NAV_H||!N.firstChild){NAV_H=h;N.innerHTML=h}}
 
@@ -2681,7 +2774,7 @@ function viewVillage(){
   const achReady=ACH.filter(a=>!S.ach[a.id]&&a.test()).length,ready=S.villages.filter(v=>v.bank.cycles).length;
   return `<section class="realm" style="background-image:url(${A('v4')})"><div class="realm-in"><span class="arr off">${ic('arrow-left')}</span><div class="center"><h1>米德加德</h1><div class="small">人類之境</div></div><span class="arr off">${ic('arrow-right')}</span></div>
    <div class="realms">${REALMS.map((r,i)=>`<div class="rlm ${i?'off':'on'}">${img('realm_'+(i+1),i?'locked':'')}${i?img('ic_lock','rl'):''}<span>${r}</span></div>`).join('')}</div></section>
-  <div class="row vbar">${btn(`全部收成${ready?` <span class="ui-badge badge">${ready}</span>`:''}`,'collectAll',{cls:'btn-primary grow',dis:!ready})}${btn(`委託成就${achReady?` <span class="ui-badge badge">${achReady}</span>`:''}`,'achopen')}${btn('排行榜','lbopen',{attrs:`data-i="${Math.max(0,cleared()-1)}"`})}</div>
+  <div class="row vbar">${btn(`全部收成${ready?` <span class="ui-badge badge">${ready}</span>`:''}`,'collectAll',{cls:'btn-primary grow',dis:!ready})}${btn(`任務${questDotN()?` <span class="ui-badge badge">${questDotN()}</span>`:''}`,'achopen')}${btn('排行榜','lbopen',{attrs:`data-i="${Math.max(0,cleared()-1)}"`})}</div>
   <div class="vlist">${VILLAGES.map((v,i)=>{const[k,lab]=vState(i),st=S.villages[i],w=st.weaponId!=null&&W(st.weaponId);
    if(k==='locked'){const first=S.villages.findIndex(x=>x.status==='locked')===i;if(!first)return '';const left=S.villages.filter(x=>x.status==='locked').length;
      return `<div class="vlocked">${img('ic_lock','lk')}<div class="grow"><b>1-${i+1} ${v.name}</b>${left>1?` 等 ${left} 座村莊`:''}<div class="small muted">完成 1-${i} ${VILLAGES[i-1].name} 的委託後解鎖</div></div></div>`}
@@ -2784,8 +2877,24 @@ const achBtn=(a,st,cls='sm')=>btn(st==='done'?'已領取':st==='ready'?'領取':
 const achOrder=list=>[...list].sort((x,y)=>({ready:0,todo:1,done:2}[achSt(x)]-{ready:0,todo:1,done:2}[achSt(y)]));
 function claimAllAch(){let n=0,got={};ACH.forEach(a=>{if(!S.ach[a.id]&&a.test()&&claimAch(a.id)){n++;for(const k in a.r)got[k]=(got[k]||0)+a.r[k]}});
   if(!n)return toast('目前沒有可領取的成就。');snd('coin');toast(`領取 ${n} 項：`+Object.entries(got).map(([k,v])=>itemName(k)+' ×'+v).join('、'),'ok');render()}
+// v3.70 每日任務（活躍度寶箱）與七日簽到
+function viewDaily(){const pts=dailyPts();
+  const box=DAILY_BOX.map(([need,rf],i)=>{const got=S.daily.box.includes(i),rd=boxReady(i),r=rf();
+    return `<div class="dq-box ${got?'done':rd?'ready':''}"><div class="dq-need">活躍 ${need}</div><div class="dq-rws">${Object.entries(r).map(([k,n])=>`<span class="ach-rw">${img(rwIcon(k))}<b>×${fmtS(n)}</b></span>`).join('')}</div>${btn(got?'已領取':rd?'領取':'未達成','qbox',{cls:(rd?'btn-primary':'btn-sec')+' sm',attrs:`data-i="${i}"`,dis:!rd})}</div>`}).join('');
+  return `<div class="dq-sum"><div class="dq-pts"><span class="small muted">今日活躍度</span><b>${pts}</b><span class="small muted">／100</span></div><div class="dq-track"><div class="prog ui-prog"><i style="width:${pts}%"></i></div>${DAILY_BOX.map(([n])=>`<span class="dq-mk ${pts>=n?'on':''}" style="left:${n}%"></span>`).join('')}</div></div>
+   <div class="dq-boxes">${box}</div>
+   <div class="dq-list">${DAILY.map(q=>{const c=dailyP(q),ok=c>=q.m;return `<div class="dq-row ${ok?'done':''}">${img(q.ic,'dq-ic')}<div class="grow"><div class="dq-t"><b>${q.n}</b><span class="small">${ok?'完成':c+'／'+q.m}</span></div><i class="cb-bar"><i style="width:${c/q.m*100}%"></i></i></div><span class="dq-pt">+${q.pt}</span></div>`}).join('')}</div>
+   <div class="small muted center">任務每天 0 點重置，完成後自動加活躍度。</div>`}
+function viewSign(){const rd=signReady(),cur=rd?S.sign.n%SIGN.length:S.sign.n-1;
+  return `<div class="sg-grid">${SIGN.map((r,i)=>{const st=i<cur||(!rd&&i===cur)?'done':i===cur?'today':'';
+    return `<div class="sg-day ${st} ${i===SIGN.length-1?'big':''}"><span class="sg-n">第 ${i+1} 天</span><span class="sg-rws">${Object.entries(r).map(([k,n])=>`<span class="ach-rw">${img(rwIcon(k))}<b>×${fmtS(n)}</b></span>`).join('')}</span>${st==='done'?img('ic_check','sg-ok'):''}</div>`}).join('')}</div>
+   ${btn(rd?`簽到領取第 ${cur+1} 天獎勵`:'今天已簽到，明天再來','qsign',{cls:(rd?'btn-primary':'btn-sec')+' big',dis:!rd})}
+   <div class="small muted center">漏簽不會歸零；第 7 天領完後從第 1 天重新開始。</div>`}
 function sheetAch(){const v=ui.achV||'A',nDone=ACH.filter(a=>S.ach[a.id]).length,nReady=ACH.filter(a=>achSt(a)==='ready').length;
-  const head=`<div class="sheet-head"><span style="width:44px"></span><h2>委託成就</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img'})}</div>`;
+  const qd=(n)=>n?`<i class="dot">${n}</i>`:'',qt=ui.qTab||'d';
+  const head=`<div class="sheet-head"><span style="width:44px"></span><h2>任務</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img'})}</div>
+   <div class="subtabs ach-tabs q-tabs">${[['d','每日任務',boxReadyN()],['s','七日簽到',signReady()?1:0],['o','委託成就',nReady]].map(([k,n,c])=>`<button class="ui-tab ${qt===k?'on':''}" data-act="qtab" data-k="${k}">${n}${qd(c)}</button>`).join('')}</div>`;
+  if(qt==='d')return head+viewDaily();if(qt==='s')return head+viewSign();
   const pick=devMode()?`<div class="ach-vpick"><span class="small muted">版型預覽</span>${['O','A','B','C','D'].map(k=>`<button class="ui-btn ui-btn--chip chipbtn ${v===k?'on':''}" data-act="achv" data-k="${k}">${k==='O'?'原版':k}</button>`).join('')}</div>`:'';
   const sum=`<div class="ach-sum"><div><b>${nDone}</b><span class="small muted">／${ACH.length} 已領取</span></div><div class="grow small muted">免費防爆卷・祝福石</div>${btn(nReady?`一鍵領取（${nReady}）`:'沒有可領取','achAll',{cls:(nReady?'btn-primary':'btn-sec')+' sm',dis:!nReady})}</div>`;
   const bar=(a,cls='')=>{const p=achP(a);return `<div class="ach-bar ${cls}"><div class="prog sm ui-prog"><i style="width:${p.f*100}%"></i></div><span class="small">${fmt(p.c)}／${fmt(p.m)}</span></div>`};
@@ -2859,6 +2968,7 @@ function sheetDev(){
      <div class="label">測試武器</div><div class="devgrid">${B('wt','3 把帶特性的傳說武器')}${B('w6','+6 霜銀長劍（安定 5）')}${B('wm','神器尼德霍格龍矛（安定 0）')}${B('w8','+8 龍鱗戟')}${B('fill','武器庫塞到 195 把')}</div>`,
    prog:`<div class="label">v3.61 介面測試</div><div class="devgrid">${B('uiv','村莊：跳到待交付關卡')}${B('uiarm','武器庫：往下捲看分類置頂')}${B('uiforge','鐵匠鋪：圖紙區上下滑')}${B('uimat','材料倉庫：點材料看用途')}${B('uishop','旅行商人：輸入數量買賣')}</div>
    <div class="label">v3.64 紅點提醒</div><div class="devgrid">${B('uigive','送一把可交付的武器')}${B('uidot_w','武器庫：最新一把標 NEW')}${B('uidot_bp','鐵匠鋪：最新圖紙標 NEW')}${B('uidot_full','村莊倉庫滿（醒目紅點）')}${B('uidot_mk','交易所：模擬有成交')}${B('uidot_mon','商城：月卡今天可領')}${B('uidot_st','目前哪些紅點會亮')}</div>
+   <div class="label">v3.70 每日任務・簽到・跑馬燈</div><div class="devgrid">${B('dq_all','每日任務全部達成')}${B('dq_reset','每日任務換日重置')}${B('sg_reset','簽到：今天可再領')}${B('sg_d7','簽到：跳到第 7 天')}${B('news_ok','跑馬燈：模擬 +12 成功')}${B('news_brk','跑馬燈：模擬 +11 爆裝')}${B('qopen','打開任務視窗')}</div>
      <div class="label">v3.67 分頁美術預熱</div><div class="devgrid">${B('uiwarm','預熱狀態')}${B('uiwarmrun','連切 5 個分頁測出圖')}</div>
      <div class="label">時間流速（正式版 1×）</div><div class="row">${[1,10,30,60].map(n=>`<button class="ui-btn ui-btn--chip chipbtn ${S.speed===n?'on':''}" data-act="speed" data-k="${n}">${n}×</button>`).join('')}</div>
      <div class="label">離線累積上限</div><div class="row">${[1,OFFLINE_H].map(n=>`<button class="ui-btn ui-btn--chip chipbtn ${S.capH===n?'on':''}" data-act="cap" data-k="${n}">${n} 小時</button>`).join('')}</div>
@@ -2963,7 +3073,7 @@ function devdo(k){if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=
     Promise.all([AUTH?adminCheck():Promise.resolve(false),fetch(SB_URL+'/rest/v1/rpc/ac_version',{method:'POST',headers:{apikey:SB_KEY,'Content-Type':'application/json'},body:'{}'}).then(r=>r.ok?r.json():null).catch(()=>null)]).then(([adm,ver])=>{
       ui.testOut=`<div><b>安全設定檢查</b></div>`+row(true,'網站模式：'+(CLOUD_ONLY?'正式（只能雲端存檔）':'測試版（本機）'))+row(!!AUTH,'登入帳號：'+(AUTH?esc(AUTH.user.email):'未登入'))
         +row(adm||!CLOUD_ONLY,'管理員：'+(adm?'是（可以使用開發者工具）':CLOUD_ONLY?'否（正式網站不能開開發者工具）':'否（測試版不限制）'))
-        +row(parseFloat(ver)>=3.63,'伺服器防作弊版本：'+(ver||'讀不到（v3.63 的 SQL 還沒執行）'))+row(parseFloat(ver)>=3.65,'排行榜戰力由伺服器計算：'+(parseFloat(ver)>=3.65?'是':'否（04_leaderboard_v3.65.sql 還沒執行）'))+row(parseFloat(ver)>=3.69,'伺服器離線上限 12 小時：'+(parseFloat(ver)>=3.69?'是':'否（05_offline12h_v3.69.sql 還沒執行）'))
+        +row(parseFloat(ver)>=3.63,'伺服器防作弊版本：'+(ver||'讀不到（v3.63 的 SQL 還沒執行）'))+row(parseFloat(ver)>=3.65,'排行榜戰力由伺服器計算：'+(parseFloat(ver)>=3.65?'是':'否（04_leaderboard_v3.65.sql 還沒執行）'))+row(parseFloat(ver)>=3.69,'伺服器離線上限 12 小時：'+(parseFloat(ver)>=3.69?'是':'否（05_offline12h_v3.69.sql 還沒執行）'))+row(parseFloat(ver)>=3.70,'全服跑馬燈：'+(parseFloat(ver)>=3.70?'已啟用':'否（06_news_v3.70.sql 還沒執行）'))
         +row(true,'一般玩家連點頭像 20 下：'+(CLOUD_ONLY?'不會開啟開發者工具':'測試版會開啟'));render()});return}
   if(k==='tlbsv'){ui.testOut='檢查中…';render();   // v3.65 每座村莊：本機最佳戰力、是否已上傳、伺服器上的戰力
     (async()=>{if(AUTH){await lbSync();LBR.t=0;await lbFetch(true)}
@@ -2988,6 +3098,12 @@ function devdo(k){if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=
      weapons:[{id:1,b:'t1_woodaxe',q:1,lv:3,ench:[{k:'swift',v:8}]},{id:2,b:'t1_farmspear',q:0,lv:2,ench:[]},{id:3,b:'t1_ironsword',q:2,lv:6,ench:[]}],jobs:[],
      villages:VILLAGES.map((v,i)=>({status:i<2?'cleared':i===2?'open':'locked',weaponId:i===0?1:i===1?2:null,cycleStart:i<2?NOW()-60000:null,pending:i===0?5:0})),monthly:{until:0,last:''}};
      S=sanitize(migrateV2(o));S.villages.forEach((st,i)=>{const n=st._pending||0;delete st._pending;const w=st.weaponId!=null&&W(st.weaponId);for(let c=0;c<n;c++)rollCycle(i,w,st)});ui.sheet=null;toast('已載入 v2 測試存檔並遷移成 v3（1-1 累積 5 輪）')},
+   dq_all:()=>{dailyRoll();const b=S.daily.b;b.harvest=S.stats.harvest-5;b.forged=forgedN()-3;b.enhTry=S.stats.enhTry-5;b.melted=S.stats.melted-1;toast('今天的每日任務已全部達成，活躍度 100')},
+   dq_reset:()=>{S.daily=null;dailyRoll();toast('每日任務已重置（像剛換日）')},
+   sg_reset:()=>{S.sign.last='';toast('今天可以再簽到一次')},sg_d7:()=>{S.sign.n=6;S.sign.last='';toast('下一次簽到是第 7 天')},
+   news_ok:()=>{newsShow({nick:S.nick||'測試鐵匠',bp:'t2_longsword',lv:12,ok:true});toast('跑馬燈應該出現一則 +12 成功公告')},
+   news_brk:()=>{newsShow({nick:S.nick||'測試鐵匠',bp:'t3_halberd',lv:11,ok:false});toast('跑馬燈應該出現一則爆裝公告')},
+   qopen:()=>{ui.qTab='d';ui.sheet={t:'a'};ui.tab='village'},
    achall:()=>{S.stats.harvest=Math.max(S.stats.harvest,300);S.stats.enhOk=Math.max(S.stats.enhOk,50);S.stats.melted=Math.max(S.stats.melted,30);S.stats.forged[0]+=50},
    testw:()=>{const bp=['t1_ironsword','t2_longsword','t3_greatsword','m_firegiant'][ui.devTier??0];const w=makeWeapon(bp,ui.devTier===3?3:2,ui.devLv??0,[]);w.test=true;ui.enhLast=null;ui.riskArm=ui.riskOk=null;ui.sheet={t:'w',id:w.id,m:'enh'};toast('已送出測試武器')},
    allw:()=>devAllWeapons(BPS.map(b=>b.id)),regenw:()=>devAllWeapons(WREGEN),
@@ -3075,7 +3191,7 @@ document.addEventListener('click',e=>{
   if(!['enhance','fxskip','devdo','mute','sndtest','sfxalt'].includes(a)&&Date.now()-PD_SND>700)snd(uiSndOf(a));
   if((a==='scrim'||a==='rclose')&&e.target!==b&&!e.target.matches('button'))return;
   if(a!=='melt')ui.meltArm=null;
-  ({tab:()=>{if(ui.busy&&ui.fxDone)ui.fxDone();if(ui.tab==='armory'&&d.k!=='armory'&&S.weapons.some(wNew)){S.seenW=S.nextId-1;save()}if(d.k==='market'&&S.mkNew){S.mkNew=0;save()}ui.tab=d.k;if(d.k==='market'&&(AUTH||mkMock())&&Date.now()-MK.t>20000)setTimeout(mkLoad,0);ui.sheet=null;ui.enhLast=null;render();warmTabs();d.k==='village'?scrollToNextVillage():scrollTo(0,0)},close:()=>{if(ui.busy)return;ui.sheet=null;ui.enhLast=null;ui.riskArm=null;ui.riskOk=null;render()},scrim:()=>{if(ui.busy)return;ui.sheet=null;ui.enhLast=null;render()},dev:()=>{ui.sheet={t:'d'};render()},achopen:()=>{ui.sheet={t:'a'};render()},
+  ({tab:()=>{if(ui.busy&&ui.fxDone)ui.fxDone();if(ui.tab==='armory'&&d.k!=='armory'&&S.weapons.some(wNew)){S.seenW=S.nextId-1;save()}if(d.k==='market'&&S.mkNew){S.mkNew=0;save()}ui.tab=d.k;if(d.k==='market'&&(AUTH||mkMock())&&Date.now()-MK.t>20000)setTimeout(mkLoad,0);ui.sheet=null;ui.enhLast=null;render();warmTabs();d.k==='village'?scrollToNextVillage():scrollTo(0,0)},close:()=>{if(ui.busy)return;ui.sheet=null;ui.enhLast=null;ui.riskArm=null;ui.riskOk=null;render()},scrim:()=>{if(ui.busy)return;ui.sheet=null;ui.enhLast=null;render()},dev:()=>{ui.sheet={t:'d'};render()},achopen:()=>{ui.qTab=signReady()?'s':boxReadyN()||!achReadyN()?'d':'o';ui.sheet={t:'a'};render()},
    sheetW:()=>{ui.sheet={t:'ws',k:'w'};render()},sheetA:()=>{ui.sheet={t:'ws',k:'a'};render()},sheetM:()=>{ui.sheet={t:'ws',k:'m'};render()},
    devdo:()=>devdo(d.k),speed:()=>{tick();const t=NOW(),old=S.speed,nw=+d.k;
      S.villages.forEach(st=>{if(st.cycleStart!=null)st.cycleStart=t-(t-st.cycleStart)*old/nw});S.jobs.forEach(j=>{j.start=t-(t-j.start)*old/nw;j.end=t+(j.end-t)*old/nw});S.speed=nw;save();render()},
@@ -3086,7 +3202,7 @@ document.addEventListener('click',e=>{
    lock:()=>{const w=W(+d.id);if(w){w.lock=!w.lock;save();toast(w.lock?'已收藏，這把武器不會被熔解。':'已取消收藏。')}render()},eslot:()=>{ui.enchSlot=+d.k;render()},
    collect:()=>{tick();collect(+d.i);render()},collectAll,deliver:()=>deliver(+d.i,+d.id),recall:()=>recall(+d.i),strat:()=>{if(setStrategy(+d.i,d.k))toast('已切換為「'+STRATS[d.k].n+'」');render()},
    melt:()=>{const id=+d.id;if(ui.meltArm!==id){ui.meltArm=id;return render()}ui.meltArm=null;const g=meltCore(id);if(g){snd('melt');toast('熔解完成：'+gotText(g),'ok');ui.sheet=null}render()},meltCheap,
-   enhance:()=>enhance(+d.id),achv:()=>{ui.achV=d.k;render()},lbw:()=>{ui.sheet={t:'lbw',i:+d.i,k:+d.k};render()},lbopen:()=>{ui.sheet={t:'lb',i:+(d.i??S.villages.findIndex(v=>v.status!=='cleared')-1)};render()},achtab:()=>{ui.achTab=d.k;render()},achAll:claimAllAch,autoEnh:()=>autoEnhance(+d.id),enchant:()=>enchant(+d.id,+d.s,false),enchantD:()=>enchant(+d.id,+d.s,true),dkey:()=>{ui.directKey=d.k;render()},
+   enhance:()=>enhance(+d.id),achv:()=>{ui.achV=d.k;render()},lbw:()=>{ui.sheet={t:'lbw',i:+d.i,k:+d.k};render()},lbopen:()=>{ui.sheet={t:'lb',i:+(d.i??S.villages.findIndex(v=>v.status!=='cleared')-1)};render()},achtab:()=>{ui.achTab=d.k;render()},qtab:()=>{ui.qTab=d.k;render()},qbox:()=>{const r=claimBox(+d.i);if(r){snd('coin');toast('活躍度寶箱：'+rwText(r),'ok')}render()},qsign:()=>{const r=claimSign();if(r){snd('coin');toast('簽到獎勵：'+rwText(r),'ok')}render()},achAll:claimAllAch,autoEnh:()=>autoEnhance(+d.id),enchant:()=>enchant(+d.id,+d.s,false),enchantD:()=>enchant(+d.id,+d.s,true),dkey:()=>{ui.directKey=d.k;render()},
    ach:()=>{if(claimAch(d.k))toast('成就獎勵已領取','ok');render()},slag:()=>{if(slagTrade(+d.i))toast('兌換完成','ok');render()},rclose:()=>{ui.result=null;render()},
    fxskip:()=>{ui.fxDone&&ui.fxDone()},fxclose:()=>{ui.busy=false;render()},backArmory:()=>{ui.sheet=null;ui.enhLast=null;ui.tab='armory';render()},
    uiskinp2:()=>p2Toggle(),
@@ -3204,7 +3320,7 @@ const TUT=[
  {t:'鐵匠鋪的<b>工坊升級</b>：熔爐越高能打越高階的材質，鐵砧越高品質越好。<b>學徒</b>可以同時鍛造多把，<b>熔解</b>能把不要的武器換回材料。',go:()=>{ui.sheet=null;ui.tab='forge';scrollTo(0,0)},sel:()=>'.hf-bar',ok:'知道了'},
  {t:'缺材料時到<b>商城</b>：旅行商人用金幣賣一階材料；鑽石可以買防爆卷、祝福石和加速道具。',go:()=>{ui.sheet=null;ui.tab='shop';scrollTo(0,0)},sel:()=>'.nav [data-act=tab][data-k=shop]',ok:'知道了'},
  {t:'封測期間<b>北境月卡免費</b>！按「<b>免費領取</b>」立刻拿 <b>300 鑽石</b>，之後 30 天每天回來還能再領 50 鑽。',go:()=>{ui.sheet=null;ui.result=null;ui.tab='shop';scrollTo(0,0)},sel:()=>ui.result?'.modal-card [data-act=rclose]':ui.tab!=='shop'?'.nav [data-act=tab][data-k=shop]':monthlyOn()?null:'[data-act=monthly]',done:()=>monthlyOn()},
- {t:'村莊頁的<b>委託成就</b>可以免費領防爆卷和祝福石；<b>排行榜</b>比你交給每座村莊最強的武器，衝進前 10 名有獎勵。',go:()=>{ui.sheet=null;ui.tab='village';scrollTo(0,0)},sel:()=>'.vbar',ok:'知道了'},
+ {t:'村莊頁的<b>任務</b>有每日任務、七日簽到和委託成就，可以免費領鑽石、防爆卷和祝福石；<b>排行榜</b>比你交給每座村莊最強的武器，衝進前 10 名有獎勵。',go:()=>{ui.sheet=null;ui.tab='village';scrollTo(0,0)},sel:()=>'.vbar',ok:'知道了'},
  {go:()=>{ui.sheet=null;ui.tab='forge';scrollTo(0,0)},t:'基本就是這樣：<b>鍛造 → 交付 → 收成 → 強化 → 附魔</b>，一路收復九界！送你 <b>防爆卷 ×1、祝福石 ×1</b> 當開工禮。',sel:()=>null,ok:'開始冒險',end:1}];
 // 各系統第一次打開時的說明（導覽結束後才會出現，每個只出現一次）
 const TIPS={
@@ -3215,7 +3331,7 @@ const TIPS={
  ench:['附魔','選一格欄位：一般附魔隨機出詞條；指定附魔可以選詞條，但要 4 個符文碎片。已經有詞條的欄位可以重抽。'],
  vdetail:['狩獵策略','一般狩獵收益穩定；素材追獵金幣少、材料多；稀有追蹤時間較長，但稀有材料掉落大幅提升。'],
  lb:['排行榜','比的是你交給這座村莊「最強的那把武器」。第一次衝進前 10、前 3、第 1 名各有一次獎勵。'],
- ach:['委託成就','達成條件就能免費領防爆卷和祝福石，記得常回來看。'],
+ ach:['任務','每日任務每天 0 點重置，集滿活躍度開寶箱；七日簽到每天領一次；委託成就達成就能領防爆卷和祝福石。'],
  ws_w:['工坊升級','熔爐：解鎖更高階材質的圖紙、縮短鍛造時間。鐵砧：提高打出高品質的機率，並開放更多附魔欄。'],
  ws_a:['學徒管理','每多一位學徒，就能同時多鍛造一把武器。'],
  ws_m:['熔解回收','不要的武器可以熔解，退回部分材料和一半鍛造金幣。一鍵熔解只會熔掉普通、精良、+0、沒有特性的武器。'],
@@ -3223,6 +3339,9 @@ const TIPS={
 function tipKey(){const s=ui.sheet;if(s){if(s.t==='w'&&s.m==='enh'){const w=W(s.id);return w&&w.lv+1>stable(w)&&w.lv<15?'danger':null}if(s.t==='w'&&s.m==='ench')return'ench';if(s.t==='v'){const v=VILLAGES[s.i];return v.need&&S.villages[s.i].status!=='cleared'?'need':S.villages[s.i].weaponId!=null?'vdetail':null}
   if(s.t==='lb')return'lb';if(s.t==='a')return'ach';if(s.t==='ws')return'ws_'+s.k;return null}
   return ui.tab==='forge'&&ui.ftab==='mat'?'mat':ui.tab==='armory'&&S.weapons.length?'armory':ui.tab==='shop'?'shop':null}
+// v3.70 每天第一次進遊戲（導覽結束後）自動打開簽到
+function signAuto(){if(ui.signAuto||!S||!signReady()||!(S.tut>=TUT.length)||ui.sheet||ui.result||ui.busy||document.body.classList.contains('gating')||(CLOUD_ONLY&&!CLOUD.ready))return;
+  ui.signAuto=true;ui.qTab='s';ui.sheet={t:'a'};render()}
 function tipDraw(){let o=document.getElementById('tip');const k=!document.body.classList.contains('gating')&&!ui.busy&&!ui.result&&S.tut>=TUT.length?tipKey():null;
   if(!k||(S.tips||{})[k]){if(o&&(!k||o.dataset.k!==k))o.remove();return}
   if(o&&o.dataset.k===k)return;if(o)o.remove();
@@ -3252,7 +3371,7 @@ function tutDraw(force){let o=document.getElementById('tut');document.body.class
 if(typeof window!=='undefined')document.addEventListener('scroll',()=>{if(tutOn()&&!tutDraw._raf)tutDraw._raf=requestAnimationFrame(()=>{tutDraw._raf=0;tutDraw()})},{passive:true,capture:true});
 function tutInit(){if(S.tut==null)S.tut=(!S.weapons.length&&!S.jobs.length&&cleared()===0)?0:99;
   if(navigator.webdriver&&!/tut/.test(location.hash)){if(S.tut<TUT.length)S.tut=99;S.tips=Object.fromEntries(Object.keys(TIPS).map(k=>[k,1]))}   // 自動測試預設不跑導覽，網址加 #tut 才顯示
-  setInterval(()=>{nickGuard();tutDraw();tipDraw()},250)}
+  setInterval(()=>{nickGuard();tutDraw();tipDraw();signAuto()},250)}
 // v3.37 保險：只要是登入帳號、還沒取暱稱、目前沒有其他全螢幕畫面，就跳出取名（不管是從哪條路徑進遊戲）
 let NICK_ASK=0;function nickGuard(){if(S._fcMsg&&!document.body.classList.contains('gating')){toast(`改版補發：已收復村莊的首次收復獎勵 ${fmt(S._fcMsg)} 金幣`,'ok');delete S._fcMsg;save()}if(!AUTH||!AUTH.user||S.nick||document.body.classList.contains('gating')||Date.now()-NICK_ASK<4000)return;NICK_ASK=Date.now();showName(true)}
 function start(){try{if(localStorage.getItem('nrs-dpv')!=='0')document.body.classList.add('dpv')}catch(e){document.body.classList.add('dpv')}dpInit();
