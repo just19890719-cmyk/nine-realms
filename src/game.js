@@ -166,7 +166,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='3.67';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='3.68';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -406,10 +406,12 @@ const lbOthers=i=>(LBR.rows[i]||[]).filter(x=>!AUTH||x.user_id!==AUTH.user.id).m
 const lbMyT=i=>{const b=S.best[i],r=AUTH&&(LBR.rows[i]||[]).find(x=>x.user_id===AUTH.user.id);return b&&r&&r.p===b.p&&Date.parse(r.updated_at)||Infinity};
 const lbAhead=(x,p,t)=>x.p>p||(x.p===p&&x.t<t);
 async function lbSync(){if(!AUTH||!CLOUD.ready)return;let n=0;for(const k in S.best){const b=S.best[k];if(!b||b.sub)continue;
-  try{await sbRest('rpc/lb_submit',{method:'POST',body:JSON.stringify({p_village:+k,p_p:b.p,p_w:{b:b.b,q:b.q,lv:b.lv,traits:b.traits||[],ench:b.ench||[]},p_nick:S.nick||'無名鐵匠'})});b.sub=true;n++}catch(e){return}}
+  try{const p=await sbRest('rpc/lb_submit',{method:'POST',body:JSON.stringify({p_village:+k,p_p:b.p,p_w:{b:b.b,q:b.q,lv:b.lv,traits:b.traits||[],ench:b.ench||[]},p_nick:S.nick||'無名鐵匠'})});if(typeof p==='number')b.p=p;b.sub=true;n++}
+    // v3.65 伺服器自己算戰力，武器要先存進雲端；還沒存到就等下一輪，10 分鐘都找不到（已熔解）或類別不符就放棄
+    catch(e){if(/weapon not saved/.test(e.message)){if(Date.now()-(b.at||0)>6e5)b.sub=true;continue}if(/bad weapon|bad village/.test(e.message)){b.sub=true;continue}return}}
   if(n){save();lbFetch(true)}}
 if(typeof window!=='undefined')setInterval(()=>{if(AUTH&&CLOUD.ready&&!document.hidden){lbSync();if(ui.sheet&&/^lb/.test(ui.sheet.t))lbFetch()}},30000);
-function lbRecord(s,i,w){const p=power(w),b=s.best[i];if(!b||p>b.p){s.best[i]={p,b:w.b,q:w.q,lv:w.lv,traits:JSON.parse(JSON.stringify(w.traits||[])),ench:JSON.parse(JSON.stringify(w.ench||[])),sub:false};if(typeof window!=='undefined'&&s===S)setTimeout(lbSync,500)}}   // 存一份當時的武器內容，排行榜可以點開看
+function lbRecord(s,i,w){const p=power(w),b=s.best[i];if(!b||p>b.p){s.best[i]={p,b:w.b,q:w.q,lv:w.lv,traits:JSON.parse(JSON.stringify(w.traits||[])),ench:JSON.parse(JSON.stringify(w.ench||[])),sub:false,at:Date.now()};if(typeof window!=='undefined'&&s===S)setTimeout(lbSync,500)}}   // 存一份當時的武器內容，排行榜可以點開看
 const lbRank=i=>{const b=S.best[i];if(!b||(AUTH&&!LBR.t))return null;const t=lbMyT(i);return lbOthers(i).filter(x=>lbAhead(x,b.p,t)).length+1};
 // 第一次衝進前 10／前 3／第 1 名各領一次
 function lbReward(i){if(!AUTH||!LBR.t)return[];const rk=lbRank(i);if(!rk)return[];const got=S.lbRw[i]=S.lbRw[i]||[];const out=[];
@@ -1467,7 +1469,7 @@ function sheetDev(){
      <div class="small muted">目前：${DEV.force?{ok:'成功',fail:'普通失敗',break:'爆裝',saved:'防爆'}[DEV.force]:'不指定（照正常機率）'}</div>
      <div class="label">3. 只播放強化動畫（不做任何判定）</div><div class="small muted">爆裝／失敗／防爆時停在第幾道符文</div><div class="row">${[[-1,'隨機'],[0,'第 1 道'],[2,'第 3 道'],[4,'第 5 道'],[6,'第 7 道']].map(([v,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devStop??-1)===v?'on':''}" data-act="devset" data-k="devStop" data-v="${v}">${n}</button>`).join('')}</div><div class="small muted">武器類型</div><div class="row">${Object.entries({axe:'斧',sword:'劍',spear:'長矛',bow:'弓',shield:'盾'}).map(([k,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devFxW||'axe')===k?'on':''}" data-act="devsets" data-k="devFxW" data-v="${k}">${n}</button>`).join('')}</div><div class="small muted">安全區（約 0.5 秒）</div><div class="devgrid">${B('fxs_ok','安全區・成功')}${B('fxs_fail','安全區・失敗')}</div>
      <div class="small muted">危險區（約 2.8 秒）</div><div class="devgrid">${B('fx_ok','危險區・成功')}${B('fx_fail','危險區・失敗')}${B('fx_broke','危險區・爆裝')}${B('fx_saved','危險區・防爆')}</div>`,
-   test:`<div class="devgrid">${B('tsec','安全設定檢查（v3.63）','btn-primary')}${B('tquick','執行快速測試')}${B('tecon','執行 30 天經濟模擬')}${B('ticon','檢查 App icon')}</div>${ui.testOut?`<div class="test-out">${ui.testOut}</div>`:''}`,
+   test:`<div class="devgrid">${B('tsec','安全設定檢查（v3.65）','btn-primary')}${B('tlbsv','排行榜上傳檢查')}${B('tquick','執行快速測試')}${B('tecon','執行 30 天經濟模擬')}${B('ticon','檢查 App icon')}</div>${ui.testOut?`<div class="test-out">${ui.testOut}</div>`:''}`,
    ui:tab==='ui'?uiGallery():'',
    mk:`<div class="label">交易所（v3.41）</div><div class="small muted" style="margin-bottom:6px">${AUTH?'目前連線真實伺服器（'+esc(S.nick||AUTH.user.email)+'）':'未登入：交易所使用「離線模擬」，只存在這支手機，用來測試畫面與流程'}</div>
      <div class="devgrid">${B('mkopen','開啟交易所')}${B('mksettle','立即結算我的成交／過期')}</div>
@@ -1547,8 +1549,13 @@ function devdo(k){if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=
     Promise.all([AUTH?adminCheck():Promise.resolve(false),fetch(SB_URL+'/rest/v1/rpc/ac_version',{method:'POST',headers:{apikey:SB_KEY,'Content-Type':'application/json'},body:'{}'}).then(r=>r.ok?r.json():null).catch(()=>null)]).then(([adm,ver])=>{
       ui.testOut=`<div><b>安全設定檢查</b></div>`+row(true,'網站模式：'+(CLOUD_ONLY?'正式（只能雲端存檔）':'測試版（本機）'))+row(!!AUTH,'登入帳號：'+(AUTH?esc(AUTH.user.email):'未登入'))
         +row(adm||!CLOUD_ONLY,'管理員：'+(adm?'是（可以使用開發者工具）':CLOUD_ONLY?'否（正式網站不能開開發者工具）':'否（測試版不限制）'))
-        +row(ver==='3.63','伺服器防作弊版本：'+(ver||'讀不到（v3.63 的 SQL 還沒執行）'))
+        +row(parseFloat(ver)>=3.63,'伺服器防作弊版本：'+(ver||'讀不到（v3.63 的 SQL 還沒執行）'))+row(parseFloat(ver)>=3.65,'排行榜戰力由伺服器計算：'+(parseFloat(ver)>=3.65?'是':'否（04_leaderboard_v3.65.sql 還沒執行）'))
         +row(true,'一般玩家連點頭像 20 下：'+(CLOUD_ONLY?'不會開啟開發者工具':'測試版會開啟'));render()});return}
+  if(k==='tlbsv'){ui.testOut='檢查中…';render();   // v3.65 每座村莊：本機最佳戰力、是否已上傳、伺服器上的戰力
+    (async()=>{if(AUTH){await lbSync();LBR.t=0;await lbFetch(true)}
+      const me=AUTH&&AUTH.user.id,rows=VILLAGES.map((v,i)=>{const b=S.best[i],r=me&&(LBR.rows[i]||[]).find(x=>x.user_id===me);if(!b&&!r)return'';
+        const ok=b&&r&&r.p===b.p;return`<div>${ok?'✓':b&&!b.sub?'…':'✗'} ${esc(v.name)}：本機 ${b?b.p:'—'}${b&&!b.sub?'（等待上傳）':''}・伺服器 ${r?r.p:'—'}</div>`}).join('');
+      ui.testOut='<div><b>排行榜上傳檢查</b></div>'+(AUTH?'':'<div>未登入，只顯示本機紀錄</div>')+(rows||'<div>還沒有任何交付紀錄</div>');render()})();return}
   if(k==='ticon'){const ls=[...document.querySelectorAll('link[rel~="icon"],link[rel="apple-touch-icon"],link[rel="manifest"]')];
     ui.testOut='<div><b>App icon 設定（'+ls.length+'/4）</b></div>'+ls.map(l=>`<div style="display:flex;align-items:center;gap:8px;margin:4px 0">${l.rel==='manifest'?'':`<img src="${l.getAttribute('href')}" style="width:${l.sizes&&l.sizes.value?parseInt(l.sizes.value):48}px;max-width:64px;border-radius:12px">`}<span>${l.rel} ${l.sizes&&l.sizes.value||''} → ${l.getAttribute('href')}</span></div>`).join('');
     fetch('manifest.webmanifest').then(r=>r.json()).then(m=>{ui.testOut+=`<div>manifest：${m.name}，icons ${m.icons.length} 個 ✓</div>`;render()}).catch(()=>{ui.testOut+='<div>manifest 讀取失敗 ✗</div>';render()});render();return}
