@@ -1184,4 +1184,5 @@ button.matbox:active{border-color:var(--gold)}
 @keyframes givePulse{50%{opacity:.55}}
 .nav .dot.hot{width:13px;height:13px;top:2px;border:2px solid #1a0d04;box-shadow:0 0 10px 2px var(--danger)}
 .new-tag{position:absolute;top:8%;left:8%;z-index:3;padding:0 4px;border-radius:3px;background:var(--danger-hi);color:#fff;font-size:10px;font-weight:800;line-height:14px;letter-spacing:.03em;pointer-events:none}
+.nobr{white-space:nowrap}   /* v3.65 月卡說明不要只剩一個「鑽」字換行 */
 </style>
