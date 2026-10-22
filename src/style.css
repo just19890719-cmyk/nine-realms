@@ -1323,4 +1323,10 @@ button.arr.off{pointer-events:none}
 @media (max-width:374px){.vcard .drops{flex-wrap:wrap;width:59px;justify-content:center}.vcard .drops .dico:nth-child(3){display:none}}   /* v3.76 窄螢幕：掉落只顯示 2 個，讓村莊名稱有位置 */
 .wart .wart-bg{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;border-radius:4px}.wt.bp.locked .wart-bg{filter:brightness(.55)}
 .bp-qual{margin:6px 0 2px}.bp-qual .label{margin-bottom:4px}.bp-qnote{margin-top:4px}
+/* v3.79 村莊卡「可以換」標籤可點、掉落可點、武器庫換武器模式 */
+button.tag-up{font:inherit;font-size:12px;background:rgba(232,184,92,.08);cursor:pointer;line-height:1.5}
+button.goal-tap{display:block;width:100%;text-align:left;font:inherit;font-size:13px;color:inherit;cursor:pointer;border-top:0;border-right:0;border-bottom:0}
+button.goal-tap b{display:block;margin-top:2px;color:var(--gold-hi)}
+button.vv-d{font:inherit;font-size:11px;color:inherit;cursor:pointer}
+.pick-cur{display:flex;align-items:center;gap:8px;margin:6px 0 4px;flex-wrap:wrap}
 </style>
