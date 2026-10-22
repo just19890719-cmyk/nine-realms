@@ -1151,6 +1151,8 @@ html,body,button,[data-act],label,input,select{touch-action:manipulation}
 .fg-ic{width:16px;height:16px;vertical-align:-3px}
 /* v3.54 導覽進行中：頁面底部留空，讓被底部分頁列擋住的目標可以捲到畫面中間 */
 body.tutoring #view{padding-bottom:40vh}
+/* v3.55 金框不做位移動畫，捲動時立即貼齊目標 */
+.tut-ring{transition:none}
 </style>
 <div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div></div>
 <main class="wrap" id="view"></main>
@@ -1491,7 +1493,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='3.54';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='3.55';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -3019,9 +3021,14 @@ function tutDraw(force){let o=document.getElementById('tut');document.body.class
   if(el&&!el.closest('nav,.nav,#res,.ui-topbar,.sheet,.modal,#gate')){   // v3.54 要框的東西被上方資源列或底部分頁列擋住 → 捲到畫面中間（矮螢幕手機）；每個目標只捲一次，避免來回跳
     const r0=el.getBoundingClientRect(),nv=document.querySelector('nav.nav'),navTop=nv?nv.getBoundingClientRect().top:innerHeight,rs=document.getElementById('res'),topLim=(rs?rs.getBoundingClientRect().bottom:60)+8,key=S.tut+'|'+sel;
     if((r0.bottom>navTop-50||r0.top<topLim)&&o.dataset.sc!==key){o.dataset.sc=key;el.scrollIntoView({block:'center'})}}
+  else if(el&&el.closest('.sheet')){   // v3.55 彈出視窗裡的目標：沒有完整露出就捲到視窗中間（每個目標只捲一次）
+    const sh=el.closest('.sheet'),r0=el.getBoundingClientRect(),rs=sh.getBoundingClientRect(),key=S.tut+'|'+sel;
+    if((r0.top<rs.top+60||r0.bottom>rs.bottom-20)&&o.dataset.sc!==key){o.dataset.sc=key;el.scrollIntoView({block:'center'})}}
   if(el){const r=el.getBoundingClientRect(),p=6;Object.assign(ring.style,{display:'block',left:r.left-p+'px',top:r.top-p+'px',width:r.width+p*2+'px',height:r.height+p*2+'px'});
     const below=r.top+r.height/2<innerHeight/2;box.style.top=below?Math.min(innerHeight-170,r.bottom+14)+'px':'auto';box.style.bottom=below?'auto':Math.max(90,innerHeight-r.top+14)+'px';o.classList.remove('nohole')}
   else{ring.style.display='none';box.style.top='auto';box.style.bottom='120px';o.classList.add('nohole')}}
+// v3.55 捲動時金框立即跟著移動
+if(typeof window!=='undefined')document.addEventListener('scroll',()=>{if(tutOn()&&!tutDraw._raf)tutDraw._raf=requestAnimationFrame(()=>{tutDraw._raf=0;tutDraw()})},{passive:true,capture:true});
 function tutInit(){if(S.tut==null)S.tut=(!S.weapons.length&&!S.jobs.length&&cleared()===0)?0:99;
   if(navigator.webdriver&&!/tut/.test(location.hash)){if(S.tut<TUT.length)S.tut=99;S.tips=Object.fromEntries(Object.keys(TIPS).map(k=>[k,1]))}   // 自動測試預設不跑導覽，網址加 #tut 才顯示
   setInterval(()=>{nickGuard();tutDraw();tipDraw()},250)}
