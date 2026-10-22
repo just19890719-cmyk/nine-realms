@@ -162,7 +162,7 @@ function saveTests(){
     S=fresh();S.speed=60;S.gold=3000;S.mats.iron=50;S.mats.oak=50;S.mats.leather=50;S.mats.shard=20;S.villages.forEach(v=>v.status='cleared');S.furnace=2;S.mats.silver=30;S.mats.fang=30;S.slots=4;let errs=0;
     const acts=[()=>forgeStart(BPS[rnd(0,20)].id,[1,5,10][rnd(0,2)],false),()=>{S.jobs.forEach(j=>j.end=NOW())},()=>tick(),()=>{const w=S.weapons[rnd(0,S.weapons.length-1)];if(w)enhanceCore(w.id,{scroll:true,bless:true})},
       ()=>{const w=S.weapons[rnd(0,S.weapons.length-1)];if(w)meltCore(w.id)},()=>{const w=S.weapons[rnd(0,S.weapons.length-1)];if(w)deliverCore(rnd(0,9),w.id)},()=>recallCore(rnd(0,9)),()=>collectCore(rnd(0,9)),
-      ()=>setStrategy(rnd(0,9),['normal','material','rare'][rnd(0,2)]),()=>{CLOCK.offset+=rnd(0,600000)},()=>cancelJob(0),()=>{const w=S.weapons[0];if(w)enchantCore(w.id,rnd(0,3),rnd(0,1)?'giant':null)},()=>slagTrade(rnd(0,2)),()=>pullCore(1)];
+      ()=>setStrategy(rnd(0,9),['normal','material','rare'][rnd(0,2)]),()=>{CLOCK.offset+=rnd(0,600000)},()=>cancelJob(0),()=>{const w=S.weapons[0];if(w)enchantCore(w.id,rnd(0,3))},()=>slagTrade(rnd(0,2)),()=>pullCore(1)];
     for(let n=0;n<3000;n++){acts[rnd(0,acts.length-1)]();
       const neg=S.gold<0||S.gems<0||S.slag<0||Object.values(S.mats).some(x=>x<0)||Object.values(S.items).some(x=>x<0);
       const ids=S.weapons.map(w=>w.id),posts=S.villages.map(v=>v.weaponId).filter(x=>x!=null);
@@ -170,11 +170,11 @@ function saveTests(){
     res.push(T('E9 3,000 次隨機操作：無負數、ID 不重複、同一把武器不會同時駐守兩村、熔解後真正消失',!errs,`異常 ${errs} 次；最終武器 ${S.weapons.length} 把`));
     // 附魔覆蓋與加成
     S=fresh();S.gold=1e6;S.mats.shard=100;S.anvil=5;const x=makeWeapon('t2_wolfaxe',2,0,[{k:'runic',v:20},{k:'light',v:5}]);
-    for(let n=0;n<50;n++)enchantCore(x.id,rnd(0,3));const slots=x.ench.length,shard0=S.mats.shard,g1=S.gold;enchantCore(x.id,0,'giant');
+    for(let n=0;n<50;n++)enchantCore(x.id,rnd(0,3));const slots=x.ench.length,shard0=S.mats.shard,g1=S.gold;enchantCore(x.id,0);
     x.ench=[{k:'loot',v:30},{k:'loot',v:30},{k:'loot',v:30},{k:'swift',v:40}];const tr=timeReduction(0,x),lo=Math.min(CAP.loot,affixVal(x,'loot'));
     const y=makeWeapon('t3_greataxe',0,2,[]);y.ench[0]={k:'giant',v:20};const yOk=eligible(7,y),y2=makeWeapon('t3_greataxe',0,0,[]);
-    res.push(T('E10 附魔覆蓋不重複、扣費正確、符文親和不重複計算、迅捷/掠奪有上限、剋巨人判定',slots===4&&shard0-S.mats.shard===4&&g1-S.gold===enchCost(x,true)&&x.ench.length===4&&tr===CAP.time/100&&lo===CAP.loot&&yOk===(power(y)>=95)&&!eligible(7,y2),
-      `欄位數 ${slots}；指定附魔扣碎片 ${shard0-S.mats.shard}、金幣 ${g1-S.gold}；迅捷堆疊後時間縮短 ${tr*100}%（上限 ${CAP.time}%）；掠奪 ${lo}%（上限 ${CAP.loot}%）；有剋巨人可交 1-8：${yOk}，沒有：${eligible(7,y2)}`));
+    res.push(T('E10 附魔覆蓋不重複、扣費正確、符文親和不重複計算、迅捷/掠奪有上限、剋巨人判定',slots===4&&shard0-S.mats.shard===1&&g1-S.gold===enchCost(x)&&x.ench.length===4&&tr===CAP.time/100&&lo===CAP.loot&&yOk===(power(y)>=95)&&!eligible(7,y2),
+      `欄位數 ${slots}；隨機附魔扣碎片 ${shard0-S.mats.shard}、金幣 ${g1-S.gold}；迅捷堆疊後時間縮短 ${tr*100}%（上限 ${CAP.time}%）；掠奪 ${lo}%（上限 ${CAP.loot}%）；有剋巨人可交 1-8：${yOk}，沒有：${eligible(7,y2)}`));
     // 附魔欄位依鐵砧
     S=fresh();S.gold=1e6;S.mats.shard=10;const z=makeWeapon('t1_woodaxe',0,0,[]);const e2=enchantCore(z.id,2);S.anvil=3;const e3=enchantCore(z.id,2),e4=enchantCore(z.id,3);S.anvil=5;const e5=enchantCore(z.id,3);
     res.push(T('E11 附魔第 3 格鐵砧 Lv3、第 4 格鐵砧 Lv5 開放',e2.err&&!e3.err&&e4.err&&!e5.err,'Lv1 第3格擋下、Lv3 第3格可用第4格擋下、Lv5 第4格可用'));
@@ -238,7 +238,7 @@ function aiSession(P,M){
         }
       }
       if(w&&W(w.id)&&power(w)>=v.req&&v.need&&!affixVal(w,v.need)){
-        if(S.mats.shard>=4)enchantCore(w.id,0,v.need);else if(S.mats.shard>=1)enchantCore(w.id,1);
+        while(S.mats.shard>=1&&S.gold>=enchCost(w)&&!affixVal(w,v.need))enchantCore(w.id,0);   // v3.84 只能隨機：抽到為止
       }
       const ok2=S.weapons.find(x=>eligible(i,x)&&where(x)<0);if(ok2){deliverCore(i,ok2.id);M.clearDay[i]=M.day}
       else{const hopeless=!w||!W(w.id)||power(w,Math.max(w.lv,stable(w)))<v.req;if(hopeless||ws.length<2)aiForgeFor(v.cat,M)}
@@ -420,12 +420,15 @@ function monTests(){if(typeof document==='undefined')return[];const box=document
   const hunting=S.villages.filter(st=>st.status!=='locked'&&st.status!=='open'&&st.weaponId!=null&&W(st.weaponId)).length;
   const ok=MONS.length===VILLAGES.length&&box.querySelectorAll('[data-mon]').length===hunting&&box.querySelectorAll('[data-vhp]').length===hunting;
   return[T('H 村莊怪物：每關都有怪物，駐守中的村莊都有怪物圖和血條',ok,`怪物 ${MONS.length} 種／村莊 ${VILLAGES.length}；駐守 ${hunting} 座，怪物圖 ${box.querySelectorAll('[data-mon]').length}、血條 ${box.querySelectorAll('[data-vhp]').length}`)]}
-// v3.84 新附魔：貪婪／尋珍／守護／剋巨人金幣都有作用，而且不超過上限
+// v3.84 附魔 12 種：只能隨機、戰力／狩獵各 5 種、受襲機制刪除（堅固改成每輪金幣）
 function enchTests(){const mk=(e,t)=>({id:-1,b:'t3_greataxe',q:0,lv:0,traits:t||[],ench:[...e,null,null,null,null].slice(0,4)});const gi=VILLAGES.findIndex(v=>v.tag==='giant'),bi=VILLAGES.findIndex(v=>v.tag==='beast'&&v.danger>0&&v.drops.some(d=>d[1]<RARE_P));
-  const a=goldMul(bi,mk([{k:'greed',v:15}])),b=goldMul(gi,mk([{k:'giant',v:40}])),c=eventChance(bi,mk([{k:'ward',v:25}]))/VILLAGES[bi].danger,cc=eventChance(bi,mk([{k:'ward',v:25}],[{k:'sturdy',v:45}]))/VILLAGES[bi].danger,g=goldMul(bi,mk([{k:'greed',v:15},{k:'greed',v:15},{k:'greed',v:15}]));
-  const rd=VILLAGES[bi].drops.find(d=>d[1]<RARE_P),sk=rd?dropChance(bi,mk([{k:'seek',v:20}]),rd,'normal')/dropChance(bi,mk([]),rd,'normal'):1.2;
-  const ok=Object.keys(AFFIX).length===9&&Math.abs(a-1.15)<1e-9&&Math.abs(b-1.4)<1e-9&&Math.abs(c-.75)<1e-9&&Math.abs(cc-.4)<1e-9&&Math.abs(g-1.4)<1e-9&&Math.abs(sk-1.2)<1e-6&&Object.values(AFFIX).every(x=>x.max<=40&&AFF_G.some(([k])=>k===x.g));
-  return[T('I 新附魔：貪婪 +15%、剋巨人金幣 +40%、守護降受襲、尋珍提升稀有、上限正常',ok,`貪婪×${a.toFixed(2)}、剋巨人×${b.toFixed(2)}、守護受襲×${c.toFixed(2)}（＋堅固×${cc.toFixed(2)}）、貪婪上限×${g.toFixed(2)}、尋珍稀有×${sk.toFixed(2)}`)]}
+  const a=goldMul(bi,mk([{k:'greed',v:15}])),b=goldMul(gi,mk([{k:'giant',v:40}])),st=goldMul(bi,mk([],[{k:'sturdy',v:20}])),g=goldMul(bi,mk([{k:'greed',v:15},{k:'greed',v:15}],[{k:'sturdy',v:45}]));
+  const rd=VILLAGES[bi].drops.find(d=>d[1]<RARE_P),sk=dropChance(bi,mk([{k:'seek',v:20}]),rd,'normal')/dropChance(bi,mk([]),rd,'normal');
+  const p0=power(mk([])),pw=power(mk([{k:'thunder',v:10},{k:'holy',v:10}])),gp=Object.entries(AFFIX).reduce((o,[k,x])=>(o[x.g]=(o[x.g]||0)+1,o),{}),tw=Object.values(AFFIX).reduce((x,y)=>x+y.w,0);
+  const S0=S;S=fresh();S.gold=1e6;S.mats.shard=500;S.anvil=5;const z=makeWeapon('t1_woodaxe',0,0,[]);const cnt={};for(let n=0;n<400;n++){enchantCore(z.id,0);cnt[z.ench[0].k]=1}const used=500-S.mats.shard;S=S0;
+  let hv=0;{const st2={strat:'normal',bank:{cycles:0,gold:0,mats:{},events:0}};const w0=mk([{k:'harvest',v:25},{k:'harvest',v:25}]);for(let n=0;n<4000;n++)rollCycle(0,w0,st2,Date.UTC(2026,9,23,4));hv=st2.bank.events}
+  const ok=Object.keys(AFFIX).length===12&&gp.pow===5&&gp.hunt===5&&tw===100&&Math.abs(a-1.15)<1e-9&&Math.abs(b-1.4)<1e-9&&Math.abs(st-1.2)<1e-9&&Math.abs(g-1.4)<1e-9&&Math.abs(sk-1.2)<1e-6&&Math.abs(pw/p0-1.2)<.02&&eventChance(bi,mk([]))===0&&hv===0&&used===400&&Object.keys(cnt).length>=10&&Object.values(AFFIX).every(x=>x.max<=40);
+  return[T('I 附魔 12 種：只能隨機（1 碎片）、戰力／狩獵各 5、貪婪＋堅固上限 40%、剋巨人金幣、尋珍、受襲刪除',ok,`戰力 ${gp.pow}／狩獵 ${gp.hunt}；權重 ${tw}；貪婪×${a.toFixed(2)}、堅固×${st.toFixed(2)}、上限×${g.toFixed(2)}、剋巨人×${b.toFixed(2)}、尋珍×${sk.toFixed(2)}、雷霆＋神聖戰力×${(pw/p0).toFixed(2)}；400 次附魔用 ${used} 碎片、出現 ${Object.keys(cnt).length} 種；受襲 ${hv} 次`)]}
 function runTests(mode){
   if(mode==='econ')return econHtml(12)+econHtml(8);
   const r=runAll({N:100000});r.res.push(...layoutTests(),...monTests(),...enchTests());const pass=r.res.filter(x=>x.pass).length;
