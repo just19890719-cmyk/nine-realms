@@ -323,9 +323,22 @@ function econHtml(capH){const e=econReport(capH);let h=`<div><b>30 天經濟模�
   for(const k in e){const m=e[k];h+=`<div style="margin-top:6px"><b>${PROFILES[k].n}</b>：收復時間 ${m.clearDays||'無'}</div>`;
     h+='<table class="tbl"><tr><th>天</th><th>村莊</th><th>金幣收入</th><th>鍛造</th><th>強化/失敗/爆</th><th>最高</th><th>熔爐/鐵砧</th></tr>'+Object.entries(m.snap).map(([d,s])=>`<tr><td>${d}</td><td>${s.cleared}</td><td>${fmt(s.goldIn)}</td><td>${s.forgedSum}</td><td>${s.enhTry}/${s.enhFail}/${s.breaks}</td><td>+${s.maxLv}</td><td>${s.furnace}/${s.anvil}</td></tr>`).join('')+'</table>'}
   return h}
+// v3.62 版面檢查（只在瀏覽器）：把商城、武器庫、村莊、材料倉庫畫在 320～480px 寬的隱藏容器裡，
+// 找出被擠成一個字寬、文字直排的欄位，以及字超出按鈕的情況（v3.61 旅行商人在 430 寬 iPhone 上直排就是這種）
+function layoutTests(){if(typeof document==='undefined')return[];const res=[],keep=[ui.tab,ui.ftab];
+  const views=[['商城',()=>viewShop()],['武器庫',()=>viewArmory()],['村莊',()=>viewVillage()],['材料倉庫',()=>{ui.ftab='mat';return viewForge()}]];
+  const box=document.createElement('div');box.className='wrap';box.style.cssText='position:absolute;left:-10000px;top:0;visibility:hidden';document.body.appendChild(box);
+  for(const[n,f]of views){const bad=[];
+    for(const w of[320,360,375,393,414,430,480]){box.style.width=(w-24)+'px';box.innerHTML=f();
+      box.querySelectorAll('*').forEach(el=>{const t=[...el.childNodes].filter(x=>x.nodeType===3).map(x=>x.textContent.trim()).join('');if(t.length<3)return;
+        const r=el.getBoundingClientRect(),fs=parseFloat(getComputedStyle(el).fontSize)||14;if(!r.width)return;
+        if(r.width<fs*2.2&&r.height>fs*3.5)bad.push(`${w}px「${t.slice(0,8)}」直排`)});
+      box.querySelectorAll('button').forEach(b=>{if(b.textContent.trim().length>1&&b.offsetWidth&&b.scrollWidth>b.clientWidth+2)bad.push(`${w}px 按鈕「${b.textContent.trim().slice(0,10)}」字超出`)})}
+    res.push(T('G 版面 '+n+'（320～480px 寬）沒有直排或字超出按鈕',!bad.length,bad.length?[...new Set(bad)].slice(0,4).join('；'):'7 種寬度都正常'))}
+  box.remove();[ui.tab,ui.ftab]=keep;return res}
 function runTests(mode){
   if(mode==='econ')return econHtml(12)+econHtml(8);
-  const r=runAll({N:100000});const pass=r.res.filter(x=>x.pass).length;
+  const r=runAll({N:100000});r.res.push(...layoutTests());const pass=r.res.filter(x=>x.pass).length;
   return `<div><b>${pass}/${r.res.length} 通過</b>（${r.ms} 毫秒）</div>`+resHtml(r.res);
 }
 if(typeof module!=='undefined')module.exports={runAll,econReport,simulate,levelCheck};

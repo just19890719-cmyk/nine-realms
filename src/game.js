@@ -166,7 +166,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='3.61';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='3.62';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -1395,7 +1395,8 @@ function viewShop(){
    ${card('it_hourglass','鍛造沙漏','鍛造中的武器<br>立即完成','40 鑽','speedForge','','glass')}</div></div>
   <div class="ui-panel panel">${info('gacha')}${ptitle('符文祈願')}<div class="gacha">${img('mat_rune','g-ico')}<div class="grow small muted">抽稀有材料、怪物素材與傳說圖紙。十連有保底。</div></div>
    <div class="row">${btn('單抽<br><span class="small">100 鑽</span>','pull',{attrs:'data-n="1"',cls:'btn-sec grow'})}${btn('十連<br><span class="small">900 鑽</span>','pull',{attrs:'data-n="10"',cls:'btn-primary grow'})}</div></div>
-  <div class="ui-panel panel">${info('merchant')}${ptitle('旅行商人')}<div class="mlist">${SHOP_MATS.map(([k,p])=>`<div class="ui-card ui-card--row mrow">${img(MATART[k])}<div class="grow"><b>${MATS[k]}</b><span class="small muted">持有 ${fmt(S.mats[k])}</span><span class="small muted">單價 ${p} 金・收購 ${SELL_PRICE[k]} 金</span></div>${btn(`買 10 個<br><span class="small">共 ${p*10} 金</span>`,'buy',{attrs:`data-k="${k}" data-p="${p}" data-n="10"`,cls:'btn-sec sm',dis:S.gold<p*10})}${btn(`賣 ${Math.min(50,S.mats[k])||50} 個<br><span class="small">得 ${SELL_PRICE[k]*(Math.min(50,S.mats[k])||50)} 金</span>`,'sell',{attrs:`data-k="${k}" data-n="50"`,cls:'btn-sec sm',dis:S.mats[k]<1})}</div>`).join('')}</div></div>
+  <div class="ui-panel panel">${info('merchant')}${ptitle('旅行商人')}<div class="mlist">${SHOP_MATS.map(([k,p])=>{const sn=Math.min(50,S.mats[k])||50;   // v3.62 名稱＋持有一行、價格一行，按鈕「買入 10 個／花費 80 金」
+    return `<div class="ui-card ui-card--row mrow">${img(MATART[k])}<div class="grow mr-info"><span class="mr-name"><b>${MATS[k]}</b><span class="small muted">持有 ${fmt(S.mats[k])}</span></span><span class="small muted">每個：售價 ${p} 金・收購 ${SELL_PRICE[k]} 金</span></div>${btn(`<span class="mr-act">買入 10 個</span><span class="mr-sub">花費 ${p*10} 金</span>`,'buy',{attrs:`data-k="${k}" data-p="${p}" data-n="10"`,cls:'btn-sec sm',dis:S.gold<p*10})}${btn(`<span class="mr-act">賣出 ${sn} 個</span><span class="mr-sub">獲得 ${SELL_PRICE[k]*sn} 金</span>`,'sell',{attrs:`data-k="${k}" data-n="50"`,cls:'btn-sec sm',dis:S.mats[k]<1})}</div>`}).join('')}</div></div>
   <div class="ui-panel panel">${info('slag')}${ptitle(`殘渣兌換（持有 ${S.slag}）`)}<div class="pgrid three">${SLAG_SHOP.map(([k,n,c],ix)=>`<div class="ui-card pcard">${img(MATART[k],'pc-ico')}<b>${MATS[k]} ×${n}</b><button class="ui-btn ui-btn--secondary btn btn-sec sm pc-buy" data-act="slag" data-i="${ix}" ${S.slag<c?'disabled':''}>${c} 殘渣</button></div>`).join('')}</div></div>`;
 }
 const DEV_TABS=[['res','資源'],['prog','進度'],['enh','強化動畫'],['test','自動測試'],['save','存檔'],['mk','交易所'],['ui','UI 元件']];
