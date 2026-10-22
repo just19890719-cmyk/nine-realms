@@ -1238,6 +1238,11 @@ button.matbox:active{border-color:var(--gold)}
 .evt-st.done{opacity:.6}
 .evt-ck{width:20px;height:20px;flex:none}
 .evt-global{display:flex;flex-direction:column;gap:6px}
+.evt-ban .cb-bar.hp i{background:linear-gradient(90deg,#8c1d14,#d8452c)}
+.evt-rk{position:relative;display:flex;align-items:center;gap:8px;width:100%;margin:6px 0 0;padding:8px 12px;border-radius:10px;border:1px solid var(--gold,#d8a64a);background:rgba(40,28,10,.9);color:var(--bone);font:inherit;font-size:13px;text-align:left}
+.evt-rk .grow{min-width:0}
+.evt-rk-ic{width:26px;height:26px;flex:none}
+.evt-rk .dot{position:absolute;top:4px;right:4px}
 @media (max-width:360px){.evt-mon{width:92px;height:92px}.evt-hero-in{padding-right:112px}.evt-go{font-size:12px}}
 .evt-hp{position:relative;height:22px;border-radius:6px;background:#2a2118;overflow:hidden;border:1px solid var(--line2)}
 .evt-hp i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#8c1d14,#d8452c)}
@@ -1617,8 +1622,10 @@ const EVT_BOSS=[
  {id:'nidhogg',n:'尼德霍格',art:'mon_10',bg:'v10',weak:{aff:'dragon'},wn:'帶「剋龍」的武器',mat:'scale'}
 ];
 const BOSS_HITS=3;   // 每天（台灣時間）挑戰次數
-// 本週累積傷害達到門檻就自動發獎；M＝本週首領的怪物素材
-const BOSS_STAGE=[[300,{gold:500,shard:2}],[1500,{gold:1500,bless:1}],[5000,{gold:3000,M:2,scroll:1}],[15000,{gold:6000,M:3,rune:2}],[40000,{gold:10000,M:5,scroll:1,bless:1}]];
+// v3.75 全服討伐（Mochi 選「全服共同討伐」）：全服血量打到 25／50／75／100% 時，本週有出擊過的人都能領；M＝本週首領的怪物素材
+const BOSS_GSTAGE=[[.25,{gold:1500,shard:2}],[.5,{gold:3000,bless:1}],[.75,{gold:5000,M:2,scroll:1}],[1,{gold:8000,M:3,bless:2,scroll:1}]];
+// 上週個人傷害排名獎勵：週一起可以領（領到下一次換週前）；[名次上限, 名稱, 獎勵]
+const BOSS_RANK=[[1,'第 1 名',{gems:200,scroll:3,M:5}],[3,'第 2～3 名',{gems:120,scroll:2,M:3}],[10,'第 4～10 名',{gems:60,scroll:1,M:2}],[Infinity,'有參加',{gold:3000,M:1}]];
 const DAY=86400e3,TZ8=8*3600e3;
 const evtWeek=t=>Math.floor(((t??NOW())+TZ8+3*DAY)/(7*DAY));   // 週一 00:00（台灣）換週
 const twDay=t=>(new Date((t??NOW())+TZ8).getUTCDay()+6)%7;      // 週一＝0 … 週日＝6
@@ -1631,8 +1638,8 @@ const bossWeak=(w,b)=>b.weak.cat?bpOf(w).cat===b.weak.cat:affixVal(w,b.weak.aff)
 const bossDmgOf=(w,b)=>Math.round(power(w)*(bossWeak(w,b)?1.5:1));
 const stageGift=(g,b)=>Object.fromEntries(Object.entries(g).map(([k,v])=>[k==='M'?b.mat:k,v]));
 function evtSt(){const e=evtNow(),tw=new Date(NOW()+TZ8).toISOString().slice(0,10);let v=S.evt;
-  if(!v||v.wk!==e.wk)v=S.evt={wk:e.wk,dmg:0,day:tw,hits:0,got:0,gw:false};if(v.day!==tw){v.day=tw;v.hits=0}return v}
-const bossDot=()=>evtNow().k==='boss'&&evtSt().hits<BOSS_HITS&&S.weapons.some(w=>!w.test);
+  if(!v||v.wk!==e.wk)v=S.evt={wk:e.wk,dmg:0,day:tw,hits:0,gs:0};v.gs=v.gs|0;if(v.day!==tw){v.day=tw;v.hits=0}return v}
+const bossDot=()=>evtNow().k==='boss'&&evtSt().hits<BOSS_HITS&&S.weapons.some(w=>!w.test)||bossStageN()>0||!!bossRankTier();
 // v3.70 每日任務（每天 0 點換日，進度＝今天的統計增加量）＋活躍度寶箱＋7 日簽到
 const DAILY=[
   {id:'login',n:'今天登入遊戲',pt:10,m:1,ic:'ic_check',p:()=>1},
@@ -2126,25 +2133,31 @@ function talentUp(k){const T=TALENTS[k];if(!T)return'沒有這個天賦';if(repP
 // v3.72 首領討伐：一天 3 次，任選一把武器（駐守中也可以，不會收回），傷害＝戰力（弱點 ×1.5）×0.9～1.1
 function bossHit(id){const e=evtNow();if(e.k!=='boss')return{err:'首領討伐在週五～週日開放'};const v=evtSt();if(v.hits>=BOSS_HITS)return{err:'今天的挑戰次數用完了，明天再來'};
   const w=W(id);if(!w||w.test)return{err:'找不到這把武器'};const dmg=Math.max(1,Math.round(bossDmgOf(w,e.boss)*(.9+Math.random()*.2)));
-  v.hits++;v.dmg+=dmg;const r=bossGrant(v,e.boss);save();return{dmg,weak:bossWeak(w,e.boss),...r}}
-function bossGrant(v,b){const gift={};let st=0;while(v.got<BOSS_STAGE.length&&v.dmg>=BOSS_STAGE[v.got][0]){const g=stageGift(BOSS_STAGE[v.got][1],b);
-    for(const k in g){if(k==='gold')S.gold+=g[k];else if(MATS[k])S.mats[k]+=g[k];else S.items[k]+=g[k];gift[k]=(gift[k]||0)+g[k]}v.got++;st++}return{gift,st}}
-// v3.72 全服血條（Supabase boss 表，07 SQL）：登入時出擊改由伺服器算傷害、伺服器把關每天 3 次；打倒首領後本週有出擊的人都能領全服獎勵
-const BOSS_G={t:0,b:null,loading:false,err:''};
-const BOSS_GIFT={gold:5000,M:3,bless:2,scroll:1};
+  v.hits++;v.dmg+=dmg;save();return{dmg,weak:bossWeak(w,e.boss)}}
+function giveGift(g){for(const k in g){if(k==='gold')S.gold+=g[k];else if(k==='gems')S.gems+=g[k];else if(MATS[k])S.mats[k]+=g[k];else S.items[k]+=g[k]}return g}
+const giftTxt=g=>Object.entries(g).map(([k,n])=>(k==='gold'?'金幣':k==='gems'?'鑽石':itemName(k))+' ×'+fmt(n)).join('、');
+// v3.72 全服血條（Supabase boss 表，07 SQL）：登入時出擊由伺服器算傷害、伺服器把關每天 3 次；b＝本週全服資料、prev＝上週（排名獎勵用）
+const BOSS_G={t:0,b:null,prev:null,loading:false,err:''};
 const bossErr=m=>/no hits/.test(m)?'今天的挑戰次數用完了，明天再來':/not boss time/.test(m)?'首領討伐在週五～週日開放':/weapon not saved/.test(m)?'這把武器還沒存到雲端，請稍後再試':/session/.test(m)?'帳號已在別的裝置登入':'出擊失敗：'+SB_ERR(m);
 async function bossBoard(force){if(!AUTH||BOSS_G.loading||(!force&&Date.now()-BOSS_G.t<30000))return;BOSS_G.loading=true;
-  try{BOSS_G.b=await sbRest('rpc/boss_board',{method:'POST',body:'{}'});BOSS_G.err=''}catch(e){BOSS_G.err=SB_ERR(e.message)}
-  BOSS_G.loading=false;BOSS_G.t=Date.now();if(ui.sheet&&ui.sheet.t==='evt')render()}
+  try{const wk=evtWeek();BOSS_G.b=await sbRest('rpc/boss_board',{method:'POST',body:JSON.stringify({p_week:wk})});
+    if(S.evtRk!==wk-1&&(!BOSS_G.prev||BOSS_G.prev.week!==wk-1))BOSS_G.prev=await sbRest('rpc/boss_board',{method:'POST',body:JSON.stringify({p_week:wk-1})});BOSS_G.err=''}catch(e){BOSS_G.err=SB_ERR(e.message)}
+  BOSS_G.loading=false;BOSS_G.t=Date.now();render()}
 async function bossHitCloud(id){const e=evtNow(),v=evtSt(),w=W(id);if(e.k!=='boss')return{err:'首領討伐在週五～週日開放'};if(v.hits>=BOSS_HITS)return{err:'今天的挑戰次數用完了，明天再來'};if(!w||w.test)return{err:'找不到這把武器'};
   const call=()=>sbRest('rpc/boss_hit',{method:'POST',body:JSON.stringify({p_sid:SID,p_w:{b:w.b,q:w.q,lv:w.lv,traits:w.traits||[],ench:w.ench||[]},p_nick:S.nick||'無名鐵匠'})});
   let r;try{r=await call()}catch(x){const m=String(x.message||'');if(!/weapon not saved/.test(m)){if(/no hits/.test(m)){v.hits=BOSS_HITS;save()}return{err:bossErr(m)}}
     try{await cloudPush(true);r=await call()}catch(y){return{err:bossErr(String(y.message||''))}}}   // 剛鍛造的武器先存到雲端再出擊一次
   if(!r||!(r.dmg>0))return{err:'伺服器沒有回應，請再試一次'};
-  v.hits=Math.min(BOSS_HITS,Math.max(v.hits+1,r.hits||0));v.dmg+=r.dmg;const g=bossGrant(v,e.boss);save();bossBoard(true);return{dmg:r.dmg,weak:!!r.weak,...g}}
-const bossKilled=()=>{const b=BOSS_G.b,v=evtSt();return !!(b&&b.week===v.wk&&b.total>=b.hp&&b.mine>0)};
-function bossClaimGlobal(){const v=evtSt();if(!bossKilled()||v.gw)return null;const g=stageGift(BOSS_GIFT,evtNow().boss);
-  for(const k in g){if(k==='gold')S.gold+=g[k];else if(MATS[k])S.mats[k]+=g[k];else S.items[k]+=g[k]}v.gw=true;save();return g}
+  v.hits=Math.min(BOSS_HITS,Math.max(v.hits+1,r.hits||0));v.dmg+=r.dmg;save();bossBoard(true);return{dmg:r.dmg,weak:!!r.weak}}
+// 全服階段：本週有出擊過（伺服器有我的傷害）才能領，一次領完所有已達成的階段
+const bossBoardNow=()=>{const g=BOSS_G.b;return g&&g.week===evtSt().wk?g:null};
+const bossStageN=()=>{const g=bossBoardNow(),v=S.evt;if(!g||!g.mine||!v)return 0;return BOSS_GSTAGE.filter(([f])=>g.total>=g.hp*f).length-(v.gs|0)};
+function bossClaimStages(){const n=bossStageN();if(n<=0)return null;const v=evtSt(),b=evtNow().boss,got={};
+  for(let k=v.gs;k<v.gs+n;k++){const g=stageGift(BOSS_GSTAGE[k][1],b);for(const x in g)got[x]=(got[x]||0)+g[x]}v.gs+=n;giveGift(got);save();return got}
+// 上週排名獎勵：上週的首領素材；S.evtRk＝已領過的週次
+function bossRankTier(){const g=BOSS_G.prev;if(!g||!g.mine||S.evtRk===g.week||g.week!==evtWeek()-1)return null;const t=BOSS_RANK.find(([m])=>g.rank<=m);
+  const b=EVT_BOSS[((g.week%EVT_BOSS.length)+EVT_BOSS.length)%EVT_BOSS.length];return{t,b,g,gift:stageGift(t[2],b)}}
+function bossClaimRank(){const r=bossRankTier();if(!r)return null;S.evtRk=r.g.week;giveGift(r.gift);save();return r}
 function recallCore(i){const st=S.villages[i];if(st.weaponId==null)return false;tick();st.weaponId=null;st.cycleStart=null;save();return true}
 function meltCore(id){const w=W(id);if(!w||where(w)>=0||w.lock)return null;if(w.test){S.weapons.splice(S.weapons.indexOf(w),1);save();return{}}const b=bpOf(w),c=recipe(b),got={gold:Math.round(goldOf(b)*.5)};
   for(const k in c){const n=Math.floor(c[k]*.3*(1+tal('melt')/100));if(n){S.mats[k]+=n;got[k]=n}}if(Math.random()<.25){S.mats.shard++;got.shard=1}
@@ -2747,30 +2760,33 @@ function sheetTalent(){const r=S.rep,need=repNeed(r.lv),pts=repPts(),bx=repBox(r
       ${mx?'<span class="small t-ok tal-max">已滿</span>':btn('+1','talup',{cls:'btn-primary sm tal-btn',attrs:`data-k="${k}"`,dis:!pts})}</div>`}).join('')}</div>
    ${allMax?'<div class="small t-ok center">天賦全部滿級！之後每升一級仍然會拿到聲望寶箱。</div>':''}`}
 // v3.72 每週限時活動：村莊頁橫幅與首領討伐視窗
-function evtBanner(){const e=evtNow(),left=fmtLeft(e.end-NOW());
-  if(e.k==='double')return `<div class="evt-ban dbl">${img('it_gold','evt-ic')}<div class="grow"><b>限時活動・雙倍收成</b><div class="small">村莊收成的金幣和一般材料 ×2</div><div class="small muted">剩 ${left}・接著是首領討伐（${e.boss.n}）</div></div></div>`;
-  const v=evtSt(),nx=BOSS_STAGE[v.got];
-  return `<button class="evt-ban boss" data-act="evtopen">${img(e.boss.art,'evt-boss')}<div class="grow"><b>限時活動・首領討伐</b><div class="small"><span class="nobr">${e.boss.n}</span>・<span class="nobr">今天剩 ${BOSS_HITS-v.hits} 次</span></div><i class="cb-bar"><i style="width:${nx?Math.min(100,v.dmg/nx[0]*100):100}%"></i></i><div class="small muted"><span class="nobr">${nx?`傷害 ${fmt(v.dmg)}／${fmt(nx[0])}`:'獎勵全部領完了'}</span>・<span class="nobr">剩 ${left}</span></div></div><span class="evt-go">出擊 ›</span>${bossDot()?'<i class="dot"></i>':''}</button>`}
-function bossGlobalPanel(b,v){const giftTxt=Object.entries(stageGift(BOSS_GIFT,b)).map(([k,n])=>(k==='gold'?'金幣':itemName(k))+' ×'+fmt(n)).join('、');
+function evtBanner(){const e=evtNow(),left=fmtLeft(e.end-NOW());if(AUTH&&Date.now()-BOSS_G.t>60000)setTimeout(()=>bossBoard(),0);
+  const rk=bossRankTier(),rkLine=rk?`<button class="evt-rk" data-act="evtopen">${img('it_gems','evt-rk-ic')}<span class="grow">上週討伐 ${rk.b.n}：你排第 ${rk.g.rank} 名，排名獎勵可以領了</span><span class="evt-go">領取 ›</span><i class="dot"></i></button>`:'';
+  if(e.k==='double')return `<div class="evt-ban dbl">${img('it_gold','evt-ic')}<div class="grow"><b>限時活動・雙倍收成</b><div class="small">村莊收成的金幣和一般材料 ×2</div><div class="small muted">剩 ${left}・接著是首領討伐（${e.boss.n}）</div></div></div>${rkLine}`;
+  const v=evtSt(),g=bossBoardNow(),f=g?Math.min(1,g.total/g.hp):0;
+  return `<button class="evt-ban boss" data-act="evtopen">${img(e.boss.art,'evt-boss')}<div class="grow"><b>全服首領討伐</b><div class="small"><span class="nobr">${e.boss.n}</span>・<span class="nobr">今天剩 ${BOSS_HITS-v.hits} 次</span></div>${g?`<i class="cb-bar hp"><i style="width:${(1-f)*100}%"></i></i>`:''}<div class="small muted">${g?`<span class="nobr">全服血量 ${Math.round((1-f)*100)}%</span>・`:''}<span class="nobr">剩 ${left}</span></div></div><span class="evt-go">出擊 ›</span>${bossDot()?'<i class="dot"></i>':''}</button>${rkLine}`}
+function bossGlobalPanel(b,v){
   if(!AUTH&&!ui.bossSim)return `<div class="ui-panel panel"><div class="small muted">登入雲端帳號後會顯示全服血條，大家一起打。</div></div>`;
-  if(AUTH&&Date.now()-BOSS_G.t>30000)setTimeout(()=>bossBoard(),0);const g=BOSS_G.b;
-  if(!g||g.week!==v.wk)return `<div class="ui-panel panel"><div class="small muted">${BOSS_G.err?'全服血條讀取失敗：'+esc(BOSS_G.err):'讀取全服血條中…'}</div></div>`;
-  const f=Math.min(1,g.total/g.hp),dead=g.total>=g.hp;
-  return `<div class="ui-panel panel evt-global"><div class="row small"><b class="grow">全服討伐</b><span class="muted">${g.players} 位鐵匠參加</span></div>
+  if(AUTH&&Date.now()-BOSS_G.t>30000)setTimeout(()=>bossBoard(),0);const g=bossBoardNow();
+  if(!g)return `<div class="ui-panel panel"><div class="small muted">${BOSS_G.err?'全服血條讀取失敗：'+esc(BOSS_G.err):'讀取全服血條中…'}</div></div>`;
+  const f=Math.min(1,g.total/g.hp),dead=g.total>=g.hp,n=bossStageN();
+  return `<div class="ui-panel panel evt-global"><div class="row small"><b class="grow">全服血條</b><span class="muted">${g.players} 位鐵匠參加</span></div>
     <div class="evt-hp ${dead?'dead':''}"><i style="width:${(1-f)*100}%"></i><span>${dead?'首領已被打倒！':`首領血量 ${fmt(g.hp-g.total)}／${fmt(g.hp)}`}</span></div>
-    ${g.top.slice(0,5).map((x,k)=>`<div class="kv evt-top ${x.me?'me':''}"><span>${k+1}. ${esc(x.nick)}</span><b>${fmt(x.dmg)}</b></div>`).join('')}
-    ${g.mine?`<div class="small">我的全服傷害 ${fmt(g.mine)}，排第 ${g.rank} 名</div>`:''}
-    ${dead?(g.mine?(v.gw?'<div class="small t-ok">全服獎勵已領取</div>':btn('領取全服獎勵：'+giftTxt,'bossgift',{cls:'btn-primary'})):'<div class="small muted">本週有出擊過的鐵匠才能領全服獎勵。</div>'):`<div class="small muted">全服打倒首領後，本週有出擊的人都能領：${giftTxt}</div>`}</div>`}
+    <div class="evt-stages">${BOSS_GSTAGE.map(([sf,sg],k)=>{const ok=g.total>=g.hp*sf,got=k<v.gs;return `<div class="evt-st ${got?'done':''}"><span class="num">${Math.round(sf*100)}%</span><span class="small grow">${giftTxt(stageGift(sg,b))}</span>${got?img('ic_check','evt-ck'):ok?'':'<span class="small muted nobr">未達成</span>'}</div>`}).join('')}</div>
+    ${n>0?btn(`領取 ${n} 個全服獎勵`,'bossgift',{cls:'btn-primary'}):g.mine?'':'<div class="small muted">本週出擊過一次，就能領全服血量的獎勵。</div>'}</div>
+   <div class="ui-panel panel evt-global"><div class="row small"><b class="grow">本週傷害排名</b>${g.mine?`<span class="muted">我第 ${g.rank} 名・${fmt(g.mine)}</span>`:''}</div>
+    ${g.top.length?g.top.map((x,k)=>`<div class="kv evt-top ${x.me?'me':''}"><span>${k+1}. ${esc(x.nick)}</span><b>${fmt(x.dmg)}</b></div>`).join(''):'<div class="small muted">還沒有人出擊，第一刀給你。</div>'}
+    <div class="small muted">週一結算，依名次領：${BOSS_RANK.map(([m,nm,rg])=>`${nm} ${giftTxt(stageGift(rg,b))}`).join('；')}</div></div>`}
+function bossRankPanel(){const r=bossRankTier();if(!r)return'';return `<div class="ui-panel panel evt-global"><div class="row small"><b class="grow">上週排名獎勵</b><span class="muted">${r.b.n}</span></div>
+  <div class="small">你上週造成 ${fmt(r.g.mine)} 傷害，排第 ${r.g.rank} 名（${r.t[1]}）</div>${btn('領取：'+giftTxt(r.gift),'bossrank',{cls:'btn-primary'})}</div>`}
 function sheetEvt(){const e=evtNow(),b=e.boss,v=evtSt();
   const head=`<div class="sheet-head"><h2>首領討伐</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>`;
-  if(e.k!=='boss')return head+`<div class="ui-panel panel"><div class="small">首領討伐在每週五～週日（台灣時間）開放。下一場首領：${b.n}。</div></div>`;
-  const gTxt=g=>Object.entries(stageGift(g,b)).map(([k,n])=>(k==='gold'?'金幣':itemName(k))+' ×'+fmt(n)).join('、');
+  if(e.k!=='boss')return head+bossRankPanel()+`<div class="ui-panel panel"><div class="small">首領討伐在每週五～週日（台灣時間）開放。下一場首領：${b.n}。</div></div>`;
   const ws=S.weapons.filter(w=>!w.test).sort((x,y)=>bossDmgOf(y,b)-bossDmgOf(x,b)).slice(0,5),out=v.hits>=BOSS_HITS;
   return head+`<div class="evt-hero" style="background-image:url(${A(b.bg)})">${img(b.art,'evt-mon')}<div class="evt-hero-in"><b>${b.n}</b><span class="small">弱點：${b.wn}<span class="nobr">（傷害 ×1.5）</span></span></div></div>
-   <div class="ui-panel panel"><div class="kv"><span>本週累積傷害</span><b>${fmt(v.dmg)}</b></div><div class="kv"><span>今天挑戰次數</span><b>${BOSS_HITS-v.hits}／${BOSS_HITS}</b></div><div class="small muted">每天可以出擊 ${BOSS_HITS} 次，傷害＝武器戰力（打中弱點 ×1.5）。駐守中的武器也能出擊，不會被收回。剩 ${fmtLeft(e.end-NOW())}。</div></div>
+   ${bossRankPanel()}<div class="ui-panel panel"><div class="kv"><span>本週我的傷害</span><b>${fmt(v.dmg)}</b></div><div class="kv"><span>今天挑戰次數</span><b>${BOSS_HITS-v.hits}／${BOSS_HITS}</b></div><div class="small muted">每天可以出擊 ${BOSS_HITS} 次，傷害＝武器戰力（打中弱點 ×1.5）。駐守中的武器也能出擊，不會被收回。全服一起打同一條血條，剩 ${fmtLeft(e.end-NOW())}。</div></div>
    ${bossGlobalPanel(b,v)}
-   <div class="label">挑一把武器出擊</div><div class="evt-ws">${ws.length?ws.map(w=>`<div class="ui-card ui-card--row evt-w">${wArt(w.b,{cls:'qimg'})}<div class="grow"><b class="q${w.q}">${bpOf(w).n}${w.lv?' +'+w.lv:''}</b><div class="small muted">預估傷害 ${fmt(bossDmgOf(w,b))}${bossWeak(w,b)?' <span class="t-ok">弱點</span>':''}</div></div>${btn('出擊','bosshit',{cls:'btn-primary sm',attrs:`data-id="${w.id}"`,dis:out})}</div>`).join(''):'<div class="small muted">武器庫沒有武器，先去鍛造一把。</div>'}</div>
-   <div class="label">累積傷害獎勵</div><div class="evt-stages">${BOSS_STAGE.map(([n,g],k)=>`<div class="evt-st ${k<v.got?'done':''}"><span class="num">${fmt(n)}</span><span class="small grow">${gTxt(g)}</span>${k<v.got?img('ic_check','evt-ck'):''}</div>`).join('')}</div>`}
+   <div class="label">挑一把武器出擊</div><div class="evt-ws">${ws.length?ws.map(w=>`<div class="ui-card ui-card--row evt-w">${wArt(w.b,{cls:'qimg'})}<div class="grow"><b class="q${w.q}">${bpOf(w).n}${w.lv?' +'+w.lv:''}</b><div class="small muted">預估傷害 ${fmt(bossDmgOf(w,b))}${bossWeak(w,b)?' <span class="t-ok">弱點</span>':''}</div></div>${btn('出擊','bosshit',{cls:'btn-primary sm',attrs:`data-id="${w.id}"`,dis:out})}</div>`).join(''):'<div class="small muted">武器庫沒有武器，先去鍛造一把。</div>'}</div>`}
 
 /* ---------- 武器庫 ---------- */
 const SORTS={power:['戰力',(a,b)=>power(b)-power(a)],q:['品質',(a,b)=>b.q-a.q||power(b)-power(a)],lv:['強化等級',(a,b)=>b.lv-a.lv||power(b)-power(a)],
@@ -3119,7 +3135,7 @@ function sheetDev(){
    res:`<div class="label">貨幣</div><div class="devgrid">${B('gold','金幣 +5,000')}${B('gems','鑽石 +1,000')}${B('slag','殘渣 +30')}</div>
      <div class="label">材料與道具</div><div class="devgrid">${B('t1','一階材料 +30')}${B('t2','霜銀、狼牙 +20')}${B('t3','龍鱗、符文石 +10')}${B('mon','怪物素材各 +5')}${B('shard','符文碎片 +10')}${B('items','防爆卷、祝福石 +5')}${B('bp','傳說圖紙 +1')}</div>
      <div class="label">v3.71 鐵匠聲望／天賦</div><div class="devgrid">${B('rep1','聲望升 1 級')}${B('rep10','聲望升 10 級')}${B('represet','天賦點全部退回')}${B('repzero','聲望歸零（Lv.1）')}${B('repopen','打開鐵匠天賦')}</div>
-     <div class="label">v3.72 每週活動（目前：${EVT_FORCE?'強制':'依日期'}${evtNow().k==='double'?'雙倍收成':'首領討伐'}・${evtNow().boss.n}）</div><div class="devgrid">${B('evtdbl','強制雙倍收成')}${B('evtboss','強制首領討伐')}${B('evtoff','依日期（取消強制）')}${B('evtnext','換下一隻首領')}${B('evthits','今天挑戰次數重置')}${B('evtdmg','首領傷害 +5,000')}${B('evtreset','本週首領進度清空')}${B('evtgdead','模擬全服打倒首領')}${B('evtgalive','模擬全服血條剩一半')}</div>
+     <div class="label">v3.72 每週活動（目前：${EVT_FORCE?'強制':'依日期'}${evtNow().k==='double'?'雙倍收成':'首領討伐'}・${evtNow().boss.n}）</div><div class="devgrid">${B('evtdbl','強制雙倍收成')}${B('evtboss','強制首領討伐')}${B('evtoff','依日期（取消強制）')}${B('evtnext','換下一隻首領')}${B('evthits','今天挑戰次數重置')}${B('evtdmg','我的傷害 +5,000（只改顯示）')}${B('evtreset','本週首領進度清空')}${B('evtgdead','模擬全服打倒首領')}${B('evtgalive','模擬全服血量剩 45%')}${B('evtgrank','模擬上週排名第 2')}</div>
      <div class="label">全部武器顯示測試（測試武器：不扣資源、不能交付村莊）</div>
      <div class="small muted">品質</div><div class="row">${[[-1,'輪替'],[0,'普通'],[1,'精良'],[2,'稀有'],[3,'史詩'],[4,'傳說']].map(([v,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devAllQ??-1)===v?'on':''}" data-act="devset" data-k="devAllQ" data-v="${v}">${n}</button>`).join('')}</div>
      <div class="small muted">強化等級</div><div class="row">${[[-1,'輪替'],[0,'+0'],[6,'+6'],[7,'+7'],[10,'+10'],[15,'+15']].map(([v,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devAllLv??-1)===v?'on':''}" data-act="devset" data-k="devAllLv" data-v="${v}">${n}</button>`).join('')}</div>
@@ -3166,8 +3182,9 @@ function sheetDev(){
 let forceEvent=-1;
 function devdo(k){if(k.startsWith('evt')){const v=evtSt();
     if(k==='evtdbl')EVT_FORCE='double';else if(k==='evtboss')EVT_FORCE='boss';else if(k==='evtoff')EVT_FORCE=null;else if(k==='evtnext')EVT_WK++;
-    else if(k==='evthits')v.hits=0;else if(k==='evtdmg'){v.dmg+=5000;bossGrant(v,evtNow().boss)}
-    else if(k==='evtgdead'||k==='evtgalive'){ui.bossSim=true;const hp=100000;BOSS_G.t=Date.now()+600000;BOSS_G.b={week:v.wk,hp,total:k==='evtgdead'?hp+1234:hp/2,players:12,mine:Math.max(1,v.dmg),rank:3,top:[{nick:'測試鐵匠甲',dmg:30000},{nick:'測試鐵匠乙',dmg:20000},{nick:S.nick||'我',dmg:Math.max(1,v.dmg),me:true}]};v.gw=false;EVT_FORCE='boss';save();ui.tab='village';ui.sheet={t:'evt'};return render()}else if(k==='evtreset'){S.evt=null}
+    else if(k==='evthits')v.hits=0;else if(k==='evtdmg'){v.dmg+=5000}
+    else if(k==='evtgrank'){ui.bossSim=true;BOSS_G.t=Date.now()+600000;S.evtRk=null;BOSS_G.prev={week:evtWeek()-1,hp:100000,total:100000,players:12,mine:8800,rank:2,top:[]}}
+    else if(k==='evtgdead'||k==='evtgalive'){ui.bossSim=true;const hp=100000;BOSS_G.t=Date.now()+600000;BOSS_G.b={week:v.wk,hp,total:k==='evtgdead'?hp+1234:hp*.55,players:12,mine:Math.max(1,v.dmg),rank:3,top:[{nick:'測試鐵匠甲',dmg:30000},{nick:'測試鐵匠乙',dmg:20000},{nick:S.nick||'我',dmg:Math.max(1,v.dmg),me:true}]};v.gs=0;EVT_FORCE='boss';save();ui.tab='village';ui.sheet={t:'evt'};return render()}else if(k==='evtreset'){S.evt=null}
     save();toast('活動設定已更新：'+(evtNow().k==='double'?'雙倍收成':'首領討伐'),'ok');ui.sheet=null;ui.tab='village';scrollTo(0,0);return render()}
   if(k==='rep1'||k==='rep10'){let n=0;for(let c=0;c<(k==='rep1'?1:10);c++)n+=repNeed(S.rep.lv+c);repGain(n-S.rep.xp+0);save();return render()}
   if(k==='represet'){for(const t in S.rep.t)S.rep.t[t]=0;save();toast('天賦點已全部退回','ok');return render()}
@@ -3361,8 +3378,9 @@ document.addEventListener('click',e=>{
   if(a!=='melt')ui.meltArm=null;
   ({tab:()=>{if(ui.busy&&ui.fxDone)ui.fxDone();if(ui.tab==='armory'&&d.k!=='armory'&&S.weapons.some(wNew)){S.seenW=S.nextId-1;save()}if(d.k==='market'&&S.mkNew){S.mkNew=0;save()}ui.tab=d.k;if(d.k==='market'&&(AUTH||mkMock())&&Date.now()-MK.t>20000)setTimeout(mkLoad,0);ui.sheet=null;ui.enhLast=null;render();warmTabs();d.k==='village'?scrollToNextVillage():scrollTo(0,0)},close:()=>{if(ui.busy)return;ui.sheet=null;ui.enhLast=null;ui.riskArm=null;ui.riskOk=null;render()},scrim:()=>{if(ui.busy)return;ui.sheet=null;ui.enhLast=null;render()},dev:()=>{ui.sheet={t:'d'};render()},achopen:()=>{ui.qTab=signReady()?'s':boxReadyN()||!achReadyN()?'d':'o';ui.sheet={t:'a'};render()},
    sheetW:()=>{ui.sheet={t:'ws',k:'w'};render()},sheetA:()=>{ui.sheet={t:'ws',k:'a'};render()},sheetM:()=>{ui.sheet={t:'ws',k:'m'};render()},sheetT:()=>{ui.sheet={t:'ws',k:'t'};render()},evtopen:()=>{ui.sheet={t:'evt'};render()},
-   bossgift:()=>{const g=bossClaimGlobal();if(!g)return toast('現在還不能領','bad');snd('unlock');toast('全服獎勵：'+Object.entries(g).map(([k,n])=>(k==='gold'?'金幣':itemName(k))+' ×'+fmt(n)).join('、'),'ok');render()},
-   bosshit:async()=>{if(ui.bossBusy)return;ui.bossBusy=true;let r;try{r=AUTH?await bossHitCloud(+d.id):bossHit(+d.id)}finally{ui.bossBusy=false}if(r.err)return toast(r.err,'bad');snd(r.weak?'enh_ok':'deliver');toast(`對 ${evtNow().boss.n} 造成 <b>${fmt(r.dmg)}</b> 點傷害${r.weak?'（打中弱點！）':''}${r.st?`<br>達成 ${r.st} 個獎勵門檻：${Object.entries(r.gift).map(([k,n])=>(k==='gold'?'金幣':itemName(k))+' ×'+fmt(n)).join('、')}`:''}`,'ok');render()},
+   bossgift:()=>{const g=bossClaimStages();if(!g)return toast('現在還不能領','bad');snd('unlock');toast('全服獎勵：'+giftTxt(g),'ok');render()},
+   bossrank:()=>{const r=bossClaimRank();if(!r)return toast('現在還不能領','bad');snd('unlock');toast(`上週排名第 ${r.g.rank} 名：`+giftTxt(r.gift),'ok');render()},
+   bosshit:async()=>{if(ui.bossBusy)return;ui.bossBusy=true;let r;try{r=AUTH?await bossHitCloud(+d.id):bossHit(+d.id)}finally{ui.bossBusy=false}if(r.err)return toast(r.err,'bad');snd(r.weak?'enh_ok':'deliver');toast(`對 ${evtNow().boss.n} 造成 <b>${fmt(r.dmg)}</b> 點傷害${r.weak?'（打中弱點！）':''}`,'ok');render()},
    talup:()=>{const e=talentUp(d.k);if(e)return toast(e,'bad');snd('upgrade');render()},
    devdo:()=>devdo(d.k),speed:()=>{tick();const t=NOW(),old=S.speed,nw=+d.k;
      S.villages.forEach(st=>{if(st.cycleStart!=null)st.cycleStart=t-(t-st.cycleStart)*old/nw});S.jobs.forEach(j=>{j.start=t-(t-j.start)*old/nw;j.end=t+(j.end-t)*old/nw});S.speed=nw;save();render()},
@@ -3506,7 +3524,7 @@ const TIPS={
  ws_w:['工坊升級','熔爐：解鎖更高階材質的圖紙、縮短鍛造時間。鐵砧：提高打出高品質的機率，並開放更多附魔欄。'],
  ws_a:['學徒管理','每多一位學徒，就能同時多鍛造一把武器。'],
  ws_t:['鐵匠天賦','收成、鍛造、強化成功、收復村莊、熔解都會累積聲望。每升 1 級得到 1 天賦點和聲望寶箱，可以點在 6 種天賦上；聲望等級沒有上限。'],
- evt:['首領討伐','每週五～週日開放。每天可以出擊 3 次，挑武器攻擊首領，打中弱點傷害 ×1.5。本週累積傷害到門檻就會自動發獎勵。'],
+ evt:['首領討伐','每週五～週日開放，全服一起打同一隻首領。每天可以出擊 3 次，打中弱點傷害 ×1.5。全服血量打到 25／50／75／100% 時，本週有出擊的人都能領獎；週一再依上週個人傷害排名領獎。'],
  ws_m:['熔解回收','不要的武器可以熔解，退回部分材料和一半鍛造金幣。一鍵熔解只會熔掉普通、精良、+0、沒有特性的武器。'],
  need:['特殊委託','這座村莊要的武器必須帶有指定附魔（例如剋巨人）。先到武器庫幫武器附魔，再來交付。']};
 function tipKey(){const s=ui.sheet;if(s){if(s.t==='w'&&s.m==='enh'){const w=W(s.id);return w&&w.lv+1>stable(w)&&w.lv<15?'danger':null}if(s.t==='w'&&s.m==='ench')return'ench';if(s.t==='v'){const v=VILLAGES[s.i];return v.need&&S.villages[s.i].status!=='cleared'?'need':S.villages[s.i].weaponId!=null?'vdetail':null}

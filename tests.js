@@ -351,8 +351,12 @@ function evtTests(){const res=[];
     EVT_FORCE='boss';S=fresh();S.gold=0;const w=makeWeapon('t3_greatsword',3,8,[]);const b=evtNow().boss,d0=bossDmgOf(w,b);
     const r=[1,2,3,4].map(()=>bossHit(w.id));const v=S.evt;
     res.push(T('J3 首領討伐一天 3 次、傷害在戰力 ±10% 內',!r[0].err&&!r[2].err&&r[3].err&&v.hits===3&&r.slice(0,3).every(x=>x.dmg>=Math.floor(d0*.9)&&x.dmg<=Math.ceil(d0*1.1)),`預估 ${d0}，實際 ${r.slice(0,3).map(x=>x.dmg).join('/')}；第 4 次：${r[3].err||'沒擋住'}`));
-    S=fresh();S.gold=0;evtSt().dmg=BOSS_STAGE[2][0];const gr=bossGrant(S.evt,b),gr2=bossGrant(S.evt,b);
-    res.push(T('J4 累積傷害獎勵：跨過幾個門檻發幾次、不重複發',gr.st===3&&gr2.st===0&&S.gold===500+1500+3000&&S.mats[b.mat]===2,`發了 ${gr.st} 階，金幣 ${S.gold}、${MATS[b.mat]} ${S.mats[b.mat]}`));
+    S=fresh();S.gold=0;S.gems=0;const v4=evtSt(),kb=BOSS_G.b,kp=BOSS_G.prev;try{
+      BOSS_G.b={week:v4.wk,hp:1000,total:600,mine:10,rank:1,players:1,top:[]};const n1=bossStageN(),g1=bossClaimStages(),n2=bossStageN();
+      BOSS_G.b.total=1000;const n3=bossStageN();bossClaimStages();BOSS_G.b.mine=0;v4.gs=0;const n4=bossStageN();
+      BOSS_G.prev={week:evtWeek()-1,hp:1000,total:1000,mine:50,rank:2,players:3,top:[]};const r1=bossClaimRank(),r2=bossClaimRank();
+      res.push(T('J4 全服階段獎勵：60% 領 2 階、打倒再領 2 階、沒出擊不能領；上週第 2 名只能領一次',n1===2&&g1&&g1.gold===4500&&n2===0&&n3===2&&n4===0&&r1&&r1.t[1]==='第 2～3 名'&&!r2&&S.gems===120,`60%：${n1} 階（金幣 ${g1&&g1.gold}）；打倒：${n3} 階；沒出擊：${n4}；排名：${r1&&r1.t[1]}，鑽石 ${S.gems}，第二次 ${r2?'又領到':'擋住'}`));
+    }finally{BOSS_G.b=kb;BOSS_G.prev=kp}
   }finally{EVT_FORCE=keepF}});
   return res}
 

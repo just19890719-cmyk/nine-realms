@@ -1222,6 +1222,11 @@ button.matbox:active{border-color:var(--gold)}
 .evt-st.done{opacity:.6}
 .evt-ck{width:20px;height:20px;flex:none}
 .evt-global{display:flex;flex-direction:column;gap:6px}
+.evt-ban .cb-bar.hp i{background:linear-gradient(90deg,#8c1d14,#d8452c)}
+.evt-rk{position:relative;display:flex;align-items:center;gap:8px;width:100%;margin:6px 0 0;padding:8px 12px;border-radius:10px;border:1px solid var(--gold,#d8a64a);background:rgba(40,28,10,.9);color:var(--bone);font:inherit;font-size:13px;text-align:left}
+.evt-rk .grow{min-width:0}
+.evt-rk-ic{width:26px;height:26px;flex:none}
+.evt-rk .dot{position:absolute;top:4px;right:4px}
 @media (max-width:360px){.evt-mon{width:92px;height:92px}.evt-hero-in{padding-right:112px}.evt-go{font-size:12px}}
 .evt-hp{position:relative;height:22px;border-radius:6px;background:#2a2118;overflow:hidden;border:1px solid var(--line2)}
 .evt-hp i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#8c1d14,#d8452c)}

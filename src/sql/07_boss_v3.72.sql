@@ -1,8 +1,8 @@
 -- ===== 九界鐵匠 v3.72 每週首領討伐：全服血條（整段貼到 SQL Editor 執行一次） =====
 -- 1) boss 資料表：每週每人一列（累積傷害、今天出擊次數）；只能透過下面的函式讀寫
 -- 2) boss_hit：傷害由伺服器用武器內容計算（lb_power，與排行榜相同），武器必須在雲端存檔裡；每天最多 3 次、只在週五～週日（台灣時間）
--- 3) boss_board：全服累積傷害、血量、參加人數、前 10 名、自己的名次
--- 需要先跑過 04（lb_power、lb_bp、lb_bpid）。若 06 有更新 ac_version，這份會改成 3.72。
+-- 3) boss_board：全服累積傷害、血量、參加人數、前 10 名、自己的名次（可查本週或上週，上週用來領排名獎勵）
+-- 需要先跑過 04（lb_power、lb_bp、lb_bpid），並且要在 06 之後執行（06 把版本設成 3.70，這份設成 3.72）。
 
 create table if not exists public.boss (
   week int not null,
@@ -62,11 +62,14 @@ end $$;
 grant execute on function public.boss_hit(text, jsonb, text) to authenticated;
 
 drop function if exists public.boss_board();
-create or replace function public.boss_board() returns jsonb
+drop function if exists public.boss_board(int);
+-- p_week：只能查本週或上週（上週用來領排名獎勵）；不帶就是本週
+create or replace function public.boss_board(p_week int default null) returns jsonb
 language plpgsql stable security definer set search_path = public as $$
-declare wk int := boss_week(); res jsonb;
+declare wk int := coalesce(p_week, boss_week()); res jsonb;
 begin
   if auth.uid() is null then raise exception 'not logged in'; end if;
+  if wk not in (boss_week(), boss_week() - 1) then raise exception 'bad week'; end if;
   select jsonb_build_object(
     'week', wk, 'hp', boss_hp(),
     'total', coalesce((select sum(dmg) from boss where week = wk), 0),
@@ -78,7 +81,7 @@ begin
   into res;
   return res;
 end $$;
-grant execute on function public.boss_board() to authenticated;
+grant execute on function public.boss_board(int) to authenticated;
 
 -- 版本號（開發者工具「安全設定檢查」會讀）
 create or replace function public.ac_version() returns text language sql immutable as $$ select '3.72'::text $$;
