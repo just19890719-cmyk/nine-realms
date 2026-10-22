@@ -1337,6 +1337,7 @@ button.arr.off{pointer-events:none}
 .rf-step{display:flex;gap:10px;align-items:center;font-size:16px;white-space:nowrap}
 .rf-box .mats{justify-content:center}
 @media (max-width:374px){.vcard .drops{flex-wrap:wrap;width:59px;justify-content:center}.vcard .drops .dico:nth-child(3){display:none}}   /* v3.76 窄螢幕：掉落只顯示 2 個，讓村莊名稱有位置 */
+.wart .wart-bg{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;border-radius:4px}.wt.bp.locked .wart-bg{filter:brightness(.55)}
 .bp-qual{margin:6px 0 2px}.bp-qual .label{margin-bottom:4px}.bp-qnote{margin-top:4px}
 </style>
 <div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div><div class="news" id="news" aria-live="polite"></div></div>
@@ -2255,7 +2256,7 @@ const CAT_ICON=Object.fromEntries(['axe','sword','dagger','polearm','hammer','bo
 const AFFIX_ICON={flame:'mat_fireheart',frost:'mat_icecore',swift:'it_hourglass',loot:'it_gold',giant:'m_frostgiant',dragon:'mat_scale'};
 const TRAIT_ICON={sharp:'tr_sharp',sturdy:'tr_sturdy',light:'tr_light',treasure:'tr_treasure',giantslayer:'tr_giantslayer',runic:'tr_runic'};
 const STRAT_ICON={normal:'it_gold',material:'mat_iron',rare:'mat_scale'};
-const TIER_FRAME=[0,2,3,4,4]; // 圖紙外框顏色：鐵製灰、霜銀藍、龍鱗紫、神器金、巨人金（外框是材質，不是品質）
+const TIER_FRAME=[0,2,3,4,4]; // 各材質對應的外框顏色（v3.77 起圖紙改用統一的圖紙底圖 frame:'bp'，這裡留給其他地方參考）
 // v3.40 音效設定：喇叭圖示打開，可開關音效、調整音量
 function sndSettings(){const v=Math.round((S.vol??1)*100);
   ui.result={t:'info',k:'snd',title:'音效設定',html:`<div class="snd-set"><div class="kv"><span>音效</span><b><button class="ui-btn ui-btn--chip chipbtn ${S.mute?'':'on'}" data-act="sndmute">${S.mute?'關閉':'開啟'}</button></b></div>
@@ -2364,8 +2365,8 @@ function devAllWeapons(ids){const L=[0,1,6,7,9,10,15],q=ui.devAllQ??-1,lv=ui.dev
   S.weapons=S.weapons.filter(w=>!w.test||where(w)>=0);
   ids.forEach((id,i)=>{const w=makeWeapon(id,q<0?i%5:q,lv<0?L[i%L.length]:lv,[]);w.lv=lv<0?L[i%L.length]:lv;w.test=true});
   ui.sheet=null;ui.tab='armory';ui.acat='all';ui.aq='all';ui.ast='test';scrollTo(0,0);toast('已產生 '+ids.length+' 把測試武器（武器庫已篩選「測試」）')}
-function wArt(id,{frame=null,cls=''}={}){const k=(frame!=null?(WFIT[id]||.65):.8)*100,o=(100-k)/2;
-  return `<span class="wart ${cls}"><img class="wart-w" src="${A(id+'_disp')}" alt="" style="left:${o}%;top:${o}%;width:${k}%;height:${k}%">${frame!=null?`<img class="wart-f" src="${A('frame'+frame)}" alt="">`:''}</span>`}
+function wArt(id,{frame=null,cls=''}={}){const bp=frame==='bp',k=(frame!=null?(WFIT[id]||.65):.8)*100,o=(100-k)/2;   // frame:'bp'＝圖紙底圖（墊在武器下面，安全距離同外框）
+  return `<span class="wart ${cls}">${bp?`<img class="wart-bg" src="${A('bp_paper')}" alt="">`:''}<img class="wart-w" src="${A(id+'_disp')}" alt="" style="left:${o}%;top:${o}%;width:${k}%;height:${k}%">${frame!=null&&!bp?`<img class="wart-f" src="${A('frame'+frame)}" alt="">`:''}</span>`}
 const cutArt=src=>src.replace(/\.webp$/,'_disp.webp'+ART_V); // 去背版武器圖（暗色底轉透明），特效才能包住武器
 // 預先載入特效圖，避免第一次播放時閃白
 function preloadVfx(){setTimeout(()=>{for(const k in VFX)for(let i=1;i<=VFX[k].N;i++){const im=new Image();im.src=vfxSrc(VFX[k],i)}},1500)}
@@ -2693,7 +2694,7 @@ function wTile(w,act,dot){const b=bpOf(w),i=where(w);
   return `<button class="wt q${w.q}b ${i>=0?'posted':''} ${w.lock?'locked-fav':''}" ${act}>${dot?'<i class="dot give-dot" title="可以交付村莊"></i>':''}<span class="wt-art">${wArt(b.id,{frame:w.q})}
    ${i>=0?`<span class="wt-post">駐守 ${vNo(i)}</span>`:''}${wNew(w)?'<span class="new-tag">NEW</span>':''}</span>
    <span class="wt-name q${w.q}"><span class="wt-lv">+${w.lv}</span>${b.n}${w.lock?img('ic_lock','wt-lk','已收藏'):''}</span><span class="wt-meta"><span class="wt-q q${w.q}">${QUAL[w.q].n}${(w.traits||[]).length?`<span class="wt-tr">特性${w.traits.length}</span>`:''}${w.test?'<span class="wt-tst">測試</span>':''}</span><span class="wt-pow">${fmt(power(w))}</span></span></button>`}
-function bpTile(b,on){const l=bpLock(b);return `<button class="wt bp ${on?'on':''} ${l?'locked':''}" data-act="bp" data-k="${b.id}"><span class="wt-art">${wArt(b.id,{frame:TIER_FRAME[b.t]})}${l?`<span class="wt-lock">${img('ic_lock')}</span>`:''}${bpNew(b)?'<span class="new-tag">NEW</span>':''}</span><span class="wt-name">${b.n}</span>${l?`<span class="wt-pow wt-lockline">${l}</span>`:`<span class="wt-pow">${TIERS[b.t].n}・${CATS[b.cat]}</span>`}</button>`}
+function bpTile(b,on){const l=bpLock(b);return `<button class="wt bp ${on?'on':''} ${l?'locked':''}" data-act="bp" data-k="${b.id}"><span class="wt-art">${wArt(b.id,{frame:'bp'})}${l?`<span class="wt-lock">${img('ic_lock')}</span>`:''}${bpNew(b)?'<span class="new-tag">NEW</span>':''}</span><span class="wt-name">${b.n}</span>${l?`<span class="wt-pow wt-lockline">${l}</span>`:`<span class="wt-pow">${TIERS[b.t].n}・${CATS[b.cat]}</span>`}</button>`}
 const matBox=(k,need)=>need==null?`<button class="matbox mb-tap" data-act="matinfo" data-k="${k}">${img(MATART[k])}<span class="mb-n">${MATS[k]}</span><span class="mb-c">${fmt(S.mats[k])}</span></button>`
   :`<div class="matbox need ${S.mats[k]<need?'lack':'ok'}">${img(MATART[k])}<span class="mb-n">${MATS[k]}</span><span class="mb-have">持有 ${fmt(S.mats[k])}</span><span class="mb-need">需要 ${fmt(need)}</span></div>`;
 // v3.61 材料倉庫：點材料顯示用途（哪些材質的圖紙會用到）與取得方式，直接從圖紙配方、村莊掉落、商店資料算出來
@@ -2751,12 +2752,12 @@ function viewForge(){
     body=`<div class="catbar">${cats.map(k=>`<button class="ui-btn ui-btn--toggle cat ${ui.cat===k?'on':''}" data-act="cat" data-k="${k}">${img(k==='all'?'nav_armory':CAT_ICON[k])}<span>${k==='all'?'全部':CATS[k]}</span></button>`).join('')}</div>
      <div class="hscroll">${list.map(x=>bpTile(x,x.id===ui.bp)).join('')}</div>
      <div class="ui-panel panel sel-bp">
-      <div class="ui-card sel-head"><div class="sel-art">${wArt(b.id,{frame:TIER_FRAME[b.t]})}</div>
+      <div class="ui-card sel-head"><div class="sel-art">${wArt(b.id,{frame:'bp'})}</div>
        <div class="grow"><div class="label">已選擇</div><h3>${b.n}</h3><div class="small muted">${TIERS[b.t].n}・${CATS[b.cat]}類</div><div class="small">安定值 <b class="${TIERS[b.t].stable?'t-ok':'t-danger'}">+${TIERS[b.t].stable}</b></div>
         <div class="powbox inline"><span class="small muted">基礎戰力</span><b>${est}～${Math.round(est*2.3)}</b></div></div></div>
       ${b.inn?`<div><span class="aff inn">天生・${AFFIX[b.inn[0]].n} +${b.inn[1]}%</span></div>`:''}
       ${lock?`<div class="goal">${lock}</div>`:`
-      <div class="bp-qual"><div class="label">鍛造品質機率</div><div class="qbar">${((qw,sum)=>qw.map((x,i)=>`<span class="q${i}" style="flex:1">${QUAL[i].n}<br>${Math.round(x/sum*1000)/10}%</span>`).join(''))(qualWeights(false,b.t),qualWeights(false,b.t).reduce((a,x)=>a+x,0))}</div><div class="small muted bp-qnote">外框顏色代表材質階級，品質在鍛造完成時隨機決定</div></div>
+      <div class="bp-qual"><div class="label">鍛造品質機率</div><div class="qbar">${((qw,sum)=>qw.map((x,i)=>`<span class="q${i}" style="flex:1">${QUAL[i].n}<br>${Math.round(x/sum*1000)/10}%</span>`).join(''))(qualWeights(false,b.t),qualWeights(false,b.t).reduce((a,x)=>a+x,0))}</div><div class="small muted bp-qnote">品質在鍛造完成時隨機決定</div></div>
       <div class="label">所需材料（×${qty}）</div><div class="mats">${Object.entries(need).map(([k,n])=>matBox(k,n)).join('')}<div class="matbox need ${S.gold<g?'lack':'ok'}">${img('it_gold')}<span class="mb-n">金幣</span><span class="mb-have">持有 ${fmt(S.gold)}</span><span class="mb-need">需要 ${fmt(g)}</span></div></div>
       <div class="qtyrow"><span class="label">數量</span>${bulkOn()?[1,5,10].map(n=>`<button class="ui-btn ui-btn--chip qchip ${qty===n?'on':''}" data-act="qty" data-k="${n}">×${n}</button>`).join('')+`<button class="ui-btn ui-btn--chip qchip ${qty===maxQty()&&![1,5,10].includes(qty)?'on':''}" data-act="qty" data-k="${maxQty()}">最多 ×${maxQty()}</button>`:'<span class="small muted">收復 1-5 後可一次鍛造多把</span>'}
        <span class="small muted grow right">${fmtT(forgeSec(b)*1000*(qty>1?qty*.6:1)/S.speed)}</span></div>
