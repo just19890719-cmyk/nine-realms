@@ -1487,7 +1487,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='3.48';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='3.49';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -1512,11 +1512,11 @@ function cloudLogout(){cloudPush(true).finally(()=>{authSave(null);CLOUD.ready=f
 async function cloudAfterLogin(){const uid=AUTH.user.id;SID=Math.random().toString(36).slice(2)+Date.now().toString(36);CLOUD.kicked=false;
   LBR.rows={};LBR.t=0;MK.rows=[];MK.mine=[];MK.t=0;
   // 先登記這支手機、同一個請求拿回存檔：避免「讀完存檔、還沒登記前，舊手機又存了一次」被蓋掉
-  let row=null;try{const r=await sbRest('saves?user_id=eq.'+uid+'&select=data,nickname,updated_at',{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({session_id:SID})});row=r&&r[0]}catch(e){CLOUD.err=SB_ERR(e.message);throw e}
+  let row=null;try{const r=await sbRest('rpc/claim_session',{method:'POST',body:JSON.stringify({p_sid:SID})});row=Array.isArray(r)?r[0]:r;if(row&&!row.data&&!row.updated_at)row=null}catch(e){CLOUD.err=SB_ERR(e.message);throw e}
   const keepMem=CLOUD.reauth&&S.uid===uid&&row&&Date.parse(row.updated_at)<=(CLOUD.pushAt||0)+3000;   // 登入過期重登：雲端沒被別台改過 → 保留目前畫面上的進度
   if(keepMem){}else if(row&&row.data&&row.data.villages){S=sanitize(row.data);if(row.nickname&&!S.nick)S.nick=row.nickname}else if(CLOUD_ONLY)S=sanitize(fresh());
   S.uid=uid;CLOUD.reauth=false;
-  if(!row)await sbRest('saves',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({user_id:uid,data:S,session_id:SID,updated_at:new Date().toISOString()})});
+  if(!row)await sbRest('rpc/create_save',{method:'POST',body:JSON.stringify({p_sid:SID,p_data:S})});
   try{localStorage.setItem('nrs-sid',SID)}catch(e){}
   CLOUD.ready=true;CLOUD.dirty=!!keepMem;CLOUD.last=Date.now();CLOUD.state='ok';CLOUD.err='';if(!CLOUD_ONLY)try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
   if(keepMem)cloudPush(true);syncClock();render();return row?'cloud':'new'}
@@ -1525,11 +1525,14 @@ async function syncClock(){if(!AUTH)return;try{const t0=Date.now(),r=await sbRes
   if(sv)CLOCK.offset=sv+(t1-t0)/2-t1}catch(e){}}
 // 存檔上傳：只有「目前登記的這支手機」寫得進去；寫不進去代表帳號已在別的手機登入
 async function cloudPush(force,leaving){if(!AUTH||!CLOUD.ready||CLOUD.busy||CLOUD.kicked||CLOUD.outdated||(!force&&!CLOUD.dirty))return;CLOUD.busy=true;CLOUD.dirty=false;
-  try{const body=JSON.stringify({nickname:S.nick||null,data:S,updated_at:new Date().toISOString()});
-    const r=await sbRest('saves?user_id=eq.'+AUTH.user.id+'&session_id=eq.'+SID+'&select=user_id',{method:'PATCH',headers:{Prefer:'return=representation'},keepalive:!!leaving&&body.length<60000,body});
-    if(!r||!r.length){CLOUD.busy=false;return cloudKicked()}
+  try{const body=JSON.stringify({p_sid:SID,p_data:S,p_nick:S.nick||null});
+    const r=await sbRest('rpc/save_game',{method:'POST',keepalive:!!leaving&&body.length<60000,body});   // v3.49 存檔一律經過伺服器檢查
+    if(typeof r==='string'&&r.startsWith('cheat')){CLOUD.busy=false;return cloudCheat(r)}
     CLOUD.last=CLOUD.pushAt=Date.now();CLOUD.err='';CLOUD.state='ok'}
-  catch(e){CLOUD.dirty=true;CLOUD.err=SB_ERR(e.message);CLOUD.state='err'}finally{CLOUD.busy=false}}
+  catch(e){if(/session/i.test(e.message)){CLOUD.busy=false;return cloudKicked()}CLOUD.dirty=true;CLOUD.err=SB_ERR(e.message);CLOUD.state='err'}finally{CLOUD.busy=false}}
+// 伺服器判定存檔異常（數值增加超過合理範圍）：還原到雲端上最後一次正常的進度
+async function cloudCheat(r){console.warn('save rejected',r);CLOUD.dirty=false;try{const x=await sbRest('saves?select=data&user_id=eq.'+AUTH.user.id);if(x&&x[0]&&x[0].data&&x[0].data.villages){S=sanitize(x[0].data);S.uid=AUTH.user.id}}catch(e){}
+  ui.sheet=null;ui.result=null;render();toast('⚠ 存檔資料異常，已還原到上一次正常的進度。若你沒有修改遊戲資料，請截圖回報給管理員。','bad')}
 function cloudKicked(){if(CLOUD.kicked||CLOUD.leaving)return;   // 頁面正在關閉／重新整理：不處理（避免舊頁面把新頁面的登入清掉）
   CLOUD.kicked=true;CLOUD.ready=false;
   let tab=false;try{const ls=localStorage.getItem('nrs-sid');tab=!!ls&&ls!==SID&&!!localStorage.getItem(AUTH_KEY)}catch(e){}
@@ -1543,8 +1546,8 @@ async function cloudCheckSession(){if(!AUTH||!CLOUD.ready||CLOUD.kicked)return;t
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const NICK_OK=n=>{const c=Array.from(n);return c.length<2?'暱稱至少 2 個字':c.length>8?'暱稱最多 8 個字':/^[\p{L}\p{N}_]+$/u.test(n)?'':'暱稱只能用中文、英文、數字或底線'};
 async function cloudSetNick(n){const old=S.nick;S.nick=n;
-  try{const r=await sbRest('saves?user_id=eq.'+AUTH.user.id+'&session_id=eq.'+SID+'&select=user_id',{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({nickname:n,data:S,updated_at:new Date().toISOString()})});if(!r||!r.length){S.nick=old;cloudKicked();throw new Error('這個帳號已經在其他手機登入')}save();CLOUD.dirty=false;CLOUD.last=Date.now()}
-  catch(e){S.nick=old;throw e}}
+  try{const r=await sbRest('rpc/save_game',{method:'POST',body:JSON.stringify({p_sid:SID,p_data:S,p_nick:n})});if(typeof r==='string'&&r.startsWith('cheat')){S.nick=old;cloudCheat(r);throw new Error('存檔資料異常')}save();CLOUD.dirty=false;CLOUD.last=Date.now()}
+  catch(e){S.nick=old;if(/session/i.test(e.message)){cloudKicked();throw new Error('這個帳號已經在其他手機登入')}throw e}}
 // 取暱稱畫面（註冊後、或之前沒取過暱稱時出現；頭像→鐵匠等級可改名）
 function showName(first,preview){document.body.classList.add('gating');const g=gateEl();g.className='gate-login gate-name';
   g.innerHTML=`<div class="gt-scene"><img class="gt-ly gt-bg" src="${LG('key_bg')}" alt=""><img class="gt-ly gt-glow" src="${LG('key_glow')}" alt=""><div class="gt-fog"></div><div class="gt-embers">${gEmb(10)}</div><div class="gt-vig"></div></div>
@@ -1574,7 +1577,7 @@ if(typeof window!=='undefined'){setInterval(()=>{if(AUTH&&CLOUD.dirty)cloudPush(
 const MK_FEE=.05,MK_MAX=10,MK_DAYS=3,MK_CUR={gold:['it_gold','金幣'],gems:['it_gems','鑽石']};
 const MK={rows:[],mine:[],loading:false,err:'',t:0,tab:'buy',cat:'all',cur:'all',sort:'new',sellCur:'gold'};
 const mkMock=()=>!AUTH&&devMode();   // 未登入但開了開發者模式 → 用本機「離線模擬」市場，方便測試畫面
-const MK_ERR=m=>{m=String(m||'');return /bad price/i.test(m)?`價格不正確（最低 ${MK_MIN}）`:/session/i.test(m)?'這個帳號已經在其他手機登入':/not available/i.test(m)?'這件商品已經賣出或下架了':/listing limit/i.test(m)?`同時最多上架 ${MK_MAX} 件`:/bad price/i.test(m)?'價格不正確':/self/i.test(m)?'不能買自己上架的武器':/could not find the function|PGRST202|relation .*market/i.test(m)?'交易所尚未啟用（伺服器還沒設定好）｜'+m.slice(0,140):SB_ERR(m)};
+const MK_ERR=m=>{m=String(m||'');return /not owned/i.test(m)?'伺服器上找不到這把武器（請稍等幾秒再試）':/bad price/i.test(m)?`價格不正確（最低 ${MK_MIN}）`:/session/i.test(m)?'這個帳號已經在其他手機登入':/not available/i.test(m)?'這件商品已經賣出或下架了':/listing limit/i.test(m)?`同時最多上架 ${MK_MAX} 件`:/bad price/i.test(m)?'價格不正確':/self/i.test(m)?'不能買自己上架的武器':/could not find the function|PGRST202|relation .*market/i.test(m)?'交易所尚未啟用（伺服器還沒設定好）｜'+m.slice(0,140):SB_ERR(m)};
 const mkLeft=r=>Math.max(0,Date.parse(r.expires_at)-Date.now());
 const mkGarrison=id=>S.villages.some(v=>v.weaponId===id);
 const mkSellable=w=>!w.lock&&!w.test&&!mkGarrison(w.id)&&!(S.jobs||[]).some(j=>j.wid===w.id);
@@ -1635,7 +1638,7 @@ const mkSettle=q=>mkReconcile(q);
 async function mkList(id,cur,price){const w=S.weapons.find(x=>x.id===id);if(!w)return toast('找不到這把武器','bad');if(!mkSellable(w))return toast('上鎖或駐守村莊中的武器不能上架','bad');
   price=Math.floor(+price);if(!(price>=MK_MIN))return toast(`最低售價 ${MK_MIN}`,'bad');if(price>MK_MAXP[cur])return toast(`最高售價 ${fmt(MK_MAXP[cur])}`,'bad');
   if(MK.mine.length>=MK_MAX)return toast(`同時最多上架 ${MK_MAX} 件`,'bad');if(ui.mkBusy)return;ui.mkBusy=true;
-  try{const nid=await mkApi('list',{p_weapon:mkClean(w),p_bp:w.b,p_lv:w.lv,p_q:w.q,p_cur:cur,p_price:price,p_nick:S.nick||'無名鐵匠'});
+  try{if(!(await mkSaved()))throw new Error('存檔還沒上傳成功，請稍後再試');const nid=await mkApi('list',{p_weapon:mkClean(w),p_bp:w.b,p_lv:w.lv,p_q:w.q,p_cur:cur,p_price:price,p_nick:S.nick||'無名鐵匠'});
     const ix=S.weapons.indexOf(w);if(ix>=0)S.weapons.splice(ix,1);if(nid)mkMark('listed',+nid);await mkSaved();
     toast(`已上架：${BP[w.b].n} +${w.lv}，${fmt(price)} ${MK_CUR[cur][1]}`,'ok');ui.sheet=null;MK.tab='mine';snd('deliver')}
   catch(e){toast('上架失敗：'+MK_ERR(e.message),'bad')}finally{ui.mkBusy=false;mkLoad()}}   // 失敗時武器沒動過；若其實上架成功，mkLoad 對帳會自動移出背包
