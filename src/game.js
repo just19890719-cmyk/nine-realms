@@ -3,8 +3,7 @@
 const VERSION=3;
 const ART_V='?v=3';  // 武器顯示圖改過透明度：加版本號，避免瀏覽器沿用舊快取
 // v3.76 第二界的 AI 圖還沒到：先借第一界的圖顯示，圖到了刪掉對應那一項就好
-const ART_WAIT={t4_axe:'m_fenrir',t4_axe_disp:'m_fenrir_disp',t4_sword:'m_firegiant',t4_sword_disp:'m_firegiant_disp',t4_bow:'m_iceraven',t4_bow_disp:'m_iceraven_disp',t4_crossbow:'t3_crossbow',t4_crossbow_disp:'t3_crossbow_disp',
-  t4_hammer:'m_frostgiant',t4_hammer_disp:'m_frostgiant_disp',t4_polearm:'m_nidhogg',t4_polearm_disp:'m_nidhogg_disp',t4_dagger:'t3_dagger',t4_dagger_disp:'t3_dagger_disp',t4_shield:'t3_shield',t4_shield_disp:'t3_shield_disp',};
+const ART_WAIT={};
 const A=n=>(n=ART_WAIT[n]||n,(typeof UI_ART!=='undefined'&&UI_ART[n])||'art/'+n+'.webp'+(n.endsWith('_disp')?ART_V:''));  // UI_ART（skin.js）可把既有圖示換成新素材路徑；預設空白＝不變
 const MATS={iron:'鐵礦',oak:'橡木',leather:'皮革',silver:'霜銀',fang:'狼牙',scale:'龍鱗',rune:'符文石',shard:'符文碎片',fur:'魔狼黑毛',icecore:'霜巨人冰核',fireheart:'火巨人焰心',serpent:'海蛇鱗',giantbone:'巨人骨',permafrost:'永凍霜晶',thunderiron:'雷鳴鐵',elderroot:'世界樹古根'};
 const MATART={iron:'mat_iron',oak:'mat_oak',leather:'mat_leather',silver:'mat_silver',fang:'mat_fang',scale:'mat_scale',rune:'mat_rune',shard:'mat_shard',fur:'mat_fur',icecore:'mat_icecore',fireheart:'mat_fireheart',serpent:'mat_serpent',giantbone:'mat_giantbone',permafrost:'mat_permafrost',thunderiron:'mat_thunderiron',elderroot:'mat_elderroot'};
@@ -844,6 +843,7 @@ const vfxSrc=(v,i)=>A(`vfx16_${v.set}_${String(i).padStart(2,'0')}`);
 const FX_START=.03,FX_END=.97,peakAt=v=>FX_START+(v.peak-.5)*(FX_END-FX_START)/v.N;
 // 統一武器顯示元件：武器圖已裁到實際可見範圍；有品質框時用逐把計算的比例（離框 10%、四角花飾額外避讓、離卡片外緣 10%），武器與框是獨立圖層
 const WFIT={"t1_woodaxe":0.615,"t1_huntbow":0.595,"t1_huntknife":0.61,"t1_farmspear":0.615,"t1_ironsword":0.605,"t1_roundshield":0.635,"t1_ironhammer":0.635,"t1_handaxe":0.645,"t1_shortspear":0.615,"t1_sling":0.625,"t1_crossbow":0.63,"t1_pickaxe":0.605,"t2_wolfaxe":0.62,"t2_longsword":0.59,"t2_daneaxe":0.595,"t2_longbow":0.595,"t2_warspear":0.615,"t2_twindagger":0.61,"t2_broadsword":0.585,"t2_warhammer":0.615,"t2_glaive":0.615,"t2_throwaxe":0.635,"t2_seax":0.625,"t2_kiteshield":0.575,"t3_greataxe":0.595,"t3_greatsword":0.565,"t3_bow":0.595,"t3_spear":0.615,"t3_hammer":0.64,"t3_dagger":0.59,"t3_halberd":0.615,"t3_saber":0.62,"t3_crossbow":0.625,"t3_shield":0.565,"t3_doubleaxe":0.57,"t3_scythe":0.605,"m_fenrir":0.605,"m_frostgiant":0.575,"m_firegiant":0.565,"m_nidhogg":0.615,"m_iceraven":0.595,"m_serpent":0.62,"t2_crossbow":0.66};
+Object.assign(WFIT,{t4_axe:.595,t4_sword:.565,t4_bow:.595,t4_crossbow:.625,t4_hammer:.6,t4_polearm:.615,t4_dagger:.59,t4_shield:.565});   // v3.76 巨人武器：沿用同類龍鱗武器的安全距離
 for(const k in ART_WAIT)if(k.endsWith('_disp')){const id=k.slice(0,-5),src=ART_WAIT[k].slice(0,-5);if(WFIT[id]==null&&WFIT[src]!=null)WFIT[id]=WFIT[src]}   // v3.76 借圖的武器沿用原圖的安全距離
 // 2026-10-20 已換成單張重新生成的完整圖（原本柄尾被截斷的 10 把）
 const WREGEN=['t1_farmspear','t1_shortspear','t2_warspear','t2_glaive','t3_spear','t3_halberd','t3_crossbow','t3_scythe','m_nidhogg','m_serpent'];
@@ -1736,7 +1736,7 @@ function devdo(k){if(k.startsWith('r2')){
     if(k==='r2open'||k==='r2all'){S.villages.forEach((st,i)=>{if(i<10||k==='r2all')st.status='cleared'});if(S.villages[10].status==='locked')S.villages[10].status='open';ui.realm=1}
     else if(k==='r2lock'){S.villages.forEach((st,i)=>{if(i>=10){if(st.weaponId!=null)recallCore(i);st.status='locked'}});ui.realm=0}
     else if(k==='r2fur'){S.furnace=6;S.gold+=0}
-    else if(k==='r2t4')return devAllWeapons(BPS.filter(b=>b.t===4).map(b=>b.id));
+    else if(k==='r2t4'){devAllWeapons(BPS.filter(b=>b.t===4).map(b=>b.id));return render()}
     else if(k==='r2mats'){for(const m of ['giantbone','permafrost','thunderiron','elderroot'])S.mats[m]+=30;S.gold+=200000}
     else if(k==='r2wpn'){const w=makeWeapon('m_fenrir',3,6,[]);w.ench[0]={k:'giant',v:30};ui.sheet={t:'w',id:w.id,m:rfOpen()?'rf':'main'};save();render();return toast(rfOpen()?'已送出，這是重鍊頁':'已送出（第二界還沒開放，先按「開放第二界」才看得到重鍊）','ok')}
     save();if(k!=='r2wpn'){ui.sheet=null;ui.tab='village'}render();return toast('完成','ok')}
