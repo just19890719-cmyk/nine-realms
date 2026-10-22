@@ -1138,6 +1138,9 @@ html,body,button,[data-act],label,input,select{touch-action:manipulation}
 @media (max-width:420px){.res .player{display:flex;align-items:center;gap:6px;flex:0 1 auto;min-width:0}.res .player .pname{display:flex;flex-direction:column;min-width:0}.res .player .pname .small{display:none}.res .player .pname b{font-size:13px;max-width:96px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
 @media (max-width:360px){.res .player .pname{display:none}}
 @media (max-width:420px){.res .player .pname b{min-width:3.2em}.res .chip .num{font-size:14px}.res .chip{gap:3px}.res .mute{margin:0}}
+/* v3.43 底部五個分頁 */
+.nav-in{grid-template-columns:repeat(5,1fr);gap:2px}.nav-in .ui-navtab span{white-space:nowrap;font-size:12px}
+.mk-tabs .chipbtn{white-space:nowrap;font-size:12px;padding:6px 4px}
 </style>
 <div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div></div>
 <main class="wrap" id="view"></main>
@@ -1460,8 +1463,11 @@ function sanitize(s){
   return s;
 }
 let S;
+// v3.43 正式網站（github.io）一律雲端存檔：不讀寫本機存檔、沒有訪客模式。Claude 測試版連不到伺服器，保留本機模式方便看畫面。
+const CLOUD_ONLY=typeof location!=='undefined'&&(/github\.io$/.test(location.hostname)||/cloudonly/.test(location.hash));
 function loadState(){
   let s=null,migrated=false;
+  if(CLOUD_ONLY){try{localStorage.removeItem(KEY);localStorage.removeItem(KEY_V2)}catch(e){}S=sanitize(fresh());return false}
   try{s=JSON.parse(localStorage.getItem(KEY))}catch(e){}
   if(!s){try{const o=JSON.parse(localStorage.getItem(KEY_V2));if(o&&o.villages){s=migrateV2(o);migrated=true}}catch(e){}}
   if(typeof window!=='undefined'&&window.claude?.hot?.data?.S)s=window.claude.hot.data.S;
@@ -1470,12 +1476,12 @@ function loadState(){
   if(migrated){S.villages.forEach((st,i)=>{const n=st._pending||0;delete st._pending;if(!n)return;const w=st.weaponId!=null&&W(st.weaponId);for(let c=0;c<n;c++)rollCycle(i,w,st)});}
   return migrated;
 }
-function save(){if(QUIET)return;S.savedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}CLOUD.dirty=true}
+function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD='v3.42 封測';const BETA=true;
+const BUILD='v3.43 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
-const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off'};
+const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
 function authSave(a){AUTH=a;try{a?localStorage.setItem(AUTH_KEY,JSON.stringify(a)):localStorage.removeItem(AUTH_KEY)}catch(e){}}
 function authFrom(r){return{access_token:r.access_token,refresh_token:r.refresh_token,expires_at:Date.now()+((r.expires_in||3600)-60)*1000,user:{id:r.user?.id,email:r.user?.email}}}
@@ -1488,26 +1494,33 @@ async function sbRest(path,opt={}){const t=await sbToken();if(!t)throw new Error
   const r=await fetch(SB_URL+'/rest/v1/'+path,{...opt,headers:{apikey:SB_KEY,Authorization:'Bearer '+t,'Content-Type':'application/json',...(opt.headers||{})}});
   if(!r.ok){const j=await r.json().catch(()=>({}));throw new Error(j.message||('HTTP '+r.status))}const tx=await r.text();if(!tx)return null;try{return JSON.parse(tx)}catch(e){return null}}
 async function cloudSignup(email,pw){const j=await sbAuth('signup',{email,password:pw});
-  if(!j.access_token){const k=await sbAuth('token?grant_type=password',{email,password:pw});authSave(authFrom(k))}else authSave(authFrom(j));return cloudAfterLogin(true)}
-async function cloudLogin(email,pw){authSave(authFrom(await sbAuth('token?grant_type=password',{email,password:pw})));return cloudAfterLogin(false)}
-function cloudLogout(){cloudPush(true).finally(()=>{authSave(null);CLOUD.state='off';toast('已登出，這支手機的進度保留在本機。');render()})}
-// 登入後：雲端有存檔 → 讀雲端（本機若是同帳號且比較新，改用本機並上傳）；雲端沒有 → 把目前進度上傳成這個帳號的存檔
-async function cloudAfterLogin(isNew){const uid=AUTH.user.id;let row=null;
-  try{const r=await sbRest('saves?select=data,updated_at&user_id=eq.'+uid);row=r&&r[0]}catch(e){CLOUD.err=SB_ERR(e.message);throw e}
-  const localMine=S.uid===uid,cloudT=row?Date.parse(row.updated_at):0;
-  if(row&&row.data&&row.data.villages&&!(localMine&&(S.savedAt||0)>cloudT+5000)){
-    if(!localMine&&S.stats&&(S.stats.forged||[]).some(n=>n>0)){try{localStorage.setItem(KEY+'-guest-bak',JSON.stringify(S))}catch(e){}}
-    S=sanitize(row.data);S.uid=uid;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}CLOUD.last=Date.now();CLOUD.state='ok';render();return 'cloud'}
-  S.uid=uid;save();await cloudPush(true);return 'local'}
-async function cloudPush(force){if(!AUTH||CLOUD.busy||(!force&&!CLOUD.dirty))return;CLOUD.busy=true;CLOUD.dirty=false;
-  try{await sbRest('saves?on_conflict=user_id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},keepalive:true,
-      body:JSON.stringify({user_id:AUTH.user.id,nickname:S.nick||null,data:S,updated_at:new Date().toISOString()})});
+  if(!j.access_token){const k=await sbAuth('token?grant_type=password',{email,password:pw});authSave(authFrom(k))}else authSave(authFrom(j));return cloudAfterLogin()}
+async function cloudLogin(email,pw){authSave(authFrom(await sbAuth('token?grant_type=password',{email,password:pw})));return cloudAfterLogin()}
+function cloudLogout(){cloudPush(true).finally(()=>{authSave(null);CLOUD.ready=false;CLOUD.state='off';
+  if(CLOUD_ONLY){S=sanitize(fresh());ui.sheet=null;ui.result=null;render();showLogin()}else{toast('已登出。');render()}})}
+// 登入後：讀雲端存檔（雲端為準）；新帳號建立全新進度。並登記這支手機的連線代碼（同帳號只能一支手機）
+async function cloudAfterLogin(){const uid=AUTH.user.id;SID=Math.random().toString(36).slice(2)+Date.now().toString(36);CLOUD.kicked=false;
+  let row=null;try{const r=await sbRest('saves?select=data,nickname&user_id=eq.'+uid);row=r&&r[0]}catch(e){CLOUD.err=SB_ERR(e.message);throw e}
+  if(row&&row.data&&row.data.villages){S=sanitize(row.data);if(row.nickname&&!S.nick)S.nick=row.nickname}else if(CLOUD_ONLY)S=sanitize(fresh());
+  S.uid=uid;const now=new Date().toISOString();
+  if(row)await sbRest('saves?user_id=eq.'+uid,{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({session_id:SID})});
+  else await sbRest('saves',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({user_id:uid,data:S,session_id:SID,updated_at:now})});
+  CLOUD.ready=true;CLOUD.dirty=false;CLOUD.last=Date.now();CLOUD.state='ok';CLOUD.err='';if(!CLOUD_ONLY)try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
+  render();return row?'cloud':'new'}
+// 存檔上傳：只有「目前登記的這支手機」寫得進去；寫不進去代表帳號已在別的手機登入
+async function cloudPush(force,leaving){if(!AUTH||!CLOUD.ready||CLOUD.busy||CLOUD.kicked||(!force&&!CLOUD.dirty))return;CLOUD.busy=true;CLOUD.dirty=false;
+  try{const body=JSON.stringify({nickname:S.nick||null,data:S,updated_at:new Date().toISOString()});
+    const r=await sbRest('saves?user_id=eq.'+AUTH.user.id+'&session_id=eq.'+SID+'&select=user_id',{method:'PATCH',headers:{Prefer:'return=representation'},keepalive:!!leaving&&body.length<60000,body});
+    if(!r||!r.length){CLOUD.busy=false;return cloudKicked()}
     CLOUD.last=Date.now();CLOUD.err='';CLOUD.state='ok'}
   catch(e){CLOUD.dirty=true;CLOUD.err=SB_ERR(e.message);CLOUD.state='err'}finally{CLOUD.busy=false}}
+function cloudKicked(){if(CLOUD.kicked)return;CLOUD.kicked=true;CLOUD.ready=false;authSave(null);
+  if(CLOUD_ONLY){S=sanitize(fresh());ui.sheet=null;ui.result=null;render()}showLogin('這個帳號已經在其他手機登入，這支手機已自動登出。')}
+async function cloudCheckSession(){if(!AUTH||!CLOUD.ready||CLOUD.kicked)return;try{const r=await sbRest('saves?select=session_id&user_id=eq.'+AUTH.user.id);if(r&&r[0]&&r[0].session_id&&r[0].session_id!==SID)cloudKicked()}catch(e){}}
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const NICK_OK=n=>{const c=Array.from(n);return c.length<2?'暱稱至少 2 個字':c.length>8?'暱稱最多 8 個字':/^[\p{L}\p{N}_]+$/u.test(n)?'':'暱稱只能用中文、英文、數字或底線'};
 async function cloudSetNick(n){const old=S.nick;S.nick=n;
-  try{await sbRest('saves?on_conflict=user_id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({user_id:AUTH.user.id,nickname:n,data:S,updated_at:new Date().toISOString()})});save();CLOUD.dirty=false;CLOUD.last=Date.now()}
+  try{const r=await sbRest('saves?user_id=eq.'+AUTH.user.id+'&session_id=eq.'+SID+'&select=user_id',{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({nickname:n,data:S,updated_at:new Date().toISOString()})});if(!r||!r.length){S.nick=old;cloudKicked();throw new Error('這個帳號已經在其他手機登入')}save();CLOUD.dirty=false;CLOUD.last=Date.now()}
   catch(e){S.nick=old;throw e}}
 // 取暱稱畫面（註冊後、或之前沒取過暱稱時出現；頭像→鐵匠等級可改名）
 function showName(first,preview){document.body.classList.add('gating');const g=gateEl();g.className='gate-login gate-name';
@@ -1526,9 +1539,9 @@ function showName(first,preview){document.body.classList.add('gating');const g=g
     cloudSetNick(n).then(()=>{gateClose();toast(first?`歡迎，${n}！`:`暱稱已改為「${n}」`,'ok');render();if(first&&!S.introSeen)setTimeout(showStory,350)})
       .catch(e=>say(SB_ERR(e.message),1)).finally(()=>{delete g.dataset.busy;b.disabled=false})}}
 function afterAuthEnter(){setTimeout(()=>mkSettle(true),1500);if(AUTH&&!S.nick)return showName(true);gateClose();if(!S.introSeen)setTimeout(showStory,350)}
-async function cloudPull(){const r=await sbRest('saves?select=data,updated_at&user_id=eq.'+AUTH.user.id);if(!r||!r[0])throw new Error('雲端還沒有存檔');S=sanitize(r[0].data);S.uid=AUTH.user.id;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}CLOUD.last=Date.now();render()}
-if(typeof window!=='undefined'){setInterval(()=>{if(AUTH&&CLOUD.dirty)cloudPush()},20000);
-  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&AUTH){save();cloudPush(true)}})}
+async function cloudPull(){const r=await sbRest('saves?select=data,updated_at&user_id=eq.'+AUTH.user.id);if(!r||!r[0])throw new Error('雲端還沒有存檔');S=sanitize(r[0].data);S.uid=AUTH.user.id;if(!CLOUD_ONLY)try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}CLOUD.last=Date.now();render()}
+if(typeof window!=='undefined'){setInterval(()=>{if(AUTH&&CLOUD.dirty)cloudPush()},10000);setInterval(()=>{if(!document.hidden)cloudCheckSession()},30000);
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&AUTH){save();cloudPush(true,true)}else if(AUTH)cloudCheckSession()})}
 
 /* ---------- v3.41 交易所（玩家之間買賣武器；伺服器 Supabase：market 表＋market_* 函式） ---------- */
 const MK_FEE=.05,MK_MAX=10,MK_DAYS=3,MK_CUR={gold:['it_gold','金幣'],gems:['it_gems','鑽石']};
@@ -1563,7 +1576,7 @@ const mkMe=r=>mkMock()?r.seller==='me':AUTH&&r.seller===AUTH.user.id;
 async function mkLoad(){if(MK.loading)return;MK.loading=true;MK.err='';mkRender();
   try{await mkSettle(true);const [a,b]=await Promise.all([mkApi('browse'),mkApi('mine')]);MK.rows=(a||[]).filter(r=>BP[bpId(r.bp)]);MK.mine=(b||[]).filter(r=>BP[bpId(r.bp)]);MK.t=Date.now()}
   catch(e){MK.err=MK_ERR(e.message)}finally{MK.loading=false;mkRender()}}
-const mkRender=()=>{if(ui.tab==='shop'&&ui.shopTab==='mk'||ui.sheet&&/^mk/.test(ui.sheet.t))render()};
+const mkRender=()=>{if(ui.tab==='market'||ui.sheet&&/^mk/.test(ui.sheet.t))render()};
 function mkGive(w){const o={...JSON.parse(JSON.stringify(w)),id:S.nextId++,lock:false,test:false,created:NOW()};o.b=bpId(o.b);o.traits=o.traits||[];o.ench=[0,1,2,3].map(i=>(o.ench||[])[i]||null);S.weapons.push(o);return o}
 // 結算：我上架的武器被買走 → 收錢（扣 5% 手續費）；過期沒賣掉 → 武器退回
 async function mkSettle(quiet){if(!AUTH&&!mkMock())return;let rs;try{rs=await mkApi('settle')}catch(e){if(!quiet)toast('結算失敗：'+MK_ERR(e.message),'bad');return}
@@ -1592,6 +1605,7 @@ function mkRow(r,act){const w=r.weapon,b=BP[bpId(r.bp)],me=mkMe(r);
   return `<button class="ui-card ui-card--row mk-row ${me?'me':''}" data-act="${act}" data-id="${r.id}"><div class="mk-art">${wArt(b.id,{frame:w.q})}</div>
    <div class="grow mk-mid"><b class="q${w.q}">${b.n} <span class="lvt">+${w.lv}</span></b><span class="small muted">${QUAL[w.q].n}・${CATS[b.cat]}・戰力 ${fmt(power({...w,b:b.id}))}</span>
    <span class="small muted">${me?'<span class="t-gold">我的上架</span>':esc(r.seller_nick||'無名鐵匠')}・剩 ${fmtT(mkLeft(r))}</span></div>${mkPrice(r.cur,r.price)}</button>`}
+function viewMarketPage(){if(!MK.t&&!MK.loading&&(AUTH||mkMock()))setTimeout(mkLoad,0);return `<div class="pagehead"><h2>交易所</h2></div>`+viewMarket()}
 function viewMarket(){
   if(!AUTH&&!mkMock())return `<div class="ui-panel panel mk-gate">${ptitle('交易所')}<div class="small muted center">交易所需要登入帳號才能使用，訪客進度只存在這支手機，無法和其他玩家交易。</div>${btn('登入／註冊','mklogin',{cls:'btn-primary big'})}</div>`;
   if(!MK.t&&!MK.loading&&!MK.err)setTimeout(mkLoad,0);
@@ -1609,7 +1623,7 @@ function viewMarket(){
   else{const ws=S.weapons.filter(w=>!w.test).sort((a,b)=>power(b)-power(a));
     body=`<div class="small muted mk-note">點選要上架的武器。上鎖、駐守村莊中的武器不能上架。</div><div class="mk-list">${ws.length?ws.map(w=>{const b=BP[w.b],ok=mkSellable(w);
       return `<button class="ui-card ui-card--row mk-row ${ok?'':'off'}" data-act="mksellw" data-id="${w.id}" ${ok?'':'disabled'}><div class="mk-art">${wArt(b.id,{frame:w.q})}</div><div class="grow mk-mid"><b class="q${w.q}">${b.n} <span class="lvt">+${w.lv}</span></b><span class="small muted">${QUAL[w.q].n}・${CATS[b.cat]}・戰力 ${fmt(power(w))}</span>${ok?'':`<span class="small t-danger">${w.lock?'已上鎖':'駐守村莊中'}</span>`}</div></button>`}).join(''):'<div class="small muted center mk-empty">武器庫是空的</div>'}</div>`}
-  return `<div class="ui-panel panel mk">${ptitle(mkMock()?'交易所（離線模擬）':'交易所')}<div class="mk-tabs">${tabs}<button class="ui-iconbtn mk-ref" data-act="mkref" aria-label="重新整理">${MK.loading?'…':'⟳'}</button></div>
+  return `<div class="ui-panel panel mk">${ptitle(mkMock()?'離線模擬市場':'玩家交易')}<div class="mk-tabs">${tabs}<button class="ui-iconbtn mk-ref" data-act="mkref" aria-label="重新整理">${MK.loading?'…':'⟳'}</button></div>
    ${MK.err?`<div class="small t-danger center mk-err">${MK.err}</div>`:''}${body}</div>`}
 function mkWeaponBox(w){const b=BP[bpId(w.b)],rm=runicMul(w),nE=(w.ench||[]).filter(Boolean).length;
   const traits=(w.traits||[]).map(t=>`<button class="wd-chip tap" data-act="trinfo" data-k="${t.k}" data-v="${t.v}">${img(TRAIT_ICON[t.k])}${TRAITS[t.k].n} <b>+${t.v}%</b><i>ⓘ</i></button>`);
@@ -2235,7 +2249,8 @@ const fmtS=n=>n>=1e5?(Math.floor(n/1e3)/10).toFixed(n>=1e7?0:1).replace(/\.0$/,'
 let RES_H='';function renderRes(){const el=document.getElementById('res');if(!el)return;
   const h=`<button class="player" data-act="player" aria-label="鐵匠等級 Lv.${smithLv()}">${img('ui_player_emblem','emblem')}<i class="lvb">Lv${smithLv()}</i><span class="pname"><span class="small muted">Lv.${smithLv()}</span><b>${esc(S.nick||(AUTH?'未命名鐵匠':'訪客鐵匠'))}</b></span></button>
   <button class="ui-iconbtn mute" data-act="mute" aria-label="${S.mute?'開啟音效':'關閉音效'}">${img(S.mute?'ic_sound_off':'ic_sound_on')}</button><span class="chip">${img('it_gold')}<b class="num">${fmtS(S.gold)}</b></span><span class="chip">${img('it_gems')}<b class="num">${fmtS(S.gems)}</b><button class="ui-iconbtn plus" data-act="tab" data-k="shop" aria-label="儲值">${img('ic_plus')}</button></span>${devMode()?`<button class="ui-iconbtn gear" data-act="dev" aria-label="開發工具">${img('ic_gear')}</button>`:''}`;if(h!==RES_H||!el.firstChild){RES_H=h;el.innerHTML=h}}
-const TABS=[['forge','鐵匠鋪','nav_forge'],['armory','武器庫','nav_armory'],['village','村莊','nav_village'],['shop','商城','nav_shop']];
+const ART_HAS_NAV_MARKET=false;   // 交易所分頁圖示（AI 美術）到位後改 true
+const TABS=[['village','村莊','nav_village'],['forge','鐵匠鋪','nav_forge'],['armory','武器庫','nav_armory'],['market','交易所',ART_HAS_NAV_MARKET?'nav_market':'it_gold'],['shop','商城','nav_shop']];
 let NAV_H='';function renderNav(){const N=document.getElementById('nav'),h=TABS.map(([k,n,ic])=>{const dot=(k==='village'&&S.villages.some(v=>v.bank.cycles))||(k==='forge'&&false);
   return `<button data-act="tab" data-k="${k}" class="ui-navtab ${ui.tab===k?'on':''}">${img(ic)}<span>${n}</span>${dot?'<i class="dot"></i>':''}</button>`}).join('');if(h!==NAV_H||!N.firstChild){NAV_H=h;N.innerHTML=h}}
 
@@ -2616,9 +2631,7 @@ function viewShop(){
   const on=monthlyOn(),days=Math.ceil((S.monthly.until-NOW())/864e5);
   const info=k=>`<button class="ui-iconbtn info-btn" data-act="info" data-k="${k}" aria-label="說明">${ic('info')}</button>`;
   const card=(ic,name,sub,price,act,attrs,ik,dis)=>`<div class="ui-card pcard">${info(ik)}${img(ic,'pc-ico')}<b>${name}</b><span class="small muted">${sub}</span><button class="ui-btn ui-btn--secondary btn btn-sec sm pc-buy" data-act="${act}" ${attrs} ${dis?'disabled':''}>${price}</button></div>`;
-  const stabs=`<div class="pagehead"><h2>商城</h2></div><div class="mk-seg">${[['mall','商城'],['mk','交易所']].map(([k,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.shopTab||'mall')===k?'on':''}" data-act="shoptab" data-k="${k}">${n}</button>`).join('')}</div>`;
-  if(ui.shopTab==='mk')return stabs+viewMarket();
-  return stabs+`
+  return `<div class="pagehead"><h2>商城</h2></div>
   ${BETA?'':`<div class="ui-panel panel">\${ptitle('鑽石（試玩版不扣款）')}<div class="gems3">\${[[60,'NT$30'],[330,'NT$150'],[1280,'NT$590']].map(([g,p])=>\`<button class="ui-card gemcard" data-act="topup" data-n="\${g}">\${img('it_gems')}<b>\${g} 鑽</b><span class="price">\${p}</span></button>\`).join('')}</div></div>`}
   <div class="ui-panel panel month ${on?'on':''}">${info('monthly')}<div class="item">${img('it_monthly')}<div class="grow"><b>北境月卡（免費）</b><div class="small muted">${on?`剩餘 ${days} 天`:'立得 300 鑽＋每天 50 鑽'}</div></div>
    ${on?btn(S.monthly.last===today()?'今日已領':'領 50 鑽','claim',{cls:'btn-primary sm',dis:S.monthly.last===today()}):btn(BETA?'免費領取':'NT$150','monthly',{cls:'btn-primary sm'})}</div></div>
@@ -2681,7 +2694,7 @@ let forceEvent=-1;
 function devdo(k){if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?'上傳失敗：'+CLOUD.err:'已上傳到雲端',CLOUD.err?'bad':'ok');render()});return}
   if(k==='cpull'){cloudPull().then(()=>toast('已從雲端下載','ok')).catch(e=>toast('下載失敗：'+SB_ERR(e.message),'bad'));return}
   if(k==='clogout'){ui.sheet=null;return cloudLogout()}
-  if(k==='mkopen'){ui.sheet=null;ui.tab='shop';ui.shopTab='mk';mkLoad();return render()}
+  if(k==='mkopen'){ui.sheet=null;ui.tab='market';mkLoad();return render()}
   if(k==='mksettle'){mkSettle(false).then(()=>mkLoad());return}
   if(k==='mksold'||k==='mkexp'||k==='mkreset'){if(AUTH)return toast('這是離線模擬專用（請先登出）','bad');if(k==='mkreset'){try{localStorage.removeItem('nrs-mkmock')}catch(e){}MK.t=0;return toast('模擬市場已重設','ok')}
     const db=mkMockDB(),mine=db.rows.filter(r=>r.seller==='me'&&r.status==='open');if(!mine.length)return toast('你目前沒有上架中的武器','bad');
@@ -2733,7 +2746,7 @@ eventChance=function(i,w){if(forceEvent===i){forceEvent=-1;return 1}return _even
 function render(){
   if(QUIET)return;renderRes();renderNav();
   const hs=[...document.querySelectorAll('#view .hscroll,#view .catbar')].map(e=>e.scrollLeft);   // 保留橫向捲動位置（點圖紙不會跳回最前面）
-  const V=document.getElementById('view'),y=scrollY,oldHero=V.querySelector(':scope > section.hero'),html=({forge:viewForge,armory:viewArmory,village:viewVillage,shop:viewShop})[ui.tab]();
+  const V=document.getElementById('view'),y=scrollY,oldHero=V.querySelector(':scope > section.hero'),html=({forge:viewForge,armory:viewArmory,village:viewVillage,shop:viewShop,market:viewMarketPage})[ui.tab]();
   // v3.26 鐵匠鋪上方區塊整塊留在原地（搬動節點也會讓動畫重跑），只更新裡面的委託橫條、工具列等
   let kept=false;if(oldHero){const T=document.createElement('div');T.innerHTML=html;const nh=T.querySelector(':scope > section.hero');
     if(nh){kept=true;oldHero.className=nh.className;[...oldHero.children].forEach(c=>{if(!c.matches('.dp,.smith'))c.remove()});[...nh.children].forEach(c=>{if(!c.matches('.dp,.smith'))oldHero.appendChild(c)});
@@ -2787,7 +2800,7 @@ document.addEventListener('click',e=>{
   if(!['enhance','fxskip','devdo','mute','sndtest','sfxalt'].includes(a)&&Date.now()-PD_SND>700)snd(uiSndOf(a));
   if((a==='scrim'||a==='rclose')&&e.target!==b&&!e.target.matches('button'))return;
   if(a!=='melt')ui.meltArm=null;
-  ({tab:()=>{if(ui.busy&&ui.fxDone)ui.fxDone();ui.tab=d.k;ui.sheet=null;ui.enhLast=null;render();scrollTo(0,0)},close:()=>{if(ui.busy)return;ui.sheet=null;ui.enhLast=null;ui.riskArm=null;ui.riskOk=null;render()},scrim:()=>{if(ui.busy)return;ui.sheet=null;ui.enhLast=null;render()},dev:()=>{ui.sheet={t:'d'};render()},achopen:()=>{ui.sheet={t:'a'};render()},
+  ({tab:()=>{if(ui.busy&&ui.fxDone)ui.fxDone();ui.tab=d.k;if(d.k==='market'&&(AUTH||mkMock())&&Date.now()-MK.t>20000)setTimeout(mkLoad,0);ui.sheet=null;ui.enhLast=null;render();scrollTo(0,0)},close:()=>{if(ui.busy)return;ui.sheet=null;ui.enhLast=null;ui.riskArm=null;ui.riskOk=null;render()},scrim:()=>{if(ui.busy)return;ui.sheet=null;ui.enhLast=null;render()},dev:()=>{ui.sheet={t:'d'};render()},achopen:()=>{ui.sheet={t:'a'};render()},
    sheetW:()=>{ui.sheet={t:'ws',k:'w'};render()},sheetA:()=>{ui.sheet={t:'ws',k:'a'};render()},sheetM:()=>{ui.sheet={t:'ws',k:'m'};render()},
    devdo:()=>devdo(d.k),speed:()=>{tick();const t=NOW(),old=S.speed,nw=+d.k;
      S.villages.forEach(st=>{if(st.cycleStart!=null)st.cycleStart=t-(t-st.cycleStart)*old/nw});S.jobs.forEach(j=>{j.start=t-(t-j.start)*old/nw;j.end=t+(j.end-t)*old/nw});S.speed=nw;save();render()},
@@ -2844,7 +2857,9 @@ const LG=n=>'art/login/'+n+'.webp';
 function gateEl(){let g=document.getElementById('gate');if(!g){g=document.createElement('div');g.id='gate';document.body.appendChild(g)}return g}
 function gateClose(){const g=document.getElementById('gate');if(g){g.classList.add('out');setTimeout(()=>{if(g.classList.contains('out'))g.remove()},450)}document.body.classList.remove('gating')}
 const gEmb=(n,cls)=>Array.from({length:n},(_,k)=>`<img class="gt-em e${k} ${cls||''}" src="${A('dp/'+['fx_ember1','fx_ember_trail','fx_ember1','fx_ember_big','fx_ember_cluster','fx_ember1','fx_ember_trail','fx_ember1','fx_ember1','fx_ember_big'][k%10])}" alt="">`).join('');
-function showLogin(){document.body.classList.add('gating');const g=gateEl();g.className='gate-login';
+function showLoading(t){document.body.classList.add('gating');const g=gateEl();g.className='gate-login gate-loading';g.onclick=null;
+  g.innerHTML=`<div class="gt-scene"><img class="gt-ly gt-bg" src="${LG('key_bg')}" alt=""><img class="gt-ly gt-glow" src="${LG('key_glow')}" alt=""><div class="gt-fog"></div><div class="gt-embers">${gEmb(10)}</div><div class="gt-vig"></div></div><img class="gt-logo" src="${LG('logo')}" alt="九界鐵匠"><div class="gt-box gt-load"><div class="gt-ttl">${t}</div></div>`}
+function showLogin(msg){document.body.classList.add('gating');const g=gateEl();g.className='gate-login';
   g.innerHTML=`<div class="gt-scene">
     <img class="gt-ly gt-bg" src="${LG('key_bg')}" alt=""><img class="gt-ly gt-glow" src="${LG('key_glow')}" alt="">
     <img class="gt-fg" src="${LG('key_fg')}" alt="">
@@ -2854,7 +2869,7 @@ function showLogin(){document.body.classList.add('gating');const g=gateEl();g.cl
     <input id="gtMail" type="email" inputmode="email" autocomplete="username" placeholder="Email">
     <input id="gtPw" type="password" autocomplete="current-password" placeholder="密碼">
     <div class="gt-row"><button type="button" class="ui-btn ui-btn--primary btn btn-primary big" data-gt="login">登入</button><button type="button" class="ui-btn ui-btn--secondary btn btn-sec big" data-gt="signup">註冊</button></div>
-    <div class="gt-msg small"></div><button type="button" class="gt-guest" data-gt="guest">訪客進入（存檔只在這支手機）</button>
+    <div class="gt-msg small ${msg?'bad':''}">${msg?esc(msg):''}</div>${CLOUD_ONLY?'':'<button type="button" class="gt-guest" data-gt="guest">訪客進入（測試版，存檔只在這支手機）</button>'}
     <div class="gt-ver small"><button type="button" class="gt-replay" data-gt="story">重看開場故事</button>・${typeof BUILD!=='undefined'?BUILD:'v3.20'}</div></form>`;
   g.onclick=e=>{const b=e.target.closest('[data-gt]');if(!b)return;const k=b.dataset.gt;snd('ui_click');
     if(k==='guest'){gateClose();if(!S.introSeen)setTimeout(showStory,350);return}
@@ -2944,7 +2959,9 @@ function start(){try{if(localStorage.getItem('nrs-dpv')!=='0')document.body.clas
   const before=S.villages.reduce((s,v)=>s+v.bank.cycles,0);tick();const after=S.villages.reduce((s,v)=>s+v.bank.cycles,0);
   bindUI();preloadVfx();render();save();
   tutInit();
-  try{if(/gate/.test(location.hash)||!(navigator.webdriver||/nogate/.test(location.hash))){if(AUTH&&AUTH.user&&!/gate/.test(location.hash)){CLOUD.state='sync';cloudAfterLogin(false).then(()=>{if(!S.nick)showName(true);mkSettle(true)}).catch(()=>{CLOUD.state='err'})}else showLogin()}}catch(e){}   // 已登入過：直接進遊戲並同步雲端   // 自動測試（webdriver）預設跳過登入，網址加 #gate 才顯示
+  try{if(/gate/.test(location.hash)||!(navigator.webdriver||/nogate/.test(location.hash))){   // 自動測試（webdriver）預設跳過登入，網址加 #gate 才顯示
+    if(AUTH&&AUTH.user&&!/forcelogin/.test(location.hash)){showLoading('讀取雲端存檔…');cloudAfterLogin().then(()=>afterAuthEnter()).catch(e=>showLogin('讀取雲端存檔失敗：'+SB_ERR(e.message)+'，請重新登入'))}
+    else showLogin()}}catch(e){}
   if(migrated)toast('已把 v2 存檔升級成 v3。');
   if(after>before)toast(`離線期間村莊狩獵了 ${after-before} 輪，記得收成！`);
   else if(!S.weapons.length&&!S.jobs.length&&!(S.tut<TUT.length))toast('歡迎來到米德加德。先鍛造一把伐木斧，交給鐵爐村的伐木工。');
