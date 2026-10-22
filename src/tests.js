@@ -205,7 +205,7 @@ function aiForgeFor(cat,M){
     if(S.furnace<TIERS[b.t].furnace){const c=FURNACE_COST[S.furnace];if(S.gold>=c){S.gold-=c;S.furnace++}else continue}
     if(S.furnace<TIERS[b.t].furnace)continue;
     const c=recipe(b);if(b.t===0){for(const k in c){const lack=c[k]-S.mats[k];if(lack>0){const p=SHOP_MATS.find(x=>x[0]===k)[1];if(S.gold>=lack*p+TIERS[0].gold){S.gold-=lack*p;S.mats[k]+=lack}}}}
-    if(S.jobs.length<S.slots&&hasMats(c)&&S.gold>=TIERS[b.t].gold){forgeStart(b.id,1,S.items.blueprint>0);M.forgedTry++;return true}
+    if(!S.jobs.length&&hasMats(c)&&S.gold>=TIERS[b.t].gold){forgeStart(b.id,1,S.items.blueprint>0);M.forgedTry++;return true}
     if(b.t>0)return false;// 高階材料不足就等
   }
   return false;
@@ -260,9 +260,8 @@ function aiSession(P,M){
   const needF=cleared()>=5&&S.furnace<4?FURNACE_COST[S.furnace]:0;const reserve=(i>=0?600:0)+needF;
   if(needF&&S.gold>=needF){S.gold-=needF;S.furnace++}
   if(S.anvil<5&&S.gold>=ANVIL_COST[S.anvil]+reserve&&cleared()>=2){S.gold-=ANVIL_COST[S.anvil];S.anvil++}
-  if(S.slots<4&&S.gold>=SLOT_COST[S.slots]+reserve&&cleared()>=4){S.gold-=SLOT_COST[S.slots];S.slots++}
   // 中後期：批量鍛造＋熔解雜兵（大量鍛造需求）
-  if(bulkOn()&&S.gold>reserve+(i>=0?30000:5000)&&S.jobs.length<S.slots){const b=BPS.find(x=>x.id==='t1_woodaxe');forgeStart(b.id,5,false)}
+  if(bulkOn()&&S.gold>reserve+(i>=0?30000:5000)&&!S.jobs.length){const b=BPS.find(x=>x.id==='t1_woodaxe');forgeStart(b.id,5,false)}
   S.weapons.filter(w=>w.q<=1&&w.lv===0&&where(w)<0&&!(w.traits||[]).length).slice(0,-2).forEach(w=>meltCore(w.id));
 }
 function simulate(key,days=30,capH=12){
@@ -340,10 +339,13 @@ function repTests(){const res=[];
     res.push(T('I2 天賦點用完不能再點、上限擋住',!e1&&e2==='天賦點不夠'&&S.rep.t.gold===4&&repPts()===0,`商隊議價 Lv${S.rep.t.gold}，第 5 次：${e2}`));
     S.rep.t.qual=20;const q=qualWeights(false,0),sum=q.reduce((a,b)=>a+b,0);
     res.push(T('I3 巨匠之手滿級：品質權重總和仍 1000、普通減 10%',Math.round(sum)===1000&&q[0]===QW[0]-100,`權重 ${q.map(x=>Math.round(x)).join('/')}，總和 ${Math.round(sum)}`));
-    S.rep.t.forge=30;const fs=forgeSec(BP.t1_woodaxe);
-    res.push(T('I4 熟練鍛造滿級：鍛造時間 −30%',near(fs,TIERS[0].sec*.7,1e-9),`伐木斧 ${fs.toFixed(2)} 秒（原 ${TIERS[0].sec} 秒）`));
+    {const s0=S;S=fresh();S.villages.forEach(v=>v.status='cleared');S.furnace=6;S.gold=1e9;S.slots=4;
+      const big=BPS.filter(b=>b.t===4)[0];for(const k of new Set([...Object.keys(S.mats),...Object.keys(recipe(big))]))S.mats[k]=1e6;const j1=forgeStart(big.id,1,false),e1=forgeStart('t1_woodaxe',1,false);const d1=j1.end-j1.start;j1.end=0;tick();const j10=forgeStart('t1_woodaxe',10,false),d10=j10.end-j10.start;
+      const o=sanitize(JSON.parse(JSON.stringify({...S,jobs:[{b:'t3_halberd',qty:1,start:1000,end:1000+240000}]})));S=s0;
+      res.push(T('I4 鍛造一律 5 秒、一次一批，舊存檔的長鍛造縮成 5 秒',d1===FORGE_SEC*1000&&d10===FORGE_SEC*1000&&typeof e1==='string'&&o.jobs[0].end===1000+FORGE_SEC*1000&&!('forge' in TALENTS),
+        `巨人武器 ${d1/1000} 秒、伐木斧 ×10 ${d10/1000} 秒；鍛造中再開：${e1}；舊存檔結束時間 ${(o.jobs[0].end-1000)/1000} 秒後`))}
     const x=sanitize(JSON.parse(JSON.stringify({...S,rep:{lv:'abc',xp:-5,t:{gold:999,forge:-3,zz:5}}})));
-    res.push(T('I5 存檔修正：壞掉的聲望資料會被修好',x.rep.lv===1&&x.rep.xp===0&&x.rep.t.gold===TALENTS.gold.max&&x.rep.t.forge===0&&!('zz' in x.rep.t),JSON.stringify(x.rep)));
+    res.push(T('I5 存檔修正：壞掉的聲望資料會被修好',x.rep.lv===1&&x.rep.xp===0&&x.rep.t.gold===TALENTS.gold.max&&!('forge' in x.rep.t)&&!('zz' in x.rep.t),JSON.stringify(x.rep)));
   }finally{repGain.mute=false}});
   return res}
 
