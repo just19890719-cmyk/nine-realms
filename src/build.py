@@ -8,7 +8,7 @@ t=t.replace('<!--STYLE-->',rd('style.css').rstrip(),1)   # style.css 本身就�
 t=t.replace('<!--SCRIPT-->','<script>\n'+rd('skin.js')+'\n'+rd('game.js')+'\n</script>\n<script>start();</script>',1)
 head='<!doctype html>\n<html lang="zh-Hant-TW"><head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n<meta name="theme-color" content="#0f0c09">\n'
 open(os.path.join(R,'index.html'),'w',encoding='utf-8').write(head+t)
-for f in ('tests.js','sw.js'):shutil.copy(os.path.join(S,f),os.path.join(R,f))
+for f in ('tests.js','sw.js','manifest.webmanifest'):shutil.copy(os.path.join(S,f),os.path.join(R,f))
 v=re.search(r"const BUILD_ID='([^']+)'",rd('game.js')).group(1)
 open(os.path.join(R,'version.json'),'w').write(json.dumps({'v':v}))
 print('built v'+v)
