@@ -1149,6 +1149,8 @@ html,body,button,[data-act],label,input,select{touch-action:manipulation}
 /* v3.47 雲端存檔失敗提示 */
 #cloudbar{position:fixed;left:8px;right:8px;top:calc(env(safe-area-inset-top,0px) + 6px);z-index:300;background:#5a1410;border:1px solid #ff8a7a;color:#ffe0da;border-radius:10px;padding:8px 10px;font-size:13px;text-align:center}
 .fg-ic{width:16px;height:16px;vertical-align:-3px}
+/* v3.54 導覽進行中：頁面底部留空，讓被底部分頁列擋住的目標可以捲到畫面中間 */
+body.tutoring #view{padding-bottom:40vh}
 </style>
 <div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div></div>
 <main class="wrap" id="view"></main>
@@ -1489,7 +1491,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='3.53';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='3.54';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -3005,7 +3007,7 @@ function tipDraw(){let o=document.getElementById('tip');const k=!document.body.c
   o.addEventListener('click',e=>{if(!e.target.closest('[data-tip]'))return;e.stopPropagation();S.tips=S.tips||{};S.tips[k]=1;save();o.remove();snd('ui_click')});document.body.appendChild(o)}
 const tutOn=()=>typeof S.tut==='number'&&S.tut<TUT.length&&!document.body.classList.contains('gating');
 function tutStep(n){S.tut=n;const nx=TUT[n];if(nx&&nx.go&&!ui.busy){nx.go();render()}if(n>=TUT.length&&!S.tutRw){S.tutRw=1;S.items.bless+=1;S.items.scroll+=1;toast('新手導覽完成：防爆卷 +1、祝福石 +1','ok')}save();tutDraw(true)}
-function tutDraw(force){let o=document.getElementById('tut');
+function tutDraw(force){let o=document.getElementById('tut');document.body.classList.toggle('tutoring',tutOn());
   if(!tutOn()){if(o)o.remove();return}
   const st=TUT[S.tut];if(!st.ok&&st.done&&st.done()){return tutStep(S.tut+1)}
   if(!o){o=document.createElement('div');o.id='tut';o.innerHTML='<div class="tut-ring"></div><div class="tut-box"><img class="tut-face" src="'+A('smith')+'" alt=""><div class="tut-body"><div class="tut-txt"></div><div class="tut-btns"></div></div></div>';document.body.appendChild(o);
@@ -3014,6 +3016,9 @@ function tutDraw(force){let o=document.getElementById('tut');
     o.querySelector('.tut-btns').innerHTML=`<span class="small muted">${S.tut+1}／${TUT.length}</span>${st.ok?`<button class="ui-btn ui-btn--primary btn btn-primary sm" data-tut="next">${st.ok}</button>`:''}${st.end?'':'<button class="tut-skip" data-tut="skip">略過導覽</button>'}`}
   if(st.tf){const x=st.tf();if(o.dataset.tx!==x){o.dataset.tx=x;o.querySelector('.tut-txt').innerHTML=x}}   // v3.52 動態說明（例如鍛造倒數）
   const sel=st.sel&&st.sel(),el=sel&&[...document.querySelectorAll(sel)].find(x=>{const r=x.getBoundingClientRect();return r.width>0&&r.height>0}),ring=o.querySelector('.tut-ring'),box=o.querySelector('.tut-box');
+  if(el&&!el.closest('nav,.nav,#res,.ui-topbar,.sheet,.modal,#gate')){   // v3.54 要框的東西被上方資源列或底部分頁列擋住 → 捲到畫面中間（矮螢幕手機）；每個目標只捲一次，避免來回跳
+    const r0=el.getBoundingClientRect(),nv=document.querySelector('nav.nav'),navTop=nv?nv.getBoundingClientRect().top:innerHeight,rs=document.getElementById('res'),topLim=(rs?rs.getBoundingClientRect().bottom:60)+8,key=S.tut+'|'+sel;
+    if((r0.bottom>navTop-50||r0.top<topLim)&&o.dataset.sc!==key){o.dataset.sc=key;el.scrollIntoView({block:'center'})}}
   if(el){const r=el.getBoundingClientRect(),p=6;Object.assign(ring.style,{display:'block',left:r.left-p+'px',top:r.top-p+'px',width:r.width+p*2+'px',height:r.height+p*2+'px'});
     const below=r.top+r.height/2<innerHeight/2;box.style.top=below?Math.min(innerHeight-170,r.bottom+14)+'px':'auto';box.style.bottom=below?'auto':Math.max(90,innerHeight-r.top+14)+'px';o.classList.remove('nohole')}
   else{ring.style.display='none';box.style.top='auto';box.style.bottom='120px';o.classList.add('nohole')}}
