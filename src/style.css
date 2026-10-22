@@ -1079,7 +1079,7 @@ body.dpv .hero .dp-fog{display:none}   /* v3.20：鐵匠鋪主畫面不要霧氣
 #tip .tip-box{position:relative;left:auto;margin:0 auto;bottom:auto;top:auto;pointer-events:auto;animation:stTxt .35s both}
 .wd-chip.tap{color:var(--bone);font:inherit;font-size:12px;cursor:pointer;min-height:32px}.wd-chip.tap i{font-style:normal;color:var(--gold);margin-left:2px;font-size:11px}.wd-chip.tap:active{border-color:var(--gold)}
 /* 圖紙橫列：只能左右捲，避免手機上下滑動把框框頂端捲掉 */
-.hscroll,.catbar{overflow-y:hidden;touch-action:pan-x;padding-top:4px;padding-left:3px;margin-top:6px}
+.hscroll,.catbar{overflow-y:hidden;touch-action:pan-x pan-y;padding-top:4px;padding-left:3px;margin-top:6px}
 /* iPhone Safari：方框圖不能被壓扁或往上裁切 → 固定成正方形、不收縮 */
 .wt-art{flex:none;width:100%;height:auto;aspect-ratio:1/1;overflow:hidden}
 .wt-art .wart{position:absolute;inset:0;width:100%;height:100%}
@@ -1088,7 +1088,7 @@ body.dpv .hero .dp-fog{display:none}   /* v3.20：鐵匠鋪主畫面不要霧氣
 
 /* v3.24 手機點擊：關掉雙擊放大判定，連續快速點按不會被吃掉 */
 html,body,button,[data-act],label,input,select{touch-action:manipulation}
-.hscroll,.catbar{touch-action:pan-x}
+.hscroll,.catbar{touch-action:pan-x pan-y}   /* v3.61 也允許上下：手指放在圖紙／分類列上直接上下滑，整頁會跟著捲 */
 #gate.out{pointer-events:none}
 
 /* v3.27 音效 A/B/C 試用 */
@@ -1160,4 +1160,10 @@ body.tutoring #view{padding-bottom:40vh}
 .tut-ring::before{content:"";position:absolute;inset:-2px;border-radius:13px;border:2px solid #fff6d0;box-shadow:0 0 18px 4px rgba(255,230,150,.7);opacity:0;animation:pulseO 1s ease-in-out infinite;pointer-events:none}
 /* v3.59 村莊卡「首次收復獎勵」金幣圖示被全域 img{display:block} 擠到獨立一行 */
 .fg-ic{display:inline-block}
+/* v3.61 武器庫：上方標題、分類、篩選貼在資源列下面，往下滑只有武器列表在動 */
+.arm-head{position:sticky;top:calc(var(--barh,52px) + env(safe-area-inset-top,0px));z-index:12;margin:0 calc(-1 * max(12px,env(safe-area-inset-left,0px)));padding:0 max(12px,env(safe-area-inset-right,0px)) 8px max(12px,env(safe-area-inset-left,0px));background:var(--iron0);border-bottom:1px solid var(--line);box-shadow:0 6px 10px -6px rgba(0,0,0,.7)}
+.arm-head .pagehead{margin-top:0;padding-top:10px}
+/* v3.61 材料倉庫：材料可以點（看用途） */
+button.matbox{font:inherit;font-size:11px;color:inherit;cursor:pointer;line-height:1.35}
+button.matbox:active{border-color:var(--gold)}
 </style>
