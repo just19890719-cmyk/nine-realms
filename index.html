@@ -1594,6 +1594,9 @@ const BP=Object.fromEntries(BPS.map(b=>[b.id,b]));
 const BP_ALIAS={t1_handaxe:'t1_woodaxe',t1_shortspear:'t1_farmspear',t2_daneaxe:'t2_wolfaxe',t2_broadsword:'t2_longsword',t2_warspear:'t2_glaive',t2_seax:'t2_twindagger',t3_doubleaxe:'t3_greataxe',t3_saber:'t3_greatsword',t3_spear:'t3_halberd',t3_scythe:'t3_halberd'};
 for(const k in BP_ALIAS){const i=BPS.findIndex(b=>b.id===k);if(i>=0)BPS.splice(i,1);delete BP[k]}
 const bpId=id=>BP_ALIAS[id]||id;
+// v3.86 拿掉工具／投擲類（Mochi 選）：圖紙不再出現，舊武器保留（BP 裡還有資料，可熔煉、上架、打首領）
+const BP_GONE=['t1_pickaxe','t1_sling','t2_throwaxe'];
+for(const k of BP_GONE){const i=BPS.findIndex(b=>b.id===k);if(i>=0)BPS.splice(i,1)}
 const goldOf=b=>TIERS[b.t].gold;
 function recipe(b){if(b.r)return b.r;if(b.t===0){const sec={axe:'oak',polearm:'oak',bow:'oak',crossbow:'oak',throw:'leather',tool:'oak',sword:'leather',dagger:'leather',shield:'oak',hammer:'iron'}[b.cat];return add({iron:3},{[sec]:2})}
   if(b.t===1)return{silver:3,fang:2,iron:2};if(b.t===4)return{giantbone:3,permafrost:2,thunderiron:2,rune:2};return{scale:2,rune:2,silver:2}}
@@ -1808,7 +1811,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='3.84';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='3.86';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -2902,7 +2905,7 @@ function viewArmory(){
   const ws=S.weapons.filter(w=>(ui.acat==='all'||bpOf(w).cat===ui.acat)&&(aq==='all'||w.q===+aq)&&stOk(w)).sort(SORTS[ui.asort][1]);
   const filtered=ui.acat!=='all'||aq!=='all'||ast!=='all';
   return `<div class="arm-head"><div class="pagehead"><h2>武器庫</h2><span class="num ${S.weapons.length>=CAP_WEAPONS?'t-danger':''}">${S.weapons.length}/${CAP_WEAPONS}</span></div>
-  <div class="catbar">${['all',...Object.keys(CATS)].map(k=>`<button class="ui-btn ui-btn--toggle cat ${ui.acat===k?'on':''}" data-act="acat" data-k="${k}">${img(k==='all'?'nav_armory':CAT_ICON[k])}<span>${k==='all'?'全部':CATS[k]}</span></button>`).join('')}</div>
+  <div class="catbar">${['all',...Object.keys(CATS).filter(k=>BPS.some(b=>b.cat===k)||S.weapons.some(w=>bpOf(w).cat===k))].map(k=>`<button class="ui-btn ui-btn--toggle cat ${ui.acat===k?'on':''}" data-act="acat" data-k="${k}">${img(k==='all'?'nav_armory':CAT_ICON[k])}<span>${k==='all'?'全部':CATS[k]}</span></button>`).join('')}</div>
   <div class="filters3"><label class="sel"><span>排序</span><select id="asort">${Object.entries(SORTS).map(([k,[n]])=>`<option value="${k}" ${ui.asort===k?'selected':''}>${n}</option>`).join('')}</select></label>
    <label class="sel"><span>品質</span><select id="aq"><option value="all">全部</option>${QUAL.map((q,i)=>`<option value="${i}" ${aq===String(i)?'selected':''}>${q.n}</option>`).join('')}</select></label>
    <label class="sel"><span>狀態</span><select id="ast">${[['all','全部'],['idle','閒置'],['post','駐守'],['lock','收藏'],['test','測試']].map(([k,n])=>`<option value="${k}" ${ast===k?'selected':''}>${n}</option>`).join('')}</select></label></div>
@@ -3278,6 +3281,7 @@ function sheetDev(){
      <div class="devgrid">${B('allw','產生全部 '+BPS.length+' 把','btn-primary')}${B('regenw','只產生重畫過的 10 把')}${B('cleartest','清除所有測試武器')}</div>
      <div class="label">測試武器</div><div class="devgrid">${B('wt','3 把帶特性的傳說武器')}${B('w6','+6 霜銀長劍（安定 5）')}${B('wm','神器尼德霍格龍矛（安定 0）')}${B('w8','+8 龍鱗戟')}${B('wench','v3.84 新附魔測試武器（雷霆・貪婪・豐收・剋巨人＋堅固）')}${B('wench2','v3.84 新附魔測試武器 2（神聖・劇毒・尋珍・剋龍）')}${B('fill','武器庫塞到 195 把')}</div>`,
    prog:`<div class="label">v3.61 介面測試</div><div class="devgrid">${B('uiv','村莊：跳到待交付關卡')}${B('uiarm','武器庫：往下捲看分類置頂')}${B('uiforge','鐵匠鋪：圖紙區上下滑')}${B('uimat','材料倉庫：點材料看用途')}${B('uishop','旅行商人：輸入數量買賣')}</div>
+   <div class="label">v3.86 拿掉工具／投擲類</div><div class="devgrid">${B('rmcat','檢查：鍛造頁沒有工具／投擲')}${B('rmcatw','送一把舊礦鎬（看武器庫分類）')}</div>
    <div class="label">v3.79 村莊換武器／掉落說明</div><div class="devgrid">${B('uiswap','村莊：送一把更強的（不亮紅點）')}${B('uidropinfo','村莊詳情：點掉落看說明')}</div>
    <div class="label">v3.64 紅點提醒</div><div class="devgrid">${B('uigive','送一把可交付的武器')}${B('uidot_w','武器庫：最新一把標 NEW')}${B('uidot_bp','鐵匠鋪：最新圖紙標 NEW')}${B('uidot_full','村莊倉庫滿（醒目紅點）')}${B('uidot_mk','交易所：模擬有成交')}${B('uidot_mon','商城：月卡今天可領')}${B('uidot_st','目前哪些紅點會亮')}</div>
    <div class="label">v3.70 每日任務・簽到・跑馬燈</div><div class="devgrid">${B('dq_all','每日任務全部達成')}${B('dq_reset','每日任務換日重置')}${B('sg_reset','簽到：今天可再領')}${B('sg_d7','簽到：跳到第 7 天')}${B('news_ok','跑馬燈：模擬 +12 成功')}${B('news_brk','跑馬燈：模擬 +11 爆裝')}${B('qopen','打開任務視窗')}</div>
@@ -3318,7 +3322,9 @@ function sheetDev(){
 }
 
 
-function devdo(k){if(k==='sfxbg'){if(ACX){try{ACX.suspend()}catch(e){}ACX_DIRTY=true}toast('已模擬切到背景（音效暫停），按「試播金幣聲」應該要有聲音');return render()}
+function devdo(k){if(k==='rmcat'){const bad=BPS.filter(b=>b.cat==='tool'||b.cat==='throw').map(b=>b.n);ui.tab='forge';ui.ftab='bp';ui.cat='all';ui.sheet=null;render();return toast(bad.length?'還有：'+bad.join('、'):'鍛造頁已沒有工具／投擲圖紙',bad.length?'bad':'ok')}
+  if(k==='rmcatw'){makeWeapon('t1_pickaxe',1,3,[]);ui.tab='armory';ui.acat='tool';ui.sheet=null;save();render();return toast('已送一把舊礦鎬：武器庫會多出「工具」分類，熔煉掉後分類會消失','ok')}
+if(k==='sfxbg'){if(ACX){try{ACX.suspend()}catch(e){}ACX_DIRTY=true}toast('已模擬切到背景（音效暫停），按「試播金幣聲」應該要有聲音');return render()}
   if(k.startsWith('r2')){
     if(k==='r2open'||k==='r2all'){S.villages.forEach((st,i)=>{if(i<10||k==='r2all')st.status='cleared'});if(S.villages[10].status==='locked')S.villages[10].status='open';ui.realm=1}
     else if(k==='r2lock'){S.villages.forEach((st,i)=>{if(i>=10){if(st.weaponId!=null)recallCore(i);st.status='locked'}});ui.realm=0}
