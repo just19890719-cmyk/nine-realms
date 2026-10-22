@@ -1268,9 +1268,9 @@ function vState(i){const st=S.villages[i];if(st.status==='locked')return['locked
   if(st.weaponId==null)return st.bank.cycles?['ready','可收成']:['pause','暫停・無武器'];const w=W(st.weaponId);if(w&&st.bank.cycles>=capCycles(i,w))return['full','倉庫滿'];if(st.bank.cycles)return['ready','可收成'];return['hunt','狩獵中']}
 /* v3.73 村莊怪物血條：狩獵一輪＝打倒一隻怪物（純畫面效果，狩獵時間與收成都不變） */
 const MONS=['枯木樹精','獠牙野豬','灰狼','霜狼','冰鴉','海蛇','雪怪','霜巨人','火巨人斥候','尼德霍格'];
-const MON_ART=[];   // 已有 AI 怪物圖的關卡（0 起算）；圖放 art/mon_N.webp 後把編號加進來，沒圖的先用村莊圖
+const MON_ART=[0,1,2,3,4,5,6,7,8,9];   // 已有 AI 怪物圖的關卡（0 起算，圖在 art/mon_N.webp）；沒圖的先用村莊圖
 const MONFX={kills:{},next:{}};
-function vMon(i,k){const art=MON_ART.includes(i);return `<div class="vmon ${k} ${art?'has-art':''}" data-mon="${i}">${img('v'+(i+1),'vthumb vmon-bg')}${art?img('mon_'+(i+1),'vmon-m'):''}</div>`}
+function vMon(i,k){const art=MON_ART.includes(i);return `<div class="vmon ${k} ${art?'has-art':''}" data-mon="${i}">${art?img('mon_'+(i+1),'vthumb vmon-m',MONS[i]):img('v'+(i+1),'vthumb vmon-bg')}</div>`}
 function monPop(el,kind,txt){el.classList.remove('hit','kill');void el.offsetWidth;el.classList.add(kind);
   const n=document.createElement('span');n.className='mon-pop '+kind;n.textContent=txt;el.appendChild(n);setTimeout(()=>n.remove(),kind==='kill'?1100:800);
   if(kind==='hit'){const sl=document.createElement('i');sl.className='mon-slash';el.appendChild(sl);setTimeout(()=>sl.remove(),350)}}
