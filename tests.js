@@ -390,6 +390,7 @@ function evtTests(){const res=[];
 function runAll(opts={}){
   const t0=Date.now();const lv=levelCheck();
   const res=[...lv.res,...forgeTests(opts.N||100000),...enhanceTests(opts.N||100000),...saveTests(),...dailyTests(),...specTests(20261020,opts.N?Math.max(opts.N,100000):200000).res,...(typeof window!=='undefined'?repTests():[]),...evtTests(),...realm2Tests()];
+  res.push(T('圖紙底圖：圖紙卡用統一圖紙底圖、不用品質外框',typeof document==='undefined'||wArt(BPS[0].id,{frame:'bp'}).includes('bp_paper')&&!wArt(BPS[0].id,{frame:'bp'}).includes('wart-f'),'frame:bp'));
   return{res,lv,ms:Date.now()-t0};
 }
 function resHtml(res){return res.map(r=>`<div><b class="${r.pass?'p':'f'}">${r.pass?'通過':'未通過'}</b> ${r.name}<div class="muted">${r.detail}</div></div>`).join('')}
