@@ -53,7 +53,7 @@ git add -A && git commit -m "v3.57 …" && git push    # GitHub Pages 約 1 分�
 - 介面測試：`npm i -D playwright && npx playwright install chromium`，啟動本機伺服器後 `node src/tools/ui_test.js`。
 
 ## 架構重點
-- **速度**：`GAME_SPEED=10`（封測 10 倍速）；`BETA=true` 時商城隱藏鑽石儲值、月卡免費。
+- **速度**：v3.69 起原本的封測 10 倍速已直接寫進狩獵／鍛造時間（`GAME_SPEED=1`，只剩開發者工具的加速按鈕會改它），畫面時間＝真實時間；離線上限 `OFFLINE_H=12` 小時（伺服器 save_game 也固定 12）；`BETA=true` 時商城隱藏鑽石儲值、月卡免費。
 - **雲端（Supabase）**：專案 `bzvilstgpjkztrydjwlt`（東京），前端只用 publishable key（已寫在 game.js）。
   **絕對不要索取或使用 service_role / secret key。**
   - 一律雲端存檔、沒有訪客模式（網站上）、同帳號只能一支手機登入（`claim_session`）。
