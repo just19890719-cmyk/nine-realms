@@ -312,10 +312,26 @@ function specTests(seed=20261020,N=200000){
   return{res,rows};
 }
 
+/* ---------- I. v3.71 鐵匠聲望／天賦 ---------- */
+function repTests(){const res=[];
+  withSandbox(()=>{QUIET=false;repGain.mute=true;try{
+    S=fresh();S=sanitize(S);const g0=S.gold,b0=S.items.bless;let need=0;for(let l=1;l<5;l++)need+=repNeed(l);const up=repGain(need);
+    res.push(T('I1 聲望升級：經驗剛好升 4 級、天賦點 4、Lv5 寶箱有祝福石',up===4&&S.rep.lv===5&&S.rep.xp===0&&repPts()===4&&S.items.bless===b0+1&&S.gold===g0+100*(2+3+4+5),`Lv.${S.rep.lv}、點數 ${repPts()}、金幣 +${S.gold-g0}、祝福石 +${S.items.bless-b0}`));
+    let e1='';for(let n=0;n<4;n++)e1=talentUp('gold')||e1;const e2=talentUp('gold');
+    res.push(T('I2 天賦點用完不能再點、上限擋住',!e1&&e2==='天賦點不夠'&&S.rep.t.gold===4&&repPts()===0,`商隊議價 Lv${S.rep.t.gold}，第 5 次：${e2}`));
+    S.rep.t.qual=20;const q=qualWeights(false,0),sum=q.reduce((a,b)=>a+b,0);
+    res.push(T('I3 巨匠之手滿級：品質權重總和仍 1000、普通減 10%',Math.round(sum)===1000&&q[0]===QW[0]-100,`權重 ${q.map(x=>Math.round(x)).join('/')}，總和 ${Math.round(sum)}`));
+    S.rep.t.forge=30;const fs=forgeSec(BP.t1_woodaxe);
+    res.push(T('I4 熟練鍛造滿級：鍛造時間 −30%',near(fs,TIERS[0].sec*.7,1e-9),`伐木斧 ${fs.toFixed(2)} 秒（原 ${TIERS[0].sec} 秒）`));
+    const x=sanitize(JSON.parse(JSON.stringify({...S,rep:{lv:'abc',xp:-5,t:{gold:999,forge:-3,zz:5}}})));
+    res.push(T('I5 存檔修正：壞掉的聲望資料會被修好',x.rep.lv===1&&x.rep.xp===0&&x.rep.t.gold===TALENTS.gold.max&&x.rep.t.forge===0&&!('zz' in x.rep.t),JSON.stringify(x.rep)));
+  }finally{repGain.mute=false}});
+  return res}
+
 /* ---------- 執行 ---------- */
 function runAll(opts={}){
   const t0=Date.now();const lv=levelCheck();
-  const res=[...lv.res,...forgeTests(opts.N||100000),...enhanceTests(opts.N||100000),...saveTests(),...specTests(20261020,opts.N?Math.max(opts.N,100000):200000).res];
+  const res=[...lv.res,...forgeTests(opts.N||100000),...enhanceTests(opts.N||100000),...saveTests(),...specTests(20261020,opts.N?Math.max(opts.N,100000):200000).res,...(typeof window!=='undefined'?repTests():[])];
   return{res,lv,ms:Date.now()-t0};
 }
 function resHtml(res){return res.map(r=>`<div><b class="${r.pass?'p':'f'}">${r.pass?'通過':'未通過'}</b> ${r.name}<div class="muted">${r.detail}</div></div>`).join('')}
@@ -328,7 +344,7 @@ function econHtml(capH){const e=econReport(capH);let h=`<div><b>30 天經濟模�
 // 只看文字本身有沒有跑出按鈕外框（紅點這類絕對定位的小圖示故意貼在框外，不算）
 function textOut(b){const br=b.getBoundingClientRect(),w=document.createTreeWalker(b,NodeFilter.SHOW_TEXT);let n;while((n=w.nextNode())){if(!n.textContent.trim())continue;const r=document.createRange();r.selectNodeContents(n);for(const q of r.getClientRects())if(q.left<br.left-1||q.right>br.right+1)return true}return false}
 function layoutTests(){if(typeof document==='undefined')return[];const res=[],keep=[ui.tab,ui.ftab];
-  const views=[['商城',()=>viewShop()],['武器庫',()=>viewArmory()],['村莊',()=>viewVillage()],['材料倉庫',()=>{ui.ftab='mat';return viewForge()}]];
+  const views=[['商城',()=>viewShop()],['武器庫',()=>viewArmory()],['村莊',()=>viewVillage()],['材料倉庫',()=>{ui.ftab='mat';return viewForge()}],['鐵匠天賦',()=>sheetTalent()]];
   const box=document.createElement('div');box.className='wrap';box.style.cssText='position:absolute;left:-10000px;top:0;visibility:hidden';document.body.appendChild(box);
   for(const[n,f]of views){const bad=[];
     for(const w of[320,360,375,393,414,430,480]){box.style.width=(w-24)+'px';box.innerHTML=f();

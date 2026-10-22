@@ -1184,4 +1184,18 @@ button.matbox:active{border-color:var(--gold)}
 .new-tag{position:absolute;top:8%;left:8%;z-index:3;padding:0 4px;border-radius:3px;background:var(--danger-hi);color:#fff;font-size:10px;font-weight:800;line-height:14px;letter-spacing:.03em;pointer-events:none}
 .nobr{white-space:nowrap}   /* v3.65 月卡說明不要只剩一個「鑽」字換行 */
 @media (max-width:360px){.mq .mq-b{width:26px}.mrow .mr-ops{grid-template-columns:minmax(0,1.8fr) minmax(0,1fr) minmax(0,1fr)}.mrow .mr-t{font-size:13px}}   /* 320 寬也放得下 4 位數 */
+/* v3.71 鐵匠天賦：主畫面工具列變 4 顆、天賦視窗 */
+.hf-btn{position:relative;min-width:0;flex:0 1 76px}
+.hf-btn .dot{position:absolute;top:3px;right:5px}
+.hero.fv-2:not(.ft-queue) .hf-bar{grid-template-columns:repeat(2,1fr)}
+.tal-head .prog{margin:4px 0 2px}
+.tal-pts{margin:6px 0 2px;padding:6px 10px;border-radius:8px;border:1px solid var(--line2);font-size:13px;text-align:center}
+.tal-pts.on{border-color:var(--gold,#d8a64a);box-shadow:0 0 8px rgba(216,166,74,.35)}
+.tal-pts b{font-size:16px}
+.tal-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.tal-row{display:flex;align-items:center;gap:10px;padding:8px 10px}
+.tal-row .tal-ic{width:40px;height:40px;flex:none}
+.tal-row .grow{min-width:0}
+.tal-btn{flex:none;min-width:52px}
+.tal-max{flex:none;min-width:52px;text-align:center}
 </style>
