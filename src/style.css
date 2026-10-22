@@ -1363,4 +1363,11 @@ button.vv-d{font:inherit;font-size:11px;color:inherit;cursor:pointer}
 .ec-t .grow{display:flex;flex-direction:column;min-width:0;line-height:1.2}.ec-t b{font-size:12px;white-space:nowrap}.ec-t .grow>span{font-size:10px;color:var(--ash);white-space:nowrap}
 .ec-t em{flex:0 0 auto;font-style:normal;font-weight:700;color:var(--gold-hi);font-size:13px}
 .ec-nw{display:inline-block;vertical-align:1px;margin-left:3px;font-style:normal;font-size:8px;line-height:12px;color:#fff;background:#c0392b;border-radius:5px;padding:0 3px}
+/* v3.85 駐守首領 */
+.evt-slot{border-color:rgba(216,69,44,.45)}
+.evt-slot.empty{border-style:dashed;opacity:.8;min-height:62px}
+.evt-slot.empty .grow{text-align:left}
+.evt-sn{flex:none;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:8px;border:1px dashed var(--line2);font-weight:700;color:var(--muted,#9a9)}
+.evt-w .btn{flex:none}
+.wt-post.boss{background:linear-gradient(transparent,rgba(120,30,20,.92));color:#ffd9cf}
 </style>

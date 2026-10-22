@@ -377,13 +377,21 @@ function evtTests(){const res=[];
     S=fresh();S.villages[0].strat='normal';const st=S.villages[0];rollCycle(0,null,st,mon);const g1=st.bank.gold;st.bank={cycles:0,gold:0,mats:{},events:0};rollCycle(0,null,st,fri);const g2=st.bank.gold;
     res.push(T('J2 雙倍收成時段金幣 ×2',g1===2*g2&&g2===VILLAGES[0].gold,`週一 ${g1}、週五 ${g2}`));
     EVT_FORCE='boss';S=fresh();S.gold=0;const w=makeWeapon('t3_greatsword',3,8,[]);const b=evtNow().boss,d0=bossDmgOf(w,b);
-    const r=[1,2,3,4].map(()=>bossHit(w.id));const v=S.evt;
-    res.push(T('J3 首領討伐一天 3 次、傷害在戰力 ±10% 內',!r[0].err&&!r[2].err&&r[3].err&&v.hits===3&&r.slice(0,3).every(x=>x.dmg>=Math.floor(d0*.9)&&x.dmg<=Math.ceil(d0*1.1)),`預估 ${d0}，實際 ${r.slice(0,3).map(x=>x.dmg).join('/')}；第 4 次：${r[3].err||'沒擋住'}`));
+    // v3.85 駐守首領：最多 3 把、按時間累積、駐守中不能打村莊／強化／熔解、收回會結算、換週自動放回
+    const w2=makeWeapon('t3_greatsword',2,5,[]),w3=makeWeapon('t2_longsword',1,3,[]),w4=makeWeapon('t2_longsword',1,2,[]);
+    const iv=VILLAGES.findIndex(x=>x.cat===bpOf(w2).cat&&!x.need&&power(w2)>=x.req);S.villages[iv].status='open';const dv=deliverCore(iv,w2.id);
+    const p1=bossPostCore(w.id),p2=bossPostCore(w2.id),p3=bossPostCore(w3.id),p4=bossPostCore(w4.id),p5=bossPostCore(w.id),v=S.evt;
+    v.slots.forEach(x=>{if(x)x.at-=2*3600e3});const live=bossLive(),want=2*(p1.pw+p2.pw+p3.pw);
+    const blocked=!!dv&&!eligible(iv,w)&&enhanceCore(w.id).err&&!meltCore(w.id)&&where(w2)<0&&p2.vi===iv;
+    const u=bossUnpostCore(0),freed=bossSlotOf(w)<0&&!v.slots[0]&&Math.abs(v.dmg-u.dmg)<1;
+    EVT_WK++;const nw=bossSlotOf(w2)<0&&eligible(iv,w2);EVT_WK--;
+    res.push(T('J3 駐守首領：最多 3 把、2 小時傷害＝戰力×2、駐守中不能打村莊／強化／熔解、收回結算、換週放回',p1.pw===d0&&!p1.err&&!p3.err&&p4.err&&p5.err&&Math.abs(live-want)<=3&&blocked&&freed&&u.dmg>=2*d0-1&&nw,
+      `每小時 ${p1.pw}/${d0}；第 4 把：${p4.err||'沒擋住'}；重複：${p5.err||'沒擋住'}；2 小時 ${live}/${want}；擋住操作 ${!!blocked}；收回 ${u&&u.dmg}；換週 ${nw}`));
     S=fresh();S.gold=0;S.gems=0;const v4=evtSt(),kb=BOSS_G.b,kp=BOSS_G.prev;try{
       BOSS_G.b={week:v4.wk,hp:1000,total:600,mine:10,rank:1,players:1,top:[]};const n1=bossStageN(),g1=bossClaimStages(),n2=bossStageN();
       BOSS_G.b.total=1000;const n3=bossStageN();bossClaimStages();BOSS_G.b.mine=0;v4.gs=0;const n4=bossStageN();
       BOSS_G.prev={week:evtWeek()-1,hp:1000,total:1000,mine:50,rank:2,players:3,top:[]};const r1=bossClaimRank(),r2=bossClaimRank();
-      res.push(T('J4 全服階段獎勵：60% 領 2 階、打倒再領 2 階、沒出擊不能領；上週第 2 名只能領一次',n1===2&&g1&&g1.gold===4500&&n2===0&&n3===2&&n4===0&&r1&&r1.t[1]==='第 2～3 名'&&!r2&&S.gems===120,`60%：${n1} 階（金幣 ${g1&&g1.gold}）；打倒：${n3} 階；沒出擊：${n4}；排名：${r1&&r1.t[1]}，鑽石 ${S.gems}，第二次 ${r2?'又領到':'擋住'}`));
+      res.push(T('J4 全服階段獎勵：60% 領 2 階、打倒再領 2 階、沒駐守不能領；上週第 2 名只能領一次',n1===2&&g1&&g1.gold===30000&&n2===0&&n3===2&&n4===0&&r1&&r1.t[1]==='第 2～3 名'&&!r2&&S.gems===200,`60%：${n1} 階（金幣 ${g1&&g1.gold}）；打倒：${n3} 階；沒駐守：${n4}；排名：${r1&&r1.t[1]}，鑽石 ${S.gems}，第二次 ${r2?'又領到':'擋住'}`));
     }finally{BOSS_G.b=kb;BOSS_G.prev=kp}
   }finally{EVT_FORCE=keepF}});
   return res}
