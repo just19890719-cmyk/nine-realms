@@ -644,6 +644,17 @@ function enhance(id){
    :r.k==='broke'?{k:'broke',t:'武器已損毀',d:`${r.before.name} 在符文石碑上碎裂${r.test?'（測試武器）':`，回收鍛造殘渣 ×${r.slag}`}`}:{k:'fail',t:'強化失敗',d:'等級維持 +'+r.before.from+'，武器沒有受損'};
   res.id=id;res.guarded=!!r.usedScroll;playFx(r.danger,r.before,r.next,res)}
 function enchant(id,slot,directed){const r=enchantCore(id,slot,directed?ui.directKey:null);if(r.err)return toast(r.err,'bad');snd('enchant');toast(`附魔結果：<b>${AFFIX[r.k].n} +${r.v}%</b>`,'ok');render()}
+// v3.65 旅行商人（方案 1）：每列一個數量框（可直接打字或按 −／＋），旁邊「買入」「賣出」按鈕的金額跟著數量變
+const MQ_MAX=9999,mqOf=k=>{const v=(ui.mq||{})[k];return v==null?10:Math.max(1,Math.min(MQ_MAX,Math.floor(v)||1))};
+function mrowBtns(k,p){const q=mqOf(k),sn=Math.min(q,S.mats[k]);
+  return {buy:`<span class="mr-t">買入</span><span class="mr-p">${img('it_gold')}−${fmt(p*q)}</span>`,sell:`<span class="mr-t">${sn&&sn<q?'全部賣出':'賣出'}</span><span class="mr-p">${img('it_gold')}+${fmt(SELL_PRICE[k]*sn)}</span>`,buyDis:S.gold<p*q,sellDis:sn<1,q}}
+function mrow(k,p){const b=mrowBtns(k,p);
+  return `<div class="ui-card mrow" data-mk="${k}"><div class="mr-info">${img(MATART[k])}<span><b>${MATS[k]}</b><span class="small muted">持有 ${fmt(S.mats[k])}</span><span class="small muted">每個：買 ${p} 金・賣 ${SELL_PRICE[k]} 金</span></span></div>
+   <div class="mr-ops"><div class="mq"><button class="mq-b" data-act="mqstep" data-k="${k}" data-d="-1" aria-label="減少">−</button><input class="mq-in" data-k="${k}" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" value="${b.q}" aria-label="${MATS[k]}數量"><button class="mq-b" data-act="mqstep" data-k="${k}" data-d="1" aria-label="增加">＋</button></div>
+   ${btn(b.buy,'buy',{attrs:`data-k="${k}" data-p="${p}" data-n="${b.q}"`,cls:'btn-sec mr-buy',dis:b.buyDis})}${btn(b.sell,'sell',{attrs:`data-k="${k}" data-n="${b.q}"`,cls:'btn-sec mr-sell',dis:b.sellDis})}</div></div>`}
+// 打字時只更新這一列的按鈕，不整頁重畫（才不會把鍵盤收掉）
+function mqUpdate(k){const row=document.querySelector(`.mrow[data-mk="${k}"]`),sp=SHOP_MATS.find(x=>x[0]===k);if(!row||!sp)return;const b=mrowBtns(k,sp[1]);
+  [['.mr-buy',b.buy,b.buyDis],['.mr-sell',b.sell,b.sellDis]].forEach(([sel,h,dis])=>{const e=row.querySelector(sel);if(!e)return;e.innerHTML=h;e.dataset.n=b.q;e.disabled=dis})}
 function buyMat(k,p,n){if(S.gold<p*n)return toast('金幣不夠。','bad');S.gold-=p*n;S.mats[k]+=n;snd('ui_buy');toast(`買入 ${MATS[k]} ×${n}`);save();render()}
 function sellMat(k,n){n=Math.min(n,S.mats[k]);if(!n||!SELL_PRICE[k])return toast('沒有可賣的'+MATS[k]+'。');S.mats[k]-=n;S.gold+=n*SELL_PRICE[k];snd('coin');toast(`賣出 ${MATS[k]} ×${n}，得到 ${n*SELL_PRICE[k]} 金`);save();render()}
 function upgrade(kind){const lv=S[kind],tbl=kind==='furnace'?FURNACE_COST:ANVIL_COST;if(lv>=5)return;const c=tbl[lv];if(S.gold<c)return toast('金幣不夠。','bad');
@@ -1421,7 +1432,7 @@ function viewShop(){
    ${card('it_hourglass','鍛造沙漏','鍛造中的武器<br>立即完成','40 鑽','speedForge','','glass')}</div></div>
   <div class="ui-panel panel">${info('gacha')}${ptitle('符文祈願')}<div class="gacha">${img('mat_rune','g-ico')}<div class="grow small muted">抽稀有材料、怪物素材與傳說圖紙。十連有保底。</div></div>
    <div class="row">${btn('單抽<br><span class="small">100 鑽</span>','pull',{attrs:'data-n="1"',cls:'btn-sec grow'})}${btn('十連<br><span class="small">900 鑽</span>','pull',{attrs:'data-n="10"',cls:'btn-primary grow'})}</div></div>
-  <div class="ui-panel panel">${info('merchant')}${ptitle('旅行商人')}<div class="mlist">${SHOP_MATS.map(([k,p])=>`<div class="ui-card ui-card--row mrow">${img(MATART[k])}<div class="grow"><b>${MATS[k]}</b><span class="small muted">持有 ${fmt(S.mats[k])}</span><span class="small muted">單價 ${p} 金・收購 ${SELL_PRICE[k]} 金</span></div>${btn(`買 10 個<br><span class="small">共 ${p*10} 金</span>`,'buy',{attrs:`data-k="${k}" data-p="${p}" data-n="10"`,cls:'btn-sec sm',dis:S.gold<p*10})}${btn(`賣 ${Math.min(50,S.mats[k])||50} 個<br><span class="small">得 ${SELL_PRICE[k]*(Math.min(50,S.mats[k])||50)} 金</span>`,'sell',{attrs:`data-k="${k}" data-n="50"`,cls:'btn-sec sm',dis:S.mats[k]<1})}</div>`).join('')}</div></div>
+  <div class="ui-panel panel">${info('merchant')}${ptitle('旅行商人')}<div class="mlist">${SHOP_MATS.map(([k,p])=>mrow(k,p)).join('')}</div></div>
   <div class="ui-panel panel">${info('slag')}${ptitle(`殘渣兌換（持有 ${S.slag}）`)}<div class="pgrid three">${SLAG_SHOP.map(([k,n,c],ix)=>`<div class="ui-card pcard">${img(MATART[k],'pc-ico')}<b>${MATS[k]} ×${n}</b><button class="ui-btn ui-btn--secondary btn btn-sec sm pc-buy" data-act="slag" data-i="${ix}" ${S.slag<c?'disabled':''}>${c} 殘渣</button></div>`).join('')}</div></div>`;
 }
 const DEV_TABS=[['res','資源'],['prog','進度'],['enh','強化動畫'],['test','自動測試'],['save','存檔'],['mk','交易所'],['ui','UI 元件']];
@@ -1435,7 +1446,7 @@ function sheetDev(){
      <div class="small muted">強化等級</div><div class="row">${[[-1,'輪替'],[0,'+0'],[6,'+6'],[7,'+7'],[10,'+10'],[15,'+15']].map(([v,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devAllLv??-1)===v?'on':''}" data-act="devset" data-k="devAllLv" data-v="${v}">${n}</button>`).join('')}</div>
      <div class="devgrid">${B('allw','產生全部 '+BPS.length+' 把','btn-primary')}${B('regenw','只產生重畫過的 10 把')}${B('cleartest','清除所有測試武器')}</div>
      <div class="label">測試武器</div><div class="devgrid">${B('wt','3 把帶特性的傳說武器')}${B('w6','+6 霜銀長劍（安定 5）')}${B('wm','神器尼德霍格龍矛（安定 0）')}${B('w8','+8 龍鱗戟')}${B('fill','武器庫塞到 195 把')}</div>`,
-   prog:`<div class="label">v3.61 介面測試</div><div class="devgrid">${B('uiv','村莊：跳到待交付關卡')}${B('uiarm','武器庫：往下捲看分類置頂')}${B('uiforge','鐵匠鋪：圖紙區上下滑')}${B('uimat','材料倉庫：點材料看用途')}${B('uishop','旅行商人：買賣標示')}</div>
+   prog:`<div class="label">v3.61 介面測試</div><div class="devgrid">${B('uiv','村莊：跳到待交付關卡')}${B('uiarm','武器庫：往下捲看分類置頂')}${B('uiforge','鐵匠鋪：圖紙區上下滑')}${B('uimat','材料倉庫：點材料看用途')}${B('uishop','旅行商人：輸入數量買賣')}</div>
    <div class="label">v3.64 紅點提醒</div><div class="devgrid">${B('uigive','送一把可交付的武器')}${B('uidot_w','武器庫：最新一把標 NEW')}${B('uidot_bp','鐵匠鋪：最新圖紙標 NEW')}${B('uidot_full','村莊倉庫滿（醒目紅點）')}${B('uidot_mk','交易所：模擬有成交')}${B('uidot_mon','商城：月卡今天可領')}${B('uidot_st','目前哪些紅點會亮')}</div>
      <div class="label">時間流速（正式版 1×）</div><div class="row">${[1,10,30,60].map(n=>`<button class="ui-btn ui-btn--chip chipbtn ${S.speed===n?'on':''}" data-act="speed" data-k="${n}">${n}×</button>`).join('')}</div>
      <div class="label">離線累積上限</div><div class="row">${[8,12].map(n=>`<button class="ui-btn ui-btn--chip chipbtn ${S.capH===n?'on':''}" data-act="cap" data-k="${n}">${n} 小時</button>`).join('')}</div>
@@ -1652,7 +1663,7 @@ document.addEventListener('click',e=>{
    uidpv:()=>{const on=document.body.classList.toggle('dpv');try{localStorage.setItem('nrs-dpv',on?'1':'0')}catch(e){}render()},
    uifpv:()=>{document.body.classList.toggle('fpv');render()},
    uiskintest:()=>{if(UI_SKIN['btn-primary']&&UI_SKIN['btn-primary']._test){UI_SKIN['btn-primary']=null}else{UI_SKIN['btn-primary']={src:'art/ui_btn_wood.webp',slice:[40,70,40,70],border:[12,24,12,24],css:'padding:2px 10px',_test:true}}applySkin();render()},
-   devoff:()=>setDev(false),mute:()=>sndSettings(),sndmute:()=>{S.mute=!S.mute;save();if(!S.mute)snd('ui_click');sndSettings()},devset:()=>{ui[d.k]=+d.v;render()},devsets:()=>{ui[d.k]=d.v;render()},noItem:()=>{ui[d.k]=false;ui.riskArm=null;render()},devforce:()=>{DEV.force=d.k||null;toast(DEV.force?'下一次強化測試武器時會套用指定結果':'已取消指定');render()},forgeCat:()=>{ui.tab='forge';ui.ftab='bp';ui.cat=d.k;const f=BPS.find(b=>b.cat===d.k&&!bpLock(b));if(f)ui.bp=f.id;render();scrollTo(0,0)},matinfo:()=>{ui.result={t:'info',...matInfo(d.k)};render()},aclear:()=>{ui.acat='all';ui.aq='all';ui.ast='all';render()},info:()=>{ui.result={t:'info',...INFO[d.k]()};render()},devtab:()=>{ui.devTab=d.k;render()},
+   devoff:()=>setDev(false),mute:()=>sndSettings(),sndmute:()=>{S.mute=!S.mute;save();if(!S.mute)snd('ui_click');sndSettings()},devset:()=>{ui[d.k]=+d.v;render()},devsets:()=>{ui[d.k]=d.v;render()},noItem:()=>{ui[d.k]=false;ui.riskArm=null;render()},devforce:()=>{DEV.force=d.k||null;toast(DEV.force?'下一次強化測試武器時會套用指定結果':'已取消指定');render()},forgeCat:()=>{ui.tab='forge';ui.ftab='bp';ui.cat=d.k;const f=BPS.find(b=>b.cat===d.k&&!bpLock(b));if(f)ui.bp=f.id;render();scrollTo(0,0)},mqstep:()=>{ui.mq=ui.mq||{};ui.mq[d.k]=Math.max(1,Math.min(MQ_MAX,mqOf(d.k)+ +d.d));const i=document.querySelector(`.mq-in[data-k="${d.k}"]`);if(i)i.value=ui.mq[d.k];mqUpdate(d.k)},matinfo:()=>{ui.result={t:'info',...matInfo(d.k)};render()},aclear:()=>{ui.acat='all';ui.aq='all';ui.ast='all';render()},info:()=>{ui.result={t:'info',...INFO[d.k]()};render()},devtab:()=>{ui.devTab=d.k;render()},
    shoptab:()=>{ui.shopTab=d.k;if(d.k==='mk'&&(AUTH||mkMock()))mkLoad();render()},mktab:()=>{MK.tab=d.k;render()},mkcat:()=>{MK.cat=d.k;render()},mkcur:()=>{MK.cur=d.k;render()},mksort:()=>{MK.sort=d.k;render()},mkref:()=>mkLoad(),
    mkview:()=>{ui.sheet={t:'mkw',id:+d.id};render()},mkbuy:()=>mkBuy(+d.id),mkcancel:()=>mkCancel(+d.id),mksellw:()=>{ui.mkPrice='';ui.sheet={t:'mks',id:+d.id};render()},mkscur:()=>{MK.sellCur=d.k;render()},
    mksell:()=>{const v=document.getElementById('mkprice');if(v)ui.mkPrice=v.value;mkList(+d.id,MK.sellCur,ui.mkPrice)},mklogin:()=>showLogin(),
@@ -1666,8 +1677,11 @@ document.addEventListener('wheel',e=>{const h=e.target.closest('.hscroll,.catbar
 document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('[role=button][data-act]')){e.preventDefault();e.target.click()}});
 document.addEventListener('input',e=>{if(e.target.id!=='mkprice')return;ui.mkPrice=e.target.value;const p=Math.max(0,Math.floor(+e.target.value||0)),net=Math.floor(p*(1-MK_FEE)),q=x=>document.querySelector(x);
   if(q('.mk-fee'))q('.mk-fee').textContent=p?'-'+fmt(p-net):'—';if(q('.mk-net'))q('.mk-net').textContent=p?fmt(net)+' '+MK_CUR[MK.sellCur][1]:'—';const bt=q('[data-act=mksell]');if(bt)bt.disabled=p<MK_MIN});
+document.addEventListener('focusout',e=>{if(e.target.classList&&e.target.classList.contains('mq-in')&&PTR_PEND&&!PTR_DOWN){PTR_PEND=false;setTimeout(render,0)}});   // 數量框打字時暫停的畫面更新，離開輸入框後補上
+document.addEventListener('input',e=>{if(!e.target.classList||!e.target.classList.contains('mq-in'))return;const k=e.target.dataset.k,v=e.target.value.replace(/\D/g,'').slice(0,4);if(v!==e.target.value)e.target.value=v;ui.mq=ui.mq||{};ui.mq[k]=+v||0;mqUpdate(k)});
 document.addEventListener('input',e=>{if(e.target.id!=='sndvol')return;S.vol=+e.target.value/100;const o=document.querySelector('.snd-v');if(o)o.textContent=e.target.value+'%'});
-document.addEventListener('change',e=>{const id=e.target.id;if(id==='mkprice')return;if(id==='sndvol'){save();snd('ui_click');return sndSettings()}if(id==='usescroll'||id==='usebless'){ui.riskArm=null}if(id==='aq')ui.aq=e.target.value;if(id==='ast')ui.ast=e.target.value;if(id==='usescroll')ui.useScroll=e.target.checked;if(id==='usebless')ui.useBless=e.target.checked;if(id==='usebp')ui.useBp=e.target.checked;if(id==='asort')ui.asort=e.target.value;render()});
+document.addEventListener('change',e=>{const id=e.target.id;if(id==='mkprice')return;if(e.target.classList.contains('mq-in')){e.target.value=mqOf(e.target.dataset.k);return}   // 數量框離開時只校正數字，不整頁重畫（否則會吃掉同時按下的買入／賣出）
+if(id==='sndvol'){save();snd('ui_click');return sndSettings()}if(id==='usescroll'||id==='usebless'){ui.riskArm=null}if(id==='aq')ui.aq=e.target.value;if(id==='ast')ui.ast=e.target.value;if(id==='usescroll')ui.useScroll=e.target.checked;if(id==='usebless')ui.useBless=e.target.checked;if(id==='usebp')ui.useBp=e.target.checked;if(id==='asort')ui.asort=e.target.value;render()});
 }
 
 // v3.17 景深視差：把指標位置／手機傾斜換成 -1～1 的 --mx --my，前後景依深度反向位移
@@ -1821,6 +1835,6 @@ function start(){try{if(localStorage.getItem('nrs-dpv')!=='0')document.body.clas
   if(after>before)toast(`離線期間村莊狩獵了 ${after-before} 輪，記得收成！`);
   else if(!S.weapons.length&&!S.jobs.length&&!(S.tut<TUT.length))toast('歡迎來到米德加德。先鍛造一把伐木斧，交給鐵爐村的伐木工。');
   // v3.59 村莊分頁也要重畫：以前停在村莊分頁時，狩獵完成一輪不會出現「收成」按鈕（要切分頁才看得到）
-  setInterval(()=>{if(tick()){if(PTR_DOWN)PTR_PEND=true;else render()}updateLive()},250);setInterval(save,3000);
+  setInterval(()=>{if(tick()){if(PTR_DOWN||(document.activeElement&&document.activeElement.classList.contains('mq-in')))PTR_PEND=true;else render()}updateLive()},250);setInterval(save,3000);
   try{if(/dev-ui/.test(location.hash)&&devMode()){ui.sheet={t:'d'};ui.devTab='ui';render()}}catch(e){}  // 網址加 #dev-ui 直接開啟 UI 元件總覽
 }
