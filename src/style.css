@@ -1184,4 +1184,53 @@ button.matbox:active{border-color:var(--gold)}
 .new-tag{position:absolute;top:8%;left:8%;z-index:3;padding:0 4px;border-radius:3px;background:var(--danger-hi);color:#fff;font-size:10px;font-weight:800;line-height:14px;letter-spacing:.03em;pointer-events:none}
 .nobr{white-space:nowrap}   /* v3.65 月卡說明不要只剩一個「鑽」字換行 */
 @media (max-width:360px){.mq .mq-b{width:26px}.mrow .mr-ops{grid-template-columns:minmax(0,1.8fr) minmax(0,1fr) minmax(0,1fr)}.mrow .mr-t{font-size:13px}}   /* 320 寬也放得下 4 位數 */
+
+/* v3.70 圖紙卡：未解鎖改成鎖頭小圖示＋下方文字，不蓋住武器圖 */
+.wt.bp.locked .wart-w{filter:grayscale(.85) brightness(.5)}
+.wt.bp .wt-lock{right:12%;top:12%}
+.wt.bp .wt-lock img{width:18px;height:18px}
+.wt-lockline{color:var(--ash)!important;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* v3.70 全服跑馬燈（疊在上方資源列下緣，不推動版面） */
+.ui-topbar.bar .news{position:absolute;left:0;right:0;top:100%;height:24px;overflow:hidden;pointer-events:none;opacity:0;transition:opacity .3s;background:linear-gradient(90deg,transparent,rgba(12,9,7,.92) 12%,rgba(12,9,7,.92) 88%,transparent);border-bottom:1px solid rgba(232,184,92,.25)}
+.ui-topbar.bar .news.on{opacity:1}
+.nw-tx{position:absolute;left:0;top:0;line-height:24px;white-space:nowrap;font-size:13px;color:var(--bone);transform:translateX(var(--nw-from,100vw));animation:nwRun linear forwards;will-change:transform}
+.nw-tx b{color:var(--gold-hi)}.nw-tx .nw-lv{color:#ffd76a}.nw-tx.bad b.nw-w{color:#e8796b}
+@keyframes nwRun{from{transform:translateX(var(--nw-from,100vw))}to{transform:translateX(var(--nw-to,-100%))}}
+@media (prefers-reduced-motion:reduce){.nw-tx{animation:nwStay 6s linear forwards;transform:none;left:8px;right:8px;overflow:hidden;text-overflow:ellipsis}@keyframes nwStay{to{opacity:1}}}
+/* v3.70 每日任務 */
+.dq-sum{display:flex;align-items:center;gap:12px;padding:10px 12px;margin-bottom:10px;border-radius:var(--r);background:linear-gradient(180deg,#1b150f,#120e0a);border:1px solid var(--line2)}
+.dq-pts{display:flex;flex-direction:column;align-items:center;flex:none;line-height:1.1}
+.dq-pts b{font-family:var(--display);font-size:26px;color:var(--gold-hi)}
+.dq-track{position:relative;flex:1;min-width:0}
+.dq-track .prog{margin:0}
+.dq-mk{position:absolute;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#2a2119;border:1.5px solid var(--line2)}
+.dq-mk:last-child{margin-left:-10px}
+.dq-mk.on{background:var(--gold-hi);border-color:#fff3c4}
+.dq-boxes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.dq-box{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 6px;border-radius:var(--r);border:1px solid var(--line);background:linear-gradient(#17120e,#0d0a08);min-width:0}
+.dq-box.ready{border-color:var(--gold);box-shadow:0 0 0 1px rgba(232,184,92,.35) inset}
+.dq-box.done{opacity:.55}
+.dq-need{font-size:12px;color:var(--ash)}
+.dq-rws{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;min-height:28px}
+.dq-box .ui-btn{width:100%}
+.dq-list{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.dq-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r);border:1px solid var(--line);background:#120e0a}
+.dq-row.done{border-color:rgba(130,204,143,.35)}
+.dq-ic{width:30px;height:30px;flex:none;object-fit:contain}
+.dq-t{display:flex;justify-content:space-between;gap:8px;margin-bottom:4px}
+.dq-t b{font-size:14px;min-width:0}
+.dq-t .small{flex:none;color:var(--ash)}
+.dq-row.done .dq-t .small{color:#82cc8f}
+.dq-pt{flex:none;font-family:var(--display);font-weight:700;color:var(--gold-hi);font-size:14px}
+/* v3.70 七日簽到 */
+.sg-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.sg-day{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 4px;border-radius:var(--r);border:1px solid var(--line);background:linear-gradient(#17120e,#0d0a08);min-width:0}
+.sg-day.big{grid-column:span 2;border-color:rgba(232,184,92,.45)}
+.sg-day.today{border-color:var(--gold-hi);box-shadow:0 0 10px rgba(232,184,92,.35),0 0 0 1px rgba(232,184,92,.5) inset}
+.sg-day.done .sg-rws{opacity:.4}
+.sg-n{font-size:12px;color:var(--ash)}
+.sg-day.today .sg-n{color:var(--gold-hi);font-weight:700}
+.sg-rws{display:flex;flex-wrap:wrap;justify-content:center;gap:4px}
+.sg-ok{position:absolute;right:4px;top:4px;width:18px;height:18px}
+.q-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}
 </style>
