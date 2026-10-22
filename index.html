@@ -1101,6 +1101,10 @@ html,body,button,[data-act],label,input,select{touch-action:manipulation}
 
 /* v3.34 登入訊息 */
 .gt-msg{min-height:18px;text-align:center;color:#e8d9b5;margin:2px 0}.gt-msg.bad{color:#ff8a7a}
+
+/* v3.35 取暱稱 */
+.gt-ttl{text-align:center;font-family:'Noto Serif TC',serif;font-weight:900;font-size:18px;color:#f3d9a0;margin-bottom:2px}.nick-row b{display:flex;align-items:center;gap:8px}.nick-row .chipbtn{padding:2px 10px;font-size:12px}
+.gate-name .gt-row>.btn:only-child{flex:1;width:100%}.kv.nick-row{align-items:center}
 </style>
 <div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div></div>
 <main class="wrap" id="view"></main>
@@ -1441,7 +1445,7 @@ const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off'};
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
 function authSave(a){AUTH=a;try{a?localStorage.setItem(AUTH_KEY,JSON.stringify(a)):localStorage.removeItem(AUTH_KEY)}catch(e){}}
 function authFrom(r){return{access_token:r.access_token,refresh_token:r.refresh_token,expires_at:Date.now()+((r.expires_in||3600)-60)*1000,user:{id:r.user?.id,email:r.user?.email}}}
-const SB_ERR=m=>{m=String(m||'');return /invalid login/i.test(m)?'Email 或密碼錯誤':/already registered|already exists/i.test(m)?'這個 Email 已經註冊過，請直接登入':/at least 6|password should/i.test(m)?'密碼至少要 6 碼':/invalid.*email|email.*invalid|unable to validate email/i.test(m)?'Email 格式不正確':/rate limit|too many/i.test(m)?'嘗試太多次，請稍後再試':/failed to fetch|network/i.test(m)?'連不上伺服器，請檢查網路':m||'發生錯誤，請再試一次'};
+const SB_ERR=m=>{m=String(m||'');return /duplicate key|unique|23505/i.test(m)?'這個暱稱已經有人用了，換一個吧':/invalid login/i.test(m)?'Email 或密碼錯誤':/already registered|already exists/i.test(m)?'這個 Email 已經註冊過，請直接登入':/at least 6|password should/i.test(m)?'密碼至少要 6 碼':/invalid.*email|email.*invalid|unable to validate email/i.test(m)?'Email 格式不正確':/rate limit|too many/i.test(m)?'嘗試太多次，請稍後再試':/failed to fetch|network/i.test(m)?'連不上伺服器，請檢查網路':m||'發生錯誤，請再試一次'};
 async function sbAuth(path,body){const r=await fetch(SB_URL+'/auth/v1/'+path,{method:'POST',headers:{apikey:SB_KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
   const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.msg||j.error_description||j.message||j.error||('HTTP '+r.status));return j}
 async function sbToken(){if(!AUTH)return null;if(Date.now()<AUTH.expires_at)return AUTH.access_token;
@@ -1463,9 +1467,29 @@ async function cloudAfterLogin(isNew){const uid=AUTH.user.id;let row=null;
   S.uid=uid;save();await cloudPush(true);return 'local'}
 async function cloudPush(force){if(!AUTH||CLOUD.busy||(!force&&!CLOUD.dirty))return;CLOUD.busy=true;CLOUD.dirty=false;
   try{await sbRest('saves?on_conflict=user_id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},keepalive:true,
-      body:JSON.stringify({user_id:AUTH.user.id,nickname:(AUTH.user.email||'').split('@')[0],data:S,updated_at:new Date().toISOString()})});
+      body:JSON.stringify({user_id:AUTH.user.id,nickname:S.nick||null,data:S,updated_at:new Date().toISOString()})});
     CLOUD.last=Date.now();CLOUD.err='';CLOUD.state='ok'}
   catch(e){CLOUD.dirty=true;CLOUD.err=SB_ERR(e.message);CLOUD.state='err'}finally{CLOUD.busy=false}}
+const NICK_OK=n=>{const c=Array.from(n);return c.length<2?'暱稱至少 2 個字':c.length>8?'暱稱最多 8 個字':/^[\p{L}\p{N}_]+$/u.test(n)?'':'暱稱只能用中文、英文、數字或底線'};
+async function cloudSetNick(n){const old=S.nick;S.nick=n;
+  try{await sbRest('saves?on_conflict=user_id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({user_id:AUTH.user.id,nickname:n,data:S,updated_at:new Date().toISOString()})});save();CLOUD.dirty=false;CLOUD.last=Date.now()}
+  catch(e){S.nick=old;throw e}}
+// 取暱稱畫面（註冊後、或之前沒取過暱稱時出現；頭像→鐵匠等級可改名）
+function showName(first){document.body.classList.add('gating');const g=gateEl();g.className='gate-login gate-name';
+  g.innerHTML=`<div class="gt-scene"><img class="gt-ly gt-bg" src="${LG('key_bg')}" alt=""><img class="gt-ly gt-glow" src="${LG('key_glow')}" alt=""><div class="gt-fog"></div><div class="gt-embers">${gEmb(10)}</div><div class="gt-vig"></div></div>
+   <img class="gt-logo" src="${LG('logo')}" alt="九界鐵匠">
+   <form class="gt-box" onsubmit="return false"><div class="gt-ttl">${first?'為你的鐵匠取個名字':'修改暱稱'}</div>
+    <input id="gtNick" type="text" maxlength="16" autocomplete="off" placeholder="2～8 個字，不能和別人重複" value="${first?'':(S.nick||'')}">
+    <div class="gt-msg small"></div>
+    <div class="gt-row"><button type="button" class="ui-btn ui-btn--primary btn btn-primary big" data-gn="ok">確定</button>${first?'':'<button type="button" class="ui-btn ui-btn--secondary btn btn-sec big" data-gn="cancel">取消</button>'}</div></form>`;
+  const msg=g.querySelector('.gt-msg'),say=(t,bad)=>{msg.textContent=t;msg.className='gt-msg small'+(bad?' bad':'')};
+  g.onclick=e=>{const b=e.target.closest('[data-gn]');if(!b)return;snd('ui_click');
+    if(b.dataset.gn==='cancel'){gateClose();return}
+    const n=(g.querySelector('#gtNick').value||'').trim(),bad=NICK_OK(n);if(bad)return say(bad,1);if(n===S.nick){gateClose();return}
+    if(g.dataset.busy)return;g.dataset.busy='1';b.disabled=true;say('確認中…');
+    cloudSetNick(n).then(()=>{gateClose();toast(first?`歡迎，${n}！`:`暱稱已改為「${n}」`,'ok');render();if(first&&!S.introSeen)setTimeout(showStory,350)})
+      .catch(e=>say(SB_ERR(e.message),1)).finally(()=>{delete g.dataset.busy;b.disabled=false})}}
+function afterAuthEnter(){if(AUTH&&!S.nick)return showName(true);gateClose();if(!S.introSeen)setTimeout(showStory,350)}
 async function cloudPull(){const r=await sbRest('saves?select=data,updated_at&user_id=eq.'+AUTH.user.id);if(!r||!r[0])throw new Error('雲端還沒有存檔');S=sanitize(r[0].data);S.uid=AUTH.user.id;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}CLOUD.last=Date.now();render()}
 if(typeof window!=='undefined'){setInterval(()=>{if(AUTH&&CLOUD.dirty)cloudPush()},20000);
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&AUTH){save();cloudPush(true)}})}
@@ -1642,7 +1666,7 @@ function showLevel(){const c=cleared(),lv=smithLv();
   const row=(k,v,m)=>`<div class="kv"><span>${k}</span><b>${v}${m?` <span class="small muted">／${m}</span>`:''}</b></div>`;
   const nb=BPS.filter(b=>b.unlock===c+1),nx=VILLAGES[c],nt=TIERS.find(t=>t.furnace>S.furnace);
   const next=[nx?`收復 1-${c+1} ${nx.name}${nb.length?`：解鎖 ${nb.length} 張新圖紙`:''}`:'',c<5?`收復 5 座村莊：開放批量鍛造`:'',nt?`熔爐升到 Lv${nt.furnace}：可鍛造${nt.n}武器`:'',S.anvil<5?`升級鐵砧：開放更多附魔欄`:''].filter(Boolean);
-  ui.result={t:'info',icon:'ui_player_emblem',title:`鐵匠等級 Lv.${lv}`,html:`<div class="small muted">等級代表你的整體進度。收復村莊、升級熔爐、鐵砧、附魔欄，每一項都會讓等級 +1。</div>
+  ui.result={t:'info',icon:'ui_player_emblem',title:`鐵匠等級 Lv.${lv}`,html:`${AUTH?`<div class="kv nick-row"><span>暱稱</span><b>${S.nick||'（尚未取名）'} <button class="ui-btn ui-btn--chip chipbtn" data-act="rename">改名</button></b></div>`:''}<div class="small muted">等級代表你的整體進度。收復村莊、升級熔爐、鐵砧、附魔欄，每一項都會讓等級 +1。</div>
    <div class="lv-rows">${row('收復村莊',c,VILLAGES.length)}${row('熔爐','Lv'+S.furnace,'Lv5')}${row('鐵砧','Lv'+S.anvil,'Lv5')}${row('附魔欄',S.slots,4)}</div>
    <div class="label">下一步可以做</div><ul class="lv-next">${next.map(t=>`<li>${t}</li>`).join('')}</ul>`};render()}
 const smithLv=()=>1+cleared()+(S.furnace-1)+(S.anvil-1)+(S.slots-1);
@@ -2493,7 +2517,7 @@ function sheetDev(){
    test:`<div class="devgrid">${B('tquick','執行快速測試')}${B('tecon','執行 30 天經濟模擬')}</div>${ui.testOut?`<div class="test-out">${ui.testOut}</div>`:''}`,
    ui:tab==='ui'?uiGallery():'',
    save:`<div class="label">雲端存檔（v3.34）</div><div class="small" style="margin-bottom:6px">${AUTH?`帳號：${AUTH.user.email}<br>狀態：${CLOUD.busy?'同步中…':CLOUD.err?'⚠ '+CLOUD.err:CLOUD.last?'已同步 '+new Date(CLOUD.last).toLocaleTimeString():'尚未同步'}${CLOUD.dirty?'（有未上傳的變更）':''}`:'目前是訪客（只存在這支手機）'}</div>
-     <div class="devgrid">${AUTH?B('cpush','立即上傳到雲端')+B('cpull','從雲端下載（覆蓋本機）')+B('clogout','登出'):B('gtlogin','開啟登入畫面')}</div>
+     <div class="devgrid">${AUTH?B('cpush','立即上傳到雲端')+B('cpull','從雲端下載（覆蓋本機）')+B('clogout','登出')+B('cname','開啟取名畫面'):B('gtlogin','開啟登入畫面')}</div>
      <div class="devgrid">${B('v2','載入 v2 測試存檔（遷移）')}${B('reset',ui.confirmReset?'再按一次確認重置':'重置存檔','btn-danger')}</div>
      <div class="label">開發者模式</div><div class="devgrid"><button class="ui-btn ui-btn--secondary btn btn-sec sm" data-act="devoff">關閉開發者模式</button></div><div class="small muted">再次開啟：連點左上角鐵匠徽章 5 下，或在網址後加上 #dev。</div>`}[tab];
   return `<div class="sheet-head"><span style="width:44px"></span><h2>開發工具</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img'})}</div>
@@ -2503,7 +2527,8 @@ function sheetDev(){
 let forceEvent=-1;
 function devdo(k){if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?'上傳失敗：'+CLOUD.err:'已上傳到雲端',CLOUD.err?'bad':'ok');render()});return}
   if(k==='cpull'){cloudPull().then(()=>toast('已從雲端下載','ok')).catch(e=>toast('下載失敗：'+SB_ERR(e.message),'bad'));return}
-  if(k==='clogout'){ui.sheet=null;return cloudLogout()}if(k==='sfxaltclr'){SFX_VAR_KEYS.forEach(n=>{if(SFX_ALT[n])sfxSetAlt(n,'')});toast('音效已全部切回原版');return render()}
+  if(k==='clogout'){ui.sheet=null;return cloudLogout()}
+  if(k==='cname'){ui.sheet=null;render();return showName(!S.nick)}if(k==='sfxaltclr'){SFX_VAR_KEYS.forEach(n=>{if(SFX_ALT[n])sfxSetAlt(n,'')});toast('音效已全部切回原版');return render()}
   const m=S.mats,give=(b,q,lv,ench,traits)=>{makeWeapon(b,q,lv,traits,ench);toast('已放入武器庫')};
   if(k.startsWith('fxs_')){if(ui.busy)return;return testFx(k.slice(4),true)}
   if(k.startsWith('fxg_')){if(ui.busy)return;return testFx(k.slice(4),false,true)}
@@ -2626,6 +2651,7 @@ document.addEventListener('click',e=>{
    uifpv:()=>{document.body.classList.toggle('fpv');render()},
    uiskintest:()=>{if(UI_SKIN['btn-primary']&&UI_SKIN['btn-primary']._test){UI_SKIN['btn-primary']=null}else{UI_SKIN['btn-primary']={src:'art/ui_btn_wood.webp',slice:[40,70,40,70],border:[12,24,12,24],css:'padding:2px 10px',_test:true}}applySkin();render()},
    devoff:()=>setDev(false),mute:()=>{S.mute=!S.mute;save();if(!S.mute)snd('ui_click');renderRes()},devset:()=>{ui[d.k]=+d.v;render()},devsets:()=>{ui[d.k]=d.v;render()},noItem:()=>{ui[d.k]=false;ui.riskArm=null;render()},devforce:()=>{DEV.force=d.k||null;toast(DEV.force?'下一次強化測試武器時會套用指定結果':'已取消指定');render()},forgeCat:()=>{ui.tab='forge';ui.ftab='bp';ui.cat=d.k;const f=BPS.find(b=>b.cat===d.k&&!bpLock(b));if(f)ui.bp=f.id;render();scrollTo(0,0)},aclear:()=>{ui.acat='all';ui.aq='all';ui.ast='all';render()},info:()=>{ui.result={t:'info',...INFO[d.k]()};render()},devtab:()=>{ui.devTab=d.k;render()},
+   rename:()=>{ui.result=null;render();showName(!S.nick)},
    player:()=>{const t=Date.now();ui.tapN=(t-(ui.tapT||0)<1500?(ui.tapN||0):0)+1;ui.tapT=t;if(ui.tapN>=5){ui.tapN=0;setDev(!devMode());toast(devMode()?'已開啟開發者模式，右上角出現齒輪。':'已關閉開發者模式。')}else{clearTimeout(ui.lvT);const n=ui.tapN;ui.lvT=setTimeout(()=>{if(ui.tapN===n)showLevel()},380)}},
    buy:()=>buyMat(d.k,+d.p,+d.n),sell:()=>sellMat(d.k,+d.n),up:()=>upgrade(d.k),hire,topup:()=>{S.gems+=+d.n;toast('測試儲值：鑽石 +'+d.n,'ok');save();render()},
    monthly,claim:claimMonthly,item:()=>buyItem(d.k,+d.n),speedHunt,speedForge,pull:()=>pull(+d.n)
@@ -2672,7 +2698,7 @@ function showLogin(){document.body.classList.add('gating');const g=gateEl();g.cl
       const say=(t,bad)=>{if(msg){msg.textContent=t;msg.className='gt-msg'+(bad?' bad':'')}};
       if(!/^\S+@\S+\.\S+$/.test(em))return say('請輸入正確的 Email',1);if(pw.length<6)return say('密碼至少要 6 碼',1);
       if(g.dataset.busy)return;g.dataset.busy='1';g.querySelectorAll('[data-gt]').forEach(x=>x.disabled=true);say(k==='login'?'登入中…':'建立帳號中…');
-      (k==='login'?cloudLogin(em,pw):cloudSignup(em,pw)).then(r=>{gateClose();toast(r==='cloud'?'已讀取雲端進度，歡迎回來！':k==='signup'?'帳號建立完成，進度會自動存到雲端。':'登入成功，進度會自動存到雲端。','ok');if(!S.introSeen)setTimeout(showStory,350)})
+      (k==='login'?cloudLogin(em,pw):cloudSignup(em,pw)).then(r=>{toast(r==='cloud'?'已讀取雲端進度，歡迎回來！':k==='signup'?'帳號建立完成，進度會自動存到雲端。':'登入成功，進度會自動存到雲端。','ok');afterAuthEnter()})
         .catch(e=>{say(SB_ERR(e.message),1)}).finally(()=>{delete g.dataset.busy;g.querySelectorAll('[data-gt]').forEach(x=>x.disabled=false)});return}}}
 function showStory(){document.body.classList.add('gating');const list=STORY.filter(s=>STORY_HAS[s[0]]);let i=0;const g=gateEl();g.className='gate-story';
   const draw=()=>{const [img,txt,cls]=list[i];
@@ -2751,7 +2777,7 @@ function start(){try{if(localStorage.getItem('nrs-dpv')!=='0')document.body.clas
   const before=S.villages.reduce((s,v)=>s+v.bank.cycles,0);tick();const after=S.villages.reduce((s,v)=>s+v.bank.cycles,0);
   bindUI();preloadVfx();render();save();
   tutInit();
-  try{if(/gate/.test(location.hash)||!(navigator.webdriver||/nogate/.test(location.hash))){if(AUTH&&AUTH.user&&!/gate/.test(location.hash)){CLOUD.state='sync';cloudAfterLogin(false).catch(()=>{CLOUD.state='err'})}else showLogin()}}catch(e){}   // 已登入過：直接進遊戲並同步雲端   // 自動測試（webdriver）預設跳過登入，網址加 #gate 才顯示
+  try{if(/gate/.test(location.hash)||!(navigator.webdriver||/nogate/.test(location.hash))){if(AUTH&&AUTH.user&&!/gate/.test(location.hash)){CLOUD.state='sync';cloudAfterLogin(false).then(()=>{if(!S.nick)showName(true)}).catch(()=>{CLOUD.state='err'})}else showLogin()}}catch(e){}   // 已登入過：直接進遊戲並同步雲端   // 自動測試（webdriver）預設跳過登入，網址加 #gate 才顯示
   if(migrated)toast('已把 v2 存檔升級成 v3。');
   if(after>before)toast(`離線期間村莊狩獵了 ${after-before} 輪，記得收成！`);
   else if(!S.weapons.length&&!S.jobs.length&&!(S.tut<TUT.length))toast('歡迎來到米德加德。先鍛造一把伐木斧，交給鐵爐村的伐木工。');
