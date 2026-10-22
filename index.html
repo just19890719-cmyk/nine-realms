@@ -1148,6 +1148,7 @@ html,body,button,[data-act],label,input,select{touch-action:manipulation}
 .mk-tabs .chipbtn{white-space:nowrap;font-size:12px;padding:6px 4px}
 /* v3.47 雲端存檔失敗提示 */
 #cloudbar{position:fixed;left:8px;right:8px;top:calc(env(safe-area-inset-top,0px) + 6px);z-index:300;background:#5a1410;border:1px solid #ff8a7a;color:#ffe0da;border-radius:10px;padding:8px 10px;font-size:13px;text-align:center}
+.fg-ic{width:16px;height:16px;vertical-align:-3px}
 </style>
 <div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div></div>
 <main class="wrap" id="view"></main>
@@ -1392,16 +1393,16 @@ const POWER_FLOOR=.6; // 戰力超過需求時，狩獵時間最多縮短到 60%
 const SLOT_ANVIL=[1,1,3,5]; // 附魔第 1~4 格需要的鐵砧等級
 const REALMS=['米德加德','約頓','尼福爾','亞爾夫','瓦納','斯瓦塔','穆斯貝','赫爾','阿斯嘉'];
 const VILLAGES=[
- {name:'鐵爐村',who:'村民・伐木工',cat:'axe',req:10,sec:1200,gold:6,danger:0,tag:'labor',drops:[['iron',.8,1,1],['oak',.6,1,1]],txt:'伐木工的斧頭全鈍了，冬天前得砍夠柴火。'},
- {name:'松林哨站',who:'村民・守林人',cat:'polearm',req:13,sec:1800,gold:12,danger:.02,tag:'beast',drops:[['oak',.8,1,1],['leather',.5,1,1]],txt:'守林人要長矛擋住林中的野豬群。'},
- {name:'狼嚎谷',who:'村民・獵人',cat:'bow',req:15,sec:2700,gold:24,danger:.04,tag:'beast',drops:[['leather',.8,1,1],['iron',.4,1,1],['fang',.15,1,1],['fur',.03,1,1]],txt:'獵人要一把好弓，谷裡的狼群越來越大膽。'},
- {name:'霜溪鎮',who:'鎮民自衛隊',cat:'sword',req:22,sec:3600,gold:40,danger:.05,tag:'beast',drops:[['iron',.6,1,1],['silver',.35,1,1],['fang',.35,1,1]],txt:'溪邊出現霜狼，自衛隊要換新劍。'},
+ {name:'鐵爐村',who:'村民・伐木工',cat:'axe',req:10,sec:1200,gold:12,danger:0,tag:'labor',drops:[['iron',.8,1,1],['oak',.6,1,1]],txt:'伐木工的斧頭全鈍了，冬天前得砍夠柴火。'},
+ {name:'松林哨站',who:'村民・守林人',cat:'polearm',req:13,sec:1800,gold:24,danger:.02,tag:'beast',drops:[['oak',.8,1,1],['leather',.5,1,1]],txt:'守林人要長矛擋住林中的野豬群。'},
+ {name:'狼嚎谷',who:'村民・獵人',cat:'bow',req:15,sec:2700,gold:45,danger:.04,tag:'beast',drops:[['leather',.8,1,1],['iron',.4,1,1],['fang',.15,1,1],['fur',.03,1,1]],txt:'獵人要一把好弓，谷裡的狼群越來越大膽。'},
+ {name:'霜溪鎮',who:'鎮民自衛隊',cat:'sword',req:22,sec:3600,gold:70,danger:.05,tag:'beast',drops:[['iron',.6,1,1],['silver',.35,1,1],['fang',.35,1,1]],txt:'溪邊出現霜狼，自衛隊要換新劍。'},
  {name:'鹿角堡',who:'軍隊・堡壘守衛',cat:'shield',req:32,sec:7200,gold:100,danger:.06,tag:'beast',drops:[['silver',.5,1,2],['fang',.4,1,2],['shard',.25,1,1]],txt:'冰鴉群天天俯衝城牆，守衛需要堅固的盾。'},
  {name:'渡鴉灣',who:'軍隊・港口衛兵',cat:'crossbow',req:34,sec:10800,gold:170,danger:.08,tag:'beast',drops:[['silver',.5,1,2],['fang',.3,1,1],['shard',.3,1,1],['serpent',.06,1,1]],txt:'海蛇在港外出沒，衛兵要能遠射的弩。'},
- {name:'雪峰營地',who:'軍隊・山地軍團',cat:'hammer',req:65,sec:14400,gold:280,danger:.1,tag:'beast',drops:[['silver',.6,1,2],['fang',.6,1,2],['scale',.15,1,1],['rune',.15,1,1],['fur',.1,1,1],['shard',.15,1,1]],txt:'雪怪的甲殼太硬，軍團要能砸碎它的戰錘。'},
- {name:'巨人足跡',who:'軍隊・王國先鋒',cat:'axe',req:95,sec:21600,gold:450,danger:.12,tag:'giant',need:'giant',drops:[['rune',.3,1,1],['scale',.2,1,1],['shard',.5,1,2],['icecore',.15,1,1]],txt:'霜巨人走下山了。武器必須帶有「剋巨人」。'},
- {name:'灰燼要塞',who:'軍隊・要塞騎士',cat:'sword',req:140,sec:28800,gold:700,danger:.14,tag:'giant',drops:[['scale',.3,1,1],['rune',.3,1,1],['shard',.3,1,1],['fireheart',.15,1,1]],txt:'火巨人的斥候燒毀了外牆，騎士要更強的劍。'},
- {name:'世界樹根穴',who:'軍隊・屠龍軍',cat:'polearm',req:175,sec:36000,gold:1000,danger:.16,tag:'dragon',need:'dragon',drops:[['scale',.35,1,2],['rune',.3,1,1],['shard',.5,1,2]],txt:'尼德霍格啃咬著世界樹根。長柄武器必須帶有「剋龍」。'}
+ {name:'雪峰營地',who:'軍隊・山地軍團',cat:'hammer',req:75,sec:14400,gold:280,danger:.1,tag:'beast',drops:[['silver',.6,1,2],['fang',.6,1,2],['scale',.15,1,1],['rune',.15,1,1],['fur',.1,1,1],['shard',.15,1,1]],txt:'雪怪的甲殼太硬，軍團要能砸碎它的戰錘。'},
+ {name:'巨人足跡',who:'軍隊・王國先鋒',cat:'axe',req:110,sec:21600,gold:450,danger:.12,tag:'giant',need:'giant',drops:[['rune',.3,1,1],['scale',.2,1,1],['shard',.5,1,2],['icecore',.15,1,1]],txt:'霜巨人走下山了。武器必須帶有「剋巨人」。'},
+ {name:'灰燼要塞',who:'軍隊・要塞騎士',cat:'sword',req:160,sec:28800,gold:700,danger:.14,tag:'giant',drops:[['scale',.3,1,1],['rune',.3,1,1],['shard',.3,1,1],['fireheart',.15,1,1]],txt:'火巨人的斥候燒毀了外牆，騎士要更強的劍。'},
+ {name:'世界樹根穴',who:'軍隊・屠龍軍',cat:'polearm',req:200,sec:36000,gold:1000,danger:.16,tag:'dragon',need:'dragon',drops:[['scale',.35,1,2],['rune',.3,1,1],['shard',.5,1,2]],txt:'尼德霍格啃咬著世界樹根。長柄武器必須帶有「剋龍」。'}
 ];
 const TAGN={labor:'勞務',beast:'野獸',giant:'巨人',dragon:'龍族'};
 const FURNACE_COST=[0,3000,6000,15000,40000],ANVIL_COST=[0,2000,8000,25000,50000],SLOT_COST=[0,3000,15000,40000];
@@ -1442,7 +1443,7 @@ const KEY='nine-realms-smith-v3',KEY_V2='nine-realms-smith-v2';
 function freshStats(){return{harvest:0,forged:[0,0,0,0,0],enhTry:0,enhOk:0,enhFail:0,breaks:0,scrollUsed:0,maxLv:0,melted:0,goldIn:0,events:0}}
 function freshVillage(i){return{status:i===0?'open':'locked',weaponId:null,cycleStart:null,strat:'normal',bank:{cycles:0,gold:0,mats:{},events:0}}}
 const GAME_SPEED=10;   // v3.45 封測速度（狩獵／鍛造 10 倍）
-function fresh(){return{v:VERSION,gold:120,gems:100,slag:0,speed:GAME_SPEED,capH:8,pity:0,
+function fresh(){return{v:VERSION,gold:500,fcRw:true,gems:100,slag:0,speed:GAME_SPEED,capH:8,pity:0,
   mats:{iron:8,oak:6,leather:3,silver:0,fang:0,scale:0,rune:0,shard:1,fur:0,icecore:0,fireheart:0,serpent:0},
   items:{scroll:1,bless:1,blueprint:0},furnace:1,anvil:1,slots:1,weapons:[],nextId:1,jobs:[],
   villages:VILLAGES.map((v,i)=>freshVillage(i)),monthly:{until:0,last:''},stats:freshStats(),ach:{},best:{},lbRw:{},lastSeen:NOW(),clockWarn:false}}
@@ -1468,6 +1469,7 @@ function sanitize(s){
   s.villages.forEach(v=>{if(v.weaponId!=null&&(!s.weapons.some(w=>w.id===v.weaponId)||used.has(v.weaponId))){v.weaponId=null;v.cycleStart=null}if(v.weaponId!=null)used.add(v.weaponId);
     v.strat=STRATS[v.strat]?v.strat:'normal';v.bank=v.bank||{cycles:0,gold:0,mats:{},events:0}});
   s.villages.forEach((v,i)=>{const w=v.weaponId!=null&&s.weapons.find(x=>x.id===v.weaponId);if(w)lbRecord(s,i,w)});
+  if(!s.fcRw){s.fcRw=true;const g=s.villages.reduce((a,v,i)=>a+(v.status==='cleared'?FIRST_GOLD[i]||0:0),0);if(g){s.gold+=g;s._fcMsg=g}}   // v3.50 補發已收復村莊的首破獎勵
   return s;
 }
 let S;
@@ -1487,7 +1489,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='3.49';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='3.50';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -1743,7 +1745,9 @@ const dur=(i,w,strat)=>gameDur(i,w,strat)/S.speed;
 const capCycles=(i,w)=>Math.max(1,Math.floor(S.capH*3600000/gameDur(i,w)));
 function eligible(i,w){const v=VILLAGES[i];return !w.test&&bpOf(w).cat===v.cat&&power(w)>=v.req&&(!v.need||affixVal(w,v.need)>0)}
 function breakChance(w,next){const s=stable(w);return next<=s?0:Math.min(.8,.35+.05*(next-s-1))}
-function enhCost(w){return Math.round(15*Math.pow(w.lv+1,1.8)*TIERS[bpOf(w).t].mult)}
+// v3.50 平衡：安全區（+1～+6）便宜好衝，危險區有代價，高等級是長期目標；再乘材質倍率
+const ENH_COST=[5,10,18,30,45,65,160,240,340,480,650,900,1250,1700,2300];
+function enhCost(w){return Math.round(ENH_COST[Math.min(14,w.lv)]*TIERS[bpOf(w).t].mult)}
 function enchCost(w,directed){return 40*TIERS[bpOf(w).t].mult*(directed?3:1)}
 function qualWeights(useBp,t){if(useBp)return[0,0,0,0,1000];const s=S.anvil-1;const q=QW.map((x,i)=>x+QSHIFT[i]*s);if(t===3){q[0]=0;q[1]=0}return q}
 const forgeSec=b=>TIERS[b.t].sec*(1-.1*(S.furnace-1));
@@ -1811,12 +1815,14 @@ function collectCore(i){const st=S.villages[i],b=st.bank;if(!b.cycles)return nul
   if(st.weaponId!=null&&st.cycleStart!=null){const w=W(st.weaponId);if(w&&n>=capCycles(i,w))st.cycleStart=NOW()}
   save();return{got,n,ev}}
 function setStrategy(i,k){const st=S.villages[i];if(!STRATS[k]||st.strat===k)return false;tick();st.strat=k;if(st.cycleStart!=null)st.cycleStart=NOW();save();return true}
+// v3.50 第一次收復村莊的金幣獎勵（伺服器存檔檢查有同一張表）
+const FIRST_GOLD=[300,500,800,1200,2000,3000,5000,8000,12000,0];
 function deliverCore(i,id){
   const w=W(id);if(!w||!eligible(i,w)||S.villages[i].status==='locked')return null;
   const old=where(w);if(old>=0&&old!==i){tick();S.villages[old].weaponId=null;S.villages[old].cycleStart=null}
   const st=S.villages[i];tick();st.weaponId=id;st.cycleStart=NOW();let first=false;lbRecord(S,i,w);
-  if(st.status!=='cleared'){st.status='cleared';first=true;const nx=S.villages[i+1];if(nx&&nx.status==='locked')nx.status='open'}
-  save();return{first};
+  let fg=0;if(st.status!=='cleared'){st.status='cleared';first=true;fg=FIRST_GOLD[i]||0;S.gold+=fg;const nx=S.villages[i+1];if(nx&&nx.status==='locked')nx.status='open'}
+  save();return{first,fg};
 }
 function recallCore(i){const st=S.villages[i];if(st.weaponId==null)return false;tick();st.weaponId=null;st.cycleStart=null;save();return true}
 function meltCore(id){const w=W(id);if(!w||where(w)>=0||w.lock)return null;if(w.test){S.weapons.splice(S.weapons.indexOf(w),1);save();return{}}const b=bpOf(w),c=recipe(b),got={gold:Math.round(goldOf(b)*.5)};
@@ -1894,7 +1900,7 @@ const gotText=g=>Object.entries(g).filter(([k,n])=>n).map(([k,n])=>`${k==='gold'
 function collectAll(){tick();let tot={},cnt=0,ev=0;S.villages.forEach((st,i)=>{const r=collect(i,true);if(r){cnt+=r.n;ev+=r.ev;tot=add(tot,r.got)}});
   if(!cnt)return toast('目前沒有可收成的村莊。');snd('coin');showHarvest(`全部收成 ${cnt} 輪`,tot,ev);render()}
 function showHarvest(title,got,ev){ui.result={t:'h',title,got,ev};render()}
-function deliver(i,id){const r=deliverCore(i,id);if(!r)return toast('這把武器不符合委託條件。','bad');const lbr=lbReward(i);if(lbr.length)setTimeout(()=>toast(`${VILLAGES[i].name}排行榜 第 ${lbRank(i)} 名！<br>`+lbr.join('<br>'),'ok'),400);snd(r.first?'unlock':'deliver');
+function deliver(i,id){const r=deliverCore(i,id);if(!r)return toast('這把武器不符合委託條件。','bad');const lbr=lbReward(i);if(lbr.length)setTimeout(()=>toast(`${VILLAGES[i].name}排行榜 第 ${lbRank(i)} 名！<br>`+lbr.join('<br>'),'ok'),400);snd(r.first?'unlock':'deliver');if(r.fg)setTimeout(()=>toast(`首次收復 ${VILLAGES[i].name}：獲得 ${fmt(r.fg)} 金幣`,'ok'),200);
   if(r.first){const nb=BPS.filter(b=>b.unlock===cleared()).map(b=>b.n);const nx=VILLAGES[i+1];
     toast(nx?`委託完成！解鎖 1-${i+2} ${nx.name}`+(nb.length?`，新圖紙：${nb.slice(0,4).join('、')}${nb.length>4?' 等 '+nb.length+' 張':''}`:''):'米德加德全部收復！','ok')}
   else toast(`${bpOf(W(id)).n} 已駐守 ${VILLAGES[i].name}`,'ok');ui.sheet=null;render()}
@@ -2543,7 +2549,7 @@ function viewVillage(){
    if(k==='open'){let has;
      has=S.weapons.filter(x=>eligible(i,x)&&where(x)<0).sort((a,b)=>power(b)-power(a))[0]||null;
      return `<div class="ui-card vcard open next" data-act="vopen" data-i="${i}" role="button" tabindex="0"><span class="next-tag">下一個挑戰</span>${img('v'+(i+1),'vthumb')}<div class="grow"><div class="row nowrap"><b class="grow">1-${i+1} ${v.name}</b><span class="vst open">${lab}</span></div>
-      <div class="small">${v.who}需要 <b>${CATS[v.cat]}</b>・戰力 ${v.req}${v.need?`＋<b class="t-danger">${AFFIX[v.need].n}</b>`:''}</div>
+      <div class="small">${v.who}需要 <b>${CATS[v.cat]}</b>・戰力 ${v.req}${v.need?`＋<b class="t-danger">${AFFIX[v.need].n}</b>`:''}</div>${st.status!=='cleared'&&FIRST_GOLD[i]?`<div class="small t-gold">首次收復獎勵 ${img('it_gold','fg-ic')} ${fmt(FIRST_GOLD[i])} 金幣</div>`:''}
       <div class="small ${has?'t-ok':'muted'}">${has?`可交付 ${S.weapons.filter(x=>eligible(i,x)&&where(x)<0).length} 把，最強：${bpOf(has).n}（${power(has)}）`:'武器庫還沒有符合的武器'}</div></div>
       <div class="vside">${has?btn('交付','deliver',{cls:'btn-primary sm',attrs:`data-i="${i}" data-id="${has.id}"`}):btn('去鍛造','forgeCat',{cls:'btn-sec sm',attrs:`data-k="${v.cat}"`})}</div></div>`}
    return `<div class="ui-card vcard ${k}" data-act="vopen" data-i="${i}" role="button" tabindex="0">${img('v'+(i+1),'vthumb')}<div class="grow"><div class="row nowrap"><b class="grow">1-${i+1} ${v.name}</b><span class="vst ${k}">${lab}</span></div>
@@ -2585,7 +2591,7 @@ function sheetVillage(i){
      <div class="acts3">${btn('收回武器','recall',{attrs:`data-i="${i}"`})}</div>`;
   }
   const ok=S.weapons.filter(x=>eligible(i,x)&&where(x)<0).sort((a,b)=>power(b)-power(a));
-  return head+`<div class="ui-panel panel"><div class="kvgrid">${kv('需要',CATS[v.cat]+'類'+(v.need?'＋'+AFFIX[v.need].n:''))}${kv('需求戰力',v.req)}${kv('每輪金幣',v.gold)}${kv('基礎時間',fmtT(v.sec*1000))}</div></div>
+  return head+`<div class="ui-panel panel"><div class="kvgrid">${kv('需要',CATS[v.cat]+'類'+(v.need?'＋'+AFFIX[v.need].n:''))}${kv('需求戰力',v.req)}${kv('每輪金幣',v.gold)}${kv('基礎時間',fmtT(v.sec*1000))}${FIRST_GOLD[i]?kv('首次收復獎勵',st.status==='cleared'?'<span class="muted">已領取</span>':'<span class="t-gold">'+fmt(FIRST_GOLD[i])+' 金</span>'):''}</div></div>
    <div class="ui-panel panel">${ptitle('可取得材料')}${drops('normal')}</div>${bank}
    <div class="ui-panel panel">${ptitle(st.status==='open'?'交付委託':'指派駐守武器')}${ok.length?`<div class="wgrid">${ok.map(x=>wTile(x,`data-act="deliver" data-i="${i}" data-id="${x.id}"`)).join('')}</div><div class="small muted">點武器即可交付。</div>`:`<div class="empty">沒有符合的${CATS[v.cat]}類武器。到鐵匠鋪鍛造，或到武器庫強化、附魔。</div>`}</div>`;
 }
@@ -3011,7 +3017,7 @@ function tutInit(){if(S.tut==null)S.tut=(!S.weapons.length&&!S.jobs.length&&clea
   if(navigator.webdriver&&!/tut/.test(location.hash)){if(S.tut<TUT.length)S.tut=99;S.tips=Object.fromEntries(Object.keys(TIPS).map(k=>[k,1]))}   // 自動測試預設不跑導覽，網址加 #tut 才顯示
   setInterval(()=>{nickGuard();tutDraw();tipDraw()},250)}
 // v3.37 保險：只要是登入帳號、還沒取暱稱、目前沒有其他全螢幕畫面，就跳出取名（不管是從哪條路徑進遊戲）
-let NICK_ASK=0;function nickGuard(){if(!AUTH||!AUTH.user||S.nick||document.body.classList.contains('gating')||Date.now()-NICK_ASK<4000)return;NICK_ASK=Date.now();showName(true)}
+let NICK_ASK=0;function nickGuard(){if(S._fcMsg&&!document.body.classList.contains('gating')){toast(`改版補發：已收復村莊的首次收復獎勵 ${fmt(S._fcMsg)} 金幣`,'ok');delete S._fcMsg;save()}if(!AUTH||!AUTH.user||S.nick||document.body.classList.contains('gating')||Date.now()-NICK_ASK<4000)return;NICK_ASK=Date.now();showName(true)}
 function start(){try{if(localStorage.getItem('nrs-dpv')!=='0')document.body.classList.add('dpv')}catch(e){document.body.classList.add('dpv')}dpInit();
   const migrated=loadState();applySkin();
   if(typeof window!=='undefined')window.claude?.hot?.snapshot?.(()=>({S}));
@@ -3057,7 +3063,7 @@ function levelCheck(){
       for(let q=0;q<5;q++){const lv=ups[q];if(lv==null)continue;const st=TIERS[b.t].stable,safe=lv<=st,dsteps=Math.max(0,lv-st);
         let pReach=1;for(let n=st+1;n<=lv;n++)pReach*=RATE[n]; // 危險區連續成功的機率（失敗未必爆）
         const pQ=qualWeights(false,b.t).slice(q).reduce((a,x)=>a+x,0)/1000,expForges=pQ?1/pQ:Infinity;
-        const ok=q<=2&&expForges<=10&&(safe||(i>=8&&dsteps<=2));
+        const ok=q<=2&&expForges<=10&&(safe||(i>=8&&dsteps<=4));
         opts.push({b,q,lv,safe,dsteps,pReach,expForges,ok,score:dsteps*30+q*10+lv})}}
     S.anvil=keepA;opts.sort((a,b)=>(b.ok-a.ok)||a.score-b.score);const best=opts[0]||null;const expForges=best?best.expForges:Infinity;
     rows.push({i,v,best,affixOk,expForges});
@@ -3186,7 +3192,7 @@ function saveTests(){
     S=fresh();S.gold=1e6;S.mats.shard=100;S.anvil=5;const x=makeWeapon('t2_wolfaxe',2,0,[{k:'runic',v:20},{k:'light',v:5}]);
     for(let n=0;n<50;n++)enchantCore(x.id,rnd(0,3));const slots=x.ench.length,shard0=S.mats.shard,g1=S.gold;enchantCore(x.id,0,'giant');
     x.ench=[{k:'loot',v:30},{k:'loot',v:30},{k:'loot',v:30},{k:'swift',v:40}];const tr=timeReduction(0,x),lo=Math.min(CAP.loot,affixVal(x,'loot'));
-    const y=makeWeapon('t3_greataxe',0,0,[]);y.ench[0]={k:'giant',v:20};const yOk=eligible(7,y),y2=makeWeapon('t3_greataxe',0,0,[]);
+    const y=makeWeapon('t3_greataxe',0,2,[]);y.ench[0]={k:'giant',v:20};const yOk=eligible(7,y),y2=makeWeapon('t3_greataxe',0,0,[]);
     res.push(T('E10 附魔覆蓋不重複、扣費正確、符文親和不重複計算、迅捷/掠奪有上限、剋巨人判定',slots===4&&shard0-S.mats.shard===4&&g1-S.gold===enchCost(x,true)&&x.ench.length===4&&tr===CAP.time/100&&lo===CAP.loot&&yOk===(power(y)>=95)&&!eligible(7,y2),
       `欄位數 ${slots}；指定附魔扣碎片 ${shard0-S.mats.shard}、金幣 ${g1-S.gold}；迅捷堆疊後時間縮短 ${tr*100}%（上限 ${CAP.time}%）；掠奪 ${lo}%（上限 ${CAP.loot}%）；有剋巨人可交 1-8：${yOk}，沒有：${eligible(7,y2)}`));
     // 附魔欄位依鐵砧
@@ -3322,10 +3328,10 @@ function specTests(seed=20261020,N=200000){
     // 費用、祝福石、防爆卷、道具不足
     S=fresh();S.gold=1e7;S.items.bless=3;S.items.scroll=0;const w=makeWeapon('t1_ironsword',0,9,[]);
     const c=enhCost(w),g0=S.gold,b0=S.items.bless;const r1=enhanceCore(w.id,{bless:true});const bUsed=b0-S.items.bless;
-    const costOk=g0-S.gold===c&&c===Math.round(15*Math.pow(10,1.8)*1)&&bUsed===1;
+    const costOk=g0-S.gold===c&&c===Math.round(ENH_COST[9]*1)&&bUsed===1;
     const w2=makeWeapon('t1_ironsword',0,9,[]);const r2=enhanceCore(w2.id,{scroll:true}),g1=S.gold;
     S.items.bless=0;const r3=enhanceCore(w2.id||0,{bless:true});
-    res.push(T('F 費用一致、祝福石必定消耗、道具不足直接拒絕（不扣費）',costOk&&r2.need==='scroll'&&(!W(w2.id)||r3.need==='bless')&&S.gold===g1,`+9 費用 ${c}（公式 ${Math.round(15*Math.pow(10,1.8))}）；祝福石扣 ${bUsed}；防爆卷不足：${r2.err}；祝福石不足：${r3.err||'—'}`));
+    res.push(T('F 費用一致、祝福石必定消耗、道具不足直接拒絕（不扣費）',costOk&&r2.need==='scroll'&&(!W(w2.id)||r3.need==='bless')&&S.gold===g1,`+9 費用 ${c}（表定 ${ENH_COST[9]}）；祝福石扣 ${bUsed}；防爆卷不足：${r2.err}；祝福石不足：${r3.err||'—'}`));
     // v3.14 規則：危險區勾選防爆卷，每次強化都消耗 1 張；判定爆裝時武器保留
     S=fresh();S.gold=1e9;S.items.scroll=1e6;let used=0,saved=0,okN=0,failN=0,broken=0;
     for(let n=0;n<20000;n++){const x=makeWeapon('t1_ironsword',0,9,[]);const s0=S.items.scroll;const o=enhanceCore(x.id,{scroll:true});used+=s0-S.items.scroll;
