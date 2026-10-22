@@ -1,0 +1,3 @@
+Sound effects derived from the Sonniss.com GDC 2026 Game Audio Bundle.
+Royalty-free, commercial use allowed, no attribution required (per Sonniss GDC bundle license).
+Source libraries: 344 Audio, Epic Stock Media, DDUMAIS, Ivo Vicic, The Noisery, and others in the bundle.
