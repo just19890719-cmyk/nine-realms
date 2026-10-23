@@ -1448,4 +1448,47 @@ html.scrimmed .cbar{display:none}
 .cx-ch.on{border-color:var(--line2);background:var(--iron2);color:var(--ash)}
 .cx-chn{flex:none;font-size:12px;color:var(--gold-hi);white-space:nowrap}
 .rlm .rdot{top:2px;right:8px;width:12px;height:12px;border:1.5px solid #1a0d04}   /* v3.95 另一界可收成 */
+/* ===== v3.98 好友＋公會 ===== */
+.gd-hb{margin:0;min-height:36px;min-width:44px;padding:0 8px;font-size:13px;position:relative}
+.gd-hb .badge{position:absolute;top:-6px;right:-6px}
+.cx-hb{display:flex;gap:4px;flex:none}
+.cx-sheet .sheet-head h2{position:absolute;left:50%;transform:translateX(-50%);pointer-events:none}
+.gd-head{display:flex;gap:10px;align-items:center;border:1px solid var(--line2);border-radius:10px;padding:10px;background:linear-gradient(#24190f,#151210)}
+.gd-head .grow{min-width:0}.gd-head h3{font-size:18px;color:var(--gold-hi);overflow-wrap:anywhere}.gd-head .small{display:block}
+.gd-emb{width:60px;height:60px;flex:none;border-radius:50%;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font:900 26px var(--display);color:var(--gold-hi);background:radial-gradient(#5a3816,#1d1611)}
+.gd-emb.sm{width:30px;height:30px;font-size:15px;border-width:1px}
+.gd-note{margin:8px 0;border:1px dashed var(--line2);border-radius:8px;padding:6px 8px;font-size:13px;color:var(--bone);overflow-wrap:anywhere}
+.gd-bar{height:10px;border-radius:5px;background:var(--iron0);border:1px solid var(--line);overflow:hidden;margin:4px 0}.gd-bar i{display:block;height:100%;background:linear-gradient(90deg,#8a5a26,#e8b85c)}
+.gd-row{display:flex;justify-content:space-between;gap:6px;font-size:12.5px;color:var(--ash);flex-wrap:wrap}
+.gd-buff{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.gd-buff span{font-size:12px;border:1px solid #3d5566;color:var(--frost);border-radius:12px;padding:2px 8px}.gd-buff span.off{border-color:var(--line);color:var(--ash)}
+.gd-tabs{display:flex;gap:6px;margin:8px 0}.gd-tabs button{flex:1;min-width:0;min-height:42px;border:1px solid var(--line);background:var(--iron2);color:var(--ash);border-radius:8px;font-weight:600;font-size:14px;position:relative;padding:0 2px;white-space:nowrap}
+.gd-tabs button.on{border-color:var(--gold);color:var(--gold-hi);background:linear-gradient(#3b2a1b,#24190f)}.gd-tabs .badge{position:absolute;top:-6px;right:-4px}
+.gd-m{display:flex;align-items:center;gap:8px;padding:7px 2px;border-bottom:1px solid rgba(75,60,43,.6);font-size:14px}
+.gd-m>i,.gd-l>i.gdot{width:8px;height:8px;border-radius:50%;flex:none;background:#555}.gd-m>i.on,.gd-l>i.gdot.on{background:var(--ok)}
+.gd-m .grow,.gd-l .grow{flex:1;min-width:0}.gd-m .small,.gd-l .grow>.small{display:block}
+.gd-m b.r{font-size:11px;color:#e3b864;border:1px solid #7a5c32;border-radius:4px;padding:0 4px;margin-right:4px;white-space:nowrap}
+.gd-m .who,.gd-l .who{background:none;border:0;padding:0;font-weight:700;color:var(--bone);font-size:15px;text-align:left;overflow-wrap:anywhere}.gd-m .who.me{color:var(--gold-hi)}
+.gd-m .v{font-weight:700;color:var(--gold-hi);white-space:nowrap;text-align:right}.gd-m .v span{display:block;font-size:10.5px;font-weight:400;color:var(--ash)}
+.gd-act{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}.gd-act .btn{margin:0;min-height:44px}
+.gd-l{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:8px;margin-bottom:6px;background:var(--iron1)}
+.gd-l .gd-emb{width:44px;height:44px;font-size:18px}.gd-l b{overflow-wrap:anywhere}
+.gd-l .gd-ic{width:40px;height:40px;flex:none;object-fit:contain}
+.gd-l>button{flex:none;min-height:38px;padding:0 10px;border-radius:8px;border:1px solid var(--gold);background:linear-gradient(#5a3816,#3b2410);color:var(--gold-hi);font-weight:700;font-size:13px;white-space:nowrap}
+.gd-l>button.off{border-color:var(--line2);background:var(--iron2);color:var(--ash)}
+.gd-ap>button{padding:0 8px}
+.gd-search{display:flex;gap:6px;margin:6px 0 8px}.gd-search input{flex:1;min-width:0;height:42px;border-radius:8px;border:1px solid var(--line2);background:var(--iron0);color:var(--bone);padding:0 10px;font-size:16px}
+.gd-search button{height:42px;padding:0 12px;border-radius:8px;border:1px solid var(--line2);background:var(--iron2);color:var(--bone);flex:none}
+.gd-create{width:100%;min-height:48px;border-radius:10px;border:1px solid var(--gold);background:linear-gradient(#8a5a26,#5a3816);color:#fff3d6;font-weight:700;font-size:15px;margin-top:6px}
+.gd-cd{margin:6px 0}
+.gd-don{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}.gd-don div{border:1px solid var(--line);border-radius:8px;padding:6px 2px;text-align:center;font-size:12px;color:var(--ash)}.gd-don b{display:block;color:var(--bone);font-size:14px}
+.gd-don div.on{border-color:#3d5566;color:var(--frost)}.gd-don div.on b{color:var(--frost)}
+.gd-pts{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:2px 0 8px}.gd-pts b{font-size:22px;color:var(--gold-hi)}.gd-pts .small{flex-basis:100%}
+.gd-mk{margin-top:8px}.gd-mk input{width:100%;height:44px;border-radius:8px;border:1px solid var(--line2);background:var(--iron0);color:var(--bone);padding:0 10px;font-size:16px;margin:4px 0 8px}
+.gd-jm{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}.gd-jm button{min-height:54px;border:1px solid var(--line);border-radius:8px;background:var(--iron2);color:var(--ash);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.gd-jm button b{font-size:14px;color:var(--bone)}.gd-jm button span{font-size:11.5px}.gd-jm button.on{border-color:var(--gold);background:linear-gradient(#3b2a1b,#24190f)}.gd-jm button.on b{color:var(--gold-hi)}
+.gd-ft{margin-top:8px}
+.cx-gdh{display:flex;align-items:center;gap:8px;width:100%;border:1px solid var(--line2);border-radius:8px;background:var(--iron1);padding:6px 8px;margin-bottom:6px;color:var(--bone);text-align:left}
+.cx-gdh b{font-size:14px;color:var(--gold-hi);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}.cx-gdh .go{margin-left:auto;font-size:12.5px;color:var(--gold);white-space:nowrap}.cx-gdh .small{white-space:nowrap}
+.cx-gd0{display:flex;flex-direction:column;gap:10px;align-items:stretch;padding:0 12px}.cx-gd0 .btn{margin:0}
+.pc-fr{grid-template-columns:1fr}
 </style>

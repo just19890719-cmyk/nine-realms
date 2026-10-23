@@ -1464,6 +1464,49 @@ html.scrimmed .cbar{display:none}
 .cx-ch.on{border-color:var(--line2);background:var(--iron2);color:var(--ash)}
 .cx-chn{flex:none;font-size:12px;color:var(--gold-hi);white-space:nowrap}
 .rlm .rdot{top:2px;right:8px;width:12px;height:12px;border:1.5px solid #1a0d04}   /* v3.95 另一界可收成 */
+/* ===== v3.98 好友＋公會 ===== */
+.gd-hb{margin:0;min-height:36px;min-width:44px;padding:0 8px;font-size:13px;position:relative}
+.gd-hb .badge{position:absolute;top:-6px;right:-6px}
+.cx-hb{display:flex;gap:4px;flex:none}
+.cx-sheet .sheet-head h2{position:absolute;left:50%;transform:translateX(-50%);pointer-events:none}
+.gd-head{display:flex;gap:10px;align-items:center;border:1px solid var(--line2);border-radius:10px;padding:10px;background:linear-gradient(#24190f,#151210)}
+.gd-head .grow{min-width:0}.gd-head h3{font-size:18px;color:var(--gold-hi);overflow-wrap:anywhere}.gd-head .small{display:block}
+.gd-emb{width:60px;height:60px;flex:none;border-radius:50%;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font:900 26px var(--display);color:var(--gold-hi);background:radial-gradient(#5a3816,#1d1611)}
+.gd-emb.sm{width:30px;height:30px;font-size:15px;border-width:1px}
+.gd-note{margin:8px 0;border:1px dashed var(--line2);border-radius:8px;padding:6px 8px;font-size:13px;color:var(--bone);overflow-wrap:anywhere}
+.gd-bar{height:10px;border-radius:5px;background:var(--iron0);border:1px solid var(--line);overflow:hidden;margin:4px 0}.gd-bar i{display:block;height:100%;background:linear-gradient(90deg,#8a5a26,#e8b85c)}
+.gd-row{display:flex;justify-content:space-between;gap:6px;font-size:12.5px;color:var(--ash);flex-wrap:wrap}
+.gd-buff{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.gd-buff span{font-size:12px;border:1px solid #3d5566;color:var(--frost);border-radius:12px;padding:2px 8px}.gd-buff span.off{border-color:var(--line);color:var(--ash)}
+.gd-tabs{display:flex;gap:6px;margin:8px 0}.gd-tabs button{flex:1;min-width:0;min-height:42px;border:1px solid var(--line);background:var(--iron2);color:var(--ash);border-radius:8px;font-weight:600;font-size:14px;position:relative;padding:0 2px;white-space:nowrap}
+.gd-tabs button.on{border-color:var(--gold);color:var(--gold-hi);background:linear-gradient(#3b2a1b,#24190f)}.gd-tabs .badge{position:absolute;top:-6px;right:-4px}
+.gd-m{display:flex;align-items:center;gap:8px;padding:7px 2px;border-bottom:1px solid rgba(75,60,43,.6);font-size:14px}
+.gd-m>i,.gd-l>i.gdot{width:8px;height:8px;border-radius:50%;flex:none;background:#555}.gd-m>i.on,.gd-l>i.gdot.on{background:var(--ok)}
+.gd-m .grow,.gd-l .grow{flex:1;min-width:0}.gd-m .small,.gd-l .grow>.small{display:block}
+.gd-m b.r{font-size:11px;color:#e3b864;border:1px solid #7a5c32;border-radius:4px;padding:0 4px;margin-right:4px;white-space:nowrap}
+.gd-m .who,.gd-l .who{background:none;border:0;padding:0;font-weight:700;color:var(--bone);font-size:15px;text-align:left;overflow-wrap:anywhere}.gd-m .who.me{color:var(--gold-hi)}
+.gd-m .v{font-weight:700;color:var(--gold-hi);white-space:nowrap;text-align:right}.gd-m .v span{display:block;font-size:10.5px;font-weight:400;color:var(--ash)}
+.gd-act{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}.gd-act .btn{margin:0;min-height:44px}
+.gd-l{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:8px;margin-bottom:6px;background:var(--iron1)}
+.gd-l .gd-emb{width:44px;height:44px;font-size:18px}.gd-l b{overflow-wrap:anywhere}
+.gd-l .gd-ic{width:40px;height:40px;flex:none;object-fit:contain}
+.gd-l>button{flex:none;min-height:38px;padding:0 10px;border-radius:8px;border:1px solid var(--gold);background:linear-gradient(#5a3816,#3b2410);color:var(--gold-hi);font-weight:700;font-size:13px;white-space:nowrap}
+.gd-l>button.off{border-color:var(--line2);background:var(--iron2);color:var(--ash)}
+.gd-ap>button{padding:0 8px}
+.gd-search{display:flex;gap:6px;margin:6px 0 8px}.gd-search input{flex:1;min-width:0;height:42px;border-radius:8px;border:1px solid var(--line2);background:var(--iron0);color:var(--bone);padding:0 10px;font-size:16px}
+.gd-search button{height:42px;padding:0 12px;border-radius:8px;border:1px solid var(--line2);background:var(--iron2);color:var(--bone);flex:none}
+.gd-create{width:100%;min-height:48px;border-radius:10px;border:1px solid var(--gold);background:linear-gradient(#8a5a26,#5a3816);color:#fff3d6;font-weight:700;font-size:15px;margin-top:6px}
+.gd-cd{margin:6px 0}
+.gd-don{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}.gd-don div{border:1px solid var(--line);border-radius:8px;padding:6px 2px;text-align:center;font-size:12px;color:var(--ash)}.gd-don b{display:block;color:var(--bone);font-size:14px}
+.gd-don div.on{border-color:#3d5566;color:var(--frost)}.gd-don div.on b{color:var(--frost)}
+.gd-pts{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:2px 0 8px}.gd-pts b{font-size:22px;color:var(--gold-hi)}.gd-pts .small{flex-basis:100%}
+.gd-mk{margin-top:8px}.gd-mk input{width:100%;height:44px;border-radius:8px;border:1px solid var(--line2);background:var(--iron0);color:var(--bone);padding:0 10px;font-size:16px;margin:4px 0 8px}
+.gd-jm{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}.gd-jm button{min-height:54px;border:1px solid var(--line);border-radius:8px;background:var(--iron2);color:var(--ash);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.gd-jm button b{font-size:14px;color:var(--bone)}.gd-jm button span{font-size:11.5px}.gd-jm button.on{border-color:var(--gold);background:linear-gradient(#3b2a1b,#24190f)}.gd-jm button.on b{color:var(--gold-hi)}
+.gd-ft{margin-top:8px}
+.cx-gdh{display:flex;align-items:center;gap:8px;width:100%;border:1px solid var(--line2);border-radius:8px;background:var(--iron1);padding:6px 8px;margin-bottom:6px;color:var(--bone);text-align:left}
+.cx-gdh b{font-size:14px;color:var(--gold-hi);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}.cx-gdh .go{margin-left:auto;font-size:12.5px;color:var(--gold);white-space:nowrap}.cx-gdh .small{white-space:nowrap}
+.cx-gd0{display:flex;flex-direction:column;gap:10px;align-items:stretch;padding:0 12px}.cx-gd0 .btn{margin:0}
+.pc-fr{grid-template-columns:1fr}
 </style>
 <div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div><div class="news" id="news" aria-live="polite" data-act="chatsys"></div></div>
 <main class="wrap" id="view"></main>
@@ -1814,7 +1857,7 @@ let EVT_WK=0;   // 開發者工具：換下一隻首領（不存檔）
 function evtNow(){const t=NOW(),w0=evtWeek(t),wk=w0+EVT_WK,start=evtStart(w0);
   return{k:'boss',wk,start,end:start+7*DAY,boss:EVT_BOSS[((wk%EVT_BOSS.length)+EVT_BOSS.length)%EVT_BOSS.length]}}
 const bossWeak=(w,b)=>b.weak.cat?bpOf(w).cat===b.weak.cat:affixVal(w,b.weak.aff)>0;
-const bossDmgOf=(w,b)=>Math.round(power(w)*(bossWeak(w,b)?1.5:1));
+const bossDmgOf=(w,b)=>Math.round(power(w)*(bossWeak(w,b)?1.5:1)*(1+gdBoss()/100));   // v3.98 公會首領傷害加成（伺服器 boss_pw 也一樣算）
 const stageGift=(g,b)=>Object.fromEntries(Object.entries(g).map(([k,v])=>[k==='M'?b.mat:k,v]));
 // 換週：傷害、全服階段歸零；駐守的武器留著，每小時傷害改用新首領的弱點重算
 function evtSt(){const e=evtNow();let v=S.evt;
@@ -1910,7 +1953,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='3.95';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='3.98';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -1933,7 +1976,7 @@ function cloudLogout(){cloudPush(true).finally(()=>{authSave(null);CLOUD.ready=f
   if(CLOUD_ONLY){S=sanitize(fresh());ui.sheet=null;ui.result=null;render();showLogin()}else{toast('已登出。');render()}})}
 // 登入後：讀雲端存檔（雲端為準）；新帳號建立全新進度。並登記這支手機的連線代碼（同帳號只能一支手機）
 async function cloudAfterLogin(){const uid=AUTH.user.id;SID=Math.random().toString(36).slice(2)+Date.now().toString(36);CLOUD.kicked=false;
-  LBR.rows={};LBR.t=0;MK.rows=[];MK.mine=[];MK.t=0;Object.assign(CHAT,{rows:[],last:0,sys:[],sysLast:0,unread:0,t:0,err:''});
+  LBR.rows={};LBR.t=0;MK.rows=[];MK.mine=[];MK.t=0;Object.assign(CHAT,{rows:[],last:0,g:[],glast:0,gunread:0,sys:[],sysLast:0,unread:0,t:0,err:''});Object.assign(GD,{d:null,list:null,t:0,mk:false,edit:false});Object.assign(FR,{d:null,find:null,t:0});
   // 先登記這支手機、同一個請求拿回存檔：避免「讀完存檔、還沒登記前，舊手機又存了一次」被蓋掉
   let row=null;try{const r=await sbRest('rpc/claim_session',{method:'POST',body:JSON.stringify({p_sid:SID})});row=Array.isArray(r)?r[0]:r;if(row&&!row.data&&!row.updated_at)row=null}catch(e){CLOUD.err=SB_ERR(e.message);throw e}
   const keepMem=CLOUD.reauth&&S.uid===uid&&row&&Date.parse(row.updated_at)<=(CLOUD.pushAt||0)+3000;   // 登入過期重登：雲端沒被別台改過 → 保留目前畫面上的進度
@@ -1991,7 +2034,7 @@ function newsNext(){const el=typeof document!=='undefined'&&document.getElementB
 if(typeof window!=='undefined')setInterval(()=>{if(Date.now()-NEWS.t>30000)newsFetch()},5000);
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 /* ---------- v3.88 世界聊天＋玩家名片：全部經過伺服器函式（chat_send 檢查冷卻、禁言、等級、髒話）；聊天開著每 4 秒、關著每 30 秒拿新訊息 ---------- */
-const CHAT={rows:[],last:0,sys:[],sysLast:0,unread:0,sysUnread:0,t:0,busy:false,cd:0,draft:'',err:'',tab:'w',sending:false,mockN:0};
+const CHAT={rows:[],last:0,g:[],glast:0,gunread:0,sys:[],sysLast:0,unread:0,sysUnread:0,t:0,busy:false,cd:0,draft:'',err:'',tab:'w',sending:false,mockN:0};
 // v3.89 稱號（條件要和 SQL chat_titles 一致；屠龍者、人氣鐵匠只有伺服器算得出來）
 const TITLES=[{k:'smith12',n:'百鍛名匠',d:'把武器強化到 +12'},{k:'legend',n:'傳說鍛造師',d:'鍛造出傳說品質的武器'},{k:'guard',n:'九界守護者',d:'收復 10 座村莊'},{k:'giant',n:'巨人剋星',d:'收復約頓海姆 2-1'},{k:'dragon',n:'屠龍者',d:'首領週排名前 3 名'},{k:'pop',n:'人氣鐵匠',d:'累積 30 個讚'}];
 const titleLocal=k=>k==='smith12'?S.stats.maxLv>=12:k==='legend'?(S.stats.forged[4]||0)>0:k==='guard'?cleared()>=10:k==='giant'?!!(S.villages[10]&&S.villages[10].status==='cleared'):false;
@@ -2007,18 +2050,20 @@ const chatAgo=t=>{const s=Math.max(0,(Date.now()-Date.parse(t))/1000);return s<6
 function chatPre(t){t=String(t||'').replace(/\s+/g,' ').trim();const n=Array.from(t).length;
   if(!n)return'請先輸入內容';if(n>CHAT_MAX)return`最多 ${CHAT_MAX} 個字`;
   if(/(https?:\/\/|www\.|\.(com|net|org|tw|cc|io|me|gg)\b|line\s*(id|:|：)|09\d{2}[\s-]?\d{3}[\s-]?\d{3}|\d{8,})/i.test(t))return'不能貼網址、電話號碼或 LINE ID';return''}
-const CHAT_MSG={slow:'太快了，{n} 秒後才能再發言',many:'發言太頻繁，請等一分鐘再說',dup:'不要重複發一樣的訊息',link:'不能貼網址、電話號碼或 LINE ID',len:`訊息要 1～${CHAT_MAX} 個字`,lv:`鐵匠等級 Lv.${CHAT_LV} 才能在世界頻道發言`,nonick:'請先取暱稱',login:'請先登入',ch:'這個頻道還沒開放'};
+const CHAT_MSG={slow:'太快了，{n} 秒後才能再發言',many:'發言太頻繁，請等一分鐘再說',dup:'不要重複發一樣的訊息',link:'不能貼網址、電話號碼或 LINE ID',len:`訊息要 1～${CHAT_MAX} 個字`,lv:`鐵匠等級 Lv.${CHAT_LV} 才能在世界頻道發言`,nonick:'請先取暱稱',login:'請先登入',ch:'這個頻道還沒開放',noguild:'你還沒有加入公會'};
 function chatErrText(r){r=String(r||'');if(r.startsWith('muted:'))return`你被禁言到 ${r.slice(6)}`;if(r.startsWith('slow:'))return CHAT_MSG.slow.replace('{n}',r.slice(5));return CHAT_MSG[r]||'發送失敗，請再試一次'}
 const chatSrvErr=e=>/function|not find|schema cache|404/i.test(e&&e.message||'')?'聊天功能還沒開通（伺服器還沒更新）':SB_ERR(e&&e.message);
 // 離線模擬資料
 const CHAT_MOCK_ROWS=[['雷霆之錘',18,'有人要 +10 戰斧嗎？交易所掛 3,000 金幣'],['冰原少女',9,'新手問一下，防爆卷什麼時候用比較好？'],['霜狼',22,'高等級再用，前面先省著'],['渡鴉',25,'剛衝上 +12，手還在抖'],['北境小鐵',14,'這把真的＊＊心痛']];
 function chatMockInit(){if(CHAT.rows.length)return;const t=Date.now();CHAT.rows=CHAT_MOCK_ROWS.map(([n,lv,b],k)=>({id:k+1,uid:'mock-'+k,nick:n,lv,body:b,mine:false,at:new Date(t-(5-k)*60000).toISOString(),title:k===2?'smith12':k===3?'legend':null,w:k===3?{b:'t2_longsword',q:3,lv:12,rf:0,traits:[],ench:[]}:null}));CHAT.last=CHAT.rows.length;
-  CHAT.sys=[{id:1,uid:'mock-2',nick:'霜狼',bp:'t2_longsword',lv:12,ok:true,at:new Date(t-300000).toISOString(),cheers:4,cheered:false},{id:3,uid:'me',mine:true,nick:S.nick||'我',bp:'t1_woodaxe',lv:10,ok:true,at:new Date(t-200000).toISOString(),cheers:2},{id:2,uid:'mock-4',nick:'北境小鐵',bp:'t2_longbow',lv:11,ok:false,at:new Date(t-120000).toISOString()}];CHAT.sysLast=2}
-function chatAdd(rows){let n=0;for(const x of rows){if(CHAT.rows.some(r=>r.id===x.id))continue;CHAT.rows.push(x);CHAT.last=Math.max(CHAT.last,+x.id||0);if(!x.mine&&!chatBlocked(x.uid))n++}
-  if(CHAT.rows.length>120)CHAT.rows.splice(0,CHAT.rows.length-120);return n}
+  CHAT.sys=[{id:1,uid:'mock-2',nick:'霜狼',bp:'t2_longsword',lv:12,ok:true,at:new Date(t-300000).toISOString(),cheers:4,cheered:false},{id:3,uid:'me',mine:true,nick:S.nick||'我',bp:'t1_woodaxe',lv:10,ok:true,at:new Date(t-200000).toISOString(),cheers:2},{id:2,uid:'mock-4',nick:'北境小鐵',bp:'t2_longbow',lv:11,ok:false,at:new Date(t-120000).toISOString()}];CHAT.sysLast=2;
+  CHAT.g=[{id:1001,uid:'mock-2',nick:'霜狼',lv:22,body:'這週目標：公會升到 Lv.4！',mine:false,at:new Date(t-900000).toISOString(),title:'dragon'},{id:1002,uid:'mock-1',nick:'冰原少女',lv:9,body:'今天的 3 次捐獻捐完了～',mine:false,at:new Date(t-240000).toISOString()}];CHAT.glast=1002}
+function chatAdd(rows,g){const L=g?CHAT.g:CHAT.rows,lk=g?'glast':'last';let n=0;for(const x of rows){if(L.some(r=>r.id===x.id))continue;L.push(x);CHAT[lk]=Math.max(CHAT[lk],+x.id||0);if(!x.mine&&!chatBlocked(x.uid))n++}
+  if(L.length>120)L.splice(0,L.length-120);return n}
 async function chatFetch(force){if(CHAT.busy||!chatOn()||document.hidden)return;CHAT.busy=true;CHAT.t=Date.now();const first=!CHAT.last;
   try{const r=await sbRest('rpc/chat_list',{method:'POST',body:JSON.stringify({p_ch:'w',p_after:CHAT.last})});CHAT.err='';
     if(Array.isArray(r)){const n=chatAdd(r);if(!first&&!(chatOpen()&&CHAT.tab==='w'))CHAT.unread=Math.min(99,CHAT.unread+n)}
+    if(gdIn()){const g1=!CHAT.glast,q=await sbRest('rpc/chat_list',{method:'POST',body:JSON.stringify({p_ch:'g',p_after:CHAT.glast})});if(Array.isArray(q)){const n=chatAdd(q,1);if(!g1&&!(chatOpen()&&CHAT.tab==='g'))CHAT.gunread=Math.min(99,CHAT.gunread+n)}}
     if(chatOpen()&&CHAT.tab==='s'||force){const s=await sbRest('rpc/chat_sys',{method:'POST',body:JSON.stringify({p_after:CHAT.sysLast})});
       if(Array.isArray(s))for(const x of s){if(CHAT.sys.some(y=>y.id===x.id))continue;CHAT.sys.push(x);CHAT.sysLast=Math.max(CHAT.sysLast,+x.id||0)}if(CHAT.sys.length>60)CHAT.sys.splice(0,CHAT.sys.length-60)}}
   catch(e){CHAT.err=chatSrvErr(e)}finally{CHAT.busy=false}chatPaint();cheerInbox()}
@@ -2027,9 +2072,10 @@ async function chatSend(wid){const el=document.getElementById('cxIn');let t=(el?
   if(wid!=null&&!sw)return toast('找不到這把武器','bad');if(sw&&!t)t='分享了一把武器';
   if(CHAT.sending)return;const pre=chatPre(t);if(pre)return toast(pre,'bad');
   const left=CHAT.cd-Date.now();if(left>0)return toast(chatErrText('slow:'+Math.ceil(left/1000)),'bad');
-  if(chatMock()){chatMockInit();chatAdd([{id:++CHAT.last,uid:'me',nick:S.nick||'我',lv:smithLv(),body:t,mine:true,at:new Date().toISOString(),title:titleOn(S.title)?S.title:null,w:sw?{b:sw.b,q:sw.q,lv:sw.lv,rf:sw.rf||0,traits:sw.traits,ench:sw.ench,p:power(sw)}:null}])}
+  const gch=CHAT.tab==='g';if(gch&&!gdIn())return toast(CHAT_MSG.noguild,'bad');
+  if(chatMock()){chatMockInit();chatAdd([{id:gch?++CHAT.glast:++CHAT.last,uid:'me',nick:S.nick||'我',lv:smithLv(),body:t,mine:true,at:new Date().toISOString(),title:titleOn(S.title)?S.title:null,w:sw?{b:sw.b,q:sw.q,lv:sw.lv,rf:sw.rf||0,traits:sw.traits,ench:sw.ench,p:power(sw)}:null}],gch)}
   else{if(!chatOn())return toast('請先登入','bad');if(!S.nick)return toast(CHAT_MSG.nonick,'bad');CHAT.sending=true;
-    try{const r=await sbRest('rpc/chat_send',{method:'POST',body:JSON.stringify(sw?{p_sid:SID,p_ch:'w',p_body:t,p_wid:sw.id}:{p_sid:SID,p_ch:'w',p_body:t})});
+    try{const r=await sbRest('rpc/chat_send',{method:'POST',body:JSON.stringify(sw?{p_sid:SID,p_ch:gch?'g':'w',p_body:t,p_wid:sw.id}:{p_sid:SID,p_ch:gch?'g':'w',p_body:t})});
       if(r==='session')return cloudKicked();if(r!=='ok')return toast(chatErrText(r),'bad')}
     catch(e){return toast(chatSrvErr(e),'bad')}finally{CHAT.sending=false}}
   CHAT.cd=Date.now()+CHAT_CD;CHAT.draft='';CHAT.pick=false;if(el)el.value='';snd('ui_click');if(sw)render();if(!chatMock())await chatFetch();chatPaint(true)}
@@ -2048,24 +2094,25 @@ async function cheerInbox(){if(!chatOn()||Date.now()-(CHAT.ci||0)<30000)return;C
 function cheerShow(r){const g={};for(const x of r){S.cheerLast=Math.max(S.cheerLast||0,+x.id||0);(g[x.news_id]=g[x.news_id]||{bp:x.bp,lv:x.lv,n:[]}).n.push(x.from_nick||'無名鐵匠')}save();
   Object.values(g).forEach((v,i)=>{const b=BP[bpId(v.bp)],who=v.n.slice(0,2).map(esc).join('、')+(v.n.length>2?` 等 ${v.n.length} 位鐵匠`:'');setTimeout(()=>{snd('deliver');toast(`🎉 ${who} 恭喜你${b?`把 <b>${esc(b.n)}</b> 強化到 +${v.lv|0}`:''}！`,'ok')},i*2800)})}
 function chatPickHtml(){const ws=S.weapons.filter(w=>!w.test).sort((a,b)=>power(b)-power(a)).slice(0,40);
-  return `<div class="small muted cx-pk-h">選一把武器貼到世界頻道（輸入框的文字會一起送出）</div>`+(ws.length?ws.map(w=>{const b=BP[w.b];return `<button class="cx-card cx-pk" data-act="chatsendw" data-id="${w.id}"><span class="ca">${wArt(b.id,{frame:w.q})}</span><span class="grow"><b class="q${w.q}">${esc(b.n)} <span class="lvt">+${w.lv}</span></b><span class="small muted">${QUAL[w.q].n}・戰力 ${fmt(power(w))}</span></span><span class="go">貼上</span></button>`}).join(''):'<div class="small muted center cx-empty">武器庫是空的</div>')}
-function chatListHtml(){if(CHAT.pick&&CHAT.tab==='w')return chatPickHtml();if(CHAT.tab==='s'){const r=CHAT.sys.filter(x=>!chatBlocked(x.uid));return r.length?r.map(chatSysHtml).join(''):`<div class="small muted center cx-empty">${CHAT.err||'最近一天還沒有 +10 以上的強化公告'}</div>`}
+  return `<div class="small muted cx-pk-h">選一把武器貼到${CHAT.tab==='g'?'公會':'世界'}頻道（輸入框的文字會一起送出）</div>`+(ws.length?ws.map(w=>{const b=BP[w.b];return `<button class="cx-card cx-pk" data-act="chatsendw" data-id="${w.id}"><span class="ca">${wArt(b.id,{frame:w.q})}</span><span class="grow"><b class="q${w.q}">${esc(b.n)} <span class="lvt">+${w.lv}</span></b><span class="small muted">${QUAL[w.q].n}・戰力 ${fmt(power(w))}</span></span><span class="go">貼上</span></button>`}).join(''):'<div class="small muted center cx-empty">武器庫是空的</div>')}
+function chatListHtml(){if(CHAT.pick&&(CHAT.tab==='w'||CHAT.tab==='g'&&gdIn()))return chatPickHtml();
+  if(CHAT.tab==='g'){if(!gdIn())return `<div class="cx-empty cx-gd0"><div class="small muted center">加入公會後，這裡就是公會成員專用的聊天室</div>${btn('找公會／建立公會','gdopen',{cls:'btn-primary'})}</div>`;const r=CHAT.g.filter(x=>!chatBlocked(x.uid));return `<button class="cx-gdh" data-act="gdopen">${gdEmb(S.gd.emb,'sm')}<b>${esc(S.gd.name)}</b><span class="small muted">公會 Lv.${S.gd.lv|0}</span><span class="go">公會主頁</span></button>`+(r.length?r.map(chatRowHtml).join(''):`<div class="small muted center cx-empty">${CHAT.err||'公會頻道還沒有人說話'}</div>`)}if(CHAT.tab==='s'){const r=CHAT.sys.filter(x=>!chatBlocked(x.uid));return r.length?r.map(chatSysHtml).join(''):`<div class="small muted center cx-empty">${CHAT.err||'最近一天還沒有 +10 以上的強化公告'}</div>`}
   const r=CHAT.rows.filter(x=>!chatBlocked(x.uid));return r.length?r.map(chatRowHtml).join(''):`<div class="small muted center cx-empty">${CHAT.err||(chatOn()&&!CHAT.t?'讀取中…':'還沒有人說話，來打聲招呼吧！')}</div>`}
 function sheetChat(){const cd=Math.max(0,Math.ceil((CHAT.cd-Date.now())/1000)),canLv=smithLv()>=CHAT_LV||CLOUD.admin;
   const tb=(k,n,b,lk)=>`<button class="cx-tab ${CHAT.tab===k?'on':''} ${lk?'lk':''}" data-act="chattab" data-k="${k}">${n}${lk?img('ic_lock','cx-lk'):''}${b?`<i class="ui-badge badge">${b}</i>`:''}</button>`;
-  return `<div class="sheet-head"><span style="width:44px"></span><h2>聊天</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>
-  <div class="cx-tabs">${tb('w','世界',0)}${tb('g','公會',0,1)}${tb('s','系統',CHAT.sysUnread)}</div>
+  return `<div class="sheet-head"><span class="cx-hb">${btn('好友'+(FR.d&&FR.d.in.length?`<i class="ui-badge badge">${FR.d.in.length}</i>`:''),'fropen',{cls:'btn-sec gd-hb'})}${btn('公會','gdopen',{cls:'btn-sec gd-hb'})}</span><h2>聊天</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>
+  <div class="cx-tabs">${tb('w','世界',0)}${tb('g','公會',CHAT.gunread,!gdIn())}${tb('s','系統',CHAT.sysUnread)}</div>
   <div class="cx-list" id="cxList">${chatListHtml()}</div>
-  ${CHAT.tab==='w'?(canLv?`<div class="cx-quick">${CHAT_QUICK.map(q=>`<button class="cx-q" data-act="chatq" data-k="${esc(q)}">${esc(q)}</button>`).join('')}</div>
-  <div class="cx-in"><button class="cx-wb ${CHAT.pick?'on':''}" data-act="chatpick" aria-label="分享武器">${CHAT.pick?'取消':'武器'}</button><input id="cxIn" type="text" maxlength="${CHAT_MAX}" autocomplete="off" enterkeyhint="send" placeholder="說點什麼…" value="${esc(CHAT.draft)}"><button class="ui-btn ui-btn--primary btn btn-primary cx-send" data-act="chatsend">送出</button></div>
+  ${CHAT.tab==='w'||CHAT.tab==='g'&&gdIn()?(canLv?`<div class="cx-quick">${CHAT_QUICK.map(q=>`<button class="cx-q" data-act="chatq" data-k="${esc(q)}">${esc(q)}</button>`).join('')}</div>
+  <div class="cx-in"><button class="cx-wb ${CHAT.pick?'on':''}" data-act="chatpick" aria-label="分享武器">${CHAT.pick?'取消':'武器'}</button><input id="cxIn" type="text" maxlength="${CHAT_MAX}" autocomplete="off" enterkeyhint="send" placeholder="${CHAT.tab==='g'?'跟公會成員說…':'說點什麼…'}" value="${esc(CHAT.draft)}"><button class="ui-btn ui-btn--primary btn btn-primary cx-send" data-act="chatsend">送出</button></div>
   <div class="cx-note"><span id="cxCd">${cd?cd+' 秒後可以再發言':`最多 ${CHAT_MAX} 字`}</span><span>點名字可以看名片、檢舉、封鎖</span></div>`
   :`<div class="cx-note cx-lvneed">鐵匠等級 Lv.${CHAT_LV} 才能發言（目前 Lv.${smithLv()}），先去收復村莊吧！</div>`)
   :`<div class="cx-note">${CHAT.tab==='s'?'強化 +10 以上成功或爆裝，都會出現在這裡':''}</div>`}`}
 // 只更新訊息列表（不重畫整個視窗，打字中的輸入框不會被清掉）
 function chatPaint(toEnd){chatBarPaint();if(!chatOpen())return;const L=document.getElementById('cxList');if(!L)return;
   const near=L.scrollHeight-L.scrollTop-L.clientHeight<60;L.innerHTML=chatListHtml();if(near||toEnd)L.scrollTop=L.scrollHeight;
-  if(CHAT.tab==='w')CHAT.unread=0}
-function chatOpenSheet(tab){if(chatMock())chatMockInit();CHAT.tab=tab||'w';if(CHAT.tab==='w')CHAT.unread=0;if(CHAT.tab==='s')CHAT.sysUnread=0;ui.sheet={t:'chat'};render();
+  if(CHAT.tab==='w')CHAT.unread=0;if(CHAT.tab==='g')CHAT.gunread=0}
+function chatOpenSheet(tab){if(chatMock())chatMockInit();CHAT.tab=tab||'w';if(CHAT.tab==='w')CHAT.unread=0;if(CHAT.tab==='g')CHAT.gunread=0;if(CHAT.tab==='s')CHAT.sysUnread=0;ui.sheet={t:'chat'};render();if(Date.now()-FR.t>60000)frLoad(true);
   const L=document.getElementById('cxList');if(L)L.scrollTop=L.scrollHeight;if(chatOn())chatFetch(true)}
 // 底部聊天條（v3.88 方案 A）：顯示世界頻道最新一則
 const chatBarShow=()=>S.chatBar!==false&&(chatOn()||chatMock())&&!(typeof tutOn==='function'&&tutOn());
@@ -2079,22 +2126,22 @@ if(typeof document!=='undefined'){document.addEventListener('input',e=>{if(e.tar
   document.addEventListener('keydown',e=>{if(e.target&&e.target.id==='cxIn'&&e.key==='Enter'&&!e.isComposing){e.preventDefault();chatSend()}})}
 
 /* 玩家名片：點聊天或排行榜的名字 */
-const PC={u:null,n:'',m:null,d:null,err:'',busy:false,mine:[]};
-async function pcOpen(u,n,m){PC.u=u;PC.n=n||'';PC.m=m||null;PC.d=null;PC.err='';pcShow();
-  if(chatMock()||String(u).startsWith('mock')||u==='me'){const k=+String(u).slice(5)||0;PC.d=u==='me'?pcSelf():{uid:u,nick:n,lv:[18,9,22,25,14][k]||10,cleared:[8,3,10,12,6][k]||5,maxlv:[10,6,13,12,11][k]||8,likes:[12,1,30,44,5][k]||0,liked:false,left:3,me:false,w:{b:['t2_daneaxe','t1_woodaxe','t2_longsword','t2_longsword','t2_longbow'][k]||'t1_woodaxe',q:[2,0,3,3,2][k]||1,lv:[10,6,13,12,11][k]||8,traits:[],ench:[]}};if(PC.d.w&&!BP[PC.d.w.b])PC.d.w.b='t1_woodaxe';if(PC.d.w)PC.d.w.p=power({...PC.d.w,b:bpId(PC.d.w.b)});return pcShow()}
+const PC={u:null,n:'',m:null,d:null,err:'',busy:false,mine:[],arm:null};
+async function pcOpen(u,n,m){PC.u=u;PC.n=n||'';PC.m=m||null;PC.d=null;PC.err='';PC.arm=null;pcShow();
+  if(chatMock()||String(u).startsWith('mock')||u==='me'){const k=+String(u).slice(5)||0;PC.d=u==='me'?pcSelf():{uid:u,nick:n,lv:[18,9,22,25,14][k]||10,cleared:[8,3,10,12,6][k]||5,maxlv:[10,6,13,12,11][k]||8,likes:[12,1,30,44,5][k]||0,liked:false,left:3,me:false,w:{b:['t2_daneaxe','t1_woodaxe','t2_longsword','t2_longsword','t2_longbow'][k]||'t1_woodaxe',q:[2,0,3,3,2][k]||1,lv:[10,6,13,12,11][k]||8,traits:[],ench:[]}};if(PC.d.w&&!BP[PC.d.w.b])PC.d.w.b='t1_woodaxe';if(u!=='me'){PC.d.fr=FR.d&&FR.d.f.some(x=>x.uid===u)?'friend':FR.d&&FR.d.in.some(x=>x.uid===u)?'got':FR.d&&FR.d.out.includes(u)?'sent':null;const gm=GD.d&&GD.d.g&&(GD.d.mem||[]).find(x=>x.uid===u);PC.d.guild=gm?GD.d.g.name:k===2||k===3?'霜狼鍛造會':null}if(PC.d.w)PC.d.w.p=power({...PC.d.w,b:bpId(PC.d.w.b)});return pcShow()}
   try{PC.d=await sbRest('rpc/pc_card',{method:'POST',body:JSON.stringify({p_uid:u})});if(!PC.d)PC.err='找不到這位玩家';else if(PC.d.me&&Array.isArray(PC.d.titles))PC.mine=PC.d.titles}catch(e){PC.err=chatSrvErr(e)}if(PC.u===u)pcShow()}
-function pcSelf(){const best=[...S.weapons].filter(w=>!w.test).sort((a,b)=>power(b)-power(a))[0];return{uid:'me',nick:S.nick||'我',lv:smithLv(),cleared:cleared(),maxlv:S.weapons.reduce((a,w)=>w.test?a:Math.max(a,w.lv),0),likes:0,liked:false,left:3,me:true,title:titleOn(S.title)?S.title:null,titles:TITLES.filter(t=>titleLocal(t.k)).map(t=>t.k),w:best?{...best,p:power(best)}:null}}
+function pcSelf(){const best=[...S.weapons].filter(w=>!w.test).sort((a,b)=>power(b)-power(a))[0];return{uid:'me',nick:S.nick||'我',lv:smithLv(),cleared:cleared(),maxlv:S.weapons.reduce((a,w)=>w.test?a:Math.max(a,w.lv),0),likes:0,liked:false,left:3,me:true,guild:gdIn()?S.gd.name:null,title:titleOn(S.title)?S.title:null,titles:TITLES.filter(t=>titleLocal(t.k)).map(t=>t.k),w:best?{...best,p:power(best)}:null}}
 function pcShow(){if(!ui.result||ui.result.k!=='pc'){ui.result={t:'info',k:'pc',icon:'ui_player_emblem',title:'',html:''}}const d=PC.d,blk=chatBlocked(PC.u);
   ui.result.title=esc(d?d.nick:PC.n||'玩家');
   if(!d){ui.result.html=`<div class="small muted center">${PC.err||'讀取中…'}</div>`;return render()}
   const w=d.w&&BP[bpId(d.w.b)]?d.w:null,b=w&&BP[bpId(w.b)];
   const T=TITLES.find(t=>t.k===d.title),has=d.me?(Array.isArray(d.titles)?d.titles:[]):[];
-  ui.result.html=`<div class="pc-top">${T?`<span class="tt">${T.n}</span>`:''}<span class="small muted">鐵匠 Lv.${d.lv|0}</span>${d.me?'<span class="small t-gold">這是你</span>':''}</div>
+  ui.result.html=`<div class="pc-top">${T?`<span class="tt">${T.n}</span>`:''}<span class="small muted">鐵匠 Lv.${d.lv|0}</span>${d.me?'<span class="small t-gold">這是你</span>':''}${d.guild?`<span class="small muted">公會：${esc(d.guild)}</span>`:''}</div>
    <div class="pc-st"><div><b>${d.cleared|0}</b>收復村莊</div><div><b>+${d.maxlv|0}</b>最高強化</div><div><b>${fmt(d.likes|0)}</b>獲得的讚</div></div>
    <div class="small muted pc-lb">最強武器</div>${w?`<div class="pc-w">${wArt(b.id,{frame:w.q|0})}<div class="grow"><b class="q${w.q|0}">${esc(b.n)} <span class="lvt">+${w.lv|0}</span></b><div class="small muted">${QUAL[w.q|0].n}・戰力 ${fmt(w.p||power({...w,b:b.id}))}</div></div></div>`:'<div class="small muted">還沒有武器</div>'}
    ${d.me?`<div class="small muted pc-lb">稱號（點一下戴上，會顯示在聊天名字前面）</div><div class="pc-tts">${TITLES.map(t=>{const ok=has.includes(t.k)||titleLocal(t.k),on=S.title===t.k&&ok;return `<button class="pc-tt ${on?'on':''} ${ok?'':'lk'}" data-act="pctitle" data-k="${t.k}" ${ok?'':'disabled'}><b>${t.n}</b><span>${ok?(on?'戴著':'已解鎖'):t.d}</span></button>`}).join('')}</div>`:''}
-   ${d.me?'':`<div class="pc-bt">${btn(d.liked?'今天已讚':`讚（今天剩 ${d.left|0} 次）`,'pclike',{cls:'btn-primary',dis:d.liked||!(d.left>0)})}${btn(blk?'解除封鎖':'封鎖','pcblock')}${PC.m?btn('檢舉這則訊息','pcreport',{cls:'btn-danger'}):''}</div>
-   ${blk?'<div class="small muted center">已封鎖：聊天裡看不到他的訊息</div>':''}`}
+   ${d.me?'':`<div class="pc-bt">${btn(d.liked?'今天已讚':`讚（今天剩 ${d.left|0} 次）`,'pclike',{cls:'btn-primary',dis:d.liked||!(d.left>0)})}${pcFrBtn(d)}${btn(blk?'解除封鎖':'封鎖','pcblock')}${PC.m?btn('檢舉這則訊息','pcreport',{cls:'btn-danger'}):''}</div>
+   ${blk?'<div class="small muted center">已封鎖：聊天裡看不到他的訊息</div>':''}${pcSocialHtml(d)}`}
    ${CLOUD.admin&&!d.me?`<div class="label">管理員</div><div class="pc-adm">${btn('禁言 1 小時','pcmute',{attrs:'data-h="1"'})}${btn('禁言 1 天','pcmute',{attrs:'data-h="24"'})}${btn('永久禁言','pcmute',{attrs:'data-h="876000"',cls:'btn-danger'})}${btn('解除禁言','pcmute',{attrs:'data-h="0"'})}${PC.m?btn('刪除這則訊息','pchide',{cls:'btn-danger'}):''}</div>`:''}`;render()}
 async function pcLike(){const d=PC.d;if(!d||d.liked)return;if(chatMock()||String(PC.u).startsWith('mock')){d.liked=true;d.likes++;d.left--;toast(`已幫 ${esc(d.nick)} 按讚`,'ok');return pcShow()}
   try{const r=await sbRest('rpc/pc_like',{method:'POST',body:JSON.stringify({p_uid:PC.u})});
@@ -2104,9 +2151,158 @@ function pcBlock(){const L=chatBlk(),i=L.findIndex(x=>x.u===PC.u);if(i>=0){L.spl
   save();chatPaint();pcShow()}
 async function pcReport(){if(!PC.m)return;if(chatMock()||String(PC.u).startsWith('mock')){toast('已檢舉（離線模擬）','ok');PC.m=null;return pcShow()}
   try{const r=await sbRest('rpc/chat_report',{method:'POST',body:JSON.stringify({p_id:+PC.m})});
-    if(r==='hidden'){CHAT.rows=CHAT.rows.filter(x=>x.id!==+PC.m);toast('已檢舉，這則訊息已隱藏','ok')}else if(r==='ok')toast('已檢舉，謝謝回報。3 位玩家檢舉同一則會自動隱藏','ok');else toast({self:'不能檢舉自己',gone:'這則訊息已經不在了',many:'今天檢舉次數太多了'}[r]||'檢舉失敗','bad');PC.m=null}
+    if(r==='hidden'){CHAT.rows=CHAT.rows.filter(x=>x.id!==+PC.m);CHAT.g=CHAT.g.filter(x=>x.id!==+PC.m);toast('已檢舉，這則訊息已隱藏','ok')}else if(r==='ok')toast('已檢舉，謝謝回報。3 位玩家檢舉同一則會自動隱藏','ok');else toast({self:'不能檢舉自己',gone:'這則訊息已經不在了',many:'今天檢舉次數太多了'}[r]||'檢舉失敗','bad');PC.m=null}
   catch(e){toast(chatSrvErr(e),'bad')}chatPaint();pcShow()}
 async function pcAdmin(fn,arg){try{const r=await sbRest('rpc/'+fn,{method:'POST',body:JSON.stringify(arg)});toast(r==='ok'||r==='unmuted'?'完成':'失敗：'+esc(r),r==='ok'||r==='unmuted'?'ok':'bad');if(fn==='chat_hide'&&r==='ok'){CHAT.rows=CHAT.rows.filter(x=>x.id!==+PC.m);PC.m=null;chatPaint();pcShow()}}catch(e){toast(chatSrvErr(e),'bad')}}
+
+/* v3.94 公會＋好友（13 SQL）：數值要和 SQL gd_lv／gd_gold／gd_boss／gd_cap、guild_donate、guild_shop 一致 */
+const GD_LV=[0,1000,3000,6000,10000,16000,24000,35000,50000,70000],GD_GOLD=[0,2,2,4,4,4,6,6,8,8],GD_BOSS=[0,0,3,3,3,5,5,5,5,8];
+const gdLvOf=x=>GD_LV.filter(t=>t<=(x||0)).length,gdCap=l=>l>=8?40:l>=5?30:20;
+const GD_COST=50000,GD_MK_LV=5,GD_DAY=3,GD_CD_H=12,FR_MAX=30;
+const GD_DON=[{k:'gold',n:'5,000 金幣',ic:'it_gold',c:5000,p:50},{k:'iron',n:'30 個鐵礦',ic:'mat_iron',c:30,p:30},{k:'gems',n:'20 鑽石',ic:'it_gems',c:20,p:150}];
+const GD_SHOP=[{k:'bless',n:'祝福石',ic:'it_bless',x:1,p:150,lim:5},{k:'scroll',n:'防爆卷',ic:'it_scroll',x:1,p:300,lim:2},{k:'shard',n:'符文碎片',ic:'mat_shard',x:5,p:100,lim:3}];
+const GD_PERK=[[2,'狩獵金幣 +2%'],[3,'首領傷害 +3%'],[4,'狩獵金幣 +4%'],[5,'成員上限 30'],[6,'首領傷害 +5%'],[7,'狩獵金幣 +6%'],[8,'成員上限 40'],[9,'狩獵金幣 +8%'],[10,'首領傷害 +8%']];
+const GD_ROLE={lead:'會長',vice:'副會長'};
+const GD_MSG={in:'你已經在公會裡了',lv:`鐵匠等級 Lv.${GD_MK_LV} 才能建立公會（加入公會要 Lv.${CHAT_LV}）`,lvj:`鐵匠等級 Lv.${CHAT_LV} 才能加入公會`,cd:`離開公會後 ${GD_CD_H} 小時內不能加入或建立公會`,name:'公會名稱要 2～8 個字，不能有空白、網址或不雅字',dup:'這個公會名稱已經有人用了',gold:`金幣不足：建立公會要 ${fmt(GD_COST)} 金幣`,
+  gone:'找不到（可能已經解散或取消了）',full:'公會人數已滿',applied:'已送出申請，等會長或副會長同意',apps:'最多同時申請 5 個公會',none:'你不在公會裡',lead:'會長要先把會長轉讓給別人，才能離開公會',role:'只有會長或副會長可以這樣做',max:'次數已經用完了',lack:'材料不夠',pts:'個人貢獻不夠',len:'公告最多 40 個字',link:'公告不能有網址、電話或 LINE ID',login:'請先登入'};
+const gdErr=(r,k)=>(k&&GD_MSG[k+r])||GD_MSG[r]||'操作失敗，請再試一次';
+const GD={d:null,list:null,t:0,busy:false,err:'',tab:'mem',q:'',name:'',join:'open',mk:false,edit:false,note:'',noteJoin:'open',arm:null,mock:null};
+const gdIn=()=>!!(S.gd&&S.gd.id);
+const gdGold=()=>gdIn()?Math.min(GD_GOLD[9],Math.max(0,S.gd.gold|0)):0,gdBoss=()=>gdIn()?Math.min(GD_BOSS[9],Math.max(0,S.gd.boss|0)):0;   // 由伺服器 guild_mine 更新
+const gdBal=k=>k==='iron'?(S.mats.iron||0):(S[k]||0);
+const gdOnline=t=>t&&Date.now()-Date.parse(t)<600000;
+const gdApi=(fn,body)=>sbRest('rpc/'+fn,{method:'POST',body:JSON.stringify(body||{})});
+// 伺服器扣款／發道具前先把存檔傳上去，回來之前暫停自動存檔（和交易所買武器一樣）
+async function gdServer(fn,body,apply){if(!await mkSaved())return toast('雲端存檔還沒同步，請稍後再試','bad'),null;CLOUD.busy=true;let r;
+  try{r=await gdApi(fn,body);if(r==='session'||(r&&r.r==='session')){CLOUD.busy=false;cloudKicked();return null}if(apply)apply(r)}catch(e){toast(chatSrvErr(e),'bad');return null}finally{CLOUD.busy=false}
+  save();CLOUD.dirty=true;cloudPush(true);return r}
+// 離線模擬（本機未登入時看畫面用）
+function gdMockInit(){if(GD.mock)return;const t=Date.now(),ago=m=>new Date(t-m*60000).toISOString();
+  GD.mock={g:null,role:'mem',me:{pts:230,don:GD_DAY,shop:{},cd:null,apps:[]},mem:[{uid:'mock-2',nick:'霜狼',lv:22,role:'lead',wk:1240,tot:5200,at:ago(5)},{uid:'mock-3',nick:'渡鴉',lv:25,role:'vice',wk:980,tot:4100,at:ago(1)},{uid:'mock-0',nick:'雷霆之錘',lv:18,role:'mem',wk:760,tot:2300,at:ago(120)},{uid:'mock-1',nick:'冰原少女',lv:9,role:'mem',wk:320,tot:900,at:ago(2)},{uid:'mock-4',nick:'北境小鐵',lv:14,role:'mem',wk:150,tot:400,at:ago(1500)}],
+    apps:[{uid:'mock-9',nick:'雪原新手',lv:4,at:ago(30)}],list:[{id:1,name:'霜狼鍛造會',emb:'霜',lv:3,n:12,cap:20,join_mode:'open'},{id:2,name:'渡鴉之巢',emb:'渡',lv:5,n:28,cap:30,join_mode:'apply'},{id:3,name:'雷神鐵砧',emb:'雷',lv:1,n:4,cap:20,join_mode:'open'},{id:4,name:'世界樹守望',emb:'世',lv:2,n:20,cap:20,join_mode:'open'}]}}
+function gdMockD(){const m=GD.mock,g=m.g;if(!g)return{g:null,me:m.me};const lv=gdLvOf(g.exp),me={uid:'me',nick:S.nick||'我',lv:smithLv(),role:m.role,wk:m.wk||0,tot:m.wk||0,at:new Date().toISOString()};
+  return{g:{...g,lv,gold:GD_GOLD[lv-1],boss:GD_BOSS[lv-1],cap:gdCap(lv),n:m.mem.length+1,rank:2,wk:m.mem.reduce((a,x)=>a+x.wk,0)+(m.wk||0)},role:m.role,me:m.me,mem:[...m.mem.filter(x=>x.role!=='mem'),me,...m.mem.filter(x=>x.role==='mem')].sort((a,b)=>(a.role==='lead'?0:a.role==='vice'?1:2)-(b.role==='lead'?0:b.role==='vice'?1:2)||b.wk-a.wk),apps:m.role==='mem'?[]:m.apps}}
+function gdSync(){const g=GD.d&&GD.d.g;const v=g?{id:g.id,name:g.name,emb:g.emb,lv:g.lv,gold:g.gold|0,boss:g.boss|0}:null;if(JSON.stringify(v)!==JSON.stringify(S.gd||null)){S.gd=v;save();CLOUD.dirty=true}}
+async function gdLoad(quiet){if(GD.busy)return;if(chatMock()){gdMockInit();GD.d=gdMockD();if(!GD.d.g)GD.list=GD.mock.list.filter(x=>!GD.q||x.name.includes(GD.q)).map(x=>({...x,applied:GD.mock.me.apps.includes(x.id)}));gdSync();GD.t=Date.now();if(!quiet)render();return}
+  if(!chatOn())return;GD.busy=true;
+  try{GD.d=await gdApi('guild_mine');if(!GD.d.g)GD.list=await gdApi('guild_list',{p_q:GD.q||null});GD.err='';gdSync()}catch(e){GD.err=chatSrvErr(e)}finally{GD.busy=false;GD.t=Date.now()}
+  if(!quiet&&ui.sheet&&(ui.sheet.t==='gd'||ui.sheet.t==='chat'))render()}
+if(typeof window!=='undefined')setInterval(()=>{if(chatOn()&&!document.hidden&&Date.now()-GD.t>(ui.sheet&&ui.sheet.t==='gd'?20000:300000))gdLoad(!(ui.sheet&&ui.sheet.t==='gd'))},5000);
+function gdOpen(tab){if(tab)GD.tab=tab;GD.arm=null;ui.sheet={t:'gd',k:GD.tab};render();gdLoad()}
+// ---- 動作 ----
+async function gdCreate(){const nm=String(GD.name||'').trim(),n=Array.from(nm).length;
+  if(smithLv()<GD_MK_LV&&!CLOUD.admin)return toast(GD_MSG.lv,'bad');if(n<2||n>8||/\s/.test(nm)||chatPre(nm))return toast(GD_MSG.name,'bad');if(S.gold<GD_COST)return toast(GD_MSG.gold,'bad');
+  if(chatMock()){gdMockInit();S.gold-=GD_COST;GD.mock.g={id:9,name:nm,emb:Array.from(nm)[0],notice:'',join:GD.join,exp:0};GD.mock.role='lead';GD.mock.mem=GD.mock.mem.slice(0,0);GD.mock.wk=0}
+  else{const r=await gdServer('guild_create',{p_sid:SID,p_name:nm,p_join:GD.join},r=>{if(r==='ok')S.gold=Math.max(0,S.gold-GD_COST)});if(r==null)return;if(r!=='ok')return toast(gdErr(r),'bad')}
+  GD.mk=false;GD.name='';GD.tab='mem';snd('unlock');toast(`公會「${esc(nm)}」建立完成！`,'ok');await gdLoad()}
+async function gdJoin(id){if(chatMock()){gdMockInit();const x=GD.mock.list.find(y=>y.id===id);if(!x)return;if(GD.mock.me.cd&&Date.parse(GD.mock.me.cd)>Date.now())return toast(GD_MSG.cd,'bad');if(x.n>=x.cap)return toast(GD_MSG.full,'bad');
+    if(x.join_mode==='apply'){if(!GD.mock.me.apps.includes(id))GD.mock.me.apps.push(id);toast(GD_MSG.applied,'ok')}else{GD.mock.g={id:x.id,name:x.name,emb:x.emb,notice:'每週日晚上一起衝首領，記得捐獻！',join:'open',exp:GD_LV[x.lv-1]+400};GD.mock.role='mem';snd('unlock');toast(`已加入「${esc(x.name)}」`,'ok')}return gdLoad()}
+  try{const r=await gdApi('guild_join',{p_sid:SID,p_gid:id});if(r==='session')return cloudKicked();if(r==='ok'){snd('unlock');toast('已加入公會！','ok')}else toast(gdErr(r,r==='lv'?'':''),r==='applied'?'ok':'bad')}catch(e){toast(chatSrvErr(e),'bad')}gdLoad()}
+async function gdUnapply(id){if(chatMock()){GD.mock.me.apps=GD.mock.me.apps.filter(x=>x!==id)}else{try{await gdApi('guild_unapply',{p_gid:id})}catch(e){return toast(chatSrvErr(e),'bad')}}toast('已取消申請');gdLoad()}
+async function gdLeave(){if(GD.arm!=='leave'){GD.arm='leave';render();return toast(GD.d&&GD.d.role==='lead'&&GD.d.g&&GD.d.g.n<=1?'再按一次：你是最後一個人，公會會解散':`再按一次確認離開（${GD_CD_H} 小時內不能加入別的公會）`)}GD.arm=null;
+  if(chatMock()){if(GD.mock.role==='lead'&&GD.mock.mem.length)return toast(GD_MSG.lead,'bad');GD.mock.g=null;GD.mock.me.cd=new Date(Date.now()+GD_CD_H*3600e3).toISOString();CHAT.g=[];toast('已離開公會');return gdLoad()}
+  try{const r=await gdApi('guild_leave',{p_sid:SID});if(r==='session')return cloudKicked();if(r==='ok'||r==='disband'){CHAT.g=[];CHAT.glast=0;toast(r==='disband'?'公會已解散':'已離開公會')}else toast(gdErr(r),'bad')}catch(e){toast(chatSrvErr(e),'bad')}gdLoad()}
+async function gdSet(){const nt=String(GD.note||'').replace(/\s+/g,' ').trim();if(Array.from(nt).length>40)return toast(GD_MSG.len,'bad');if(nt&&chatPre(nt))return toast(GD_MSG.link,'bad');
+  if(chatMock()){GD.mock.g.notice=nt;GD.mock.g.join=GD.noteJoin}else{try{const r=await gdApi('guild_set',{p_sid:SID,p_notice:nt,p_join:GD.noteJoin});if(r==='session')return cloudKicked();if(r!=='ok')return toast(gdErr(r),'bad')}catch(e){return toast(chatSrvErr(e),'bad')}}
+  GD.edit=false;toast('公會設定已儲存','ok');gdLoad()}
+async function gdAppAns(uid,ok){if(chatMock()){const a=GD.mock.apps.find(x=>x.uid===uid);GD.mock.apps=GD.mock.apps.filter(x=>x.uid!==uid);if(ok&&a)GD.mock.mem.push({...a,role:'mem',wk:0,tot:0,at:new Date().toISOString()});toast(ok?'已同意入會':'已拒絕');return gdLoad()}
+  try{const r=await gdApi('guild_app_ans',{p_sid:SID,p_uid:uid,p_ok:!!ok});if(r==='session')return cloudKicked();if(r==='ok')toast('已同意入會','ok');else if(r==='no')toast('已拒絕');else toast(r==='in'?'他已經加入別的公會了':gdErr(r),'bad')}catch(e){toast(chatSrvErr(e),'bad')}gdLoad()}
+async function gdMemAct(uid,act){const nm=(GD.d&&(GD.d.mem||[]).find(x=>x.uid===uid)||{}).nick||'';const k=act+uid;
+  if((act==='kick'||act==='lead')&&PC.arm!==k){PC.arm=k;pcShow();return toast(act==='kick'?`再按一次把 ${esc(nm)} 踢出公會`:`再按一次把會長轉讓給 ${esc(nm)}（你會變成副會長）`)}PC.arm=null;
+  if(chatMock()){const m=GD.mock,x=m.mem.find(y=>y.uid===uid);if(!x)return;if(act==='kick')m.mem=m.mem.filter(y=>y!==x);else if(act==='vice')x.role='vice';else if(act==='unvice')x.role='mem';else if(act==='lead'){m.mem.forEach(y=>{if(y.role==='lead')y.role='mem'});x.role='lead';m.role='vice'}}
+  else{try{const r=await gdApi('guild_mem_act',{p_sid:SID,p_uid:uid,p_act:act});if(r==='session')return cloudKicked();if(r!=='ok'){toast(r==='max'?'副會長最多 2 位':gdErr(r),'bad');return pcShow()}}catch(e){toast(chatSrvErr(e),'bad');return pcShow()}}
+  toast({kick:`已把 ${esc(nm)} 踢出公會`,vice:`${esc(nm)} 升為副會長`,unvice:`已取消 ${esc(nm)} 的副會長`,lead:`會長已轉讓給 ${esc(nm)}`}[act]||'完成','ok');await gdLoad(true);if(act==='kick')ui.result=null;else pcShow();render()}
+async function gdDonate(k){const x=GD_DON.find(y=>y.k===k),me=GD.d&&GD.d.me;if(!x||!me)return;if(me.don<=0)return toast(`今天 ${GD_DAY} 次捐獻都用完了，明天再來`,'bad');if(gdBal(k)<x.c)return toast(`${x.n.replace(/^\d[\d,]* ?個?/,'')}不夠`,'bad');
+  const pay=()=>{if(k==='iron')S.mats.iron-=x.c;else S[k]-=x.c};let up=false;
+  if(chatMock()){pay();const g=GD.mock.g,l0=gdLvOf(g.exp);g.exp+=x.p;up=gdLvOf(g.exp)>l0;GD.mock.me.don--;GD.mock.me.pts+=x.p;GD.mock.wk=(GD.mock.wk||0)+x.p}
+  else{const r=await gdServer('guild_donate',{p_sid:SID,p_kind:k},r=>{if(r&&r.r==='ok')pay()});if(r==null)return;if(r.r!=='ok')return toast(r.r==='max'?`今天 ${GD_DAY} 次捐獻都用完了，明天再來`:r.r==='lack'?'雲端存檔的數量不夠，請稍後再試':gdErr(r.r),'bad');up=!!r.up}
+  snd(up?'unlock':'deliver');toast(`捐獻 ${x.n}：公會經驗 +${x.p}、個人貢獻 +${x.p}`,'ok');await gdLoad(true);if(up&&GD.d&&GD.d.g)toast(`公會升到 Lv.${GD.d.g.lv}！`,'ok');render()}
+async function gdShop(k){const x=GD_SHOP.find(y=>y.k===k),me=GD.d&&GD.d.me;if(!x||!me)return;const n=(me.shop&&me.shop[k])|0;if(n>=x.lim)return toast('這週這個道具已經換完了','bad');if((me.pts|0)<x.p)return toast(GD_MSG.pts,'bad');
+  const give=()=>{if(k==='shard')S.mats.shard=(S.mats.shard||0)+x.x;else S.items[k]=(S.items[k]||0)+x.x};
+  if(chatMock()){give();me.pts-=x.p;me.shop={...me.shop,[k]:n+1}}
+  else{const r=await gdServer('guild_shop',{p_sid:SID,p_item:k},r=>{if(r==='ok')give()});if(r==null)return;if(r!=='ok')return toast(r==='max'?'這週這個道具已經換完了':gdErr(r),'bad')}
+  snd('deliver');toast(`兌換 ${x.n} ×${x.x}`,'ok');await gdLoad(true);render()}
+// ---- 畫面 ----
+const gdEmb=(e,c='')=>`<div class="gd-emb ${c}">${esc(Array.from(String(e||'？'))[0]||'？')}</div>`;
+function gdListHtml(){const me=GD.d.me||{},cd=me.cd&&Date.parse(me.cd)>Date.now();
+  if(GD.mk)return `<div class="gd-mk"><div class="label">建立公會</div>
+    <input id="gdName" class="gx-in" type="text" maxlength="8" autocomplete="off" placeholder="公會名稱（2～8 個字）" value="${esc(GD.name)}">
+    <div class="gd-jm"><button class="${GD.join==='open'?'on':''}" data-act="gdjm" data-k="open"><b>自由加入</b><span>按加入就進來</span></button><button class="${GD.join==='apply'?'on':''}" data-act="gdjm" data-k="apply"><b>需要審核</b><span>會長／副會長同意</span></button></div>
+    <div class="small muted">徽章會用名稱的第一個字。需要鐵匠 Lv.${GD_MK_LV}（目前 Lv.${smithLv()}）、${fmt(GD_COST)} 金幣（目前 ${fmt(S.gold)}）。</div>
+    <div class="gd-act">${btn('建立公會','gdmk2',{cls:'btn-primary',dis:S.gold<GD_COST})}${btn('取消','gdmk0')}</div></div>`;
+  const L=GD.list;
+  return `<div class="small muted">你還沒有加入公會。加入後可以跟會員聊天、一起捐獻升級，拿狩獵金幣和首領傷害加成。</div>
+   ${cd?`<div class="gd-cd small t-danger">剛離開公會：${new Date(me.cd).toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'})} 之後才能加入或建立公會</div>`:''}
+   <div class="gd-search"><input id="gdQ" class="gx-in" type="search" maxlength="8" autocomplete="off" enterkeyhint="search" placeholder="搜尋公會名稱" value="${esc(GD.q)}"><button data-act="gdfind">搜尋</button></div>
+   ${!L?'<div class="small muted center">讀取中…</div>':L.length?L.map(x=>{const full=x.n>=x.cap,ap=x.applied;
+     return `<div class="gd-l">${gdEmb(x.emb)}<div class="grow"><b>${esc(x.name)}</b><span class="small muted">Lv.${x.lv}・${x.n}／${x.cap} 人・${x.join_mode==='apply'?'需要審核':'自由加入'}</span></div>${ap?`<button class="off" data-act="gdunap" data-id="${+x.id}">取消申請</button>`:full?'<button class="off" disabled>已滿</button>':`<button data-act="gdjoin" data-id="${+x.id}">${x.join_mode==='apply'?'申請':'加入'}</button>`}</div>`}).join(''):`<div class="small muted center cx-empty">${GD.q?'找不到這個名稱的公會':'還沒有任何公會，來建立第一個吧！'}</div>`}
+   <button class="gd-create" data-act="gdmk">建立公會（${fmt(GD_COST)} 金幣）</button>`}
+function gdHomeHtml(){const d=GD.d,g=d.g,me=d.me||{},lv=g.lv,nx=GD_LV[lv],off=d.role==='lead'||d.role==='vice',lead=(d.mem||[]).find(x=>x.role==='lead');
+  const tb=(k,n,b)=>`<button class="${GD.tab===k?'on':''}" data-act="gdtab" data-k="${k}">${n}${b?`<i class="ui-badge badge">${b}</i>`:''}</button>`;
+  const head=`<div class="gd-head">${gdEmb(g.emb)}<div class="grow"><h3>${esc(g.name)}</h3><span class="small muted">公會 Lv.${lv}・成員 ${g.n}／${g.cap}・排名 #${g.rank}</span><span class="small muted">會長：${esc(lead?lead.nick:'—')}${g.join==='apply'?'・需要審核':'・自由加入'}</span></div></div>`;
+  if(GD.edit)return head+`<div class="gd-mk"><div class="label">公會公告（最多 40 字）</div><input id="gdNote" class="gx-in" type="text" maxlength="40" autocomplete="off" placeholder="例如：每週日晚上一起衝首領" value="${esc(GD.note)}">
+    <div class="label">入會方式</div><div class="gd-jm"><button class="${GD.noteJoin==='open'?'on':''}" data-act="gdnj" data-k="open"><b>自由加入</b><span>按加入就進來</span></button><button class="${GD.noteJoin==='apply'?'on':''}" data-act="gdnj" data-k="apply"><b>需要審核</b><span>會長／副會長同意</span></button></div>
+    <div class="gd-act">${btn('儲存','gdset',{cls:'btn-primary'})}${btn('取消','gded0')}</div></div>`;
+  let body='';
+  if(GD.tab==='don'){body=`<div class="small muted">每天可以捐 ${GD_DAY} 次（今天剩 <b class="t-gold">${me.don|0}</b> 次），捐獻會變成公會經驗和你的個人貢獻。</div>`+GD_DON.map(x=>{const lack=gdBal(x.k)<x.c;
+      return `<div class="gd-l">${img(x.ic,'gd-ic')}<div class="grow"><b>捐 ${x.n}</b><span class="small ${lack?'t-danger':'muted'}">${lack?`不夠（目前 ${fmt(gdBal(x.k))}）`:`公會經驗、個人貢獻各 +${x.p}`}</span></div><button data-act="gddon" data-k="${x.k}" ${lack||!(me.don>0)?'class="off"':''}>捐獻</button></div>`}).join('')
+     +`<div class="label">公會等級加成</div><div class="gd-don">${GD_PERK.map(([l,t])=>`<div class="${lv>=l?'on':''}"><b>Lv.${l}</b>${t}</div>`).join('')}</div>`}
+  else if(GD.tab==='shop'){body=`<div class="gd-pts"><span>個人貢獻</span><b>${fmt(me.pts|0)}</b><span class="small muted">離開公會也會保留・每週日 00:00 重置兌換次數</span></div>`+GD_SHOP.map(x=>{const n=(me.shop&&me.shop[x.k])|0,left=x.lim-n,can=left>0&&(me.pts|0)>=x.p;
+      return `<div class="gd-l">${img(x.ic,'gd-ic')}<div class="grow"><b>${x.n} ×${x.x}</b><span class="small muted">${x.p} 點・這週剩 ${left}／${x.lim}</span></div><button data-act="gdshop" data-k="${x.k}" ${can?'':'class="off"'}>${left>0?'兌換':'換完了'}</button></div>`}).join('')}
+  else{const apps=off?(d.apps||[]):[];
+    body=(apps.length?`<div class="label">入會申請 ${apps.length}</div>`+apps.map(a=>`<div class="gd-l gd-ap"><div class="grow"><button class="who" data-act="pcard" data-u="${esc(a.uid)}" data-n="${esc(a.nick)}">${esc(a.nick)}</button><span class="small muted">Lv${a.lv|0}・${chatAgo(a.at)}申請</span></div><button data-act="gdapp" data-u="${esc(a.uid)}" data-k="1">同意</button><button class="off" data-act="gdapp" data-u="${esc(a.uid)}" data-k="0">拒絕</button></div>`).join('')+'<div class="label">成員</div>':'')
+     +(d.mem||[]).map(x=>{const mine=x.uid==='me'||!!(AUTH&&x.uid===AUTH.user.id);
+      return `<div class="gd-m"><i class="${gdOnline(x.at)?'on':'off'}"></i><div class="grow">${GD_ROLE[x.role]?`<b class="r">${GD_ROLE[x.role]}</b>`:''}<button class="who ${mine?'me':''}" data-act="pcard" data-u="${esc(mine?'me':x.uid)}" data-n="${esc(x.nick)}">${mine?'我':esc(x.nick)}</button><span class="small muted">Lv${x.lv|0}・${gdOnline(x.at)?'在線上':chatAgo(x.at)}</span></div><span class="v">${fmt(x.wk|0)}<span>本週貢獻</span></span></div>`}).join('')
+     +`<div class="gd-act">${btn('捐獻','gdtab',{cls:'btn-primary',attrs:'data-k="don"'})}${btn(GD.arm==='leave'?'再按一次確認':d.role==='lead'&&g.n>1?'離開（要先轉讓會長）':'離開公會','gdleave',{cls:GD.arm==='leave'?'btn-danger':'btn-sec'})}</div>`}
+  return head+`<div class="gd-note">${g.notice?'公告：'+esc(g.notice):'<span class="muted">'+(off?'還沒有公告，點右上角「設定」寫一則吧':'會長還沒寫公告')+'</span>'}</div>
+   <div class="gd-row"><span>公會經驗 ${fmt(g.exp)}${nx?'／'+fmt(nx):''}</span><span>${nx?`升到 Lv.${lv+1} 還差 ${fmt(nx-g.exp)}`:'已經是最高等級'}</span></div><div class="gd-bar"><i style="width:${nx?Math.min(100,Math.round((g.exp-GD_LV[lv-1])/(nx-GD_LV[lv-1])*100)):100}%"></i></div>
+   <div class="gd-buff">${g.gold||g.boss?`${g.gold?`<span>狩獵金幣 +${g.gold}%</span>`:''}${g.boss?`<span>首領傷害 +${g.boss}%</span>`:''}`:'<span class="off">Lv.2 開始有加成</span>'}</div>
+   <div class="gd-tabs">${tb('mem','成員',off?(d.apps||[]).length:0)}${tb('don','捐獻',me.don>0?me.don:0)}${tb('shop','商店')}<button data-act="gdchat">聊天${CHAT.gunread?`<i class="ui-badge badge">${CHAT.gunread}</i>`:''}</button></div>`+body}
+function sheetGuild(){const d=GD.d,off=d&&d.g&&(d.role==='lead'||d.role==='vice');
+  return `<div class="sheet-head">${off&&!GD.edit?btn('設定','gded',{cls:'btn-sec gd-hb'}):'<span style="width:44px"></span>'}<h2>鐵匠公會</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>
+  ${!d?`<div class="small muted center cx-empty">${GD.err||(chatOn()||chatMock()?'讀取中…':'請先登入')}</div>`:d.g?gdHomeHtml():gdListHtml()}`}
+
+/* 好友（不送禮） */
+const FR={d:null,find:null,q:'',tab:'f',t:0,busy:false,err:''};
+const FR_MOCK=()=>({f:[{uid:'mock-2',nick:'霜狼',lv:22,at:new Date(Date.now()-60000).toISOString(),g:'霜狼鍛造會'},{uid:'mock-3',nick:'渡鴉',lv:25,at:new Date(Date.now()-300000).toISOString(),g:null},{uid:'mock-1',nick:'冰原少女',lv:9,at:new Date(Date.now()-3600e3).toISOString(),g:'霜狼鍛造會'},{uid:'mock-0',nick:'雷霆之錘',lv:18,at:new Date(Date.now()-3*86400e3).toISOString(),g:null}],in:[{uid:'mock-4',nick:'北境小鐵',lv:14,at:new Date(Date.now()-7200e3).toISOString()},{uid:'mock-9',nick:'雪原新手',lv:4,at:new Date(Date.now()-600e3).toISOString()}],out:[]});
+async function frLoad(quiet){if(chatMock()){if(!FR.d)FR.d=FR_MOCK();FR.t=Date.now();if(!quiet)render();return}if(!chatOn()||FR.busy)return;FR.busy=true;
+  try{FR.d=await gdApi('friend_list');FR.err=''}catch(e){FR.err=chatSrvErr(e)}finally{FR.busy=false;FR.t=Date.now()}if(!quiet||(ui.sheet&&(ui.sheet.t==='fr'||ui.sheet.t==='chat')))render()}
+function frOpen(tab){if(tab)FR.tab=tab;ui.sheet={t:'fr',k:FR.tab};render();frLoad()}
+const FR_MSG={self:'不能加自己',gone:'找不到這位玩家',already:'你們已經是好友了',full:`好友最多 ${FR_MAX} 位`,full2:'對方的好友已經滿了',many:'今天送出的好友申請太多了，明天再試',sent:'已送出好友申請',ok:'你們成為好友了！',no:'已拒絕',login:'請先登入'};
+async function frAct(fn,uid,arg){if(chatMock()){if(!FR.d)FR.d=FR_MOCK();const L=FR.d;let r='ok';
+    if(fn==='friend_add'){if(L.f.some(x=>x.uid===uid))r='already';else{const i=L.in.findIndex(x=>x.uid===uid);if(i>=0){L.f.unshift({...L.in[i],at:new Date().toISOString()});L.in.splice(i,1)}else{r='sent';L.out.push(uid)}}}
+    else if(fn==='friend_ans'){const i=L.in.findIndex(x=>x.uid===uid);if(i<0)r='gone';else{if(arg)L.f.unshift({...L.in[i],at:new Date().toISOString()});else r='no';L.in.splice(i,1)}}
+    else if(fn==='friend_del')L.f=L.f.filter(x=>x.uid!==uid);
+    if(FR.find)FR.find.forEach(x=>{if(x.uid===uid)x.fr=r==='sent'?'sent':r==='ok'&&fn!=='friend_del'?'friend':x.fr});return r}
+  try{return await gdApi(fn,fn==='friend_ans'?{p_uid:uid,p_ok:!!arg}:{p_uid:uid})}catch(e){toast(chatSrvErr(e),'bad');return null}}
+async function frAdd(uid){const r=await frAct('friend_add',uid);if(r==null)return;toast(fn2txt(r,'friend_add'),r==='ok'||r==='sent'?'ok':'bad');if(r==='ok')snd('unlock');if(PC.d&&PC.u===uid){PC.d.fr=r==='ok'||r==='already'?'friend':r==='sent'?'sent':PC.d.fr;pcShow()}if(FR.find)FR.find.forEach(x=>{if(x.uid===uid)x.fr=r==='ok'||r==='already'?'friend':r==='sent'?'sent':x.fr});frLoad(true)}
+const fn2txt=(r,fn)=>r==='ok'&&fn==='friend_del'?'已刪除好友':FR_MSG[r]||'操作失敗，請再試一次';
+async function frAns(uid,ok){const r=await frAct('friend_ans',uid,ok);if(r==null)return;toast(fn2txt(r),r==='ok'?'ok':r==='no'?'':'bad');if(r==='ok')snd('unlock');if(PC.d&&PC.u===uid){PC.d.fr=r==='ok'?'friend':null;pcShow()}frLoad()}
+async function frDel(uid){if(PC.arm!=='fdel'+uid){PC.arm='fdel'+uid;pcShow();return toast('再按一次確認刪除好友')}PC.arm=null;const r=await frAct('friend_del',uid);if(r==null)return;toast('已刪除好友');if(PC.d&&PC.u===uid){PC.d.fr=null;pcShow()}frLoad(true)}
+async function frFind(){const q=String(FR.q||'').trim();if(!q)return toast('請輸入暱稱','bad');
+  if(chatMock()){FR.find=[{uid:'mock-7',nick:q+'鐵匠',lv:7,fr:null},{uid:'mock-2',nick:'霜狼',lv:22,fr:'friend'}];return render()}
+  try{FR.find=await gdApi('friend_find',{p_nick:q})}catch(e){return toast(chatSrvErr(e),'bad')}render()}
+function sheetFriend(){const d=FR.d,inN=d?d.in.length:0;
+  const tb=(k,n,b)=>`<button class="${FR.tab===k?'on':''}" data-act="frtab" data-k="${k}">${n}${b?`<i class="ui-badge badge">${b}</i>`:''}</button>`;
+  const who=x=>`<button class="who" data-act="pcard" data-u="${esc(x.uid)}" data-n="${esc(x.nick)}">${esc(x.nick)}</button>`;
+  let body='';
+  if(!d)body=`<div class="small muted center cx-empty">${FR.err||(chatOn()||chatMock()?'讀取中…':'請先登入')}</div>`;
+  else if(FR.tab==='in')body=d.in.length?d.in.map(x=>`<div class="gd-l gd-ap"><div class="grow">${who(x)}<span class="small muted">Lv${x.lv|0}・${chatAgo(x.at)}申請</span></div><button data-act="frans" data-u="${esc(x.uid)}" data-k="1">同意</button><button class="off" data-act="frans" data-u="${esc(x.uid)}" data-k="0">拒絕</button></div>`).join(''):'<div class="small muted center cx-empty">沒有新的好友申請</div>';
+  else if(FR.tab==='find')body=`<div class="gd-search"><input id="frQ" class="gx-in" type="search" maxlength="8" autocomplete="off" enterkeyhint="search" placeholder="輸入暱稱（開頭幾個字也可以）" value="${esc(FR.q)}"><button data-act="frfind">搜尋</button></div>`
+    +(FR.find?FR.find.length?FR.find.map(x=>`<div class="gd-l"><div class="grow">${who(x)}<span class="small muted">Lv${x.lv|0}</span></div>${x.fr==='friend'?'<button class="off" disabled>已是好友</button>':x.fr==='sent'?'<button class="off" disabled>已申請</button>':x.fr==='got'?`<button data-act="frans" data-u="${esc(x.uid)}" data-k="1">同意</button>`:`<button data-act="fradd" data-u="${esc(x.uid)}">加好友</button>`}</div>`).join(''):'<div class="small muted center cx-empty">找不到這個暱稱</div>':'<div class="small muted center">也可以在聊天點別人的名字，從名片加好友</div>');
+  else body=d.f.length?d.f.map(x=>`<div class="gd-l"><i class="gdot ${gdOnline(x.at)?'on':'off'}"></i><div class="grow">${who(x)}<span class="small muted">Lv${x.lv|0}・${gdOnline(x.at)?'在線上':chatAgo(x.at).replace('剛剛','剛剛')+'上線'}${x.g?'・'+esc(x.g):''}</span></div><button class="off" data-act="pcard" data-u="${esc(x.uid)}" data-n="${esc(x.nick)}">名片</button></div>`).join('')+`<div class="small muted center gd-ft">點名字可以看名片、刪除好友</div>`
+    :'<div class="small muted center cx-empty">還沒有好友。<br>在聊天點別人的名字，名片上就能加好友</div>';
+  return `<div class="sheet-head"><span style="width:44px"></span><h2>好友</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>
+  <div class="gd-tabs">${tb('f',`好友 ${d?d.f.length:0}／${FR_MAX}`)}${tb('in','申請',inN)}${tb('find','搜尋')}</div>${body}`}
+if(typeof document!=='undefined'){document.addEventListener('input',e=>{const t=e.target;if(!t||!t.id)return;if(t.id==='gdQ')GD.q=t.value;else if(t.id==='gdName')GD.name=t.value;else if(t.id==='gdNote')GD.note=t.value;else if(t.id==='frQ')FR.q=t.value});
+  document.addEventListener('keydown',e=>{const t=e.target;if(!t||e.key!=='Enter'||e.isComposing)return;if(t.id==='gdQ'){e.preventDefault();GD.list=null;gdLoad()}else if(t.id==='frQ'){e.preventDefault();frFind()}})}
+function pcFrBtn(d){const u=PC.u,fr=d.fr,arm=PC.arm,ua=`data-u="${esc(u)}"`;
+  return fr==='friend'?btn(arm==='fdel'+u?'再按一次刪除':'刪除好友','frdel',{cls:arm==='fdel'+u?'btn-danger':'btn-sec',attrs:ua}):fr==='sent'?btn('已申請好友','fradd',{dis:true}):fr==='got'?btn('同意好友','frans',{cls:'btn-primary',attrs:ua+' data-k="1"'}):btn('加好友','fradd',{cls:'btn-primary',attrs:ua})}
+function pcSocialHtml(d){const u=PC.u,arm=PC.arm,ua=`data-u="${esc(u)}"`;
+  const gm=GD.d&&GD.d.g&&(GD.d.mem||[]).find(x=>x.uid===u),my=GD.d&&GD.d.role;let ga='';
+  if(gm&&(my==='lead'||(my==='vice'&&gm.role==='mem'))){const k=a=>btn(arm===a+u?'再按一次確認':{kick:'踢出公會',vice:'升副會長',unvice:'取消副會長',lead:'轉讓會長'}[a],'gdmem',{cls:a==='kick'||arm===a+u?'btn-danger':'btn-sec',attrs:ua+` data-k="${a}"`});
+    ga=`<div class="label">公會管理（${esc(gm.nick)} 是${GD_ROLE[gm.role]||'成員'}）</div><div class="pc-adm">${my==='lead'?(gm.role==='vice'?k('unvice'):k('vice'))+k('lead'):''}${k('kick')}</div>`}
+  return ga}
 const NICK_OK=n=>{const c=Array.from(n);return c.length<2?'暱稱至少 2 個字':c.length>8?'暱稱最多 8 個字':/^[\p{L}\p{N}_]+$/u.test(n)?'':'暱稱只能用中文、英文、數字或底線'};
 async function cloudSetNick(n){const old=S.nick;S.nick=n;
   try{const r=await sbRest('rpc/save_game',{method:'POST',body:JSON.stringify({p_sid:SID,p_data:S,p_nick:n})});if(typeof r==='string'&&r.startsWith('cheat')){S.nick=old;cloudCheat(r);throw new Error('存檔資料異常')}save();CLOUD.dirty=false;CLOUD.last=Date.now()}
@@ -2379,7 +2575,7 @@ function rollEnhance(r,bc){const ok=Math.random()<r;if(ok)return'ok';return Math
 function makeWeapon(b,q,lv=0,traits,ench){b=bpId(b);const w={id:S.nextId++,b,q,lv,traits:traits||rollTraits(q),ench:ench||[null,null,null,null],created:NOW()};S.weapons.push(w);return w}
 function rollCycle(i,w,st,t){
   const v=VILLAGES[i],s=STRATS[st.strat],b=st.bank;b.cycles++;const x2=1;   // v3.87 取消雙倍收成（首領改整週）
-  const gs=goldMul(i,w);b.gold+=Math.round(v.gold*s.gold*gs*(1+tal('gold')/100))*x2;
+  const gs=goldMul(i,w);b.gold+=Math.round(v.gold*s.gold*gs*(1+(tal('gold')+gdGold())/100))*x2;   // v3.98 加上公會加成
   for(const d of v.drops){if(Math.random()<dropChance(i,w,d,st.strat)){let n=rnd(d[2],d[3]);if(d[1]>=RARE_P&&s.bonus&&Math.random()<s.bonus)n++;if(d[1]>=RARE_P&&w&&Math.random()<Math.min(CAP.harvest,affixVal(w,'harvest'))/100)n++;if(d[1]>=RARE_P)n*=x2;b.mats[d[0]]=(b.mats[d[0]]||0)+n}}
 }
 function tick(){
@@ -3384,7 +3580,7 @@ function sheetVillage(i){
    <div class="ui-panel panel">${ptitle('可取得材料')}${drops('normal')}</div>${bank}
    <div class="ui-panel panel">${ptitle(st.status==='open'?'交付委託':'指派駐守武器')}${ok.length?`<div class="wgrid">${ok.map(x=>wTile(x,`data-act="deliver" data-i="${i}" data-id="${x.id}"`)).join('')}</div><div class="small muted">點武器即可交付。</div>`:`<div class="empty">沒有符合的${CATS[v.cat]}類武器。到鐵匠鋪鍛造，或到武器庫強化、附魔。</div>`}</div>`;
 }
-const gph=(i,w)=>{const v=VILLAGES[i],st=S.villages[i],gs=goldMul(i,w);return Math.round(3600000/gameDur(i,w)*v.gold*STRATS[st.strat].gold*gs*(1+tal('gold')/100))};
+const gph=(i,w)=>{const v=VILLAGES[i],st=S.villages[i],gs=goldMul(i,w);return Math.round(3600000/gameDur(i,w)*v.gold*STRATS[st.strat].gold*gs*(1+(tal('gold')+gdGold())/100))};
 const harvestMini=g=>Object.entries(g).filter(([k,n])=>n).slice(0,4).map(([k,n])=>`<span class="hm">${img(k==='gold'?'it_gold':MATART[k])}${fmt(n)}</span>`).join('');
 const harvestIcons=g=>Object.entries(g).filter(([k,n])=>n).map(([k,n])=>`<div class="hico">${img(k==='gold'?'it_gold':MATART[k]||ITEMS[k][1])}<span class="num">×${fmt(n)}</span></div>`).join('')||'<div class="small muted">沒有獎勵</div>';
 function lbRows(i){const b=S.best[i];return [...lbOthers(i).map(x=>({...x,me:false})),...(b?[{n:S.nick||'你',p:b.p,t:lbMyT(i),w:{b:b.b,q:b.q,lv:b.lv,traits:b.traits||[],ench:b.ench||[]},me:true}]:[])].sort((x,y)=>y.p-x.p||(x.t<y.t?-1:x.t>y.t?1:y.me-x.me)).map((x,k)=>({...x,k}))}
@@ -3575,6 +3771,7 @@ function sheetDev(){
      <div class="devgrid">${B('chopen','打開聊天視窗','btn-primary')}${B('chnew','模擬收到 3 則新訊息')}${B('chlong','模擬一則 60 字長訊息')}${B('chcd','模擬發言冷卻 5 秒')}${B('chsys','打開系統頻道')}${B('chbar','底部聊天條：'+(S.chatBar===false?'目前隱藏':'目前顯示'))}</div>
      <div class="label">玩家名片</div><div class="devgrid">${B('pcme','看自己的名片')}${B('pcother','看別人的名片（模擬）')}${B('chunblk','清空封鎖名單（'+chatBlk().length+' 人）')}</div>
      <div class="label">v3.89 武器卡、稱號、恭喜</div><div class="devgrid">${B('chwcard','模擬別人貼一張武器卡')}${B('chtitle','解鎖本機 4 個稱號（+12、傳說、10 村、2-1）')}${B('chtitle0','卸下稱號')}${B('chcheer','模擬收到 3 位鐵匠恭喜')}${B('chsys','打開系統頻道（按恭喜）')}</div>
+     <div class="label">v3.98 好友＋公會</div><div class="small muted" style="margin-bottom:6px">${chatOn()?'已登入：打開的是真的公會／好友；模擬按鈕只在本機未登入時可用':'未登入：公會、好友用離線模擬'}</div><div class="devgrid">${B('gdopen','打開公會','btn-primary')}${B('gdnone','模擬：還沒加入公會')}${B('gdlead','模擬：我是會長（有入會申請）')}${B('gdmem','模擬：我是一般成員')}${B('gdlv5','模擬：公會升到 Lv.5')}${B('gdchat','打開公會聊天')}${B('fropen','打開好友（有 2 個申請）')}${B('gdbonus','檢查公會加成（金幣、首領）')}</div>
      <div class="label">檢查</div><div class="devgrid">${B('chfilter','測試輸入檢查（網址、電話、字數）')}${B('tsec','安全設定檢查（含聊天 SQL）')}</div>`,
    mk:`<div class="label">交易所（v3.41）</div><div class="small muted" style="margin-bottom:6px">${AUTH?'目前連線真實伺服器（'+esc(S.nick||AUTH.user.email)+'）':'未登入：交易所使用「離線模擬」，只存在這支手機，用來測試畫面與流程'}</div>
      <div class="devgrid">${B('mkopen','開啟交易所')}${B('mksettle','立即結算我的成交／過期')}</div>
@@ -3589,7 +3786,19 @@ function sheetDev(){
 }
 
 
-function devdo(k){if(k.startsWith('ch')||k.startsWith('pc')){ui.sheet=null;   // v3.88 聊天測試
+function devdo(k){if(k.startsWith('gd')||k==='fropen'){ui.sheet=null;   // v3.98 好友＋公會測試
+    const mk=['gdnone','gdlead','gdmem','gdlv5'].includes(k);if(mk&&!chatMock()){ui.sheet={t:'d'};render();return toast('模擬按鈕只在本機未登入時可用','bad')}
+    if(mk){if(k!=='gdlv5')GD.mock=null;gdMockInit();const m=GD.mock;if(k==='gdnone'){m.g=null;m.me.cd=null}else{m.g=m.g||{id:1,name:'霜狼鍛造會',emb:'霜',notice:'每週日晚上一起衝首領，記得捐獻！',join:'open',exp:3860};m.role=k==='gdlead'?'lead':'mem';if(k==='gdlead')m.mem.forEach(x=>{if(x.role==='lead')x.role='mem'});else if(!m.mem.some(x=>x.role==='lead'))m.mem[0].role='lead';if(k==='gdlv5')m.g.exp=Math.max(m.g.exp,GD_LV[4])}GD.mk=false;GD.edit=false;GD.tab='mem';return gdOpen()}
+    if(k==='gdopen')return gdOpen();if(k==='gdchat'){if(chatMock())chatMockInit();return chatOpenSheet('g')}if(k==='fropen'){FR.tab='in';return frOpen()}
+    if(k==='gdbonus'){const o=S.gd,i=S.villages.findIndex(v=>v.status==='cleared'&&v.weaponId!=null),w=i>=0?W(S.villages[i].weaponId):S.weapons.find(x=>!x.test),b=evtNow().boss;const res=[];
+      const chk=(n,ok)=>res.push((ok?'✓ ':'✗ ')+n);
+      S.gd=null;const g0=i>=0?gph(i,w):0,d0=w?bossDmgOf(w,b):0;S.gd={id:1,name:'測試',lv:10,gold:8,boss:8};const g1=i>=0?gph(i,w):0,d1=w?bossDmgOf(w,b):0;S.gd=o;
+      chk(`等級表：Lv.1～10 金幣 ${GD_GOLD.join('/')}，首領 ${GD_BOSS.join('/')}`,gdLvOf(0)===1&&gdLvOf(999)===1&&gdLvOf(1000)===2&&gdLvOf(70000)===10&&gdCap(4)===20&&gdCap(5)===30&&gdCap(8)===40);
+      chk(i>=0?`狩獵金幣：每小時 ${fmt(g0)} → ${fmt(g1)}（+8%）`:'狩獵金幣：沒有駐守中的村莊，略過',i<0||Math.abs(g1/Math.max(1,g0)-(1+(tal('gold')+8)/100)/(1+tal('gold')/100))<.02);
+      chk(w?`首領傷害：每小時 ${fmt(d0)} → ${fmt(d1)}（+8%）`:'首領傷害：沒有武器，略過',!w||Math.abs(d1-Math.round(d0*1.08))<=2);
+      chk(`目前公會：${gdIn()?esc(S.gd.name)+'（Lv.'+S.gd.lv+'，金幣 +'+gdGold()+'%、首領 +'+gdBoss()+'%）':'沒有加入'}`,true);
+      ui.result={t:'info',title:'公會加成檢查',html:`<div class="small" style="text-align:left;line-height:1.8">${res.join('<br>')}</div>`};ui.sheet={t:'d'};return render()}}
+  if(k.startsWith('ch')||k.startsWith('pc')){ui.sheet=null;   // v3.88 聊天測試
     if(chatMock())chatMockInit();
     if(k==='chopen')return chatOpenSheet('w');if(k==='chsys')return chatOpenSheet('s');
     if(k==='chnew'){const t=new Date().toISOString();chatAdd([0,1,2].map(i=>({id:CHAT.last+1+i,uid:'mock-'+i,nick:['雷霆之錘','冰原少女','霜狼'][i],lv:[18,9,22][i],body:['測試訊息 A：有人在嗎？','測試訊息 B：剛剛爆了一把…','測試訊息 C：恭喜恭喜'][i],mine:false,at:t})));CHAT.unread=Math.min(99,CHAT.unread+3);render();return toast('底部聊天條應該出現紅色 3','ok')}
@@ -3703,7 +3912,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
     Promise.all([AUTH?adminCheck():Promise.resolve(false),fetch(SB_URL+'/rest/v1/rpc/ac_version',{method:'POST',headers:{apikey:SB_KEY,'Content-Type':'application/json'},body:'{}'}).then(r=>r.ok?r.json():null).catch(()=>null),fetch(SB_URL+'/rest/v1/rpc/chat_version',{method:'POST',headers:{apikey:SB_KEY,'Content-Type':'application/json'},body:'{}'}).then(r=>r.ok?r.json():null).catch(()=>null)]).then(([adm,ver,cver])=>{
       ui.testOut=`<div><b>安全設定檢查</b></div>`+row(true,'網站模式：'+(CLOUD_ONLY?'正式（只能雲端存檔）':'測試版（本機）'))+row(!!AUTH,'登入帳號：'+(AUTH?esc(AUTH.user.email):'未登入'))
         +row(adm||!CLOUD_ONLY,'管理員：'+(adm?'是（可以使用開發者工具）':CLOUD_ONLY?'否（正式網站不能開開發者工具）':'否（測試版不限制）'))
-        +row(parseFloat(ver)>=3.63,'伺服器防作弊版本：'+(ver||'讀不到（v3.63 的 SQL 還沒執行）'))+row(parseFloat(ver)>=3.65,'排行榜戰力由伺服器計算：'+(parseFloat(ver)>=3.65?'是':'否（04_leaderboard_v3.65.sql 還沒執行）'))+row(parseFloat(ver)>=3.69,'伺服器離線上限 12 小時：'+(parseFloat(ver)>=3.69?'是':'否（05_offline12h_v3.69.sql 還沒執行）'))+row(parseFloat(ver)>=3.70,'全服跑馬燈：'+(parseFloat(ver)>=3.70?'已啟用':'否（06_news_v3.70.sql 還沒執行）'))+row(parseFloat(ver)>=3.72,'首領討伐全服血條：'+(parseFloat(ver)>=3.72?'是':'否（07_boss_v3.72.sql 還沒執行）'))+row(parseFloat(ver)>=3.87,'派武器駐守首領：'+(parseFloat(ver)>=3.87?'是':'否（10_boss_post_v3.87.sql 還沒執行）'))+row(parseFloat(cver)>=3.88,'世界聊天＋玩家名片：'+(parseFloat(cver)>=3.88?'已啟用（'+cver+'）':'否（11_chat_v3.88.sql 還沒執行）'))
+        +row(parseFloat(ver)>=3.63,'伺服器防作弊版本：'+(ver||'讀不到（v3.63 的 SQL 還沒執行）'))+row(parseFloat(ver)>=3.65,'排行榜戰力由伺服器計算：'+(parseFloat(ver)>=3.65?'是':'否（04_leaderboard_v3.65.sql 還沒執行）'))+row(parseFloat(ver)>=3.69,'伺服器離線上限 12 小時：'+(parseFloat(ver)>=3.69?'是':'否（05_offline12h_v3.69.sql 還沒執行）'))+row(parseFloat(ver)>=3.70,'全服跑馬燈：'+(parseFloat(ver)>=3.70?'已啟用':'否（06_news_v3.70.sql 還沒執行）'))+row(parseFloat(ver)>=3.72,'首領討伐全服血條：'+(parseFloat(ver)>=3.72?'是':'否（07_boss_v3.72.sql 還沒執行）'))+row(parseFloat(ver)>=3.87,'派武器駐守首領：'+(parseFloat(ver)>=3.87?'是':'否（10_boss_post_v3.87.sql 還沒執行）'))+row(parseFloat(cver)>=3.88,'世界聊天＋玩家名片：'+(parseFloat(cver)>=3.88?'已啟用（'+cver+'）':'否（11_chat_v3.88.sql 還沒執行）'))+row(parseFloat(cver)>=3.98,'好友＋公會：'+(parseFloat(cver)>=3.98?'已啟用':'否（14_guild_v3.98.sql 還沒執行）'))
         +row(true,'一般玩家連點頭像 20 下：'+(CLOUD_ONLY?'不會開啟開發者工具':'測試版會開啟'));render()});return}
   if(k==='tlbsv'){ui.testOut='檢查中…';render();   // v3.65 每座村莊：本機最佳戰力、是否已上傳、伺服器上的戰力
     (async()=>{if(AUTH){await lbSync();LBR.t=0;await lbFetch(true)}
@@ -3776,7 +3985,7 @@ if(typeof window!=='undefined')window.addEventListener('resize',()=>fitNames());
 function renderLayer(){
   const L=document.getElementById('layer');const s=ui.sheet;let h='';
   const sc=document.querySelector('.sheet'),st=sc?sc.scrollTop:0,same=sc&&ui._lastSheet===JSON.stringify(s);
-  if(s){const full=s.t==='w'||s.t==='fxt';h+=`<div class="scrim ${same?'still':''}" data-act="scrim"><div class="ui-sheet sheet ${full?'full':''} ${s.t==='chat'?'cx-sheet':''} ${same?'still':''}">${s.t==='w'?sheetWeapon(s.id,s.m):s.t==='v'?sheetVillage(s.i):s.t==='a'?sheetAch():s.t==='lb'?sheetLb(s.i):s.t==='lbw'?sheetLbW(s.i,s.k):s.t==='ws'?sheetWorkshop(s.k):s.t==='evt'?sheetEvt():s.t==='chat'?sheetChat():s.t==='bw'?sheetBossW(s.r,s.j):s.t==='fxt'?sheetFxTest(s):/^mk/.test(s.t)?sheetMk(s):sheetDev()}</div></div>`}
+  if(s){const full=s.t==='w'||s.t==='fxt';h+=`<div class="scrim ${same?'still':''}" data-act="scrim"><div class="ui-sheet sheet ${full?'full':''} ${s.t==='chat'?'cx-sheet':''} ${same?'still':''}">${s.t==='w'?sheetWeapon(s.id,s.m):s.t==='v'?sheetVillage(s.i):s.t==='a'?sheetAch():s.t==='lb'?sheetLb(s.i):s.t==='lbw'?sheetLbW(s.i,s.k):s.t==='ws'?sheetWorkshop(s.k):s.t==='evt'?sheetEvt():s.t==='chat'?sheetChat():s.t==='gd'?sheetGuild():s.t==='fr'?sheetFriend():s.t==='bw'?sheetBossW(s.r,s.j):s.t==='fxt'?sheetFxTest(s):/^mk/.test(s.t)?sheetMk(s):sheetDev()}</div></div>`}
   const r=ui.result;
   if(r&&r.t==='h')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card">${ptitle(r.title)}${r.ev?`<div class="small t-danger center">其中 ${r.ev} 輪受襲：沒有材料、金幣減半</div>`:''}<div class="hgrid">${harvestIcons(r.got)}</div>${btn('確定','rclose',{cls:'btn-primary big'})}</div></div>`;
   if(r&&r.t==='info')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card">${r.icon?`<div class="info-ico">${img(r.icon)}</div>`:''}${ptitle(r.title)}<div class="info-body">${r.html}</div>${btn('知道了','rclose',{cls:'btn-primary big'})}</div></div>`;
@@ -3825,10 +4034,14 @@ document.addEventListener('click',e=>{
   if(a!=='melt')ui.meltArm=null;
   ({tab:()=>{if(ui.busy&&ui.fxDone)ui.fxDone();ui.pickV=null;if(ui.tab==='armory'&&d.k!=='armory'&&S.weapons.some(wNew)){S.seenW=S.nextId-1;save()}if(d.k==='market'&&S.mkNew){S.mkNew=0;save()}ui.tab=d.k;if(d.k==='market'&&(AUTH||mkMock())&&Date.now()-MK.t>20000)setTimeout(mkLoad,0);ui.sheet=null;ui.enhLast=null;render();warmTabs();d.k==='village'?scrollToNextVillage():scrollTo(0,0)},close:()=>{if(ui.busy)return;ui.sheet=null;ui.enhLast=null;ui.riskArm=null;ui.riskOk=null;render()},scrim:()=>{if(ui.busy)return;ui.sheet=null;ui.enhLast=null;render()},dev:()=>{ui.sheet={t:'d'};render()},achopen:()=>{ui.qTab=signReady()?'s':boxReadyN()||!achReadyN()?'d':'o';ui.sheet={t:'a'};render()},
    sheetW:()=>{ui.sheet={t:'ws',k:'w'};render()},sheetM:()=>{ui.sheet={t:'ws',k:'m'};render()},sheetT:()=>{ui.sheet={t:'ws',k:'t'};render()},evtopen:()=>{ui.sheet={t:'evt'};render()},bossw:()=>{ui.sheet={t:'bw',r:+d.r,j:+d.j};render()},
-   chatopen:()=>chatOpenSheet(),chattab:()=>{if(d.k==='g')return toast('公會功能會在之後的版本開放');CHAT.tab=d.k;if(d.k==='s')CHAT.sysUnread=0;else CHAT.unread=0;render();const L=document.getElementById('cxList');if(L)L.scrollTop=L.scrollHeight;if(chatOn())chatFetch(true)},
+   chatopen:()=>chatOpenSheet(),chattab:()=>{CHAT.tab=d.k;CHAT.pick=false;if(d.k==='s')CHAT.sysUnread=0;else if(d.k==='g')CHAT.gunread=0;else CHAT.unread=0;render();const L=document.getElementById('cxList');if(L)L.scrollTop=L.scrollHeight;if(chatOn())chatFetch(true)},
    chatq:()=>{const el=document.getElementById('cxIn');if(!el)return;const v=(el.value+(el.value&&!/\s$/.test(el.value)?' ':'')+d.k);el.value=Array.from(v).slice(0,CHAT_MAX).join('');CHAT.draft=el.value;el.focus()},chatsend:()=>chatSend(),cheer:()=>cheerAdd(+d.id),chatsys:()=>{if(chatOn()||chatMock())chatOpenSheet('s')},chatpick:()=>{CHAT.pick=!CHAT.pick;chatPaint(!CHAT.pick);const L=document.getElementById('cxList');if(L&&CHAT.pick)L.scrollTop=0;const b=document.querySelector('.cx-wb');if(b){b.textContent=CHAT.pick?'取消':'武器';b.classList.toggle('on',CHAT.pick)}},chatsendw:()=>chatSend(+d.id),
-   chatw:()=>{const x=CHAT.rows.find(r=>r.id===+d.m);if(!x||!x.w||!BP[bpId(x.w.b)])return;ui.result={t:'info',title:x.mine?'我的武器':`${esc(x.nick)}的武器`,html:mkWeaponBox(x.w)};render()},
+   chatw:()=>{const x=[...CHAT.rows,...CHAT.g].find(r=>r.id===+d.m);if(!x||!x.w||!BP[bpId(x.w.b)])return;ui.result={t:'info',title:x.mine?'我的武器':`${esc(x.nick)}的武器`,html:mkWeaponBox(x.w)};render()},
    pctitle:()=>{S.title=S.title===d.k?null:d.k;save();CLOUD.dirty=true;toast(S.title?`已戴上「${TITLES.find(t=>t.k===d.k).n}」，下一則聊天開始顯示`:'已卸下稱號');if(PC.d){PC.d.title=S.title}pcShow()},
+   gdopen:()=>gdOpen(),gdtab:()=>{GD.tab=d.k;GD.arm=null;ui.sheet={t:'gd',k:d.k};render()},gdjm:()=>{GD.join=d.k;render()},gdnj:()=>{GD.noteJoin=d.k;render()},gdmk:()=>{GD.mk=true;render()},gdmk0:()=>{GD.mk=false;render()},gdmk2:()=>gdCreate(),
+   gdfind:()=>{GD.list=null;render();gdLoad()},gdjoin:()=>gdJoin(+d.id),gdunap:()=>gdUnapply(+d.id),gdleave:()=>gdLeave(),gded:()=>{const g=GD.d&&GD.d.g;if(!g)return;GD.edit=true;GD.note=g.notice||'';GD.noteJoin=g.join;render()},gded0:()=>{GD.edit=false;render()},gdset:()=>gdSet(),
+   gdapp:()=>gdAppAns(d.u,d.k==='1'),gddon:()=>gdDonate(d.k),gdshop:()=>gdShop(d.k),gdchat:()=>chatOpenSheet('g'),gdmem:()=>gdMemAct(d.u,d.k),
+   fropen:()=>frOpen(),frtab:()=>{FR.tab=d.k;ui.sheet={t:'fr',k:d.k};render()},frfind:()=>frFind(),fradd:()=>frAdd(d.u),frans:()=>frAns(d.u,d.k==='1'),frdel:()=>frDel(d.u),
    pcard:()=>{if(!d.u)return;pcOpen(d.u,d.n,d.m)},pclike:()=>pcLike(),pcblock:()=>pcBlock(),pcreport:()=>pcReport(),pcmute:()=>pcAdmin('chat_mute',{p_uid:PC.u,p_hours:+d.h}),pchide:()=>pcAdmin('chat_hide',{p_id:+PC.m}),
    cbarset:()=>{S.chatBar=S.chatBar===false;save();chatBarPaint();showLevel()},cblun:()=>{const L=chatBlk(),i=L.findIndex(x=>x.u===d.u);if(i>=0)L.splice(i,1);save();chatPaint();showLevel()},
    bossgift:()=>{const g=bossClaimStages();if(!g)return toast('現在還不能領','bad');snd('unlock');toast('全服獎勵：'+giftTxt(g),'ok');render()},
@@ -3873,7 +4086,7 @@ document.addEventListener('input',e=>{if(e.target.id!=='mkprice')return;ui.mkPri
 document.addEventListener('focusout',e=>{if(e.target.classList&&e.target.classList.contains('mq-in')&&PTR_PEND&&!PTR_DOWN){PTR_PEND=false;setTimeout(render,0)}});   // 數量框打字時暫停的畫面更新，離開輸入框後補上
 document.addEventListener('input',e=>{if(!e.target.classList||!e.target.classList.contains('mq-in'))return;const k=e.target.dataset.k,v=e.target.value.replace(/\D/g,'').slice(0,4);if(v!==e.target.value)e.target.value=v;ui.mq=ui.mq||{};ui.mq[k]=+v||0;mqUpdate(k)});
 document.addEventListener('input',e=>{if(e.target.id!=='sndvol')return;S.vol=+e.target.value/100;const o=document.querySelector('.snd-v');if(o)o.textContent=e.target.value+'%'});
-document.addEventListener('change',e=>{const id=e.target.id;if(id==='mkprice'||id==='cxIn')return;if(e.target.classList.contains('mq-in')){e.target.value=mqOf(e.target.dataset.k);return}   // 數量框離開時只校正數字，不整頁重畫（否則會吃掉同時按下的買入／賣出）
+document.addEventListener('change',e=>{const id=e.target.id;if(id==='mkprice'||id==='cxIn'||e.target.classList.contains('gx-in'))return;if(e.target.classList.contains('mq-in')){e.target.value=mqOf(e.target.dataset.k);return}   // 數量框離開時只校正數字，不整頁重畫（否則會吃掉同時按下的買入／賣出）
 if(id==='sndvol'){save();snd('ui_click');return sndSettings()}if(id==='usescroll'||id==='usebless'){ui.riskArm=null}if(id==='aq')ui.aq=e.target.value;if(id==='ast')ui.ast=e.target.value;if(id==='usescroll')ui.useScroll=e.target.checked;if(id==='usebless')ui.useBless=e.target.checked;if(id==='usebp')ui.useBp=e.target.checked;if(id==='asort')ui.asort=e.target.value;render()});
 }
 
