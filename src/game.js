@@ -271,7 +271,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.02';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.03';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -1052,11 +1052,75 @@ const TRAIT_ICON={sharp:'tr_sharp',sturdy:'tr_sturdy',light:'tr_light',treasure:
 const STRAT_ICON={normal:'it_gold',material:'mat_iron',rare:'mat_scale'};
 const TIER_FRAME=[0,2,3,4,4]; // 各材質對應的外框顏色（v3.77 起圖紙改用統一的圖紙底圖 frame:'bp'，這裡留給其他地方參考）
 // v3.40 音效設定：喇叭圖示打開，可開關音效、調整音量
-function sndSettings(){const v=Math.round((S.vol??1)*100);
-  ui.result={t:'info',k:'snd',title:'音效設定',html:`<div class="snd-set"><div class="kv"><span>音效</span><b><button class="ui-btn ui-btn--chip chipbtn ${S.mute?'':'on'}" data-act="sndmute">${S.mute?'關閉':'開啟'}</button></b></div>
+// v4.03 音效設定也放進齒輪設定頁：設定頁開著時只重畫設定頁
+const sndHtml=()=>{const v=Math.round((S.vol??1)*100);return `<div class="snd-set"><div class="kv"><span>音效</span><b><button class="ui-btn ui-btn--chip chipbtn ${S.mute?'':'on'}" data-act="sndmute">${S.mute?'關閉':'開啟'}</button></b></div>
    <div class="kv"><span>音量</span><b class="snd-v">${v}%</b></div><input id="sndvol" type="range" min="0" max="100" step="5" value="${v}" ${S.mute?'disabled':''}>
    <div class="kv"><span>沒有聲音？</span><b><button class="ui-btn ui-btn--chip chipbtn" data-act="sndfix">修復音效</button></b></div>
-   <div class="small muted">iPhone 切成靜音時，音效也會靜音。</div></div>`};render()}
+   <div class="small muted">iPhone 切成靜音時，音效也會靜音。</div></div>`};
+function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result={t:'info',k:'snd',title:'音效設定',html:sndHtml()};render()}
+// v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
+// 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
+const NW_LOG=[
+ {v:'4.03',d:'10/23',t:'遊戲內公告與玩法說明',b:['右上角喇叭換成<b>齒輪</b>：裡面有更新公告、玩法說明和音效設定','每次更新的新玩法都會寫在這裡，沒看過的會標 <b>NEW</b>，看過就消失'],g:['set']},
+ {v:'4.02',d:'10/23',t:'武器打法各有特色・戰力改名攻擊力',b:['8 類武器在村莊有各自的打法：劍連斬、短刃爆擊、錘重擊、斧旋風斬、弓三連射、弩破甲、長柄流血、盾越打越痛','狩獵時間和收成都不變，只是打法不同','「戰力」全部改叫「攻擊力」，數值不變'],g:['hit']},
+ {v:'4.01',d:'10/23',t:'村莊怪物血條',b:['怪物被武器打中才會扣血，扣多少就是造成的傷害','點村莊看詳情，血條同步顯示'],g:['hp']},
+ {v:'4.00',d:'10/23',t:'安定值 +6・強化難度調整',b:['所有材質安定值都是 <b>+6</b>，+1～+6 失敗不會爆裝','+7～+15 成功率改成 45／35／25／18／12／8／5／3／2%','危險區失敗時爆裝機率 50% 起，每級 +5%，最高 90%','2-3 雷鳴峽谷需求攻擊力 320 → 260'],g:['enh']},
+ {v:'3.99',d:'10/23',t:'全部收成只收目前這一界',b:['「全部收成」只收和計算目前在看的這一界'],g:['vil']},
+ {v:'3.98',d:'10/23',t:'好友與公會',b:['可以加好友（最多 30 人）','建立或加入公會：捐獻、公會等級加成、貢獻商店、公會聊天'],g:['gd']},
+ {v:'3.95',d:'10/23',t:'另一界可收成時亮紅點',b:['另一界有村莊可以收成時，上方地圖列的圖示會亮紅點'],g:['vil']},
+ {v:'3.93',d:'10/23',t:'聊天武器卡・稱號・恭喜',b:['聊天可以貼出自己的武器卡','可以戴稱號','跑馬燈的強化公告可以按「恭喜」'],g:['chat']},
+ {v:'3.90',d:'10/23',t:'工坊升級依進度解鎖',b:['熔爐、鐵砧升級前要先收復足夠的村莊','已經升上去的等級會保留'],g:['ws']},
+ {v:'3.88',d:'10/23',t:'世界聊天與玩家名片',b:['世界頻道、系統頻道（全服強化公告）','點名字可以看玩家名片','畫面底部有聊天條'],g:['chat']},
+ {v:'3.87',d:'10/23',t:'首領改成整週駐守',b:['首領整週開打，每週日 00:00 結算換下一隻','最多 3 把武器駐守，結算後武器留著繼續打','取消週一～週四雙倍收成','傷害排名可以看玩家用的武器'],g:['boss']},
+ {v:'3.86',d:'10/23',t:'拿掉工具、投擲類武器',b:['礦鎬、投石索、霜銀飛斧不再出現在鍛造頁','舊的武器保留，可以熔解、上架、打首領'],g:['forge']},
+ {v:'3.84',d:'10/23',t:'附魔改版',b:['附魔只能隨機，共 12 種詞條（攻擊力 5 種、狩獵 5 種、剋制 2 種）','拿掉指定附魔和「受襲」'],g:['ench']},
+ {v:'3.78',d:'10/23',t:'鍛造一律 5 秒',b:['拿掉武器學徒，一次一批、不管幾把都是 5 秒完成'],g:['forge']},
+ {v:'3.76',d:'10/23',t:'天賦・首領・第二界',b:['鐵匠聲望與天賦','全服首領討伐','第二界約頓海姆：10 座村莊、4 種新材料、巨人武器、巨人體重鍊'],g:['tal','boss','realm']},
+ {v:'3.74',d:'10/22',t:'每日任務・簽到・跑馬燈',b:['每日任務＋活躍度寶箱','七日簽到','全服強化跑馬燈（+10 以上成功或爆裝）'],g:['quest']},
+ {v:'3.69',d:'10/22',t:'畫面時間＝真實時間',b:['封測 10 倍速直接寫進遊戲時間','離線最多累積 12 小時'],g:['vil']}
+];
+const GUIDE=[
+ ['基礎',[
+  {k:'forge',ic:'t1_ironhammer_disp',n:'鍛造',s:'選圖紙、放材料，5 秒打好一批',v:'3.86',h:'在鐵匠鋪「圖紙」選一張圖紙，材料和金幣夠就能按「開始鍛造」。<br>一次一批（最多 10 把），不管幾把都是 <b>5 秒</b>完成。<br>熔爐等級決定能打哪種材質：鐵製 Lv1、霜銀 Lv2、龍鱗 Lv4、神器 Lv5、巨人 Lv6。<br>收復村莊會解鎖新圖紙。'},
+  {k:'qual',ic:'tr_sharp',n:'品質與先天特性',s:'普通到傳說，攻擊力最多 2.3 倍',v:'3.77',h:'品質：普通 ×1、精良 ×1.2、稀有 ×1.45、史詩 ×1.8、傳說 ×2.3。鐵砧等級越高，好品質機率越高。<br>霜銀以上有保底：連續 9 把低於稀有，第 10 把必定稀有。<br>鍛造時會隨機帶<b>先天特性</b>（鋒利、堅固、輕巧、尋寶、巨人獵手、符文親和），品質越高特性越多、數值越高。'},
+  {k:'enh',ic:'it_bless',n:'強化',s:'+1～+6 安定，+7 起有機率爆裝',v:'4.00',h:'所有材質的安定值都是 <b>+6</b>：+1～+6 失敗只扣金幣，不會爆裝。<br>+7 起是危險區，成功率依序 45／35／25／18／12／8／5／3／2%（+7～+15）。失敗時爆裝機率 50% 起，每級 +5%，最高 90%。<br><b>防爆卷</b>：爆裝時保住武器。<b>祝福石</b>：成功率 +10%。<br>爆裝會留下殘渣，可以換材料。'},
+  {k:'ench',ic:'mat_shard',n:'附魔',s:'符文碎片隨機出 12 種詞條',v:'3.84',h:'用 1 個符文碎片＋金幣隨機附魔一種詞條，重新附魔會蓋掉那一格。<br><b>攻擊力</b>：烈焰、霜寒、雷霆、劇毒、神聖。<br><b>狩獵</b>：迅捷、掠奪、貪婪、尋珍、豐收。<br><b>剋制</b>：剋巨人、剋龍（特定委託一定要有）。<br>附魔欄：鐵砧 Lv1 開 2 格、Lv3 第 3 格、Lv5 第 4 格。'},
+  {k:'melt',ic:'mat_iron',n:'熔解回收',s:'不要的武器換回金幣和材料',v:'3.71',h:'熔解退回一半鍛造金幣、三成材料，25% 機率多得符文碎片。<br>收藏（上鎖）的武器不會被熔解。<br>爆裝留下的殘渣可以在熔解回收頁換鐵礦、霜銀、符文碎片。'},
+  {k:'ws',ic:'nav_forge',n:'工坊升級',s:'熔爐開材質、鐵砧提品質',v:'3.90',h:'<b>熔爐</b>解鎖高階材質；<b>鐵砧</b>提高好品質機率、開附魔欄。<br>升級前要先收復足夠的村莊：熔爐 Lv2～Lv6 需要 3／5／6／7／10 座，鐵砧 Lv2～Lv5 需要 2／4／7／10 座。<br>已經升上去的等級會保留。'},
+  {k:'tal',ic:'ic_star',n:'鐵匠天賦',s:'累積聲望、點天賦，沒有等級上限',v:'3.76',h:'收成、鍛造、強化成功、收復村莊、熔解都會累積聲望。<br>每升 1 級得 1 天賦點和聲望寶箱，等級沒有上限。<br>天賦：商隊議價（收成金幣）、拾荒專家（一般材料）、尋寶直覺（稀有素材）、巨匠之手（好品質）、熔解大師（熔解回收）。'}]],
+ ['村莊與戰鬥',[
+  {k:'vil',ic:'nav_village',n:'村莊委託與收成',s:'交武器收復村莊、自動狩獵收成',v:'3.99',h:'把類別符合、攻擊力達標的武器交給村莊就能收復，解鎖下一座村莊和新圖紙，第一次收復有金幣獎勵。<br>交付後武器會駐守狩獵，自動帶回金幣和材料，<b>離線最多累積 12 小時</b>。換上更強的武器狩獵更快。<br>「全部收成」只收目前在看的這一界；另一界可以收成時，地圖圖示會亮紅點。<br>狩獵策略：一般、素材追獵（材料多、金幣少）、稀有追蹤（稀有素材多、時間長）。'},
+  {k:'hp',ic:'mon_1',n:'怪物血條',s:'打中才扣血，扣多少＝傷害',v:'4.01',h:'村莊卡上的怪物有血條，武器打中才會扣血，扣多少就是造成的傷害。<br>怪物被打倒就完成一輪狩獵，換下一隻。<br>點村莊看詳情，血條同步顯示。'},
+  {k:'hit',ic:'cat_sword',n:'武器打法',s:'8 類武器各有打法',v:'4.02',h:'<b>劍</b>：連斬，每第 4 下砍 2 刀。<b>短刃</b>：出手快，25% 爆擊。<br><b>錘</b>：慢但一下很重。<b>斧</b>：30% 旋風斬連砍 3 下。<br><b>弓</b>：每次連射 3 箭，偶爾穿心。<b>弩</b>：每第 3 發破甲。<br><b>長柄</b>：突刺後流血 3 次。<b>盾</b>：越打越痛，打倒後重算。<br>狩獵時間和收成不受影響，只是打法不同。'},
+  {k:'boss',ic:'mon_10',n:'每週首領',s:'派 3 把武器駐守，週日結算',v:'3.87',h:'全服一起打同一隻首領，整週開打，<b>每週日 00:00</b> 結算換下一隻。<br>最多派 3 把武器駐守，每小時傷害＝攻擊力，打中弱點 ×1.5，離線也會繼續打；結算後武器留著繼續打下一隻。<br>全服血量打到 25／50／75／100% 都有獎勵，上週個人傷害排名也有獎勵。<br>駐守首領的武器不能同時打村莊、強化、附魔、熔解、上架。'},
+  {k:'realm',ic:'realm_2',n:'第二界 約頓海姆',s:'收復 1-10 後開放',v:'3.76',h:'收復 1-10 世界樹根穴後開放第二界，用上方地圖列切換。<br>10 座新村莊、4 種新材料（巨人骨、永凍霜晶、雷鳴鐵、世界樹古根），第五階巨人武器要熔爐 Lv6。<br><b>巨人體重鍊</b>：龍鱗以上的武器可以用第二界材料重鍊，提高攻擊力。'},
+  {k:'lb',ic:'ui_player_emblem',n:'排行榜',s:'每座村莊比最強交付武器',v:'3.68',h:'每座村莊比誰交付的武器攻擊力最高，攻擊力由伺服器計算。<br>第一次進前 10、前 3、第 1 名各有獎勵。'}]],
+ ['成長與獎勵',[
+  {k:'quest',ic:'ic_check',n:'每日任務・簽到・成就',s:'每天領活躍度寶箱',v:'3.74',h:'<b>每日任務</b>：完成登入、收成、鍛造、強化、熔解累積活躍度，40／70／100 點各開一個寶箱。<br><b>七日簽到</b>：漏簽不會歸零，第 7 天領完從第 1 天重新開始。<br><b>委託成就</b>：免費拿防爆卷和祝福石。'},
+  {k:'shop',ic:'nav_shop',n:'商城',s:'月卡、防爆卷、祝福石、祈願',v:'3.69',h:'封測期間<b>月卡免費</b>：立得鑽石，之後每天再領。<br>可以用鑽石買防爆卷、祝福石、狩獵號角，也可以祈願抽獎（有保底）。<br>旅行商人用金幣賣鐵礦、橡木、皮革。'}]],
+ ['玩家互動',[
+  {k:'mk',ic:'nav_market',n:'交易所',s:'金幣或鑽石買賣武器',v:'3.48',h:'用金幣或鑽石上架武器，最低 10，成交收 5% 手續費。<br>上架 3 天沒賣出會自動退回，最多同時上架 10 件。<br>收藏（上鎖）或駐守中的武器不能上架。'},
+  {k:'chat',ic:'it_horn',n:'聊天與跑馬燈',s:'世界頻道、系統公告、武器卡',v:'3.93',h:'世界頻道可以和全服玩家聊天（鐵匠 Lv3 以上可以發言），系統頻道會顯示全服 +10 以上的強化公告。<br>點名字可以看玩家名片；聊天可以貼出自己的武器卡、戴稱號。<br>跑馬燈出現強化公告時可以按「恭喜」。'},
+  {k:'gd',ic:'ui_player_emblem',n:'好友與公會',s:'捐獻升級、公會加成、貢獻商店',v:'3.98',h:'好友最多 30 人。<br>鐵匠 Lv5 可以建立公會（50,000 金幣），Lv3 可以加入。<br>捐獻金幣、鐵礦或鑽石增加公會經驗和個人貢獻；公會升級會加狩獵金幣、首領傷害和成員上限。<br>個人貢獻可以在貢獻商店換祝福石、防爆卷、符文碎片。離開公會後 12 小時內不能再加入。'},
+  {k:'set',ic:'ic_gear',n:'設定與公告',s:'右上角齒輪',v:'4.03',h:'右上角齒輪裡有更新公告、玩法說明和音效設定。<br>有新的公告或玩法時，齒輪會亮紅點；沒看過的項目標 <b>NEW</b>，看過就消失。'}]]
+];
+const GUIDE_ALL=GUIDE.flatMap(x=>x[1]);
+// 已讀：S.nwSeen＝看過的公告版本、S.glSeen＝{玩法 key: 看過的版本}。第一次（舊玩家或新帳號）只把最近 5 則公告和它們改到的玩法算成 NEW
+function nwInit(){if(S.nwSeen&&S.glSeen)return;const recent=NW_LOG.slice(0,5).map(n=>n.v);S.nwSeen=NW_LOG.filter(n=>!recent.includes(n.v)).map(n=>n.v);S.glSeen={};for(const g of GUIDE_ALL)if(!recent.includes(g.v))S.glSeen[g.k]=g.v}
+const nwNew=n=>{nwInit();return!S.nwSeen.includes(n.v)},glNew=g=>{nwInit();return parseFloat(S.glSeen[g.k]||0)<parseFloat(g.v)};
+const nwNewN=()=>NW_LOG.filter(nwNew).length,glNewN=()=>GUIDE_ALL.filter(glNew).length,setDotN=()=>S?nwNewN()+glNewN():0;
+function nwMarkAll(){nwInit();let ch=false;for(const n of NW_LOG)if(!S.nwSeen.includes(n.v)){S.nwSeen.push(n.v);ch=true}if(ch)save()}
+function glMark(k){const g=GUIDE_ALL.find(x=>x.k===k);if(g&&glNew(g)){S.glSeen[k]=g.v;save()}}
+const newB=n=>`<i class="newb">NEW${n>1?' '+n:''}</i>`;
+function sheetSet(k){const back=k?btn(img('ic_back'),'setk',{cls:'icon-btn img',attrs:'data-k="" aria-label="返回設定"'}):'<span style="width:44px"></span>';
+  const head=t=>`<div class="sheet-head">${back}<h2>${t}</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>`;
+  if(k==='n'){ui.nwOn=true;return head('更新公告')+`<div class="small muted st-hint">沒看過的公告標 NEW，離開這頁後就會消失</div>`+NW_LOG.map((n,i)=>{const nw=nwNew(n),open=nw||i===0||ui.nwOpen===n.v;
+    return `<button class="nwc ${nw?'new':''} ${open?'open':''}" data-act="nwtog" data-k="${n.v}"><span class="nwc-h"><span class="nwc-t">${nw?newB(1):''}<b>v${n.v}・${n.t}</b></span>${open?'':'<span class="nwc-go">展開 ›</span>'}</span><span class="nwc-d">2026/${n.d}</span>${open?`<ul>${n.b.map(x=>`<li>${x}</li>`).join('')}</ul>`:''}</button>`}).join('')}
+  if(k==='g')return head('玩法說明')+`<div class="small muted st-hint">點一項看說明；標 NEW 的是最近更新過的玩法</div>`+GUIDE.map(([s,rows])=>`<div class="st-sec">${s}</div>`+rows.map(g=>{const o=ui.glOpen===g.k,nw=glNew(g);
+    return `<div class="glr ${o?'open':''}"><button class="glr-h" data-act="gltog" data-k="${g.k}">${img(g.ic)}<span class="grow"><b>${g.n}</b>${nw?newB(1):''}<span class="s">${g.s}</span></span><span class="go">${o?'收起':'›'}</span></button>${o?`<div class="glr-b">${g.h}<div class="glr-v">v${g.v} 更新</div></div>`:''}</div>`}).join('')).join('');
+  const nn=nwNewN(),gn=glNewN(),row=(act,ic,t,s,n,attrs='')=>`<button class="st-row" data-act="${act}" ${attrs}>${img(ic)}<span class="grow"><b>${t}</b><span class="s">${s}</span></span>${n?newB(n):''}<span class="go">›</span></button>`;
+  return head('設定')+`<div class="st-sec">遊戲資訊</div>`+row('setk','it_horn','更新公告',`最新 v${NW_LOG[0].v}・${NW_LOG[0].t}`,nn,'data-k="n"')+row('setk','it_blueprint','玩法說明','每個系統怎麼玩，一次看懂',gn,'data-k="g"')
+   +`<div class="st-sec">音效</div><div class="ui-panel panel st-snd">${sndHtml()}</div>`+(devMode()?`<div class="st-sec">開發者</div>`+row('dev','ic_gear','開發者工具','只有開發者模式看得到',0):'')}
 function showLevel(){const c=cleared(),lv=smithLv();
   const row=(k,v,m)=>`<div class="kv"><span>${k}</span><b>${v}${m?` <span class="small muted">／${m}</span>`:''}</b></div>`;
   const nb=BPS.filter(b=>b.unlock===c+1),nx=VILLAGES[c],nt=TIERS.find(t=>t.furnace>S.furnace);
@@ -1524,7 +1588,7 @@ const traitHtml=w=>(w.traits||[]).map(t=>`<span class="trait">${TRAITS[t.k].n} +
 const fmtS=n=>n>=1e5?(Math.floor(n/1e3)/10).toFixed(n>=1e7?0:1).replace(/\.0$/,'')+'萬':fmt(n);
 let RES_H='';function renderRes(){const el=document.getElementById('res');if(!el)return;
   const h=`<button class="player" data-act="player" aria-label="鐵匠等級 Lv.${smithLv()}">${img('ui_player_emblem','emblem')}<i class="lvb">Lv${smithLv()}</i><span class="pname"><span class="small muted">Lv.${smithLv()}</span><b>${esc(S.nick||(AUTH?'未命名鐵匠':'訪客鐵匠'))}</b></span></button>
-  <button class="ui-iconbtn mute" data-act="mute" aria-label="${S.mute?'開啟音效':'關閉音效'}">${img(S.mute?'ic_sound_off':'ic_sound_on')}</button><span class="chip">${img('it_gold')}<b class="num">${fmtS(S.gold)}</b></span><span class="chip">${img('it_gems')}<b class="num">${fmtS(S.gems)}</b><button class="ui-iconbtn plus" data-act="tab" data-k="shop" aria-label="儲值">${img('ic_plus')}</button></span>${devMode()?`<button class="ui-iconbtn gear" data-act="dev" aria-label="開發工具">${img('ic_gear')}</button>`:''}`;if(h!==RES_H||!el.firstChild){RES_H=h;el.innerHTML=h}}
+  <span class="chip">${img('it_gold')}<b class="num">${fmtS(S.gold)}</b></span><span class="chip">${img('it_gems')}<b class="num">${fmtS(S.gems)}</b><button class="ui-iconbtn plus" data-act="tab" data-k="shop" aria-label="儲值">${img('ic_plus')}</button></span><button class="ui-iconbtn mute st-gear" data-act="set" aria-label="設定、公告與玩法說明">${img('ic_gear')}${setDotN()?'<i class="st-dot"></i>':''}</button>`;if(h!==RES_H||!el.firstChild){RES_H=h;el.innerHTML=h}}
 const ART_HAS_NAV_MARKET=true;    // 交易所分頁圖示（AI 美術）到位後改 true
 const TABS=[['village','村莊','nav_village'],['forge','鐵匠鋪','nav_forge'],['armory','武器庫','nav_armory'],['market','交易所',ART_HAS_NAV_MARKET?'nav_market':'it_gold'],['shop','商城','nav_shop']];
 let NAV_H='';function renderNav(){const N=document.getElementById('nav'),h=TABS.map(([k,n,ic])=>{const dot=k==='village'?bossDot()||S.villages.some(v=>v.bank.cycles)||anyGive()||questDotN()>0:k==='armory'?anyGive()||ui.tab!=='armory'&&S.weapons.some(wNew)
@@ -2092,6 +2156,7 @@ function sheetDev(){
    <div class="label">v3.86 拿掉工具／投擲類</div><div class="devgrid">${B('rmcat','檢查：鍛造頁沒有工具／投擲')}${B('rmcatw','送一把舊礦鎬（看武器庫分類）')}</div>
    <div class="label">v3.79 村莊換武器／掉落說明</div><div class="devgrid">${B('uiswap','村莊：送一把更強的（不亮紅點）')}${B('uidropinfo','村莊詳情：點掉落看說明')}</div>
    <div class="label">v3.64 紅點提醒</div><div class="devgrid">${B('uigive','送一把可交付的武器')}${B('uidot_w','武器庫：最新一把標 NEW')}${B('uidot_bp','鐵匠鋪：最新圖紙標 NEW')}${B('uidot_full','村莊倉庫滿（醒目紅點）')}${B('uidot_mk','交易所：模擬有成交')}${B('uidot_mon','商城：月卡今天可領')}${B('uidot_st','目前哪些紅點會亮')}</div>
+   <div class="label">v4.03 公告與玩法說明（右上角齒輪）</div><div class="devgrid">${B('nw_open','打開齒輪設定')}${B('nw_new1','模擬新版本：最新一則變 NEW')}${B('nw_all','全部公告和玩法變 NEW')}${B('nw_seen','全部標成已讀')}</div>
    <div class="label">v3.70 每日任務・簽到・跑馬燈</div><div class="devgrid">${B('dq_all','每日任務全部達成')}${B('dq_reset','每日任務換日重置')}${B('sg_reset','簽到：今天可再領')}${B('sg_d7','簽到：跳到第 7 天')}${B('news_ok','跑馬燈：模擬 +12 成功')}${B('news_brk','跑馬燈：模擬 +11 爆裝')}${B('qopen','打開任務視窗')}</div>
      <div class="label">v3.67 分頁美術預熱</div><div class="devgrid">${B('uiwarm','預熱狀態')}${B('uiwarmrun','連切 5 個分頁測出圖')}</div>
      <div class="label">時間流速（正式版 1×）</div><div class="row">${[1,10,30,60].map(n=>`<button class="ui-btn ui-btn--chip chipbtn ${S.speed===n?'on':''}" data-act="speed" data-k="${n}">${n}×</button>`).join('')}</div>
@@ -2295,6 +2360,10 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
    dq_all:()=>{dailyRoll();const b=S.daily.b;b.harvest=S.stats.harvest-5;b.forged=forgedN()-3;b.enhTry=S.stats.enhTry-5;b.melted=S.stats.melted-1;toast('今天的每日任務已全部達成，活躍度 100')},
    dq_reset:()=>{S.daily=null;dailyRoll();toast('每日任務已重置（像剛換日）')},
    sg_reset:()=>{S.sign.last='';toast('今天可以再簽到一次')},sg_d7:()=>{S.sign.n=6;S.sign.last='';toast('下一次簽到是第 7 天')},
+   nw_open:()=>{ui.sheet={t:'set'};toast('齒輪設定已打開：有 NEW 時齒輪會亮紅點')},
+   nw_new1:()=>{nwInit();const n=NW_LOG[0];S.nwSeen=S.nwSeen.filter(v=>v!==n.v);for(const k of n.g)delete S.glSeen[k];ui.sheet=null;toast(`v${n.v} 公告和它改到的玩法變成 NEW：齒輪應該亮紅點`,'ok')},
+   nw_all:()=>{S.nwSeen=[];S.glSeen={};ui.sheet=null;toast(`公告 ${NW_LOG.length} 則、玩法 ${GUIDE_ALL.length} 項全部變 NEW`,'ok')},
+   nw_seen:()=>{S.nwSeen=NW_LOG.map(n=>n.v);S.glSeen=Object.fromEntries(GUIDE_ALL.map(g=>[g.k,g.v]));ui.sheet=null;toast('全部標成已讀：齒輪紅點應該消失','ok')},
    news_ok:()=>{newsShow({nick:S.nick||'測試鐵匠',bp:'t2_longsword',lv:12,ok:true});toast('跑馬燈應該出現一則 +12 成功公告')},
    news_brk:()=>{newsShow({nick:S.nick||'測試鐵匠',bp:'t3_halberd',lv:11,ok:false});toast('跑馬燈應該出現一則爆裝公告')},
    qopen:()=>{ui.qTab='d';ui.sheet={t:'a'};ui.tab='village'},
@@ -2314,7 +2383,8 @@ let WARM_T=0;function warmTabs(){clearTimeout(WARM_T);WARM_T=setTimeout(()=>{if(
   [['bp'],['mat'],['queue']].forEach(([f])=>{ui.ftab=f;try{warmArt(viewForge())}catch(e){}});ui.ftab=ft;
   [viewArmory,viewVillage,viewShop].forEach(f=>{try{warmArt(f())}catch(e){}});warmArt('art/dp/fog_band.webp art/bg_forge.webp')},400)}
 function render(){
-  if(QUIET)return;renderRes();renderNav();
+  if(QUIET)return;if(ui.nwOn&&!(ui.sheet&&ui.sheet.t==='set'&&ui.sheet.k==='n')){ui.nwOn=false;nwMarkAll()}   // v4.03 離開更新公告頁才把 NEW 消掉
+  renderRes();renderNav();
   const hs=[...document.querySelectorAll('#view .hscroll,#view .catbar')].map(e=>e.scrollLeft);   // 保留橫向捲動位置（點圖紙不會跳回最前面）
   const V=document.getElementById('view'),y=scrollY,html=({forge:viewForge,armory:viewArmory,village:viewVillage,shop:viewShop,market:viewMarketPage})[ui.tab]();
   // v3.67 離開鐵匠鋪時把上方 hero（大背景、鐵匠、道具圖）整塊收起來，回來直接放回去，不用重新載入和解碼圖片
@@ -2341,7 +2411,7 @@ if(typeof window!=='undefined')window.addEventListener('resize',()=>fitNames());
 function renderLayer(){
   const L=document.getElementById('layer');const s=ui.sheet;let h='';
   const sc=document.querySelector('.sheet'),st=sc?sc.scrollTop:0,same=sc&&ui._lastSheet===JSON.stringify(s);
-  if(s){const full=s.t==='w'||s.t==='fxt';h+=`<div class="scrim ${same?'still':''}" data-act="scrim"><div class="ui-sheet sheet ${full?'full':''} ${s.t==='chat'?'cx-sheet':''} ${same?'still':''}">${s.t==='w'?sheetWeapon(s.id,s.m):s.t==='v'?sheetVillage(s.i):s.t==='a'?sheetAch():s.t==='lb'?sheetLb(s.i):s.t==='lbw'?sheetLbW(s.i,s.k):s.t==='ws'?sheetWorkshop(s.k):s.t==='evt'?sheetEvt():s.t==='chat'?sheetChat():s.t==='gd'?sheetGuild():s.t==='fr'?sheetFriend():s.t==='bw'?sheetBossW(s.r,s.j):s.t==='fxt'?sheetFxTest(s):/^mk/.test(s.t)?sheetMk(s):sheetDev()}</div></div>`}
+  if(s){const full=s.t==='w'||s.t==='fxt';h+=`<div class="scrim ${same?'still':''}" data-act="scrim"><div class="ui-sheet sheet ${full?'full':''} ${s.t==='chat'?'cx-sheet':''} ${same?'still':''}">${s.t==='w'?sheetWeapon(s.id,s.m):s.t==='v'?sheetVillage(s.i):s.t==='a'?sheetAch():s.t==='lb'?sheetLb(s.i):s.t==='lbw'?sheetLbW(s.i,s.k):s.t==='ws'?sheetWorkshop(s.k):s.t==='evt'?sheetEvt():s.t==='chat'?sheetChat():s.t==='gd'?sheetGuild():s.t==='fr'?sheetFriend():s.t==='bw'?sheetBossW(s.r,s.j):s.t==='fxt'?sheetFxTest(s):s.t==='set'?sheetSet(s.k):/^mk/.test(s.t)?sheetMk(s):sheetDev()}</div></div>`}
   const r=ui.result;
   if(r&&r.t==='h')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card">${ptitle(r.title)}${r.ev?`<div class="small t-danger center">其中 ${r.ev} 輪受襲：沒有材料、金幣減半</div>`:''}<div class="hgrid">${harvestIcons(r.got)}</div>${btn('確定','rclose',{cls:'btn-primary big'})}</div></div>`;
   if(r&&r.t==='info')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card">${r.icon?`<div class="info-ico">${img(r.icon)}</div>`:''}${ptitle(r.title)}<div class="info-body">${r.html}</div>${btn('知道了','rclose',{cls:'btn-primary big'})}</div></div>`;
@@ -2368,7 +2438,7 @@ const sfxAway=m=>{if(ACX){ACX_DIRTY=true;sfxLog(m)}};
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')sfxAway('切到背景');else sfxLog('回到前景')});
 window.addEventListener('pagehide',()=>sfxAway('離開頁面'));window.addEventListener('blur',()=>sfxAway('失去焦點'));
 window.addEventListener('pageshow',e=>{if(e.persisted)sfxAway('從快取回來')});
-const uiSndOf=a=>a==='tab'||a==='ftab'||a==='cat'||a==='acat'?'ui_tab':['close','scrim','rclose','backArmory'].includes(a)?'ui_close':['wopen','vopen','sheetW','sheetM','sheetT','evtopen','dev','achopen','wmode','player'].includes(a)?'ui_open':'ui_click';
+const uiSndOf=a=>a==='tab'||a==='ftab'||a==='cat'||a==='acat'?'ui_tab':['close','scrim','rclose','backArmory'].includes(a)?'ui_close':['wopen','vopen','sheetW','sheetM','sheetT','evtopen','dev','set','achopen','wmode','player'].includes(a)?'ui_open':'ui_click';
 let PD_SND=0;
 // v3.25 橫向捲動列（圖紙、分類）在 iPhone 上：慣性滑動中的第一下、或手指微晃，系統會把點擊吃掉 → 自己判斷「點一下」
 let TAP0=null,TAP_EL=null,TAP_T=0,TAP_XY=[0,0];
@@ -2386,6 +2456,8 @@ document.addEventListener('click',e=>{
   if((a==='scrim'||a==='rclose')&&e.target!==b&&!e.target.matches('button'))return;
   if(a!=='melt')ui.meltArm=null;
   ({tab:()=>{if(ui.busy&&ui.fxDone)ui.fxDone();ui.pickV=null;if(ui.tab==='armory'&&d.k!=='armory'&&S.weapons.some(wNew)){S.seenW=S.nextId-1;save()}if(d.k==='market'&&S.mkNew){S.mkNew=0;save()}ui.tab=d.k;if(d.k==='market'&&(AUTH||mkMock())&&Date.now()-MK.t>20000)setTimeout(mkLoad,0);ui.sheet=null;ui.enhLast=null;render();warmTabs();d.k==='village'?scrollToNextVillage():scrollTo(0,0)},close:()=>{if(ui.busy)return;ui.sheet=null;ui.enhLast=null;ui.riskArm=null;ui.riskOk=null;render()},scrim:()=>{if(ui.busy)return;ui.sheet=null;ui.enhLast=null;render()},dev:()=>{ui.sheet={t:'d'};render()},achopen:()=>{ui.qTab=signReady()?'s':boxReadyN()||!achReadyN()?'d':'o';ui.sheet={t:'a'};render()},
+   set:()=>{ui.result=null;ui.sheet={t:'set'};render()},setk:()=>{ui.sheet={t:'set',k:d.k||null};ui.glOpen=null;render();const sc=document.querySelector('.sheet');if(sc)sc.scrollTop=0},
+   nwtog:()=>{ui.nwOpen=ui.nwOpen===d.k?null:d.k;render()},gltog:()=>{ui.glOpen=ui.glOpen===d.k?null:d.k;if(ui.glOpen)glMark(d.k);render()},
    sheetW:()=>{ui.sheet={t:'ws',k:'w'};render()},sheetM:()=>{ui.sheet={t:'ws',k:'m'};render()},sheetT:()=>{ui.sheet={t:'ws',k:'t'};render()},evtopen:()=>{ui.sheet={t:'evt'};render()},bossw:()=>{ui.sheet={t:'bw',r:+d.r,j:+d.j};render()},
    chatopen:()=>chatOpenSheet(),chattab:()=>{CHAT.tab=d.k;CHAT.pick=false;if(d.k==='s')CHAT.sysUnread=0;else if(d.k==='g')CHAT.gunread=0;else CHAT.unread=0;render();const L=document.getElementById('cxList');if(L)L.scrollTop=L.scrollHeight;if(chatOn())chatFetch(true)},
    chatq:()=>{const el=document.getElementById('cxIn');if(!el)return;const v=(el.value+(el.value&&!/\s$/.test(el.value)?' ':'')+d.k);el.value=Array.from(v).slice(0,CHAT_MAX).join('');CHAT.draft=el.value;el.focus()},chatsend:()=>chatSend(),cheer:()=>cheerAdd(+d.id),chatsys:()=>{if(chatOn()||chatMock())chatOpenSheet('s')},chatpick:()=>{CHAT.pick=!CHAT.pick;chatPaint(!CHAT.pick);const L=document.getElementById('cxList');if(L&&CHAT.pick)L.scrollTop=0;const b=document.querySelector('.cx-wb');if(b){b.textContent=CHAT.pick?'取消':'武器';b.classList.toggle('on',CHAT.pick)}},chatsendw:()=>chatSend(+d.id),
@@ -2427,7 +2499,7 @@ document.addEventListener('click',e=>{
    mkview:()=>{ui.sheet={t:'mkw',id:+d.id};render()},mkbuy:()=>mkBuy(+d.id),mkcancel:()=>mkCancel(+d.id),mksellw:()=>{ui.mkPrice='';ui.sheet={t:'mks',id:+d.id};render()},mkscur:()=>{MK.sellCur=d.k;render()},
    mksell:()=>{const v=document.getElementById('mkprice');if(v)ui.mkPrice=v.value;mkList(+d.id,MK.sellCur,ui.mkPrice)},mklogin:()=>showLogin(),
    rename:()=>{ui.result=null;render();showName(!S.nick)},
-   player:()=>{const t=Date.now();ui.tapN=(t-(ui.tapT||0)<1500?(ui.tapN||0):0)+1;ui.tapT=t;if(ui.tapN>=20&&(!CLOUD_ONLY||CLOUD.admin)){ui.tapN=0;clearTimeout(ui.lvT);ui.result=null;setDev(!devMode());toast(devMode()?'已開啟開發者模式，右上角出現齒輪。':'已關閉開發者模式。')}else{clearTimeout(ui.lvT);const n=ui.tapN;ui.lvT=setTimeout(()=>{if(ui.tapN===n)showLevel()},300)}},
+   player:()=>{const t=Date.now();ui.tapN=(t-(ui.tapT||0)<1500?(ui.tapN||0):0)+1;ui.tapT=t;if(ui.tapN>=20&&(!CLOUD_ONLY||CLOUD.admin)){ui.tapN=0;clearTimeout(ui.lvT);ui.result=null;setDev(!devMode());toast(devMode()?'已開啟開發者模式：右上角齒輪裡多了「開發者工具」。':'已關閉開發者模式。')}else{clearTimeout(ui.lvT);const n=ui.tapN;ui.lvT=setTimeout(()=>{if(ui.tapN===n)showLevel()},300)}},
    buy:()=>buyMat(d.k,+d.p,+d.n),sell:()=>sellMat(d.k,+d.n),up:()=>upgrade(d.k),topup:()=>{S.gems+=+d.n;toast('測試儲值：鑽石 +'+d.n,'ok');save();render()},
    monthly,claim:claimMonthly,item:()=>buyItem(d.k,+d.n),speedHunt,pull:()=>pull(+d.n)
   })[a]?.();
