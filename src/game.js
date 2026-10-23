@@ -269,7 +269,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='3.88';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='3.93';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -1645,12 +1645,14 @@ function monFx(i,st,w,full){const c=st.bank.cycles,pk=MONFX.kills[i];MONFX.kills
   monPop(el,'hit','-'+fmt(Math.max(1,Math.round(power(w)*(.8+Math.random()*.4)))))}
 const clock=(ms,ref)=>{const s=Math.max(0,Math.ceil(ms/1000)),long=(ref??ms)>=3600000;return(long?[Math.floor(s/3600),Math.floor(s%3600/60),s%60]:[Math.floor(s/60),s%60]).map(x=>String(x).padStart(2,'0')).join(':')};
 // v3.76 地圖切換：沒選過就顯示目前進度所在的那一界
+// v3.93 另一界有村莊可以收成：地圖列那一界的圖示亮紅點
+const realmHarvest=k=>(k===0||k===1&&rfOpen())&&S.villages.slice(k*10,k*10+10).some(v=>v.bank.cycles>0);
 const realmNow=()=>Math.max(0,Math.min(rfOpen()?1:0,ui.realm??(rfOpen()?1:0)));
 function viewVillage(){
   const achReady=ACH.filter(a=>!S.ach[a.id]&&a.test()).length,ready=S.villages.filter(v=>v.bank.cycles).length;
   const rm=realmNow(),[rn,rs,rbg]=REALM_N[rm],r0=rm*10,r1=r0+10,rOk=i=>i===0||(i===1&&rfOpen());
   return `<section class="realm" style="background-image:url(${A(rbg)})"><div class="realm-in"><button class="arr ${rm>0?'':'off'}" data-act="realm" data-k="${rm-1}" aria-label="上一界">${ic('arrow-left')}</button><div class="center"><h1>${rn}</h1><div class="small">${rs}</div></div><button class="arr ${rm<1&&rfOpen()?'':'off'}" data-act="realm" data-k="${rm+1}" aria-label="下一界">${ic('arrow-right')}</button></div>
-   <div class="realms">${REALMS.map((r,i)=>`<div class="rlm ${rOk(i)?'on':'off'} ${i===rm?'cur':''}" ${i<2?`data-act="realm" data-k="${i}" role="button"`:''}>${img('realm_'+(i+1),rOk(i)?'':'locked')}${rOk(i)?'':img('ic_lock','rl')}<span>${r}</span></div>`).join('')}</div></section>${evtBanner()}
+   <div class="realms">${REALMS.map((r,i)=>`<div class="rlm ${rOk(i)?'on':'off'} ${i===rm?'cur':''}" ${i<2?`data-act="realm" data-k="${i}" role="button"`:''}>${img('realm_'+(i+1),rOk(i)?'':'locked')}${rOk(i)?'':img('ic_lock','rl')}${i!==rm&&realmHarvest(i)?'<i class="dot give-dot rdot" title="這一界有村莊可以收成"></i>':''}<span>${r}</span></div>`).join('')}</div></section>${evtBanner()}
   <div class="row vbar">${btn(`全部收成${ready?` <span class="ui-badge badge">${ready}</span>`:''}`,'collectAll',{cls:'btn-primary grow',dis:!ready})}${btn(`任務${questDotN()?` <span class="ui-badge badge">${questDotN()}</span>`:''}`,'achopen')}${btn('排行榜','lbopen',{attrs:`data-i="${Math.max(0,cleared()-1)}"`})}</div>
   <div class="vlist">${VILLAGES.map((v,i)=>{if(i<r0||i>=r1)return'';const[k,lab]=vState(i),st=S.villages[i],w=st.weaponId!=null&&W(st.weaponId);
    if(k==='locked'){const first=S.villages.findIndex(x=>x.status==='locked')===i;if(!first)return '';const left=S.villages.slice(r0,r1).filter(x=>x.status==='locked').length;
@@ -1859,6 +1861,7 @@ function sheetDev(){
      <div class="label">v3.71 鐵匠聲望／天賦</div><div class="devgrid">${B('rep1','聲望升 1 級')}${B('rep10','聲望升 10 級')}${B('represet','天賦點全部退回')}${B('repzero','聲望歸零（Lv.1）')}${B('repopen','打開鐵匠天賦')}</div>
      <div class="label">v3.87 首領討伐（整週・週日結算・目前：${evtNow().boss.n}）</div><div class="devgrid">${B('evtnext','模擬換週（下一隻首領）')}${B('evtfast','首領駐守時間 −10 小時')}${B('evtdmg','我的傷害 +5,000（只改顯示）')}${B('evtreset','本週首領進度清空')}${B('evtgdead','模擬全服打倒首領')}${B('evtgalive','模擬全服血量剩 45%＋排名武器')}${B('evtgrank','模擬上週排名第 2')}</div>
      <div class="label">v3.76 第二界約頓海姆／巨人體重鍊（目前：${rfOpen()?'已開放':'未開放'}・收復 ${cleared()}/${VILLAGES.length}）</div><div class="devgrid">${B('r2open','開放第二界（收復 1-1～1-10）')}${B('r2mats','第二界材料各 +30、金幣 +20 萬')}${B('r2wpn','送史詩神器斧＋剋巨人（開重鍊頁）')}${B('r2all','第二界全部收復')}${B('r2lock','第二界改回未開放')}${B('r2fur','熔爐升到 Lv6（可鍛造巨人武器）')}${B('r2t4','顯示 8 把巨人武器（測試）')}</div>
+     <div class="label">v3.93 另一界可收成紅點（地圖列圖示）</div><div class="devgrid">${B('rdot1','米德加德 1-1 可收成，切到約頓海姆看')}${B('rdot2','約頓海姆 2-1 可收成，切到米德加德看')}</div>
      <div class="label">全部武器顯示測試（測試武器：不扣資源、不能交付村莊）</div>
      <div class="small muted">品質</div><div class="row">${[[-1,'輪替'],[0,'普通'],[1,'精良'],[2,'稀有'],[3,'史詩'],[4,'傳說']].map(([v,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devAllQ??-1)===v?'on':''}" data-act="devset" data-k="devAllQ" data-v="${v}">${n}</button>`).join('')}</div>
      <div class="small muted">強化等級</div><div class="row">${[[-1,'輪替'],[0,'+0'],[6,'+6'],[7,'+7'],[10,'+10'],[15,'+15']].map(([v,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devAllLv??-1)===v?'on':''}" data-act="devset" data-k="devAllLv" data-v="${v}">${n}</button>`).join('')}</div>
@@ -1926,6 +1929,7 @@ function devdo(k){if(k.startsWith('ch')||k.startsWith('pc')){ui.sheet=null;   //
   if(k==='rmcat'){const bad=BPS.filter(b=>b.cat==='tool'||b.cat==='throw').map(b=>b.n);ui.tab='forge';ui.ftab='bp';ui.cat='all';ui.sheet=null;render();return toast(bad.length?'還有：'+bad.join('、'):'鍛造頁已沒有工具／投擲圖紙',bad.length?'bad':'ok')}
   if(k==='rmcatw'){makeWeapon('t1_pickaxe',1,3,[]);ui.tab='armory';ui.acat='tool';ui.sheet=null;save();render();return toast('已送一把舊礦鎬：武器庫會多出「工具」分類，熔煉掉後分類會消失','ok')}
 if(k==='sfxbg'){if(ACX){try{ACX.suspend()}catch(e){}ACX_DIRTY=true}toast('已模擬切到背景（音效暫停），按「試播金幣聲」應該要有聲音');return render()}
+  if(k==='rdot1'||k==='rdot2'){S.villages.forEach((st,i)=>{if(i<10)st.status='cleared'});if(S.villages[10].status==='locked')S.villages[10].status='open';const st=S.villages[k==='rdot1'?0:10];st.bank.cycles+=2;st.bank.gold+=100;ui.realm=k==='rdot1'?1:0;ui.tab='village';save();render();return toast('完成，看地圖列另一界的圖示有沒有紅點','ok')}
   if(k.startsWith('r2')){
     if(k==='r2open'||k==='r2all'){S.villages.forEach((st,i)=>{if(i<10||k==='r2all')st.status='cleared'});if(S.villages[10].status==='locked')S.villages[10].status='open';ui.realm=1}
     else if(k==='r2lock'){S.villages.forEach((st,i)=>{if(i>=10){if(st.weaponId!=null)recallCore(i);st.status='locked'}});ui.realm=0}
