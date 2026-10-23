@@ -1427,4 +1427,24 @@ html.scrimmed .cbar{display:none}
 .pc-adm{display:grid;grid-template-columns:1fr 1fr;gap:6px}.pc-adm .btn{margin:0;min-height:40px;font-size:13px}
 .cbl-row{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0}
 .lbw-owner .btn.sm{flex:none;width:auto;margin:0}
+/* ===== v3.89 武器卡、稱號 ===== */
+.cx-m .tt,.pc-top .tt{display:inline-block;font-size:11px;color:#e3b864;border:1px solid #7a5c32;background:rgba(232,184,92,.08);border-radius:4px;padding:0 4px;margin-right:4px;vertical-align:1px;line-height:16px}
+.pc-top .tt{font-size:12px;line-height:18px}
+.cx-card{display:flex;align-items:center;gap:8px;width:100%;max-width:300px;margin-top:4px;border:1px solid var(--line2);border-radius:8px;padding:6px;background:var(--iron1);text-align:left;color:var(--bone)}
+.cx-card .ca{width:54px;height:54px;flex:none;display:block}.cx-card .ca>*{width:100%;height:100%}
+.cx-card .grow{display:flex;flex-direction:column;min-width:0}.cx-card b{font-size:14px}.cx-card .small{font-size:12px}
+.cx-card .go{margin-left:auto;flex:none;font-size:12px;color:var(--gold);border:1px solid var(--line2);border-radius:6px;padding:4px 8px;white-space:nowrap}
+.cx-pk{max-width:none;min-height:66px}.cx-pk-h{margin-bottom:2px}
+.cx-wb{flex:none;width:52px;height:44px;border-radius:8px;border:1px solid var(--line2);background:var(--iron2);color:var(--gold);font-size:13px;font-weight:700}
+.cx-wb.on{border-color:var(--gold);color:var(--gold-hi);background:linear-gradient(#3b2a1b,#24190f)}
+.pc-tts{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px}
+.pc-tt{min-height:52px;border:1px solid var(--line);border-radius:8px;background:var(--iron2);color:var(--bone);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px;line-height:1.3}
+.pc-tt b{font-size:13.5px;color:#e3b864}.pc-tt span{font-size:11px;color:var(--ash)}
+.pc-tt.on{border-color:var(--gold);background:linear-gradient(#3b2a1b,#24190f)}.pc-tt.on span{color:var(--gold-hi)}
+.pc-tt.lk{opacity:.5}.pc-tt.lk b{color:var(--ash)}
+.ui-topbar.bar .news.on{pointer-events:auto;cursor:pointer}
+.cx-sys{display:flex;align-items:center;gap:8px}.cx-st{flex:1;min-width:0}
+.cx-ch{flex:none;min-height:36px;padding:0 10px;border-radius:18px;border:1px solid var(--gold);background:linear-gradient(#5a3816,#3b2410);color:var(--gold-hi);font-size:13px;font-weight:700;white-space:nowrap}
+.cx-ch.on{border-color:var(--line2);background:var(--iron2);color:var(--ash)}
+.cx-chn{flex:none;font-size:12px;color:var(--gold-hi);white-space:nowrap}
 </style>
