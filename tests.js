@@ -349,9 +349,9 @@ function specTests(seed=20261020,N=200000){
       if(o.k==='saved')saved++;else if(o.k==='ok')okN++;else if(o.k==='broke')broken++;else failN++;S.weapons=[]}
     let safeUsed=0;{const y=makeWeapon('t1_ironsword',0,0,[]);const s0=S.items.scroll;enhanceCore(y.id,{scroll:true});safeUsed=s0-S.items.scroll;S.weapons=[]}
     res.push(T('F 危險區勾選防爆卷每次都消耗 1 張、爆裝時武器保留；安定區不消耗',used===20000&&saved>0&&broken===0&&safeUsed===0,`20,000 次 +9→+10：消耗 ${used} 張；防爆生效 ${saved}、成功 ${okN}、普通失敗 ${failN}、爆裝 ${broken}；安定區強化消耗 ${safeUsed} 張`));
-    // 戰力同步
+    // 攻擊力同步
     S=fresh();S.gold=1e9;const y=makeWeapon('t2_longsword',3,5,[]);y.ench[0]={k:'flame',v:10};const pre=power(y,6);let o;do{o=enhanceCore(y.id,{scroll:true})}while(o.k!=='ok'&&W(y.id));
-    res.push(T('F 強化介面預估戰力＝成功後實際戰力',!W(y.id)||power(y)===pre||y.lv!==6,`預估 ${pre}，實際 ${W(y.id)?power(y):'—'}`));
+    res.push(T('F 強化介面預估攻擊力＝成功後實際攻擊力',!W(y.id)||power(y)===pre||y.lv!==6,`預估 ${pre}，實際 ${W(y.id)?power(y):'—'}`));
     // 測試武器與指定結果不動正式資源
     S=fresh();S.gold=500;S.items.scroll=2;S.items.bless=2;const tw=makeWeapon('t3_greatsword',2,5,[]);tw.test=true;const snap=JSON.stringify([S.gold,S.items,S.stats]);
     const f1=enhanceCore(tw.id,{force:'saved'}),f2=enhanceCore(tw.id,{force:'fail'}),f3=enhanceCore(tw.id,{force:'ok',bless:true}),f4=enhanceCore(tw.id,{force:'break',scroll:true});
@@ -396,7 +396,7 @@ function realm2Tests(){const res=[];
     const okCost=r1&&S.gold===g0-5000&&S.mats.giantbone===b0-2&&Math.abs(power(w)-p0*1.12)<=1;
     for(let k=0;k<6;k++)reforgeCore(w.id);
     const iron=makeWeapon('t1_woodaxe',0,0,[]);deliverCore(10,w.id);
-    res.push(T('K3 重鍊扣材料金幣、戰力 +12%、最高 Lv5、鐵製不能重鍊',okCost&&w.rf===5&&Math.abs(power(w)-p0*1.6)<=1&&!reforgeCore(iron.id),`Lv1 戰力 ${p0}→${r1&&r1.p1}；滿級 Lv${w.rf} 戰力 ${power(w)}（×${(power(w)/p0).toFixed(2)}）`));
+    res.push(T('K3 重鍊扣材料金幣、攻擊力 +12%、最高 Lv5、鐵製不能重鍊',okCost&&w.rf===5&&Math.abs(power(w)-p0*1.6)<=1&&!reforgeCore(iron.id),`Lv1 攻擊力 ${p0}→${r1&&r1.p1}；滿級 Lv${w.rf} 攻擊力 ${power(w)}（×${(power(w)/p0).toFixed(2)}）`));
     S.villages.forEach(v=>v.status=v===S.villages[0]?'open':'locked');
     res.push(T('K4 第二界沒開放時不能重鍊',!reforgeCore(makeWeapon('t3_greataxe',2,0,[]).id)&&!rfOpen(),'1-10 未收復'));
   });
@@ -417,7 +417,7 @@ function evtTests(){const res=[];
     const blocked=!!dv&&!eligible(iv,w)&&enhanceCore(w.id).err&&!meltCore(w.id)&&where(w2)<0&&p2.vi===iv;
     const u=bossUnpostCore(0),freed=bossSlotOf(w)<0&&!v.slots[0]&&Math.abs(v.dmg-u.dmg)<1;
     EVT_WK++;const nw=bossSlotOf(w2)===1&&!eligible(iv,w2)&&evtSt().dmg===0&&evtSt().slots[1].pw===bossDmgOf(w2,evtNow().boss);EVT_WK--;
-    res.push(T('J3 駐守首領：最多 3 把、2 小時傷害＝戰力×2、駐守中不能打村莊／強化／熔解、收回結算、換週武器留著',p1.pw===d0&&!p1.err&&!p3.err&&p4.err&&p5.err&&Math.abs(live-want)<=3&&blocked&&freed&&u.dmg>=Math.floor(hrs*d0)-1&&nw,
+    res.push(T('J3 駐守首領：最多 3 把、2 小時傷害＝攻擊力×2、駐守中不能打村莊／強化／熔解、收回結算、換週武器留著',p1.pw===d0&&!p1.err&&!p3.err&&p4.err&&p5.err&&Math.abs(live-want)<=3&&blocked&&freed&&u.dmg>=Math.floor(hrs*d0)-1&&nw,
       `每小時 ${p1.pw}/${d0}；第 4 把：${p4.err||'沒擋住'}；重複：${p5.err||'沒擋住'}；2 小時 ${live}/${want}；擋住操作 ${!!blocked}；收回 ${u&&u.dmg}；換週 ${nw}`));
     S=fresh();S.gold=0;S.gems=0;const v4=evtSt(),kb=BOSS_G.b,kp=BOSS_G.prev;try{
       BOSS_G.b={week:v4.wk,hp:1000,total:600,mine:10,rank:1,players:1,top:[]};const n1=bossStageN(),g1=bossClaimStages(),n2=bossStageN();
@@ -460,7 +460,10 @@ function monTests(){if(typeof document==='undefined')return[];const box=document
   const hunting=S.villages.filter(st=>st.status!=='locked'&&st.status!=='open'&&st.weaponId!=null&&W(st.weaponId)).length;
   const ok=MONS.length===VILLAGES.length&&box.querySelectorAll('[data-mon]').length===hunting&&box.querySelectorAll('[data-vhp]').length===hunting;
   return[T('H 村莊怪物：每關都有怪物，駐守中的村莊都有怪物圖和血條',ok,`怪物 ${MONS.length} 種／村莊 ${VILLAGES.length}；駐守 ${hunting} 座，怪物圖 ${box.querySelectorAll('[data-mon]').length}、血條 ${box.querySelectorAll('[data-vhp]').length}`)]}
-// v3.84 附魔 12 種：只能隨機、戰力／狩獵各 5 種、受襲機制刪除（堅固改成每輪金幣）
+// v4.02 武器打法：每種還在的武器類別都有打法與說明，連擊間隔加起來比攻擊間隔短
+function hitTests(){const cats=[...new Set(BPS.map(b=>b.cat))],miss=cats.filter(c=>!HIT[c]||!HIT_N[c]),bad=Object.entries(HIT).filter(([k,h])=>(h.n-1)*(h.gap||0)>=h.iv*.85);
+  return[T('H 武器打法：每種武器類別都有攻速／連擊設定',!miss.length&&!bad.length,miss.length?'缺：'+miss.join('、'):bad.length?'連擊太長：'+bad.map(x=>x[0]).join('、'):cats.length+' 種都有')]}
+// v3.84 附魔 12 種：只能隨機、攻擊力／狩獵各 5 種、受襲機制刪除（堅固改成每輪金幣）
 function enchTests(){const mk=(e,t)=>({id:-1,b:'t3_greataxe',q:0,lv:0,traits:t||[],ench:[...e,null,null,null,null].slice(0,4)});const gi=VILLAGES.findIndex(v=>v.tag==='giant'),bi=VILLAGES.findIndex(v=>v.tag==='beast'&&v.danger>0&&v.drops.some(d=>d[1]<RARE_P));
   const a=goldMul(bi,mk([{k:'greed',v:15}])),b=goldMul(gi,mk([{k:'giant',v:40}])),st=goldMul(bi,mk([],[{k:'sturdy',v:20}])),g=goldMul(bi,mk([{k:'greed',v:15},{k:'greed',v:15}],[{k:'sturdy',v:45}]));
   const rd=VILLAGES[bi].drops.find(d=>d[1]<RARE_P),sk=dropChance(bi,mk([{k:'seek',v:20}]),rd,'normal')/dropChance(bi,mk([]),rd,'normal');
@@ -468,7 +471,7 @@ function enchTests(){const mk=(e,t)=>({id:-1,b:'t3_greataxe',q:0,lv:0,traits:t||
   const S0=S;S=fresh();S.gold=1e6;S.mats.shard=500;S.anvil=5;const z=makeWeapon('t1_woodaxe',0,0,[]);const cnt={};for(let n=0;n<400;n++){enchantCore(z.id,0);cnt[z.ench[0].k]=1}const used=500-S.mats.shard;S=S0;
   let hv=0;{const st2={strat:'normal',bank:{cycles:0,gold:0,mats:{},events:0}};const w0=mk([{k:'harvest',v:25},{k:'harvest',v:25}]);for(let n=0;n<4000;n++)rollCycle(0,w0,st2,Date.UTC(2026,9,23,4));hv=st2.bank.events}
   const ok=Object.keys(AFFIX).length===12&&gp.pow===5&&gp.hunt===5&&tw===100&&Math.abs(a-1.15)<1e-9&&Math.abs(b-1.4)<1e-9&&Math.abs(st-1.2)<1e-9&&Math.abs(g-1.4)<1e-9&&Math.abs(sk-1.2)<1e-6&&Math.abs(pw/p0-1.2)<.02&&eventChance(bi,mk([]))===0&&hv===0&&used===400&&Object.keys(cnt).length>=10&&Object.values(AFFIX).every(x=>x.max<=40);
-  return[T('I 附魔 12 種：只能隨機（1 碎片）、戰力／狩獵各 5、貪婪＋堅固上限 40%、剋巨人金幣、尋珍、受襲刪除',ok,`戰力 ${gp.pow}／狩獵 ${gp.hunt}；權重 ${tw}；貪婪×${a.toFixed(2)}、堅固×${st.toFixed(2)}、上限×${g.toFixed(2)}、剋巨人×${b.toFixed(2)}、尋珍×${sk.toFixed(2)}、雷霆＋神聖戰力×${(pw/p0).toFixed(2)}；400 次附魔用 ${used} 碎片、出現 ${Object.keys(cnt).length} 種；受襲 ${hv} 次`)]}
+  return[T('I 附魔 12 種：只能隨機（1 碎片）、攻擊力／狩獵各 5、貪婪＋堅固上限 40%、剋巨人金幣、尋珍、受襲刪除',ok,`攻擊力 ${gp.pow}／狩獵 ${gp.hunt}；權重 ${tw}；貪婪×${a.toFixed(2)}、堅固×${st.toFixed(2)}、上限×${g.toFixed(2)}、剋巨人×${b.toFixed(2)}、尋珍×${sk.toFixed(2)}、雷霆＋神聖攻擊力×${(pw/p0).toFixed(2)}；400 次附魔用 ${used} 碎片、出現 ${Object.keys(cnt).length} 種；受襲 ${hv} 次`)]}
 // v3.90 工坊升級依關卡進度解鎖：沒收復到就不能升、扣不到錢；已經升上去的等級保留
 function wsTests(){const S0=S;S=fresh();S.gold=1e6;const at=n=>S.villages.forEach((v,i)=>{if(i<n)v.status='cleared'});
   upgradeCore('anvil');upgradeCore('furnace');const a0=S.anvil===1&&S.furnace===1&&S.gold===1e6;
@@ -479,7 +482,7 @@ function wsTests(){const S0=S;S=fresh();S.gold=1e6;const at=n=>S.villages.forEac
   return[T('J 工坊升級依關卡解鎖（鐵砧 1-2/1-4/1-7/1-10、熔爐 1-3/1-5/1-6/1-7）',a0&&a1&&a2&&a3&&keep,`沒收復不能升 ${a0}；1-2→鐵砧 2 ${a1}；1-4→鐵砧 3 ${a2}；1-7→鐵砧 4、熔爐 5、鐵砧 5 還鎖 ${a3}；舊等級保留 ${keep}（${gates}）`)]}
 function runTests(mode){
   if(mode==='econ')return econHtml(12)+econHtml(8);
-  const r=runAll({N:100000});r.res.push(...layoutTests(),...monTests(),...enchTests(),...wsTests());const pass=r.res.filter(x=>x.pass).length;
+  const r=runAll({N:100000});r.res.push(...layoutTests(),...monTests(),...hitTests(),...enchTests(),...wsTests());const pass=r.res.filter(x=>x.pass).length;
   return `<div><b>${pass}/${r.res.length} 通過</b>（${r.ms} 毫秒）</div>`+resHtml(r.res);
 }
 if(typeof module!=='undefined')module.exports={runAll,econReport,simulate,levelCheck};
