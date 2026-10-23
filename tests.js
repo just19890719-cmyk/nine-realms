@@ -130,17 +130,17 @@ function enhanceTests(N=100000){
   const res=[];
   // 純判定：各目標等級
   const rows=[];let ok=true;
-  for(let next=1;next<=15;next++){const r=RATE[next],bc=next<=6?0:Math.min(.8,.35+.05*(next-7));let s=0,b=0;
+  for(let next=1;next<=15;next++){const r=RATE[next],bc=next<=6?0:Math.min(.9,.5+.05*(next-7));let s=0,b=0;
     for(let n=0;n<N;n++){const o=rollEnhance(r,bc);if(o==='ok')s++;else if(o==='break')b++}
     const eb=(1-r)*bc;const tol=Math.max(.003,4.5*Math.sqrt(.25/N));const good=near(s/N,r,tol)&&near(b/N,eb,tol);if(!good)ok=false;rows.push(`+${next} 成功 ${(s/N*100).toFixed(1)}%/${Math.round(r*100)}%、爆 ${(b/N*100).toFixed(1)}%/${(eb*100).toFixed(1)}%`)}
   res.push(T(`C1 強化判定（每級 ${N.toLocaleString()} 次，鐵製安定 +6）`,ok,rows.join('；')));
   // 安定值與公式
   withSandbox(()=>{S=fresh();const mk=b=>makeWeapon(b,0,0,[]);
-    const t1=mk('t1_woodaxe'),t2=mk('t2_wolfaxe'),t3=mk('t3_greataxe'),t4=mk('m_fenrir');
-    const st=[t1,t2,t3,t4].map(stable).join('/');const b4=breakChance(t4,1),b1=breakChance(t1,6),b1b=breakChance(t1,7);
+    const t1=mk('t1_woodaxe'),t2=mk('t2_wolfaxe'),t3=mk('t3_greataxe'),t4=mk('m_fenrir'),t5=mk('t4_sword');
+    const st=[t1,t2,t3,t4,t5].map(stable).join('/');const b4=breakChance(t4,6)+breakChance(t5,6)+(breakChance(t4,7)===.5&&breakChance(t5,7)===.5?0:1),b1=breakChance(t1,6),b1b=breakChance(t1,7);
     const mul=[0,6,7,15].map(enhMult);
-    res.push(T('C2 安定值 6/5/3/0、神器 +0→+1 會判定爆裝、倍率加法',st==='6/5/3/0'&&b4===.35&&b1===0&&b1b===.35&&near(mul[1],1.6,1e-9)&&near(mul[2],1.78,1e-9)&&near(mul[3],3.22,1e-9),
-      `安定值 ${st}；神器 +1 失敗爆裝 ${b4*100}%；鐵製 +6 ${b1*100}%、+7 ${b1b*100}%；倍率 +0 ${mul[0]}、+6 ${mul[1]}、+7 ${mul[2]}、+15 ${mul[3].toFixed(2)}`));
+    res.push(T('C2 安定值全部 +6（v4.00）、神器／巨人 +6 不爆、+7 才判定爆裝、倍率加法',st==='6/6/6/6/6'&&b4===0&&b1===0&&b1b===.5&&near(breakChance(t1,15),.9,1e-9)&&near(RATE[7],.45,1e-9)&&near(RATE[15],.02,1e-9)&&near(mul[1],1.6,1e-9)&&near(mul[2],1.78,1e-9)&&near(mul[3],3.22,1e-9),
+      `安定值 ${st}；神器／巨人 +6 爆裝 ${b4*100}%；鐵製 +6 ${b1*100}%、+7 ${b1b*100}%；倍率 +0 ${mul[0]}、+6 ${mul[1]}、+7 ${mul[2]}、+15 ${mul[3].toFixed(2)}`));
     // 防爆卷、殘渣、駐守保護
     S.gold=1e9;const w=mk('t1_ironsword');w.lv=14;S.items.scroll=100000;let saved=0,lost=0,broke=0;
     for(let n=0;n<3000;n++){const r=enhanceCore(w.id,{scroll:true});if(r.k==='saved')saved++;if(r.k==='broke')broke++;if(r.k==='ok'){w.lv=14}}
@@ -151,7 +151,7 @@ function enhanceTests(N=100000){
   });
   // 完整過程模擬
   const journey=(tier,target,runs=4000)=>{let tries=0,gold=0,reach=0,broke=0;const st=TIERS[tier].stable,mult=TIERS[tier].mult;
-    for(let r=0;r<runs;r++){let lv=0;while(lv<target){tries++;gold+=Math.round(15*Math.pow(lv+1,1.8)*mult);const next=lv+1,bc=next<=st?0:Math.min(.8,.35+.05*(next-st-1));const o=rollEnhance(RATE[next],bc);
+    for(let r=0;r<runs;r++){let lv=0;while(lv<target){tries++;gold+=Math.round(15*Math.pow(lv+1,1.8)*mult);const next=lv+1,bc=next<=st?0:Math.min(.9,.5+.05*(next-st-1));const o=rollEnhance(RATE[next],bc);
       if(o==='ok')lv++;else if(o==='break'){broke++;break}}if(lv>=target)reach++}
     return`${TIERS[tier].n} +0→+${target}：成功率 ${(reach/runs*100).toFixed(1)}%、平均嘗試 ${(tries/runs).toFixed(1)} 次、平均金幣 ${fmt(gold/runs)}`};
   const lines=[];for(const t of [0,3])for(const g of [6,9,12,15])lines.push(journey(t,g));
@@ -331,8 +331,8 @@ function specTests(seed=20261020,N=200000){
       res.push(T(`F 機率 ${tn} +${lv}→+${next}${bless?' 祝福石':''}`,pass,rows[rows.length-1]));
     }
     // 安定區爆裝率必須為 0
-    const safe=[['t1_ironsword',6],['t2_longsword',5],['t3_greatsword',3],['m_firegiant',0]].every(([b,st])=>{for(let n=1;n<=st;n++)if(breakChance({b},n)!==0)return false;return breakChance({b},st+1)===.35});
-    res.push(T('F 安定值內爆裝率 0%，超過安定值第一階為 35%',safe,'鐵製 6、霜銀 5、龍鱗 3、神器 0 全部符合'));
+    const safe=[['t1_ironsword',6],['t2_longsword',6],['t3_greatsword',6],['m_firegiant',6],['t4_sword',6]].every(([b,st])=>{for(let n=1;n<=st;n++)if(breakChance({b},n)!==0)return false;return breakChance({b},st+1)===.5});
+    res.push(T('F 安定值內爆裝率 0%，超過安定值第一階為 50%（v4.00 難度 B）',safe,'鐵製、霜銀、龍鱗、神器、巨人 安定值都是 +6，全部符合'));
     // 倍率表
     const tbl=[1,1.1,1.2,1.3,1.4,1.5,1.6,1.78,1.96,2.14,2.32,2.5,2.68,2.86,3.04,3.22];
     res.push(T('F 強化倍率加法累積（+0～+15 對照規格表）',tbl.every((x,i)=>near(enhMult(i),x,1e-9)),tbl.map((x,i)=>'+'+i+' '+enhMult(i).toFixed(2)).join('、')));
