@@ -271,7 +271,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='3.95';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='3.96';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -1933,7 +1933,7 @@ function sheetDev(){
    test:`<div class="devgrid">${B('tsec','安全設定檢查（v3.65）','btn-primary')}${B('tlbsv','排行榜上傳檢查')}${B('tquick','執行快速測試')}${B('tecon','執行 30 天經濟模擬')}${B('ticon','檢查 App icon')}</div>${ui.testOut?`<div class="test-out">${ui.testOut}</div>`:''}`,
    ui:tab==='ui'?uiGallery():'',
    chat:`<div class="label">v3.88～3.89 世界聊天＋玩家名片（${chatOn()?'連線真實伺服器':chatMock()?'未登入：離線模擬，只看畫面':'未連線'}）</div>
-     <div class="devgrid">${B('chopen','打開聊天視窗','btn-primary')}${B('chnew','模擬收到 3 則新訊息')}${B('chlong','模擬一則 60 字長訊息')}${B('chcd','模擬發言冷卻 5 秒')}${B('chsys','打開系統頻道')}${B('chbar','底部聊天條：'+(S.chatBar===false?'目前隱藏':'目前顯示'))}</div>
+     <div class="devgrid">${B('chopen','打開聊天視窗','btn-primary')}${B('chnew','模擬收到 3 則新訊息')}${B('chlong','模擬一則 60 字長訊息')}${B('chcd','模擬發言冷卻 5 秒')}${B('chsys','打開系統頻道')}${B('chkb','模擬打字（鍵盤打開）')}${B('chbar','底部聊天條：'+(S.chatBar===false?'目前隱藏':'目前顯示'))}</div>
      <div class="label">玩家名片</div><div class="devgrid">${B('pcme','看自己的名片')}${B('pcother','看別人的名片（模擬）')}${B('chunblk','清空封鎖名單（'+chatBlk().length+' 人）')}</div>
      <div class="label">v3.89 武器卡、稱號、恭喜</div><div class="devgrid">${B('chwcard','模擬別人貼一張武器卡')}${B('chtitle','解鎖本機 4 個稱號（+12、傳說、10 村、2-1）')}${B('chtitle0','卸下稱號')}${B('chcheer','模擬收到 3 位鐵匠恭喜')}${B('chsys','打開系統頻道（按恭喜）')}</div>
      <div class="label">檢查</div><div class="devgrid">${B('chfilter','測試輸入檢查（網址、電話、字數）')}${B('tsec','安全設定檢查（含聊天 SQL）')}</div>`,
@@ -1956,6 +1956,8 @@ function devdo(k){if(k.startsWith('ch')||k.startsWith('pc')){ui.sheet=null;   //
     if(k==='chnew'){const t=new Date().toISOString();chatAdd([0,1,2].map(i=>({id:CHAT.last+1+i,uid:'mock-'+i,nick:['雷霆之錘','冰原少女','霜狼'][i],lv:[18,9,22][i],body:['測試訊息 A：有人在嗎？','測試訊息 B：剛剛爆了一把…','測試訊息 C：恭喜恭喜'][i],mine:false,at:t})));CHAT.unread=Math.min(99,CHAT.unread+3);render();return toast('底部聊天條應該出現紅色 3','ok')}
     if(k==='chlong'){chatAdd([{id:CHAT.last+1,uid:'mock-3',nick:'渡鴉',lv:25,body:'這是一則六十個字的長訊息測試，用來看聊天視窗和底部聊天條會不會被撐破，文字應該要正常換行，聊天條則是用刪節號收尾，不能超出畫面。'.slice(0,CHAT_MAX),mine:false,at:new Date().toISOString()}]);return chatOpenSheet('w')}
     if(k==='chcd'){CHAT.cd=Date.now()+CHAT_CD;return chatOpenSheet('w')}
+    if(k==='chkb'){chatOpenSheet('w');const n=document.getElementById('cxIn');if(!n)return toast(`鐵匠等級 Lv.${CHAT_LV} 才有輸入框`,'bad');n.focus();   // v3.96 電腦上沒有鍵盤：假裝可見區域剩 55%
+      const v=window.visualViewport;if(!v||v.height>innerHeight*.8){const r=document.documentElement;r.classList.add('kb');r.style.setProperty('--vvh',Math.round(innerHeight*.55)+'px');r.style.setProperty('--vvt','0px');kbList()}return toast('聊天視窗應該縮在鍵盤上方，輸入框看得到')}
     if(k==='chbar'){S.chatBar=S.chatBar===false;save();ui.sheet={t:'d'};render();return toast('底部聊天條：'+(S.chatBar===false?'隱藏':'顯示'))}
     if(k==='pcme'){render();return pcOpen('me',S.nick||'我')}
     if(k==='pcother'){render();return pcOpen('mock-2','霜狼',chatOn()?null:3)}
@@ -2160,6 +2162,11 @@ function updateLive(){
 }
 function toast(html,kind){if(QUIET)return;if(kind==='bad')snd('ui_error');const box=document.getElementById('toasts');if(!box)return;const d=document.createElement('div');d.className='ui-toast toast '+(kind||'');d.innerHTML=html;box.appendChild(d);setTimeout(()=>d.remove(),2600);while(box.children.length>2)box.firstChild.remove()}
 
+// v3.96 手機鍵盤：打字時不重畫（輸入框被換掉會讓鍵盤收起又跳出、畫面亂跳）；彈出視窗只佔鍵盤上方看得到的區域；鍵盤收起後把被 iOS 推走的畫面拉回原位
+function isTyping(el){return !!el&&(el.tagName==='TEXTAREA'||el.tagName==='INPUT'&&/^(text|number|email|password|search|tel)$/.test(el.type))}
+let KB_Y=null,KB_T=0;
+function kbFit(){const v=window.visualViewport,r=document.documentElement;if(!v||!r.classList.contains('kb'))return;r.style.setProperty('--vvh',v.height+'px');r.style.setProperty('--vvt',v.offsetTop+'px');kbList()}
+function kbList(){const L=document.getElementById('cxList');if(L)L.scrollTop=L.scrollHeight}   // 視窗變矮後聊天停在最新訊息
 function bindUI(){
 ['pointerdown','touchstart'].forEach(ev=>document.addEventListener(ev,()=>{sfxPreload()},{passive:true,once:false}));
 ['touchend','click'].forEach(ev=>document.addEventListener(ev,()=>{if(ACX)sfxWake()},{passive:true,capture:true}));
@@ -2231,7 +2238,12 @@ document.addEventListener('wheel',e=>{const h=e.target.closest('.hscroll,.catbar
 document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('[role=button][data-act]')){e.preventDefault();e.target.click()}});
 document.addEventListener('input',e=>{if(e.target.id!=='mkprice')return;ui.mkPrice=e.target.value;const p=Math.max(0,Math.floor(+e.target.value||0)),net=Math.floor(p*(1-MK_FEE)),q=x=>document.querySelector(x);
   if(q('.mk-fee'))q('.mk-fee').textContent=p?'-'+fmt(p-net):'—';if(q('.mk-net'))q('.mk-net').textContent=p?fmt(net)+' '+MK_CUR[MK.sellCur][1]:'—';const bt=q('[data-act=mksell]');if(bt)bt.disabled=p<MK_MIN});
-document.addEventListener('focusout',e=>{if(e.target.classList&&e.target.classList.contains('mq-in')&&PTR_PEND&&!PTR_DOWN){PTR_PEND=false;setTimeout(render,0)}});   // 數量框打字時暫停的畫面更新，離開輸入框後補上
+document.addEventListener('focusout',e=>{if(isTyping(e.target)&&PTR_PEND&&!PTR_DOWN){PTR_PEND=false;setTimeout(render,0)}});   // 打字時暫停的畫面更新，離開輸入框後補上
+// v3.96 手機鍵盤：focusin 加 html.kb、可見區域變化時更新 --vvh/--vvt；focusout 後拉回畫面（函式在 bindUI 外面）
+document.addEventListener('focusin',e=>{if(!isTyping(e.target))return;clearTimeout(KB_T);const r=document.documentElement;if(!r.classList.contains('kb')){KB_Y=window.scrollY;r.classList.add('kb')}kbFit()});
+document.addEventListener('focusout',e=>{if(!isTyping(e.target))return;clearTimeout(KB_T);KB_T=setTimeout(()=>{if(isTyping(document.activeElement))return;const r=document.documentElement;r.classList.remove('kb');r.style.removeProperty('--vvh');r.style.removeProperty('--vvt');
+  if(KB_Y!=null&&(r.classList.contains('scrimmed')||document.body.classList.contains('gating'))&&Math.abs(window.scrollY-KB_Y)>1)window.scrollTo(0,KB_Y);KB_Y=null},150)});   // 彈出視窗／登入畫面時底下不該捲動，被鍵盤推走就拉回來
+if(window.visualViewport){visualViewport.addEventListener('resize',kbFit);visualViewport.addEventListener('scroll',kbFit)}
 document.addEventListener('input',e=>{if(!e.target.classList||!e.target.classList.contains('mq-in'))return;const k=e.target.dataset.k,v=e.target.value.replace(/\D/g,'').slice(0,4);if(v!==e.target.value)e.target.value=v;ui.mq=ui.mq||{};ui.mq[k]=+v||0;mqUpdate(k)});
 document.addEventListener('input',e=>{if(e.target.id!=='sndvol')return;S.vol=+e.target.value/100;const o=document.querySelector('.snd-v');if(o)o.textContent=e.target.value+'%'});
 document.addEventListener('change',e=>{const id=e.target.id;if(id==='mkprice'||id==='cxIn')return;if(e.target.classList.contains('mq-in')){e.target.value=mqOf(e.target.dataset.k);return}   // 數量框離開時只校正數字，不整頁重畫（否則會吃掉同時按下的買入／賣出）
@@ -2393,6 +2405,6 @@ function start(){try{if(localStorage.getItem('nrs-dpv')!=='0')document.body.clas
   if(after>before)toast(`離線期間村莊狩獵了 ${after-before} 輪，記得收成！`);
   else if(!S.weapons.length&&!S.jobs.length&&!(S.tut<TUT.length))toast('歡迎來到米德加德。先鍛造一把伐木斧，交給鐵爐村的伐木工。');
   // v3.59 村莊分頁也要重畫：以前停在村莊分頁時，狩獵完成一輪不會出現「收成」按鈕（要切分頁才看得到）
-  setInterval(()=>{if(tick()){if(PTR_DOWN||(document.activeElement&&document.activeElement.classList.contains('mq-in')))PTR_PEND=true;else render()}updateLive()},250);setInterval(save,3000);
+  setInterval(()=>{if(tick()){if(PTR_DOWN||isTyping(document.activeElement))PTR_PEND=true;else render()}updateLive()},250);setInterval(save,3000);
   try{if(/dev-ui/.test(location.hash)&&devMode()){ui.sheet={t:'d'};ui.devTab='ui';render()}}catch(e){}  // 網址加 #dev-ui 直接開啟 UI 元件總覽
 }

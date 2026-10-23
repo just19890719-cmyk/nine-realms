@@ -1448,4 +1448,11 @@ html.scrimmed .cbar{display:none}
 .cx-ch.on{border-color:var(--line2);background:var(--iron2);color:var(--ash)}
 .cx-chn{flex:none;font-size:12px;color:var(--gold-hi);white-space:nowrap}
 .rlm .rdot{top:2px;right:8px;width:12px;height:12px;border:1.5px solid #1a0d04}   /* v3.95 另一界可收成 */
+/* ===== v3.96 手機鍵盤打開時：彈出視窗、登入畫面只佔鍵盤上方看得到的區域（--vvh/--vvt 由 kbFit 設定） ===== */
+html.kb .scrim,html.kb #gate{top:var(--vvt,0px);bottom:auto;height:var(--vvh,100%)}
+html.kb .sheet{padding-bottom:10px}
+html.kb .sheet.cx-sheet{height:100%;max-height:100%}
+html.kb .cx-note{padding-bottom:0}
+html.kb .cbar{display:none}
+@media(max-height:700px){html.kb .cx-quick{display:none}}   /* 小手機鍵盤打開後空間很少，先藏快捷語，留給訊息 */
 </style>
