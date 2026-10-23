@@ -30,6 +30,13 @@ function chatTests(){return withSandbox(()=>{const res=[];S=sanitize(fresh());
   const shown=CHAT.rows.filter(x=>!chatBlocked(x.uid)).length;
   res.push(T('I3 新訊息計數不重複、不算自己和封鎖的人',n1===2&&n2===0&&n3===0&&CHAT.last===4&&shown===2,`第一次 ${n1}、重複 ${n2}、封鎖者 ${n3}、顯示 ${shown} 則`));
   Object.assign(CHAT,keep);
+  // v3.89 稱號、武器卡、恭喜
+  const t0=TITLES.filter(t=>titleLocal(t.k)).length;S.stats.maxLv=12;S.stats.forged[4]=1;const t1=TITLES.filter(t=>titleLocal(t.k)).map(t=>t.k).join(',');
+  res.push(T('I4 稱號解鎖條件（+12、傳說）',t0===0&&t1==='smith12,legend',`新存檔 ${t0} 個；+12＋傳說後：${t1}`));
+  const h=chatRowHtml({id:9,uid:'a',nick:'甲',lv:5,body:'看',mine:false,at:'',title:'smith12',w:{b:'t2_longsword',q:3,lv:12,traits:[],ench:[]}}),h2=chatRowHtml({id:9,uid:'a',nick:'<b>x',lv:5,body:'<img src=x>',mine:false,at:'',title:'nope'});
+  res.push(T('I5 聊天顯示稱號、武器卡，名字和內容會跳脫',h.includes('百鍛名匠')&&h.includes('data-act="chatw"')&&!h2.includes('<img')&&!h2.includes('<b>x')&&!h2.includes('class="tt"'),'檢查 HTML'));
+  const sa=chatSysHtml({id:1,uid:'a',nick:'甲',bp:'t2_longsword',lv:12,ok:true,at:'',cheers:2}),sb=chatSysHtml({id:2,uid:'a',nick:'甲',bp:'t2_longsword',lv:12,ok:true,at:'',cheers:2,mine:true}),sc=chatSysHtml({id:3,uid:'a',nick:'甲',bp:'t2_longsword',lv:11,ok:false,at:''});
+  res.push(T('I6 恭喜鈕只出現在別人的成功公告',sa.includes('data-act="cheer"')&&!sb.includes('data-act="cheer"')&&sb.includes('2 位鐵匠恭喜你')&&!sc.includes('data-act="cheer"'),'別人／自己／爆裝'));
   return res})}
 const near=(a,b,tol)=>Math.abs(a-b)<=tol;
 
