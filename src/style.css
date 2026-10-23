@@ -1329,7 +1329,7 @@ button.goal-tap{display:block;width:100%;text-align:left;font:inherit;font-size:
 button.goal-tap b{display:block;margin-top:2px;color:var(--gold-hi)}
 button.vv-d{font:inherit;font-size:11px;color:inherit;cursor:pointer}
 .pick-cur{display:flex;align-items:center;gap:8px;margin:6px 0 4px;flex-wrap:wrap}
-/* v3.82 窄螢幕（320）「基礎戰力」不要被拆成兩行：太窄時數值整段換到下一行 */
+/* v3.82 窄螢幕（320）「基礎攻擊力」不要被拆成兩行：太窄時數值整段換到下一行 */
 .powbox.inline{flex-wrap:wrap;column-gap:6px;row-gap:0}.powbox.inline>*{white-space:nowrap}
 /* v3.82 開始鍛造鈕移到數量列（取代原本「最多」和底部鍛造條） */
 .qtyrow .forge-go{margin-left:auto;min-width:112px;min-height:46px;padding:4px 14px;flex-direction:column;gap:0;line-height:1.15}
@@ -1497,4 +1497,15 @@ html.scrimmed .cbar{display:none}
 .hpbar .hp-t{z-index:2}
 .hpbar.shake{animation:hpShake .18s linear}
 @keyframes hpShake{35%{transform:translateX(-2px)}70%{transform:translateX(2px)}}
+/* v4.02 武器詳情：狩獵打法 */
+.wd-hit{display:flex;gap:8px;align-items:baseline;padding:2px 0 8px;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,.06)}.wd-hit .muted{flex:none}
+/* v4.02 爆擊／重擊：數字比較大、血條晃比較大 */
+.mon-pop.crit{color:#ffe14d;font-size:17px;top:0;text-shadow:0 0 6px #e8572a,0 2px 2px #000;animation-duration:1s}
+.hpbar.shake2{animation:hpShake2 .26s linear}
+/* v4.02 長柄流血：紫色小字；錘重擊：怪物圖大震 */
+.mon-pop i{display:block;font-size:11px;font-style:normal;line-height:1.1;text-align:center}
+.mon-pop.bleed{color:#d9a2ff;font-size:12px;top:30px;text-shadow:0 0 4px #6a2aa8,0 1px 2px #000}
+.vmon.heavy .vthumb{animation:monHeavy .42s ease-out}
+@keyframes monHeavy{0%{transform:none}15%{transform:translate(-4px,2px) scale(.94)}35%{transform:translate(4px,-2px) scale(.97)}55%{transform:translate(-3px,1px)}75%{transform:translate(2px,0)}100%{transform:none}}
+@keyframes hpShake2{20%{transform:translateX(-4px)}45%{transform:translateX(4px)}70%{transform:translateX(-2px)}90%{transform:translateX(1px)}}
 </style>
