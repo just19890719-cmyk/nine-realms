@@ -37,6 +37,17 @@ function chatTests(){return withSandbox(()=>{const res=[];S=sanitize(fresh());
   res.push(T('I5 聊天顯示稱號、武器卡，名字和內容會跳脫',h.includes('百鍛名匠')&&h.includes('data-act="chatw"')&&!h2.includes('<img')&&!h2.includes('<b>x')&&!h2.includes('class="tt"'),'檢查 HTML'));
   const sa=chatSysHtml({id:1,uid:'a',nick:'甲',bp:'t2_longsword',lv:12,ok:true,at:'',cheers:2}),sb=chatSysHtml({id:2,uid:'a',nick:'甲',bp:'t2_longsword',lv:12,ok:true,at:'',cheers:2,mine:true}),sc=chatSysHtml({id:3,uid:'a',nick:'甲',bp:'t2_longsword',lv:11,ok:false,at:''});
   res.push(T('I6 恭喜鈕只出現在別人的成功公告',sa.includes('data-act="cheer"')&&!sb.includes('data-act="cheer"')&&sb.includes('2 位鐵匠恭喜你')&&!sc.includes('data-act="cheer"'),'別人／自己／爆裝'));
+  // v3.98 公會、好友
+  const lvs=[0,999,1000,2999,3000,69999,70000,1e7].map(gdLvOf).join(','),pk=GD_PERK.every(([l,t])=>/金幣/.test(t)?GD_GOLD[l-1]>GD_GOLD[l-2]&&t.includes('+'+GD_GOLD[l-1]+'%'):/首領/.test(t)?GD_BOSS[l-1]>GD_BOSS[l-2]&&t.includes('+'+GD_BOSS[l-1]+'%'):gdCap(l)>gdCap(l-1)&&t.includes(String(gdCap(l))));
+  res.push(T('I7 公會等級表（經驗門檻、加成、人數上限）',lvs==='1,1,2,2,3,9,10,10'&&pk&&gdCap(1)===20&&gdCap(5)===30&&gdCap(8)===40,`等級 ${lvs}・加成表${pk?'一致':'不一致'}`));
+  const w=makeWeapon('t1_woodaxe',0,3),bo=evtNow().boss;S.villages[0].status='cleared';S.villages[0].weaponId=w.id;S.gd=null;const g0=gph(0,w),d0=bossDmgOf(w,bo);S.gd={id:1,name:'測',emb:'測',lv:10,gold:8,boss:8};const g1=gph(0,w),d1=bossDmgOf(w,bo);S.gd=null;
+  res.push(T('I8 公會加成算進狩獵金幣和首領傷害',g1>g0&&Math.abs(g1/g0-(1+(tal('gold')+8)/100)/(1+tal('gold')/100))<.02&&Math.abs(d1-Math.round(d0*1.08))<=1,`金幣 ${g0}→${g1}、首領 ${d0}→${d1}`));
+  const kg={d:GD.d,list:GD.list,mk:GD.mk,edit:GD.edit,tab:GD.tab},kf={d:FR.d,tab:FR.tab,find:FR.find};
+  GD.mk=false;GD.edit=false;GD.tab='mem';GD.d={g:null,me:{pts:0,don:3,shop:{},cd:null,apps:[]}};GD.list=[{id:1,name:'<img src=x>',emb:'<',lv:1,n:1,cap:20,join_mode:'open',applied:false}];const hl=sheetGuild();
+  GD.d={g:{id:1,name:'<b>g',emb:'<',notice:'<script>',join:'open',exp:0,lv:1,gold:0,boss:0,cap:20,n:1,rank:1},role:'lead',me:{pts:0,don:3,shop:{}},mem:[{uid:'u1',nick:'<i>n',lv:3,role:'lead',wk:0,tot:0,at:''}],apps:[{uid:'u2',nick:'<u>a',lv:3,at:''}]};const hh=sheetGuild();
+  FR.d={f:[{uid:'u3',nick:'<s>f',lv:3,at:'',g:'<em>'}],in:[],out:[]};FR.tab='f';const hf=sheetFriend();
+  Object.assign(GD,kg);Object.assign(FR,kf);
+  res.push(T('I9 公會、好友畫面的名字會跳脫',![hl,hh,hf].some(h=>['<img src=x>','<b>g','<script>','<i>n','<u>a','<s>f','<em>'].some(x=>h.includes(x)))&&hh.includes('data-act="gdapp"')&&hl.includes('data-act="gdjoin"'),'公會列表／主頁／好友'));
   return res})}
 const near=(a,b,tol)=>Math.abs(a-b)<=tol;
 
