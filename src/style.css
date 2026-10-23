@@ -1491,4 +1491,10 @@ html.scrimmed .cbar{display:none}
 .cx-gdh b{font-size:14px;color:var(--gold-hi);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}.cx-gdh .go{margin-left:auto;font-size:12.5px;color:var(--gold);white-space:nowrap}.cx-gdh .small{white-space:nowrap}
 .cx-gd0{display:flex;flex-direction:column;gap:10px;align-items:stretch;padding:0 12px}.cx-gd0 .btn{margin:0}
 .pc-fr{grid-template-columns:1fr}
+/* v4.01 怪物血條：打中才扣，淡色殘影慢一點跟上，扣血時輕晃 */
+.hpbar i[data-vhp]{position:relative;z-index:1;transition:width .18s ease-out}
+.hpbar i.hp-g{position:absolute;left:0;top:0;z-index:0;background:#f1d9a6;opacity:.8;box-shadow:none;transition:width .45s ease-in .35s}
+.hpbar .hp-t{z-index:2}
+.hpbar.shake{animation:hpShake .18s linear}
+@keyframes hpShake{35%{transform:translateX(-2px)}70%{transform:translateX(2px)}}
 </style>
