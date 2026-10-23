@@ -1119,7 +1119,7 @@ function sheetSet(k){const back=k?btn(img('ic_back'),'setk',{cls:'icon-btn img',
   if(k==='g')return head('玩法說明')+`<div class="small muted st-hint">點一項看說明；標 NEW 的是最近更新過的玩法</div>`+GUIDE.map(([s,rows])=>`<div class="st-sec">${s}</div>`+rows.map(g=>{const o=ui.glOpen===g.k,nw=glNew(g);
     return `<div class="glr ${o?'open':''}"><button class="glr-h" data-act="gltog" data-k="${g.k}">${img(g.ic)}<span class="grow"><b>${g.n}</b>${nw?newB(1):''}<span class="s">${g.s}</span></span><span class="go">${o?'收起':'›'}</span></button>${o?`<div class="glr-b">${g.h}<div class="glr-v">v${g.v} 更新</div></div>`:''}</div>`}).join('')).join('');
   const nn=nwNewN(),gn=glNewN(),row=(act,ic,t,s,n,attrs='')=>`<button class="st-row" data-act="${act}" ${attrs}>${img(ic)}<span class="grow"><b>${t}</b><span class="s">${s}</span></span>${n?newB(n):''}<span class="go">›</span></button>`;
-  return head('設定')+`<div class="st-sec">遊戲資訊</div>`+row('setk','it_horn','更新公告',`最新 v${NW_LOG[0].v}・${NW_LOG[0].t}`,nn,'data-k="n"')+row('setk','it_blueprint','玩法說明','每個系統怎麼玩，一次看懂',gn,'data-k="g"')
+  return head('設定')+`<div class="st-sec">遊戲資訊</div>`+row('setk','ic_news','更新公告',`最新 v${NW_LOG[0].v}・${NW_LOG[0].t}`,nn,'data-k="n"')+row('setk','ic_guide','玩法說明','每個系統怎麼玩，一次看懂',gn,'data-k="g"')
    +`<div class="st-sec">音效</div><div class="ui-panel panel st-snd">${sndHtml()}</div>`+(devMode()?`<div class="st-sec">開發者</div>`+row('dev','ic_gear','開發者工具','只有開發者模式看得到',0):'')}
 function showLevel(){const c=cleared(),lv=smithLv();
   const row=(k,v,m)=>`<div class="kv"><span>${k}</span><b>${v}${m?` <span class="small muted">／${m}</span>`:''}</b></div>`;
