@@ -451,9 +451,17 @@ function enchTests(){const mk=(e,t)=>({id:-1,b:'t3_greataxe',q:0,lv:0,traits:t||
   let hv=0;{const st2={strat:'normal',bank:{cycles:0,gold:0,mats:{},events:0}};const w0=mk([{k:'harvest',v:25},{k:'harvest',v:25}]);for(let n=0;n<4000;n++)rollCycle(0,w0,st2,Date.UTC(2026,9,23,4));hv=st2.bank.events}
   const ok=Object.keys(AFFIX).length===12&&gp.pow===5&&gp.hunt===5&&tw===100&&Math.abs(a-1.15)<1e-9&&Math.abs(b-1.4)<1e-9&&Math.abs(st-1.2)<1e-9&&Math.abs(g-1.4)<1e-9&&Math.abs(sk-1.2)<1e-6&&Math.abs(pw/p0-1.2)<.02&&eventChance(bi,mk([]))===0&&hv===0&&used===400&&Object.keys(cnt).length>=10&&Object.values(AFFIX).every(x=>x.max<=40);
   return[T('I 附魔 12 種：只能隨機（1 碎片）、戰力／狩獵各 5、貪婪＋堅固上限 40%、剋巨人金幣、尋珍、受襲刪除',ok,`戰力 ${gp.pow}／狩獵 ${gp.hunt}；權重 ${tw}；貪婪×${a.toFixed(2)}、堅固×${st.toFixed(2)}、上限×${g.toFixed(2)}、剋巨人×${b.toFixed(2)}、尋珍×${sk.toFixed(2)}、雷霆＋神聖戰力×${(pw/p0).toFixed(2)}；400 次附魔用 ${used} 碎片、出現 ${Object.keys(cnt).length} 種；受襲 ${hv} 次`)]}
+// v3.90 工坊升級依關卡進度解鎖：沒收復到就不能升、扣不到錢；已經升上去的等級保留
+function wsTests(){const S0=S;S=fresh();S.gold=1e6;const at=n=>S.villages.forEach((v,i)=>{if(i<n)v.status='cleared'});
+  upgradeCore('anvil');upgradeCore('furnace');const a0=S.anvil===1&&S.furnace===1&&S.gold===1e6;
+  at(2);upgradeCore('anvil');upgradeCore('anvil');const a1=S.anvil===2;at(4);upgradeCore('anvil');upgradeCore('anvil');const a2=S.anvil===3;
+  at(7);for(let n=0;n<5;n++){upgradeCore('anvil');upgradeCore('furnace')}const a3=S.anvil===4&&S.furnace===5&&!!wsGate('anvil');
+  S.anvil=5;S.villages.forEach(v=>v.status='open');const keep=S.anvil===5&&S.furnace===5;
+  const gates=Object.entries(WS_GATE).map(([k,g])=>k+' '+g.slice(2).join('/')).join('；');S=S0;
+  return[T('J 工坊升級依關卡解鎖（鐵砧 1-2/1-4/1-7/1-10、熔爐 1-3/1-5/1-6/1-7）',a0&&a1&&a2&&a3&&keep,`沒收復不能升 ${a0}；1-2→鐵砧 2 ${a1}；1-4→鐵砧 3 ${a2}；1-7→鐵砧 4、熔爐 5、鐵砧 5 還鎖 ${a3}；舊等級保留 ${keep}（${gates}）`)]}
 function runTests(mode){
   if(mode==='econ')return econHtml(12)+econHtml(8);
-  const r=runAll({N:100000});r.res.push(...layoutTests(),...monTests(),...enchTests());const pass=r.res.filter(x=>x.pass).length;
+  const r=runAll({N:100000});r.res.push(...layoutTests(),...monTests(),...enchTests(),...wsTests());const pass=r.res.filter(x=>x.pass).length;
   return `<div><b>${pass}/${r.res.length} 通過</b>（${r.ms} 毫秒）</div>`+resHtml(r.res);
 }
 if(typeof module!=='undefined')module.exports={runAll,econReport,simulate,levelCheck};
