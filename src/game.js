@@ -271,7 +271,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='3.90';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='3.92';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -882,7 +882,9 @@ const TIER_FRAME=[0,2,3,4,4]; // 各材質對應的外框顏色（v3.77 起圖�
 // v3.40 音效設定：喇叭圖示打開，可開關音效、調整音量
 function sndSettings(){const v=Math.round((S.vol??1)*100);
   ui.result={t:'info',k:'snd',title:'音效設定',html:`<div class="snd-set"><div class="kv"><span>音效</span><b><button class="ui-btn ui-btn--chip chipbtn ${S.mute?'':'on'}" data-act="sndmute">${S.mute?'關閉':'開啟'}</button></b></div>
-   <div class="kv"><span>音量</span><b class="snd-v">${v}%</b></div><input id="sndvol" type="range" min="0" max="100" step="5" value="${v}" ${S.mute?'disabled':''}></div>`};render()}
+   <div class="kv"><span>音量</span><b class="snd-v">${v}%</b></div><input id="sndvol" type="range" min="0" max="100" step="5" value="${v}" ${S.mute?'disabled':''}>
+   <div class="kv"><span>沒有聲音？</span><b><button class="ui-btn ui-btn--chip chipbtn" data-act="sndfix">修復音效</button></b></div>
+   <div class="small muted">iPhone 切成靜音時，音效也會靜音。</div></div>`};render()}
 function showLevel(){const c=cleared(),lv=smithLv();
   const row=(k,v,m)=>`<div class="kv"><span>${k}</span><b>${v}${m?` <span class="small muted">／${m}</span>`:''}</b></div>`;
   const nb=BPS.filter(b=>b.unlock===c+1),nx=VILLAGES[c],nt=TIERS.find(t=>t.furnace>S.furnace);
@@ -1010,18 +1012,27 @@ const sfxUrl=n=>SFX_VAR_KEYS.includes(n)&&SFX_VARS[n].includes(SFX_ALT[n])&&SFX_
 function sfxSetAlt(n,v){if(v)SFX_ALT[n]=v;else delete SFX_ALT[n];try{localStorage.setItem('nrs-sfxalt',JSON.stringify(SFX_ALT))}catch(e){}delete SFXBUF[n];delete sfxPool[n];sfxLoadAll()}let ACX=null;const SFXBUF={};
 // v3.83 iPhone 切到背景再回來，AudioContext 會變成 interrupted／suspended，甚至顯示 running 卻沒聲音：
 // 回前景後標記 ACX_DIRTY，下一次觸控時關掉舊的、重建新的（已解碼的音檔可以直接沿用）
-let ACX_DIRTY=false;
-function sfxCtx(){if(ACX&&ACX_DIRTY){ACX_DIRTY=false;try{ACX.close()}catch(e){}ACX=null}
-  if(!ACX){const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;try{ACX=new C()}catch(e){return null}}
+// v3.92 加強：只在觸控（手勢）裡重建；app 切換器／通知中心等沒有 visibilitychange 的中斷也標記；
+// 偵測「顯示 running 但時間不走」；固定 iOS 音訊模式（SFX_SESSION），不再忽有忽無；記錄最近 20 筆音效事件給開發者工具看
+const SFX_SESSION='ambient';let ACX_DIRTY=false,ACX_N=0,ACX_CK=null;const SFX_LOG=[];
+function sfxLog(m){SFX_LOG.push(new Date().toTimeString().slice(0,8)+' '+m+(ACX?'（'+ACX.state+'）':''));if(SFX_LOG.length>20)SFX_LOG.shift()}
+function sfxSession(){try{if(navigator.audioSession&&navigator.audioSession.type!==SFX_SESSION)navigator.audioSession.type=SFX_SESSION}catch(e){}}
+function sfxCtx(){if(!ACX){const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;sfxSession();try{ACX=new C()}catch(e){return null}ACX_N++;ACX_CK=null;sfxLog('建立音效引擎 #'+ACX_N);
+    const me=ACX;ACX.onstatechange=()=>{if(ACX!==me)return;sfxLog('狀態改變');if(me.state!=='running'&&me.state!=='closed')ACX_DIRTY=true}}
   if(ACX.state!=='running'&&ACX.state!=='closed'){try{const r=ACX.resume();r&&r.catch&&r.catch(()=>{})}catch(e){}}return ACX}
-// 在觸控（使用者手勢）裡喚醒：resume＋播一段無聲音，iOS 才會真的放行
-function sfxWake(){const c=sfxCtx();if(!c)return;try{const s=c.createBufferSource();s.buffer=c.createBuffer(1,1,22050);s.connect(c.destination);s.start(0)}catch(e){}}
+const sfxReady=()=>ACX&&!ACX_DIRTY&&ACX.state==='running';
+// 在觸控（使用者手勢）裡喚醒：需要時重建、resume＋播一段無聲音，iOS 才會真的放行
+function sfxWake(force){const now=performance.now();
+  if(ACX&&!ACX_DIRTY&&ACX.state==='running'&&ACX_CK&&now-ACX_CK.t>1500&&ACX.currentTime-ACX_CK.ct<0.05){ACX_DIRTY=true;sfxLog('時間沒在走，判定卡住')}
+  if(ACX&&(ACX_DIRTY||force)){try{ACX.close()}catch(e){}ACX=null;sfxLog(force?'手動修復':'重建')}ACX_DIRTY=false;
+  const c=sfxCtx();if(!c)return;try{const s=c.createBufferSource();s.buffer=c.createBuffer(1,1,22050);s.connect(c.destination);s.start(0)}catch(e){}
+  ACX_CK={t:now,ct:c.currentTime}}
 function sfxLoadAll(){const c=sfxCtx();if(!c)return;Object.keys(SFXV).forEach(n=>{if(SFXBUF[n])return;SFXBUF[n]='loading';
   const u=sfxUrl(n);fetch(u).then(r=>r.arrayBuffer()).then(ab=>new Promise((ok,no)=>c.decodeAudioData(ab,ok,no))).then(buf=>{if(sfxUrl(n)===u)SFXBUF[n]=sfxTrim(buf)}).catch(()=>{if(sfxUrl(n)===u)SFXBUF[n]=null})})}
 // 去掉 MP3 開頭的靜音（編碼器會補一小段空白）
 function sfxTrim(buf){const d=buf.getChannelData(0);let i=0;while(i<d.length&&Math.abs(d[i])<0.004)i++;return{buf,off:Math.max(0,i-32)/buf.sampleRate}}
-function snd(n,rate=1,vol){if(QUIET||S.mute||!(n in SFXV))return;vol=(vol??1)*(S.vol??1);if(vol<=0)return;try{const c=sfxCtx(),b=SFXBUF[n];
-  if(c&&b&&b!=='loading'&&c.state==='running'){const s=c.createBufferSource(),g=c.createGain();s.buffer=b.buf;s.playbackRate.value=rate;g.gain.value=Math.min(1,(vol??1)*SFXV[n]);s.connect(g).connect(c.destination);s.start(0,b.off);return}
+function snd(n,rate=1,vol){if(QUIET||S.mute||!(n in SFXV))return;vol=(vol??1)*(S.vol??1);if(vol<=0)return;try{const c=ACX_DIRTY?ACX:sfxCtx(),b=SFXBUF[n];
+  if(c&&b&&b!=='loading'&&sfxReady()){const s=c.createBufferSource(),g=c.createGain();s.buffer=b.buf;s.playbackRate.value=rate;g.gain.value=Math.min(1,(vol??1)*SFXV[n]);s.connect(g).connect(c.destination);s.start(0,b.off);return}
   if(typeof Audio==='undefined')return;const base=sfxPool[n]||(sfxPool[n]=new Audio(sfxUrl(n)));const a=base.cloneNode();a.volume=Math.min(1,(vol??1)*SFXV[n]);a.preservesPitch=false;a.playbackRate=rate;a.play().catch(()=>{})}catch(e){}}
 const ENH_SND={ok:'enh_ok',fail:'enh_fail',broke:'enh_break',saved:'enh_saved'};
 function playSfx(n){if(n==='sfx_enh_charge')return snd('enh_start');const k=n.replace('sfx_enh_','');snd(ENH_SND[k]||n)}
@@ -1885,7 +1896,8 @@ function sheetDev(){
      <div class="devgrid">${B('testw','送出並開啟強化頁','btn-primary')}${B('cleartest','清除所有測試武器')}</div>
      <div class="devgrid">${B('autoenh','一鍵強化到安定值（新增 +0 鐵錘並執行）')}</div>
      <div class="label">音效試聽（目前正式音效）</div><div class="row" style="flex-wrap:wrap;gap:6px">${Object.keys(SFXV).map(n=>`<button class="ui-btn ui-btn--chip chipbtn" data-act="sndtest" data-k="${n}">${SFX_NAME[n]||n}</button>`).join('')}<button class="ui-btn ui-btn--chip chipbtn" data-act="sndtest" data-k="_spokes">8 道符文連續</button></div>
-     <div class="label">切回遊戲音效（v3.83）：目前狀態 ${ACX?ACX.state:'尚未啟動'}${ACX_DIRTY?'（待重建）':''}</div><div class="row" style="flex-wrap:wrap;gap:6px"><button class="ui-btn ui-btn--chip chipbtn" data-act="devdo" data-k="sfxbg">模擬切到背景再回來</button><button class="ui-btn ui-btn--chip chipbtn" data-act="sndtest" data-k="coin">試播金幣聲</button></div>
+     <div class="label">切回遊戲音效（v3.92）：目前狀態 ${ACX?ACX.state:'尚未啟動'}${ACX_DIRTY?'（待重建）':''}，已建立 ${ACX_N} 次，iOS 音訊模式 ${navigator.audioSession?navigator.audioSession.type:'不支援'}</div><div class="row" style="flex-wrap:wrap;gap:6px"><button class="ui-btn ui-btn--chip chipbtn" data-act="devdo" data-k="sfxbg">模擬切到背景再回來</button><button class="ui-btn ui-btn--chip chipbtn" data-act="devdo" data-k="sfxstall">模擬卡住（假 running）</button><button class="ui-btn ui-btn--chip chipbtn" data-act="sndtest" data-k="coin">試播金幣聲</button><button class="ui-btn ui-btn--chip chipbtn" data-act="devsets" data-k="sfxlog" data-v="1">更新紀錄</button></div>
+     <div class="small muted" style="white-space:pre-wrap;max-height:160px;overflow:auto">${SFX_LOG.slice().reverse().join('\n')||'（還沒有紀錄）'}</div>
      ${SFX_VAR_KEYS.length?`<div class="label">音效試用（v3.32，只是試聽，選定後再正式換）</div><div class="sfxalt">${SFX_VAR_KEYS.map(n=>`<div class="sfxalt-r"><span>${SFX_NO[n]}. ${SFX_NAME[n]}</span>${SFX_VARS[n].map(v=>`<button class="ui-btn ui-btn--chip chipbtn ${(SFX_VARS[n].includes(SFX_ALT[n])?SFX_ALT[n]||'':'')===v?'on':''}" data-act="sfxalt" data-k="${n}" data-v="${v}">${v||'原'}</button>`).join('')}</div>`).join('')}</div>
      <div class="devgrid">${B('sfxaltclr','全部切回原版')}</div>`:''}
      <div class="label">登入與開場（v3.20）</div><div class="devgrid">${B('gtlogin','顯示登入畫面')}${B('gtstory','播放開場故事')}${B('gtreset','重設「已看過開場」')}</div>
@@ -1930,7 +1942,8 @@ function devdo(k){if(k.startsWith('ch')||k.startsWith('pc')){ui.sheet=null;   //
     ui.sheet={t:'d'}}
   if(k==='rmcat'){const bad=BPS.filter(b=>b.cat==='tool'||b.cat==='throw').map(b=>b.n);ui.tab='forge';ui.ftab='bp';ui.cat='all';ui.sheet=null;render();return toast(bad.length?'還有：'+bad.join('、'):'鍛造頁已沒有工具／投擲圖紙',bad.length?'bad':'ok')}
   if(k==='rmcatw'){makeWeapon('t1_pickaxe',1,3,[]);ui.tab='armory';ui.acat='tool';ui.sheet=null;save();render();return toast('已送一把舊礦鎬：武器庫會多出「工具」分類，熔煉掉後分類會消失','ok')}
-if(k==='sfxbg'){if(ACX){try{ACX.suspend()}catch(e){}ACX_DIRTY=true}toast('已模擬切到背景（音效暫停），按「試播金幣聲」應該要有聲音');return render()}
+if(k==='sfxstall'){if(ACX)ACX_CK={t:performance.now()-5000,ct:ACX.currentTime+99};sfxLog('模擬卡住');toast('已模擬音效卡住，按「試播金幣聲」應該會自動重建並出聲');return render()}
+  if(k==='sfxbg'){if(ACX){try{ACX.suspend()}catch(e){}ACX_DIRTY=true}toast('已模擬切到背景（音效暫停），按「試播金幣聲」應該要有聲音');return render()}
   if(k.startsWith('r2')){
     if(k==='r2open'||k==='r2all'){S.villages.forEach((st,i)=>{if(i<10||k==='r2all')st.status='cleared'});if(S.villages[10].status==='locked')S.villages[10].status='open';ui.realm=1}
     else if(k==='r2lock'){S.villages.forEach((st,i)=>{if(i>=10){if(st.weaponId!=null)recallCore(i);st.status='locked'}});ui.realm=0}
@@ -2121,9 +2134,11 @@ function toast(html,kind){if(QUIET)return;if(kind==='bad')snd('ui_error');const 
 
 function bindUI(){
 ['pointerdown','touchstart'].forEach(ev=>document.addEventListener(ev,()=>{sfxPreload()},{passive:true,once:false}));
-['touchend','click'].forEach(ev=>document.addEventListener(ev,()=>{if(ACX_DIRTY||(ACX&&ACX.state!=='running'))sfxWake()},{passive:true,capture:true}));
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){if(ACX)ACX_DIRTY=true}else if(ACX&&ACX.state!=='running')sfxCtx()});
-window.addEventListener('pageshow',e=>{if(e.persisted&&ACX)ACX_DIRTY=true});
+['touchend','click'].forEach(ev=>document.addEventListener(ev,()=>{if(ACX)sfxWake()},{passive:true,capture:true}));
+const sfxAway=m=>{if(ACX){ACX_DIRTY=true;sfxLog(m)}};
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')sfxAway('切到背景');else sfxLog('回到前景')});
+window.addEventListener('pagehide',()=>sfxAway('離開頁面'));window.addEventListener('blur',()=>sfxAway('失去焦點'));
+window.addEventListener('pageshow',e=>{if(e.persisted)sfxAway('從快取回來')});
 const uiSndOf=a=>a==='tab'||a==='ftab'||a==='cat'||a==='acat'?'ui_tab':['close','scrim','rclose','backArmory'].includes(a)?'ui_close':['wopen','vopen','sheetW','sheetM','sheetT','evtopen','dev','achopen','wmode','player'].includes(a)?'ui_open':'ui_click';
 let PD_SND=0;
 // v3.25 橫向捲動列（圖紙、分類）在 iPhone 上：慣性滑動中的第一下、或手指微晃，系統會把點擊吃掉 → 自己判斷「點一下」
@@ -2135,10 +2150,10 @@ document.addEventListener('touchend',e=>{const o=TAP0;TAP0=null;if(!o||o.b.disab
 // v3.23 手指按住按鈕的期間暫停定時重畫，避免按鈕在按下與放開之間被換掉而吃掉點擊（需要按兩次的原因）
 document.addEventListener('pointerdown',e=>{if(e.target.closest('[data-act],button,input,select,label'))PTR_DOWN=true},{passive:true,capture:true});
 ['pointerup','pointercancel'].forEach(ev=>document.addEventListener(ev,()=>{if(!PTR_DOWN)return;setTimeout(()=>{PTR_DOWN=false;if(PTR_PEND){PTR_PEND=false;render()}},60)},{passive:true,capture:true}));   // 介面音效在手指按下的瞬間就播放，不等放開
-document.addEventListener('pointerdown',e=>{const b=e.target.closest('[data-act]');if(!b||b.disabled)return;const a=b.dataset.act;if(['enhance','fxskip','devdo','mute','sndtest','sfxalt','scrim','sndvol'].includes(a)||b.closest('.hscroll,.catbar')||(a==='rclose'&&e.target!==b))return;snd(uiSndOf(a));PD_SND=Date.now()},{passive:true});
+document.addEventListener('pointerdown',e=>{const b=e.target.closest('[data-act]');if(!b||b.disabled)return;const a=b.dataset.act;if(['enhance','fxskip','devdo','mute','sndtest','sndfix','sfxalt','scrim','sndvol'].includes(a)||b.closest('.hscroll,.catbar')||(a==='rclose'&&e.target!==b))return;snd(uiSndOf(a));PD_SND=Date.now()},{passive:true});
 document.addEventListener('click',e=>{
   const b=e.target.closest('[data-act]');if(!b||b.disabled)return;if(e.isTrusted&&TAP_EL&&Date.now()-TAP_T<700&&(b===TAP_EL||Math.abs(e.clientX-TAP_XY[0])<30&&Math.abs(e.clientY-TAP_XY[1])<30))return;const a=b.dataset.act,d=b.dataset;sfxPreload();
-  if(!['enhance','fxskip','devdo','mute','sndtest','sfxalt'].includes(a)&&Date.now()-PD_SND>700)snd(uiSndOf(a));
+  if(!['enhance','fxskip','devdo','mute','sndtest','sndfix','sfxalt'].includes(a)&&Date.now()-PD_SND>700)snd(uiSndOf(a));
   if((a==='scrim'||a==='rclose')&&e.target!==b&&!e.target.matches('button'))return;
   if(a!=='melt')ui.meltArm=null;
   ({tab:()=>{if(ui.busy&&ui.fxDone)ui.fxDone();ui.pickV=null;if(ui.tab==='armory'&&d.k!=='armory'&&S.weapons.some(wNew)){S.seenW=S.nextId-1;save()}if(d.k==='market'&&S.mkNew){S.mkNew=0;save()}ui.tab=d.k;if(d.k==='market'&&(AUTH||mkMock())&&Date.now()-MK.t>20000)setTimeout(mkLoad,0);ui.sheet=null;ui.enhLast=null;render();warmTabs();d.k==='village'?scrollToNextVillage():scrollTo(0,0)},close:()=>{if(ui.busy)return;ui.sheet=null;ui.enhLast=null;ui.riskArm=null;ui.riskOk=null;render()},scrim:()=>{if(ui.busy)return;ui.sheet=null;ui.enhLast=null;render()},dev:()=>{ui.sheet={t:'d'};render()},achopen:()=>{ui.qTab=signReady()?'s':boxReadyN()||!achReadyN()?'d':'o';ui.sheet={t:'a'};render()},
@@ -2172,7 +2187,7 @@ document.addEventListener('click',e=>{
    uidpv:()=>{const on=document.body.classList.toggle('dpv');try{localStorage.setItem('nrs-dpv',on?'1':'0')}catch(e){}render()},
    uifpv:()=>{document.body.classList.toggle('fpv');render()},
    uiskintest:()=>{if(UI_SKIN['btn-primary']&&UI_SKIN['btn-primary']._test){UI_SKIN['btn-primary']=null}else{UI_SKIN['btn-primary']={src:'art/ui_btn_wood.webp',slice:[40,70,40,70],border:[12,24,12,24],css:'padding:2px 10px',_test:true}}applySkin();render()},
-   devoff:()=>setDev(false),mute:()=>sndSettings(),sndmute:()=>{S.mute=!S.mute;save();if(!S.mute)snd('ui_click');sndSettings()},devset:()=>{ui[d.k]=+d.v;render()},devsets:()=>{ui[d.k]=d.v;render()},noItem:()=>{ui[d.k]=false;ui.riskArm=null;render()},devforce:()=>{DEV.force=d.k||null;toast(DEV.force?'下一次強化測試武器時會套用指定結果':'已取消指定');render()},forgeCat:()=>{ui.tab='forge';ui.ftab='bp';ui.cat=d.k;const f=BPS.find(b=>b.cat===d.k&&!bpLock(b));if(f)ui.bp=f.id;render();scrollTo(0,0)},mqstep:()=>{ui.mq=ui.mq||{};ui.mq[d.k]=Math.max(1,Math.min(MQ_MAX,mqOf(d.k)+ +d.d));const i=document.querySelector(`.mq-in[data-k="${d.k}"]`);if(i)i.value=ui.mq[d.k];mqUpdate(d.k)},matinfo:()=>{ui.result={t:'info',...matInfo(d.k,d.v)};render()},aclear:()=>{ui.acat='all';ui.aq='all';ui.ast='all';render()},info:()=>{ui.result={t:'info',...INFO[d.k]()};render()},devtab:()=>{ui.devTab=d.k;render()},
+   devoff:()=>setDev(false),mute:()=>sndSettings(),sndfix:()=>{sfxWake(true);const was=S.mute;S.mute=false;snd('coin');S.mute=was;toast(was?'音效已重新啟動（目前音效是關閉的）':'音效已重新啟動')},sndmute:()=>{S.mute=!S.mute;save();if(!S.mute)snd('ui_click');sndSettings()},devset:()=>{ui[d.k]=+d.v;render()},devsets:()=>{ui[d.k]=d.v;render()},noItem:()=>{ui[d.k]=false;ui.riskArm=null;render()},devforce:()=>{DEV.force=d.k||null;toast(DEV.force?'下一次強化測試武器時會套用指定結果':'已取消指定');render()},forgeCat:()=>{ui.tab='forge';ui.ftab='bp';ui.cat=d.k;const f=BPS.find(b=>b.cat===d.k&&!bpLock(b));if(f)ui.bp=f.id;render();scrollTo(0,0)},mqstep:()=>{ui.mq=ui.mq||{};ui.mq[d.k]=Math.max(1,Math.min(MQ_MAX,mqOf(d.k)+ +d.d));const i=document.querySelector(`.mq-in[data-k="${d.k}"]`);if(i)i.value=ui.mq[d.k];mqUpdate(d.k)},matinfo:()=>{ui.result={t:'info',...matInfo(d.k,d.v)};render()},aclear:()=>{ui.acat='all';ui.aq='all';ui.ast='all';render()},info:()=>{ui.result={t:'info',...INFO[d.k]()};render()},devtab:()=>{ui.devTab=d.k;render()},
    shoptab:()=>{ui.shopTab=d.k;if(d.k==='mk'&&(AUTH||mkMock()))mkLoad();render()},mktab:()=>{MK.tab=d.k;render()},mkcat:()=>{MK.cat=d.k;render()},mkcur:()=>{MK.cur=d.k;render()},mksort:()=>{MK.sort=d.k;render()},mkref:()=>mkLoad(),
    mkview:()=>{ui.sheet={t:'mkw',id:+d.id};render()},mkbuy:()=>mkBuy(+d.id),mkcancel:()=>mkCancel(+d.id),mksellw:()=>{ui.mkPrice='';ui.sheet={t:'mks',id:+d.id};render()},mkscur:()=>{MK.sellCur=d.k;render()},
    mksell:()=>{const v=document.getElementById('mkprice');if(v)ui.mkPrice=v.value;mkList(+d.id,MK.sellCur,ui.mkPrice)},mklogin:()=>showLogin(),
