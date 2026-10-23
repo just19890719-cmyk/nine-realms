@@ -1826,30 +1826,39 @@ const MONFX={kills:{},next:{},hp:{}};
 const hpBar=i=>`<div class="ui-prog prog hpbar"><i class="hp-g"></i><i data-vhp="${i}"></i><span class="hp-t"><b class="hp-n">${MONS[i]}</b><b data-vhpt="${i}"></b></span></div>`;   // v4.01 卡片和詳情頁共用
 function vMon(i,k){const art=MON_ART.includes(i);return `<div class="vmon ${k} ${art?'has-art':''}" data-mon="${i}">${art?img('mon_'+(i+1),'vthumb vmon-m',MONS[i]):img('v'+(i+1),'vthumb vmon-bg')}</div>`}
 function monPop(el,kind,txt,dx){el.classList.remove('hit','kill');void el.offsetWidth;el.classList.add(kind==='kill'?'kill':'hit');
-  const n=document.createElement('span');n.className='mon-pop '+kind;n.textContent=txt;if(dx)n.style.marginLeft=dx+'px';el.appendChild(n);setTimeout(()=>n.remove(),kind==='kill'?1100:kind==='crit'?1000:800);
+  const n=document.createElement('span');n.className='mon-pop '+kind;n.innerHTML=txt;if(dx)n.style.marginLeft=dx+'px';el.appendChild(n);setTimeout(()=>n.remove(),kind==='kill'?1100:kind==='crit'?1000:800);
   if(kind!=='kill'){const sl=document.createElement('i');sl.className='mon-slash';el.appendChild(sl);setTimeout(()=>sl.remove(),350)}}
-// v4.02 各類武器打法：iv＝每輪攻擊間隔（毫秒）、n＝連擊數、gap＝連擊間隔、cr／cm＝爆擊率／倍率、hv＝重擊（晃比較大）
-// 總血量照舊＝攻擊力×本輪時間÷1.7 秒（劍一下≈攻擊力），只改「多久打一下、一下多少」，狩獵時間與收成不變
-const HIT={sword:{iv:1700,n:1},dagger:{iv:900,n:1,cr:.2,cm:2},hammer:{iv:3400,n:1,hv:1},axe:{iv:2400,n:1,cr:.15,cm:2.5},
-  bow:{iv:2500,n:3,gap:160},crossbow:{iv:3000,n:1,cr:.1,cm:2},polearm:{iv:2000,n:2,gap:220},shield:{iv:2200,n:1}};
-const HIT_N={sword:'每 1.7 秒 1 下・傷害平均',dagger:'每 0.9 秒 1 下・爆擊 20%（×2）',hammer:'每 3.4 秒 1 下・一下約 2 倍',axe:'每 2.4 秒 1 下・重擊 15%（×2.5）',
-  bow:'每 2.5 秒連射 3 箭',crossbow:'每 3 秒 1 發・爆擊 10%（×2）',polearm:'每 2 秒連刺 2 下',shield:'每 2.2 秒盾擊 1 下・一下約 1.3 倍'};
+// v4.02 各類武器打法：iv＝每輪攻擊間隔（毫秒）、E＝每輪平均倍率合計、plan(h)＝這一輪的每一下 [延遲毫秒, 倍率, 種類, 字]
+// 種類：hit 一般、crit 大黃字、bleed 紫色小字；hv＝重擊（怪物和血條晃比較大）
+// 總血量照舊＝攻擊力×本輪時間÷1.7 秒，只改「多久打一下、一下多少」，狩獵時間與收成不變
+const HIT={
+  sword:{iv:1700,E:1.125,plan:h=>(h.c=(h.c||0)+1)%4?[[0,1]]:[[0,.75,'crit','連斬'],[180,.75]]},
+  dagger:{iv:600,E:1.25,plan:()=>Math.random()<.25?[[0,2,'crit','爆擊！']]:[[0,1]]},
+  hammer:{iv:4500,E:1,hv:1,plan:()=>[[0,1,'crit','重擊！']]},
+  axe:{iv:2500,E:1.42,plan:()=>Math.random()<.3?[[0,.8,'crit','旋風斬'],[150,.8],[300,.8]]:[[0,1]]},
+  bow:{iv:3000,E:3.9,plan:()=>[0,160,320].map(t=>Math.random()<.15?[t,3,'crit','穿心']:[t,1])},
+  crossbow:{iv:2600,E:1.5,plan:h=>(h.c=(h.c||0)+1)%3?[[0,1]]:[[0,2.5,'crit','破甲！']]},
+  polearm:{iv:2000,E:1.75,plan:()=>[[0,1],[500,.25,'bleed'],[1000,.25,'bleed'],[1500,.25,'bleed']]},
+  shield:{iv:2400,E:2,plan:h=>[[0,1+.15*Math.min(10,h.ramp=(h.ramp||0)+1)]]}};
+const HIT_N={sword:'連斬：每 1.7 秒 1 下，每第 4 下砍 2 刀',dagger:'狂刺：每 0.6 秒 1 下，爆擊 25%（×2）',hammer:'蓄力重擊：每 4.5 秒 1 下，一下約 2.6 倍',axe:'旋風斬：每 2.5 秒 1 下，30% 連砍 3 下',
+  bow:'三連射：每 3 秒連射 3 箭，偶爾穿心（×3）',crossbow:'破甲：每 2.6 秒 1 發，每第 3 發 ×2.5',polearm:'流血：每 2 秒突刺 1 下，之後流血 3 次',shield:'越打越痛：每 2.4 秒盾擊，每下 +15%（打倒後重算）'};
 const hitOf=w=>HIT[bpOf(w).cat]||HIT.sword;
-// 打中才扣血，扣掉的量＝跳出的傷害數字；每一下約等於「這段時間該扣的血」，爆擊先多扣、之後幾下少扣補回來，
+// 打中才扣血，扣掉的量＝跳出的傷害數字；每輪開始時依「血條落後時間多少」算倍率 f（0.6～1.6），爆擊多扣的會在之後幾輪少扣補回；
 // 血條最多只能比時間超前一點點，所以最後一下剛好打倒；看不到時直接對齊剩餘時間
-function monShot(i,k,last){const h=MONFX.hp[i];if(!h||h.refill||h.full||document.hidden)return;const m=document.querySelector(`#view [data-mon="${i}"]`),hs=h.hs,exp=h.exp;
-  const lag=h.cur-h.live,base=Math.max(exp*.5,Math.min(exp*1.6,lag/(hs.n-k))),crit=hs.cr&&Math.random()<hs.cr;
-  let dm=Math.round(base*(crit?hs.cm:1)*(.92+Math.random()*.16));dm=Math.min(dm,h.cur-Math.max(1,h.live-exp*hs.n*(hs.cm||1)));
-  if(dm<1)return;h.cur-=dm;h.hit=hs.hv||crit?2:1;if(m)monPop(m,crit?'crit':'hit',(crit?'爆擊！':'')+'-'+fmt(dm),hs.n>1?(k-(hs.n-1)/2)*16:0);monPaint(i,h)}
+function monShot(i,sh,f,dx){const h=MONFX.hp[i];if(!h||h.refill||h.full||document.hidden)return;const m=document.querySelector(`#view [data-mon="${i}"]`),[,mul,kind='hit',lab]=sh;
+  let dm=Math.round(h.unit*mul*f*(.92+Math.random()*.16));dm=Math.min(dm,h.cur-Math.max(1,h.live-h.unit*h.hs.E*2));if(dm<1)return;h.cur-=dm;
+  h.hit=h.hs.hv||kind==='crit'?2:1;if(m){monPop(m,kind,(lab?`<i>${lab}</i>`:kind==='bleed'?'流血 ':'')+'-'+fmt(dm),dx);if(h.hs.hv){m.classList.remove('heavy');void m.offsetWidth;m.classList.add('heavy')}}monPaint(i,h)}
+function monVolley(i,h){const sh=h.hs.plan(h),f=Math.max(.6,Math.min(1.6,(h.cur-h.live)/(h.unit*h.hs.E))),n=sh.filter(x=>x[2]!=='bleed').length;let k=0;
+  sh.forEach(x=>{const dx=x[2]==='bleed'?22:n>1?(k++-(n-1)/2)*18:0;x[0]?setTimeout(()=>monShot(i,x,f,dx),x[0]):monShot(i,x,f,dx)})}
 function monFx(i,st,w,full,d,el){const max=Math.max(1,Math.round(power(w)*d/1700)),live=full?max:Math.max(0,Math.ceil(max*(1-Math.min(1,el/d))));
   const c=st.bank.cycles,pk=MONFX.kills[i];MONFX.kills[i]=c;const now=performance.now(),m=document.querySelector(`#view [data-mon="${i}"]`),hs=hitOf(w);
-  let h=MONFX.hp[i];if(!h||h.max!==max||h.hs!==hs)h=MONFX.hp[i]={max,cur:live};h.live=live;h.full=full;h.hs=hs;h.exp=max*hs.iv/d/hs.n;
+  let h=MONFX.hp[i];if(!h||h.max!==max||h.hs!==hs)h=MONFX.hp[i]={max,cur:live};h.live=live;h.full=full;h.hs=hs;h.unit=max*hs.iv/d/hs.E;
   if(document.hidden||S.clockWarn||!document.querySelector(`[data-vhp="${i}"]`)){h.cur=live;h.refill=0}
-  else if(pk!=null&&c>pk){if(m)monPop(m,'kill','擊倒！');h.cur=0;h.refill=now+1100;MONFX.next[i]=now+1500}
+  else if(pk!=null&&c>pk){if(m)monPop(m,'kill','擊倒！');h.cur=0;h.ramp=0;h.refill=now+1100;MONFX.next[i]=now+1500}
   else if(h.refill){if(now>=h.refill){h.refill=0;h.cur=live}}
   else if(full||live>h.cur+max*.05)h.cur=live;   // 倉庫滿、換策略重新計時
   else{if(MONFX.next[i]==null)MONFX.next[i]=now+Math.random()*hs.iv;
-    if(now>=MONFX.next[i]){MONFX.next[i]=now+hs.iv*(.85+Math.random()*.3);for(let k=0;k<hs.n;k++)k?setTimeout(()=>monShot(i,k),k*hs.gap):monShot(i,0)}}
+    if(now>=MONFX.next[i]){MONFX.next[i]=now+hs.iv*(.85+Math.random()*.3);monVolley(i,h)}}
   return h}
 function monPaint(i,h){const hp=h.cur/h.max*100;
   document.querySelectorAll(`[data-vhp="${i}"]`).forEach(e=>{const g=e.previousElementSibling,up=hp>(parseFloat(e.style.width)||0)+5;e.style.transition=up?'none':'';e.style.width=hp+'%';e.classList.toggle('full',!!h.full);
@@ -2270,7 +2279,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
    mon:()=>{m.fur+=5;m.icecore+=5;m.fireheart+=5;m.serpent+=5},shard:()=>m.shard+=10,items:()=>{S.items.scroll+=5;S.items.bless+=5},bp:()=>S.items.blueprint++,slag:()=>S.slag+=30,
    monall:()=>{const cs=Object.keys(HIT);cs.forEach((c,i)=>{const b=BPS.filter(x=>x.cat===c).sort((x,y)=>x.t-y.t)[0];if(!b)return;const st=S.villages[i],old=st.weaponId;
        const w=makeWeapon(b.id,2,6);if(st.status!=='cleared')st.status='cleared';st.weaponId=w.id;st.cycleStart=NOW()-dur(i,w)*.3;delete MONFX.hp[i]});
-     ui.sheet=null;ui.tab='village';ui.realm=0;toast('1-1～1-8 各換一種武器（劍、短刃、錘、斧、弓、弩、長柄、盾），看每種扣血的節奏','ok')},
+     ui.sheet=null;ui.tab='village';ui.realm=0;toast('1-1～1-8 各換一種武器：劍連斬、短刃狂刺、錘重擊、斧旋風斬、弓三連射、弩破甲、長柄流血、盾越打越痛','ok')},
    monhp:()=>{let n=0;S.villages.forEach((st,i)=>{const w=st.weaponId!=null&&W(st.weaponId);if(!w||st.bank.cycles>=capCycles(i,w))return;st.cycleStart=NOW()-Math.max(0,dur(i,w)-10000);delete MONFX.hp[i];n++});
      ui.sheet=null;ui.tab='village';toast(n?`${n} 座村莊的怪物剩 10 秒：看血條是不是每跳一次傷害才扣，最後擊倒`:'沒有正在狩獵的村莊','ok')},
    hunt:()=>{tick();S.villages.forEach((st,i)=>{const w=st.weaponId!=null&&W(st.weaponId);if(w)for(let c=0;c<10;c++)rollCycle(i,w,st)})},

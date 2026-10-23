@@ -1502,5 +1502,10 @@ html.scrimmed .cbar{display:none}
 /* v4.02 爆擊／重擊：數字比較大、血條晃比較大 */
 .mon-pop.crit{color:#ffe14d;font-size:17px;top:0;text-shadow:0 0 6px #e8572a,0 2px 2px #000;animation-duration:1s}
 .hpbar.shake2{animation:hpShake2 .26s linear}
+/* v4.02 長柄流血：紫色小字；錘重擊：怪物圖大震 */
+.mon-pop i{display:block;font-size:11px;font-style:normal;line-height:1.1;text-align:center}
+.mon-pop.bleed{color:#d9a2ff;font-size:12px;top:30px;text-shadow:0 0 4px #6a2aa8,0 1px 2px #000}
+.vmon.heavy .vthumb{animation:monHeavy .42s ease-out}
+@keyframes monHeavy{0%{transform:none}15%{transform:translate(-4px,2px) scale(.94)}35%{transform:translate(4px,-2px) scale(.97)}55%{transform:translate(-3px,1px)}75%{transform:translate(2px,0)}100%{transform:none}}
 @keyframes hpShake2{20%{transform:translateX(-4px)}45%{transform:translateX(4px)}70%{transform:translateX(-2px)}90%{transform:translateX(1px)}}
 </style>

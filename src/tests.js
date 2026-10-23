@@ -461,8 +461,9 @@ function monTests(){if(typeof document==='undefined')return[];const box=document
   const ok=MONS.length===VILLAGES.length&&box.querySelectorAll('[data-mon]').length===hunting&&box.querySelectorAll('[data-vhp]').length===hunting;
   return[T('H 村莊怪物：每關都有怪物，駐守中的村莊都有怪物圖和血條',ok,`怪物 ${MONS.length} 種／村莊 ${VILLAGES.length}；駐守 ${hunting} 座，怪物圖 ${box.querySelectorAll('[data-mon]').length}、血條 ${box.querySelectorAll('[data-vhp]').length}`)]}
 // v4.02 武器打法：每種還在的武器類別都有打法與說明，連擊間隔加起來比攻擊間隔短
-function hitTests(){const cats=[...new Set(BPS.map(b=>b.cat))],miss=cats.filter(c=>!HIT[c]||!HIT_N[c]),bad=Object.entries(HIT).filter(([k,h])=>(h.n-1)*(h.gap||0)>=h.iv*.85);
-  return[T('H 武器打法：每種武器類別都有攻速／連擊設定',!miss.length&&!bad.length,miss.length?'缺：'+miss.join('、'):bad.length?'連擊太長：'+bad.map(x=>x[0]).join('、'):cats.length+' 種都有')]}
+function hitTests(){const cats=[...new Set(BPS.map(b=>b.cat))],miss=cats.filter(c=>!HIT[c]||!HIT_N[c]);
+  const bad=Object.entries(HIT).filter(([k,h])=>{const z={};let sum=0;for(let n=0;n<400;n++){const p=h.plan(z);if(p.some(x=>x[0]>=h.iv*.85))return true;sum+=p.reduce((a,x)=>a+x[1],0)}return k!=='shield'&&Math.abs(sum/400/h.E-1)>.15});
+  return[T('H 武器打法：每種武器類別都有打法，連擊在下一輪前打完、平均倍率和設定相符',!miss.length&&!bad.length,miss.length?'缺：'+miss.join('、'):bad.length?'不符：'+bad.map(x=>x[0]).join('、'):cats.length+' 種都有')]}
 // v3.84 附魔 12 種：只能隨機、攻擊力／狩獵各 5 種、受襲機制刪除（堅固改成每輪金幣）
 function enchTests(){const mk=(e,t)=>({id:-1,b:'t3_greataxe',q:0,lv:0,traits:t||[],ench:[...e,null,null,null,null].slice(0,4)});const gi=VILLAGES.findIndex(v=>v.tag==='giant'),bi=VILLAGES.findIndex(v=>v.tag==='beast'&&v.danger>0&&v.drops.some(d=>d[1]<RARE_P));
   const a=goldMul(bi,mk([{k:'greed',v:15}])),b=goldMul(gi,mk([{k:'giant',v:40}])),st=goldMul(bi,mk([],[{k:'sturdy',v:20}])),g=goldMul(bi,mk([{k:'greed',v:15},{k:'greed',v:15}],[{k:'sturdy',v:45}]));
