@@ -534,7 +534,10 @@ function gwTests(){const ck=godCheck(),bad=ck.filter(x=>!x.ok);
     T('GW4 覺醒：+6 沒有、+7 狩獵 −3%、+11 攻擊力 ×1.1、+13 四段、+15 稱號',n6===0&&Math.abs(tr-.03)<1e-9&&p10===b10&&p11===b11&&n13===4&&!t0&&t1,`+6 段數 ${n6}；+7 縮短 ${tr}；+10 ${p10}/${b10}；+11 ${p11}/${b11}；+13 段數 ${n13}；稱號 ${t0}→${t1}`)]}
 function runTests(mode){
   if(mode==='econ')return econHtml(12)+econHtml(8);
-  const r=runAll({N:100000});r.res.push(...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...storyTests(),...curveTests(),...vNeedTests(),...godWordTests(),...hitTests(),...enchTests(),...wsTests(),...gwTests());const pass=r.res.filter(x=>x.pass).length;
+  const r=runAll({N:100000});r.res.push(...frameLvTests(),...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...storyTests(),...curveTests(),...vNeedTests(),...godWordTests(),...hitTests(),...enchTests(),...wsTests(),...gwTests());const pass=r.res.filter(x=>x.pass).length;
   return `<div><b>${pass}/${r.res.length} 通過</b>（${r.ms} 毫秒）</div>`+resHtml(r.res);
 }
+// v4.34 武器框顏色看強化等級
+function frameLvTests(){if(typeof FLV==='undefined')return[];const exp={0:0,1:1,6:1,7:2,8:2,9:3,10:6,11:4,12:5,15:5},bad=Object.entries(exp).filter(([lv,f])=>FLV(+lv)!==f);
+  return[T('FL1 框色：+0 灰、+1～+6 綠、+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石',!bad.length,bad.length?'錯：'+bad.map(x=>'+'+x[0]).join('、'):'10 個等級都對')]}
 if(typeof module!=='undefined')module.exports={runAll,econReport,simulate,levelCheck};
