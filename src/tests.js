@@ -383,6 +383,15 @@ function repTests(){const res=[];
 
 /* ---------- J. v3.72 每週限時活動 ---------- */
 // v3.76 第二界約頓海姆＋巨人體重鍊
+// v4.16 附魔與祈願隨關卡開放
+function unlockTests(){return withSandbox(()=>{const res=[];S=sanitize(fresh());
+  const p0=affPool(),g0=gachaPool(),sum0=g0.reduce((a,x)=>a+x[2],0);
+  res.push(T('U1 開局只會 5 種基本符文、祈願抽不到後面的素材',p0.length===5&&!p0.includes('giant')&&!p0.includes('holy')&&!g0.some(x=>x[0]==='icecore'||x[0]==='scale')&&Math.abs(sum0-1000)<1e-9&&g0.some(x=>x[2]<=PITY_MAX_W),`詞條 ${p0.join(',')}；祈願總和 ${sum0}`));
+  S.villages[7].status='open';const p1=affPool();
+  res.push(T('U2 1-8 開放就學會剋巨人',p1.includes('giant')&&!p1.includes('holy'),`詞條 ${p1.length} 種`));
+  S.villages.forEach(v=>v.status='open');const p2=affPool(),g2=gachaPool();
+  res.push(T('U3 全部開放後回到 12 種、祈願表跟原本一樣',p2.length===12&&g2.length===GACHA.length&&g2.every((x,i)=>x[2]===GACHA[i][2]),`詞條 ${p2.length}；祈願 ${g2.length} 項`));
+  return res})}
 function realm2Tests(){const res=[];
   withSandbox(()=>{
     S=fresh();S.speed=1;
@@ -431,7 +440,7 @@ function evtTests(){const res=[];
 /* ---------- 執行 ---------- */
 function runAll(opts={}){
   const t0=Date.now();const lv=levelCheck();
-  const res=[...lv.res,...forgeTests(opts.N||100000),...enhanceTests(opts.N||100000),...saveTests(),...dailyTests(),...chatTests(),...specTests(20261020,opts.N?Math.max(opts.N,100000):200000).res,...(typeof window!=='undefined'?repTests():[]),...evtTests(),...realm2Tests()];
+  const res=[...lv.res,...forgeTests(opts.N||100000),...enhanceTests(opts.N||100000),...saveTests(),...dailyTests(),...chatTests(),...specTests(20261020,opts.N?Math.max(opts.N,100000):200000).res,...(typeof window!=='undefined'?repTests():[]),...evtTests(),...realm2Tests(),...unlockTests()];
   res.push(T('圖紙底圖：圖紙卡用統一圖紙底圖、不用品質外框',typeof document==='undefined'||wArt(BPS[0].id,{frame:'bp'}).includes('bp_paper2')&&!wArt(BPS[0].id,{frame:'bp'}).includes('wart-f'),'frame:bp'));
   return{res,lv,ms:Date.now()-t0};
 }
@@ -495,7 +504,7 @@ function enchTests(){const mk=(e,t)=>({id:-1,b:'t3_greataxe',q:0,lv:0,traits:t||
   const a=goldMul(bi,mk([{k:'greed',v:15}])),b=goldMul(gi,mk([{k:'giant',v:40}])),st=goldMul(bi,mk([],[{k:'sturdy',v:20}])),g=goldMul(bi,mk([{k:'greed',v:15},{k:'greed',v:15}],[{k:'sturdy',v:45}]));
   const rd=VILLAGES[bi].drops.find(d=>d[1]<RARE_P),sk=dropChance(bi,mk([{k:'seek',v:20}]),rd,'normal')/dropChance(bi,mk([]),rd,'normal');
   const p0=power(mk([])),pw=power(mk([{k:'thunder',v:10},{k:'holy',v:10}])),gp=Object.entries(AFFIX).reduce((o,[k,x])=>(o[x.g]=(o[x.g]||0)+1,o),{}),tw=Object.values(AFFIX).reduce((x,y)=>x+y.w,0);
-  const S0=S;S=fresh();S.gold=1e6;S.mats.shard=500;S.anvil=5;const z=makeWeapon('t1_woodaxe',0,0,[]);const cnt={};for(let n=0;n<400;n++){enchantCore(z.id,0);cnt[z.ench[0].k]=1}const used=500-S.mats.shard;S=S0;
+  const S0=S;S=fresh();S.gold=1e6;S.mats.shard=500;S.anvil=5;S.villages.forEach(v=>v.status='open');const z=makeWeapon('t1_woodaxe',0,0,[]);const cnt={};for(let n=0;n<400;n++){enchantCore(z.id,0);cnt[z.ench[0].k]=1}const used=500-S.mats.shard;S=S0;
   let hv=0;{const st2={strat:'normal',bank:{cycles:0,gold:0,mats:{},events:0}};const w0=mk([{k:'harvest',v:25},{k:'harvest',v:25}]);for(let n=0;n<4000;n++)rollCycle(0,w0,st2,Date.UTC(2026,9,23,4));hv=st2.bank.events}
   const ok=Object.keys(AFFIX).length===12&&gp.pow===5&&gp.hunt===5&&tw===100&&Math.abs(a-1.15)<1e-9&&Math.abs(b-1.4)<1e-9&&Math.abs(st-1.2)<1e-9&&Math.abs(g-1.4)<1e-9&&Math.abs(sk-1.2)<1e-6&&Math.abs(pw/p0-1.2)<.02&&eventChance(bi,mk([]))===0&&hv===0&&used===400&&Object.keys(cnt).length>=10&&Object.values(AFFIX).every(x=>x.max<=40);
   return[T('I 附魔 12 種：只能隨機（1 碎片）、攻擊力／狩獵各 5、貪婪＋堅固上限 40%、剋巨人金幣、尋珍、受襲刪除',ok,`攻擊力 ${gp.pow}／狩獵 ${gp.hunt}；權重 ${tw}；貪婪×${a.toFixed(2)}、堅固×${st.toFixed(2)}、上限×${g.toFixed(2)}、剋巨人×${b.toFixed(2)}、尋珍×${sk.toFixed(2)}、雷霆＋神聖攻擊力×${(pw/p0).toFixed(2)}；400 次附魔用 ${used} 碎片、出現 ${Object.keys(cnt).length} 種；受襲 ${hv} 次`)]}
