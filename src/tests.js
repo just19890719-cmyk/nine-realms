@@ -79,13 +79,9 @@ function levelCheck(){
   // 素材循環：每個圖紙的材料是否在其解鎖前就有來源
   const src2=new Set(['iron','oak','leather']);const bad=[];
   for(let i=0;i<=VILLAGES.length;i++){BPS.filter(b=>b.unlock===i).forEach(b=>{const ms=Object.keys(recipe(b)).filter(m=>!src2.has(m));if(ms.length)bad.push(b.n+'缺'+ms.map(m=>MATS[m]).join('、'))});if(VILLAGES[i])VILLAGES[i].drops.forEach(d=>src2.add(d[0]))}
-  // v3.76 第二界（v4.37 重鍊已拿掉）：龍鱗／神器／巨人，每關找出最低品質和強化等級（安全標準：史詩以下 +8 內、或傳說 +6 內）
-  const r2=[];let ok2=true;
-  for(let i=10;i<VILLAGES.length;i++){const v=VILLAGES[i];let best=null;
-    for(let q=0;q<5&&!(best&&best.good);q++)for(const b of BPS.filter(b=>b.t>=2&&b.unlock<=i&&(b.t<3||q>=2)))for(let lv=0;lv<=15;lv++){
-      if(Math.round(b.base*TIERS[b.t].mult*QUAL[q].m*enhMult(lv))>=v.req){const good=q<=3?lv<=8:lv<=6;if(!best||(good&&!best.good)||(good===best.good&&lv<best.lv))best={b,q,lv,good};break}}
-    const good=best&&best.good;ok2=ok2&&good;r2.push(`${vNo(i)} ${v.req}：${best?`${QUAL[best.q].n}${best.b.n}+${best.lv}`:'無'}${good?'':'（太難）'}`)}
-  res.push(T('A12 第二界每關都打得過（龍鱗／神器／巨人，沒有重鍊）',ok2,r2.join('；')));
+  // v4.37 村莊不限武器：+0 普通鐵製、沒附魔的武器每一關都能交
+  {const w={id:-1,b:'t1_woodaxe',q:0,lv:0,traits:[],ench:[null,null,null,null]},bad=VILLAGES.map((v,i)=>i).filter(i=>!eligible(i,w));
+   res.push(T('A12 任何武器都能交付每一關（+0 普通鐵製、沒附魔）',!bad.length,bad.length?'不能交：'+bad.map(vNo).join('、'):'20 關都能交'))}
   res.push(T('A11 材料來源與解鎖順序（無循環、無無法取得素材）',!bad.length,bad.length?bad.join('；'):'所有圖紙在解鎖時，材料都已有來源'));
   return{res,rows};
 }
@@ -205,7 +201,7 @@ function saveTests(){
     for(let n=0;n<50;n++)enchantCore(x.id,rnd(0,3));const slots=x.ench.length,shard0=S.mats.shard,g1=S.gold;enchantCore(x.id,0);
     x.ench=[{k:'loot',v:30},{k:'loot',v:30},{k:'swift',v:40},{k:'swift',v:40}];const tr=timeReduction(0,x),lo=Math.min(CAP.loot,affixVal(x,'loot'));
     const y=makeWeapon('t3_greataxe',1,4,[]);y.ench[0]={k:'giant',v:20};const yOk=eligible(7,y),y2=makeWeapon('t3_greataxe',0,0,[]);
-    res.push(T('E10 附魔覆蓋不重複、扣費正確、迅捷/掠奪有上限、剋巨人判定',slots===4&&shard0-S.mats.shard===1&&g1-S.gold===enchCost(x)&&x.ench.length===4&&tr===CAP.time/100&&lo===CAP.loot&&yOk===(power(y)>=VILLAGES[7].req)&&yOk&&!eligible(7,y2),
+    res.push(T('E10 附魔覆蓋不重複、扣費正確、迅捷/掠奪有上限、不限附魔也能交 1-8',slots===4&&shard0-S.mats.shard===1&&g1-S.gold===enchCost(x)&&x.ench.length===4&&tr===CAP.time/100&&lo===CAP.loot&&yOk&&eligible(7,y2),
       `欄位數 ${slots}；隨機附魔扣碎片 ${shard0-S.mats.shard}、金幣 ${g1-S.gold}；迅捷堆疊後時間縮短 ${tr*100}%（上限 ${CAP.time}%）；掠奪 ${lo}%（上限 ${CAP.loot}%）；有剋巨人可交 1-8：${yOk}，沒有：${eligible(7,y2)}`));
     // 附魔欄位依鐵砧
     S=fresh();S.gold=1e6;S.mats.shard=10;const z=makeWeapon('t1_woodaxe',0,0,[]);const e2=enchantCore(z.id,2);S.anvil=3;const e3=enchantCore(z.id,2),e4=enchantCore(z.id,3);S.anvil=5;const e5=enchantCore(z.id,3);
@@ -477,7 +473,7 @@ function dexTests(){const sv=ui.sheet,bad=VILLAGES.map((v,i)=>i).filter(i=>{ui.s
 function godReqTests(){const v=VILLAGES[9],u=VILLAGES[19],mk=e=>({id:-1,b:'t3_halberd',q:3,lv:15,traits:[],ench:[e,null,null,null]});
   const gods=VILLAGES.map((x,i)=>i).filter(i=>/神/.test(MON_T[i])),badGod=gods.filter(i=>VILLAGES[i].need!=='holy'),old=VILLAGES.filter(x=>/世界樹根穴|烏特加德城$|鐵爐村|鹿角堡|渡鴉灣|雪峰營地|冰川裂谷|雷鳴峽谷|霜晶礦坑|冰巨人王庭/.test(x.name)&&x!==VILLAGES[17]);
   const drag=VILLAGES[15],noScale=VILLAGES.filter((x,i)=>[7,9,12].includes(i)&&x.drops.some(d=>d[0]==='scale'));
-  const ok=v.name==='彩虹橋頭'&&u.name==='維莫爾河渡口'&&u.cat==='hammer'&&!badGod.length&&!old.length&&VILLAGES[17].name==='烏特加德城'&&VILLAGES[8].need==='frost'&&drag.need==='dragon'&&drag.drops.some(d=>d[0]==='scale')&&!noScale.length&&v.drops.some(d=>d[0]==='rainbow')&&MATS.rainbow&&eligible(9,mk({k:'holy',v:15}))&&!eligible(9,mk({k:'dragon',v:40}))&&TAGN[v.tag]&&TAGN[drag.tag];
+  const ok=v.name==='彩虹橋頭'&&u.name==='維莫爾河渡口'&&u.cat==='hammer'&&!badGod.length&&!old.length&&VILLAGES[17].name==='烏特加德城'&&VILLAGES[8].need==='frost'&&drag.need==='dragon'&&drag.drops.some(d=>d[0]==='scale')&&!noScale.length&&v.drops.some(d=>d[0]==='rainbow')&&MATS.rainbow&&TAGN[v.tag]&&TAGN[drag.tag];
   return[T('H 關卡跟故事一致：神的關卡都要神聖、2-10 要戰錘、1-9 要霜寒、2-6 蠕龍要剋龍且掉龍鱗、舊名稱都換掉、1-10 掉虹橋碎晶',!!ok,`沒要神聖的神：${badGod.map(vNo).join('、')||'無'}；舊名稱：${old.map(x=>x.name).join('、')||'無'}；不該掉龍鱗：${noScale.map(x=>x.name).join('、')||'無'}`)]}
 // v4.24 第一、二界故事主線：1-8／2-9 對調、2-10 索爾、代名詞（神＝祂，怪物＝牠，不用他／她／它）
 function storyTests(){const pr=[...MON_LORE,...VILLAGES.map(v=>v.txt)].map((t,i)=>[i,t]).filter(([i,t])=>/[他它]|(?<!巨人女巫放話：先打贏)她/.test(t.replace(/其他|試試它/g,'')));
@@ -514,8 +510,7 @@ function wsTests(){const S0=S;S=fresh();S.gold=1e6;const at=n=>S.villages.forEac
 // v4.07 難度曲線：每關需求不低於曲線、1-1 以外剛打好的普通武器不能直接交、需求數字和公告一致
 function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter((d,i)=>i&&d.v.req<d.curve*.97),free=rows.filter((d,i)=>i&&d.need[0]===0),nw=NW_LOG.find(n=>n.v==='4.07'),txt=nw?nw.b.join(''):'';
   const want={1:14,4:44,5:55,7:155,9:310,10:280,13:545,14:420,15:420,18:900},miss=Object.entries(want).filter(([i,r])=>VILLAGES[i].req!==r||!txt.includes(({石籬原:'熔岩裂口'}[VILLAGES[i].name]||VILLAGES[i].name)+' '+r))   // v4.24 2-9 改名，4.07 公告裡還是舊名;
-  return[T('N1 每關需求不低於難度曲線（中度）',!low.length,low.length?low.map(d=>d.v.name+' '+d.v.req+'<'+d.curve).join('、'):'20 關都 ≥ 曲線'),
-    T('N2 1-1 以外普通 +0 不能直接交付',!free.length,free.length?free.map(d=>d.v.name).join('、'):'都要強化'),
+  return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 // v4.15 神明武器：滿加成弱於下一界、遺物只在神的關卡掉、覺醒等級和效果、稱號
 function gwTests(){const ck=godCheck(),bad=ck.filter(x=>!x.ok);

@@ -121,20 +121,20 @@ const VILLAGES=[
  {name:'鴉巢堡',who:'軍隊・堡壘守衛',cat:'shield',req:44,sec:720,gold:100,danger:.06,tag:'beast',drops:[['silver',.5,1,2],['fang',.4,1,2],['shard',.25,1,1]],txt:'人間打起仗來，戰場鴉魔吃飽了戰死者的心臟，在堡頂築巢，成群俯衝城牆，守衛需要打得下鴉群的好武器。'},
  {name:'巨怪灣',who:'軍隊・港口衛兵',cat:'crossbow',req:55,sec:1080,gold:170,danger:.08,tag:'beast',drops:[['silver',.5,1,2],['shard',.3,1,1],['serpent',.12,1,1]],txt:'克拉肯從北海游進巨怪灣，在港外拖沉運糧的長船，衛兵要能遠射的弩。'},
  {name:'巨魔山口',who:'軍隊・山地軍團',cat:'hammer',req:75,sec:1440,gold:280,danger:.1,tag:'beast',drops:[['silver',.6,1,2],['fang',.6,1,2],['scale',.15,1,1],['rune',.15,1,1],['fur',.1,1,1],['shard',.15,1,1]],txt:'山怪特羅爾堵住山口，身上披著撿來的龍鱗，軍團要能砸碎石皮的戰錘。山口後面，就是巨人走下山的路。'},
- {name:'巨人足跡',who:'軍隊・王國先鋒',cat:'axe',req:155,sec:2160,gold:450,danger:.12,tag:'giant',need:'giant',drops:[['rune',.45,1,1],['shard',.5,1,2],['icecore',.15,1,1]],txt:'山口一破，地上出現一排排泥巴大腳印：巨人們用黏土捏出的泥巨人莫庫卡爾菲，被派到人間探路。武器必須帶有「剋巨人」。'},
- {name:'灰燼要塞',who:'軍隊・要塞騎士',cat:'sword',req:160,sec:2880,gold:700,danger:.14,tag:'giant',need:'frost',drops:[['scale',.3,1,1],['rune',.3,1,1],['shard',.3,1,1],['fireheart',.15,1,1]],txt:'九界的門也通到火之國，穆斯貝爾的火焰騎兵騎著披龍鱗馬鎧的戰馬燒毀外牆。火要用霜壓，武器必須帶有「霜寒」。'},
- {name:'彩虹橋頭',who:'軍隊・登橋先鋒',cat:'polearm',req:310,sec:3600,gold:1000,danger:.16,tag:'god',need:'holy',drops:[['rainbow',.35,1,2],['rune',.3,1,1],['shard',.5,1,2],['hrelic',.2,1,1]],txt:'守望之神海姆達爾擋在彩虹橋頭，奉奧丁之命把凡人擋在神界門外。凡鐵傷不了神，武器必須帶有「神聖」。'},
+ {name:'巨人足跡',who:'軍隊・王國先鋒',cat:'axe',req:155,sec:2160,gold:450,danger:.12,tag:'giant',need:'giant',drops:[['rune',.45,1,1],['shard',.5,1,2],['icecore',.15,1,1]],txt:'山口一破，地上出現一排排泥巴大腳印：巨人們用黏土捏出的泥巨人莫庫卡爾菲，被派到人間探路。'},
+ {name:'灰燼要塞',who:'軍隊・要塞騎士',cat:'sword',req:160,sec:2880,gold:700,danger:.14,tag:'giant',need:'frost',drops:[['scale',.3,1,1],['rune',.3,1,1],['shard',.3,1,1],['fireheart',.15,1,1]],txt:'九界的門也通到火之國，穆斯貝爾的火焰騎兵騎著披龍鱗馬鎧的戰馬燒毀外牆。火要用霜壓。'},
+ {name:'彩虹橋頭',who:'軍隊・登橋先鋒',cat:'polearm',req:310,sec:3600,gold:1000,danger:.16,tag:'god',need:'holy',drops:[['rainbow',.35,1,2],['rune',.3,1,1],['shard',.5,1,2],['hrelic',.2,1,1]],txt:'守望之神海姆達爾擋在彩虹橋頭，奉奧丁之命把凡人擋在神界門外。'},
  // v3.76 第二界約頓海姆（收復 1-10 後開放）
  {name:'霜巨人前哨',who:'遠征軍・斥候隊',cat:'axe',req:280,sec:3600,gold:1100,danger:.16,tag:'giant',drops:[['giantbone',.4,1,1],['silver',.6,1,2],['shard',.5,1,2]],txt:'彩虹橋被封，遠征軍只能繞進約頓海姆找巨人結盟。九頭巨人守著入口的哨站，不打贏牠，沒有巨人會聽凡人說話。斥候隊要劈得開巨木柵欄的斧。'},
  {name:'鐵森林',who:'遠征軍・獵兵隊',cat:'bow',req:280,sec:4200,gold:1250,danger:.16,tag:'beast',drops:[['permafrost',.4,1,1],['fang',.6,1,2],['icecore',.15,1,1]],txt:'鐵森林的狼王帶著狼群在黑鐵色的枯林裡出沒，巨人女巫放話：先打贏我養的狼，再來談結盟。獵兵要能遠射的長弓。'},
  {name:'巨鷹之崖',who:'遠征軍・弩兵團',cat:'crossbow',req:260,sec:4800,gold:1400,danger:.17,tag:'beast',drops:[['thunderiron',.5,1,1],['rune',.35,1,1]],txt:'吞屍巨鷹赫拉斯瓦爾格坐在崖頂拍翅，颳起雷暴，弩兵團要射得穿風暴的重弩。'},
  {name:'巨骨墓場',who:'遠征軍・重裝隊',cat:'hammer',req:545,sec:5400,gold:1550,danger:.17,tag:'giant',drops:[['giantbone',.5,1,2],['rune',.4,1,1],['shard',.5,1,2]],txt:'巨人屍鬼守著先祖的陪葬寶物爬出了墳墓，得用戰錘把牠們砸回土裡。'},
  {name:'永凍湖',who:'湖畔漁村・守衛',cat:'shield',req:420,sec:6000,gold:1700,danger:.18,tag:'beast',drops:[['permafrost',.5,1,2],['icecore',.2,1,1],['serpent',.15,1,1]],txt:'冰湖水妖用琴聲引人上冰，再從冰下射出冰刺，漁村守衛需要敲得碎冰刺的好武器。'},
- {name:'蠕龍礦坑',who:'礦工公會・護衛',cat:'dagger',req:420,sec:6000,gold:1800,danger:.18,tag:'dragon',need:'dragon',drops:[['permafrost',.45,1,1],['thunderiron',.35,1,1],['scale',.3,1,1]],txt:'洞穴蠕龍林德蟲盤在礦坑窄道裡，長兵器揮不開。牠是龍，武器必須帶有「剋龍」。'},
+ {name:'蠕龍礦坑',who:'礦工公會・護衛',cat:'dagger',req:420,sec:6000,gold:1800,danger:.18,tag:'dragon',need:'dragon',drops:[['permafrost',.45,1,1],['thunderiron',.35,1,1],['scale',.3,1,1]],txt:'洞穴蠕龍林德蟲盤在礦坑窄道裡，長兵器揮不開。牠是龍，全身都是硬鱗。'},
  {name:'狂風高原',who:'遠征軍・長槍陣',cat:'polearm',req:600,sec:6600,gold:2000,danger:.19,tag:'giant',drops:[['thunderiron',.45,1,1],['giantbone',.45,1,1]],txt:'風之巨人卡瑞一吐氣就是暴風雪，擋住通往烏特加德城的路，長槍陣要能刺穿巨人的長柄武器。'},
  {name:'烏特加德城',who:'遠征軍・王家騎士',cat:'sword',req:720,sec:7200,gold:2300,danger:.2,tag:'giant',drops:[['elderroot',.25,1,1],['icecore',.25,1,1]],txt:'幻術巨人王烏特加德洛基坐在王座大廳，說只要贏得過牠的幻術，就肯聽凡人說話。騎士們要最鋒利的劍。'},
  {name:'石籬原',who:'遠征軍・攻城隊',cat:'axe',req:900,sec:7200,gold:2600,danger:.2,tag:'giant',drops:[['elderroot',.3,1,1],['giantbone',.3,1,1],['thunderiron',.45,1,1]],txt:'巨人王認輸後說：最強的巨人赫朗格尼爾住在石籬原，只要牠點頭，全約頓海姆都會跟你走。攻城隊的斧要劈得開牠的石盾。'},
- {name:'維莫爾河渡口',who:'遠征軍・總指揮',cat:'hammer',req:1040,sec:7200,gold:3000,danger:.2,tag:'god',need:'holy',drops:[['elderroot',.35,1,1],['giantbone',.5,1,2],['rune',.4,1,1],['srelic',.2,1,1]],txt:'巨人們終於願意和凡人結盟，雷神索爾卻駕著山羊戰車渡過維莫爾河，要親手拆散這個聯盟。凡鐵傷不了神，武器必須帶有「神聖」。'}
+ {name:'維莫爾河渡口',who:'遠征軍・總指揮',cat:'hammer',req:1040,sec:7200,gold:3000,danger:.2,tag:'god',need:'holy',drops:[['elderroot',.35,1,1],['giantbone',.5,1,2],['rune',.4,1,1],['srelic',.2,1,1]],txt:'巨人們終於願意和凡人結盟，雷神索爾卻駕著山羊戰車渡過維莫爾河，要親手拆散這個聯盟。'}
 ];
 const REALM_N=[['米德加德','人類之境','v4'],['約頓海姆','巨人之境','v20']];   // [名稱, 副標, 背景圖]
 const vRealm=i=>i<10?0:1,vNo=i=>(vRealm(i)+1)+'-'+(i%10+1);   // 關卡編號：0→1-1，10→2-1
@@ -880,8 +880,8 @@ function goldMul(i,w){if(!w)return 1;const v=VILLAGES[i];let g=Math.min(CAP.gree
 function gameDur(i,w,strat){const v=VILLAGES[i];const ratio=Math.min(1,Math.max(POWER_FLOOR,v.req/power(w)));return v.sec*1000*ratio*(1-timeReduction(i,w))*STRATS[strat||S.villages[i].strat].time}
 const dur=(i,w,strat)=>gameDur(i,w,strat)/S.speed;
 const capCycles=(i,w)=>Math.max(1,Math.floor(S.capH*3600000/gameDur(i,w)));
-// v4.37 村莊不限武器類別（武器系統定案）：只看攻擊力（和打神等關卡要的附魔）；v.cat 只用來算需求曲線和故事
-function eligible(i,w){const v=VILLAGES[i];return !w.test&&bossSlotOf(w)<0&&power(w)>=v.req&&(!v.need||affixVal(w,v.need)>0)}
+// v4.37 村莊不限武器（Mochi：不限類別、不限攻擊力、不限附魔）：任何武器都能交；v.req 只留給狩獵時間計算，v.cat／v.need 只留給故事和難度曲線
+function eligible(i,w){return !w.test&&bossSlotOf(w)<0}
 // v3.64 紅點提醒：只在「有事可以做」時亮
 // 可交付：未解鎖以外的村莊，「等待交付／沒有駐守」門檻 -1；v3.79 已有駐守就不亮紅點（武器庫有更強的只在村莊卡顯示「可以換」標籤，玩家可能要留給別的村莊）
 const giveMin=()=>S.villages.map(st=>{if(st.status==='locked')return null;const c=st.weaponId!=null&&W(st.weaponId);return c?null:-1});
@@ -1112,6 +1112,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.37',d:'10/24',t:'村莊不限武器・拿掉特性、重鍊和盾',b:['村莊委託<b>不限武器</b>：不指定類別、不看攻擊力、不用特定附魔，任何武器都能交（武器越強狩獵越快）','鍛造不再帶<b>先天特性</b>（鋒利、堅固、輕巧、尋寶、巨人獵手、符文親和）','<b>巨人體重鍊</b>拿掉了，第二界材料用來鍛造巨人武器','<b>盾</b>拿掉了：4 張盾圖紙不再出現；1-5 鴉巢堡、2-5 永凍湖的故事跟著改寫'],g:['vil','qual','realm']},
  {v:'4.36',d:'10/24',t:'武器品階與框的電流',b:['+9 以上的武器框改成<b>一道電流繞著框打轉</b>（原本是整框一明一暗）','武器上原本的品質名稱改成看強化等級的<b>品階</b>，顏色跟框一樣：+0 凡鐵、+1～+6 精鍛、+7～+8 寒鋒、+9 血刃、+10 神鑄、+11 星魂、+12 永恆','武器庫的「品質」篩選改成「品階」','武器格只留武器圖和名稱','鐵匠鋪的<b>工坊升級、熔解回收、鐵匠天賦</b>拿掉了（遊戲大改版中），效果也一起拿掉：圖紙只看收復的關卡就解鎖，附魔固定 2 格；單把武器還是可以在武器詳情裡熔解'],g:['enh','melt','ench']},
  {v:'4.35',d:'10/24',t:'第二界 8 隻怪物有全身圖了',b:['2-1 九頭巨人斯里瓦爾迪、2-2 鐵森林狼王、2-3 吞屍巨鷹赫拉斯瓦爾格、2-4 巨人屍鬼德勞格','2-5 冰湖水妖諾克（拉著琴把你引上冰面）、2-6 洞穴蠕龍林德蟲、2-7 風之巨人卡瑞、2-8 幻術巨人王烏特加德洛基','20 關都有全身圖了：點怪物小圖展開戰鬥畫面，就能看到牠們待機和攻擊的動作','怪物被打中時的閃光跟著當下的動作走，不會再出現跟身體對不上的白影'],g:['hit']},
  {v:'4.35',d:'10/24',t:'戰鬥畫面不再出現兩隻怪物',b:['1-2、1-9、1-10 和第二界的村莊背景本來就畫了怪物，展開戰鬥畫面時會跟前面的怪物重複','現在戰鬥畫面只取背景裡沒有怪物的那一段（例如瞭望塔、燃燒的城堡、巨人營地、極光），卡片和詳情頁的背景不變'],g:['hit']},
@@ -1161,11 +1162,11 @@ const GUIDE=[
   {k:'forge',ic:'t1_ironhammer_disp',n:'鍛造',s:'選圖紙、放材料，5 秒打好一批',v:'3.86',h:'在鐵匠鋪「圖紙」選一張圖紙，材料和金幣夠就能按「開始鍛造」。<br>一次一批（最多 10 把），不管幾把都是 <b>5 秒</b>完成。<br>熔爐等級決定能打哪種材質：鐵製 Lv1、霜銀 Lv2、龍鱗 Lv4、神器 Lv5、巨人 Lv6。<br>收復村莊會解鎖新圖紙。'},
   {k:'qual',ic:'it_blueprint',n:'品質',s:'普通到傳說，攻擊力最多 2.3 倍',v:'4.37',h:'品質：普通 ×1、精良 ×1.2、稀有 ×1.45、史詩 ×1.8、傳說 ×2.3。鐵砧等級越高，好品質機率越高。<br>霜銀以上有保底：連續 9 把低於稀有，第 10 把必定稀有。<br>v4.37 起鍛造不再帶先天特性，武器強度只看材質、品質、強化和附魔。'},
   {k:'enh',ic:'it_bless',n:'強化',s:'+1～+6 安定，+7 起有機率爆裝',v:'4.36',h:'所有材質的安定值都是 <b>+6</b>：+1～+6 失敗只扣金幣，不會爆裝。<br>+7 起是危險區，成功率依序 45／35／25／18／12／8／5／3／2%（+7～+15）。失敗時爆裝機率 50% 起，每級 +5%，最高 90%。<br><b>防爆卷</b>：爆裝時保住武器。<b>祝福石</b>：成功率 +10%。<br>爆裝會留下殘渣，可以換材料。<br>武器的<b>品階</b>和框色看強化等級：+0 凡鐵（灰）、+1～+6 精鍛（綠）、+7～+8 寒鋒（藍）、+9 血刃（紅）、+10 神鑄（金）、+11 星魂（紫）、+12 永恆（鑽石），+9 以上的框有電流繞著跑。'},
-  {k:'ench',ic:'mat_shard',n:'附魔',s:'符文碎片隨機出 12 種詞條，一關一關學會',v:'4.36',h:'用 1 個符文碎片＋金幣隨機附魔一種詞條，重新附魔會蓋掉那一格。<br>符文要<b>一關一關學會</b>：開局會烈焰、霜寒、迅捷、掠奪、豐收；1-3 開放學會尋珍、1-6 貪婪、1-7 雷霆、1-8 剋巨人、1-10 神聖、2-6 劇毒和剋龍。已經附在武器上的不受影響。<br><b>攻擊力</b>：烈焰、霜寒、雷霆、劇毒、神聖。凡鐵傷不了神，打神（1-10、2-10）一定要<b>神聖</b>。<br><b>狩獵</b>：迅捷、掠奪、貪婪、尋珍、豐收。<br><b>剋制</b>：剋巨人（1-8 巨人足跡一定要有）、剋龍（2-6 蠕龍礦坑一定要有、打尼德霍格）。1-9 灰燼要塞要<b>霜寒</b>。<br>附魔欄：目前開放 2 格。'},
+  {k:'ench',ic:'mat_shard',n:'附魔',s:'符文碎片隨機出 12 種詞條，一關一關學會',v:'4.37',h:'用 1 個符文碎片＋金幣隨機附魔一種詞條，重新附魔會蓋掉那一格。<br>符文要<b>一關一關學會</b>：開局會烈焰、霜寒、迅捷、掠奪、豐收；1-3 開放學會尋珍、1-6 貪婪、1-7 雷霆、1-8 剋巨人、1-10 神聖、2-6 劇毒和剋龍。已經附在武器上的不受影響。<br><b>攻擊力</b>：烈焰、霜寒、雷霆、劇毒、神聖。<br><b>狩獵</b>：迅捷、掠奪、貪婪、尋珍、豐收。<br><b>剋制</b>：剋巨人、剋龍（打尼德霍格）。1-9 灰燼要塞要<b>霜寒</b>。<br>附魔欄：目前開放 2 格。'},
   {k:'god',ic:'g_hofund_disp',n:'神明武器與神格覺醒',s:'用神的遺物鍛造，強化越高覺醒越多',v:'4.26',h:'每一界最後一關是神。駐守神的關卡狩獵，每輪有 20% 機率掉<b>神的遺物</b>（1-10 霍夫德劍柄、2-10 雷神錘柄）。<br>收集 6 個遺物加材料，就能在鐵匠鋪鍛造<b>霍夫德之劍</b>（熔爐 Lv5）或<b>索爾之錘</b>（熔爐 Lv6）。它們是那一界最強的武器，但比不上下一界的新材質。<br><b>神格覺醒</b>：強化到 +7、+9、+11、+13、+15 會逐段覺醒，效果只算在這把武器身上（狩獵時間、稀有素材或材料、攻擊力 +10%、首領傷害 +15%）。+15 完全覺醒有專屬稱號、全服公告和金色光環。<br>強化規則和一般武器一樣，+7 以上失敗還是可能爆裝，記得用防爆卷。'},
   {k:'melt',ic:'mat_iron',n:'熔解',s:'不要的武器換回金幣和材料',v:'4.36',h:'在武器詳情按「熔解」：退回一半鍛造金幣、三成材料，25% 機率多得符文碎片。<br>收藏（上鎖）的武器不能熔解。'}]],
  ['村莊與戰鬥',[
-  {k:'vil',ic:'nav_village',n:'村莊委託與收成',s:'交武器收復村莊、自動狩獵收成',v:'4.14',h:'把類別符合、攻擊力達標的武器交給村莊就能收復，解鎖下一座村莊和新圖紙，第一次收復有金幣獎勵。<br>村莊詳情的「需要的武器」列出所有符合類別的圖紙，點一下直接去鍛造。<br>交付後武器會駐守狩獵，自動帶回金幣和材料，<b>離線最多累積 12 小時</b>。換上更強的武器狩獵更快。<br>「全部收成」只收目前在看的這一界；另一界可以收成時，地圖圖示會亮紅點。<br>狩獵策略：一般、素材追獵（材料多、金幣少）、稀有追蹤（稀有素材多、時間長）。<br><b>需求越往後越高</b>：每一界剛開始時普通品質大約要強化到 +6，越後面越需要好品質和 +7 以上的強化，第 9、10 關最難。'},
+  {k:'vil',ic:'nav_village',n:'村莊委託與收成',s:'交武器收復村莊、自動狩獵收成',v:'4.37',h:'把武器交給村莊就能收復（v4.37 起不限類別、攻擊力和附魔，任何武器都可以），解鎖下一座村莊和新圖紙，第一次收復有金幣獎勵。<br>村莊詳情的「需要的武器」列出目前最高材質的圖紙，點一下直接去鍛造。<br>交付後武器會駐守狩獵，自動帶回金幣和材料，<b>離線最多累積 12 小時</b>。換上更強的武器狩獵更快。<br>「全部收成」只收目前在看的這一界；另一界可以收成時，地圖圖示會亮紅點。<br>狩獵策略：一般、素材追獵（材料多、金幣少）、稀有追蹤（稀有素材多、時間長）。<br><b>需求越往後越高</b>：每一界剛開始時普通品質大約要強化到 +6，越後面越需要好品質和 +7 以上的強化，第 9、10 關最難。'},
   {k:'hp',ic:'mon_1',n:'怪物血條',s:'打中才扣血，扣多少＝傷害',v:'4.26',h:'村莊卡上的怪物有血條，武器打中才會扣血，扣多少就是造成的傷害。<br>還沒交付或沒有駐守武器的村莊，點開詳情上方有怪物大圖，按 ‹ › 翻看這一界 10 隻（還沒解鎖的只顯示黑影）。<br>怪物被打倒就完成一輪狩獵，換下一隻。<br>點村莊看詳情，血條同步顯示，下方還有這隻北歐神話怪物的稱號和傳說。每一界的最後一關都是神，每一關的名稱、條件、掉落都跟那隻怪物或神的故事有關：打神要神聖、打龍要剋龍、火要霜寒。'},
   {k:'hit',ic:'cat_sword',n:'武器打法',s:'攻速不同、強化越高越常觸發附加效果',v:'4.37',h:'點村莊卡片上的怪物小圖，會展開戰鬥畫面（一次一個，再點一下收起）：騎士拿著駐守的武器打怪物，打中時怪物閃一下、停頓後被打退，跳出的數字就是傷害。戰鬥畫面收起時，卡片上的小怪物也是同樣的攻速和附加效果。<br>攻速：<b>劍</b> 1.0 秒、<b>斧</b> 1.3 秒（兩連斬）、<b>錘</b> 1.8 秒、<b>短刃</b> 0.6 秒、<b>長柄</b> 1.2 秒、<b>弓</b> 1.1 秒、<b>弩</b> 1.6 秒。<br>強化越高越常觸發附加效果（+1～+6 每級 2%，+7 起 16%～40%）：劍<b>會心</b>、斧<b>流血</b>、錘<b>震碎</b>、短刃<b>中毒</b>、長柄<b>貫穿</b>、弓<b>穿心</b>、弩<b>破甲</b>。狩獵時間和收成不受影響。'},
   {k:'boss',ic:'boss_nidhogg',n:'每週首領',s:'派 3 把武器駐守，週日結算',v:'3.87',h:'全服一起打同一隻首領，整週開打，<b>每週日 00:00</b> 結算換下一隻。<br>最多派 3 把武器駐守，每小時傷害＝攻擊力，打中弱點 ×1.5，離線也會繼續打；結算後武器留著繼續打下一隻。<br>全服血量打到 25／50／75／100% 都有獎勵，上週個人傷害排名也有獎勵。<br>駐守首領的武器不能同時打村莊、強化、附魔、熔解、上架。'},
@@ -1223,7 +1224,7 @@ function collectAll(){tick();let tot={},cnt=0,ev=0;const r0=realmNow()*10;S.vill
 function showHarvest(title,got,ev){ui.result={t:'h',title,got,ev};render()}
 function deliver(i,id){const r=deliverCore(i,id);if(!r)return toast('這把武器不符合委託條件。','bad');const lbr=lbReward(i);if(lbr.length)setTimeout(()=>toast(`${VILLAGES[i].name}排行榜 第 ${lbRank(i)} 名！<br>`+lbr.join('<br>'),'ok'),400);snd(r.first?'unlock':'deliver');if(r.fg)setTimeout(()=>toast(`首次收復 ${VILLAGES[i].name}：獲得 ${fmt(r.fg)} 金幣`,'ok'),200);
   if(r.first){const nb=BPS.filter(b=>b.unlock===cleared()).map(b=>b.n);const nx=VILLAGES[i+1];
-    toast(nx?`委託完成！解鎖 ${vNo(i+1)} ${nx.name}`+(nb.length?`，新圖紙：${nb.slice(0,4).join('、')}${nb.length>4?' 等 '+nb.length+' 張':''}`:''):'約頓海姆全部收復！','ok');if(i===9){ui.realm=1;setTimeout(()=>toast('米德加德全部收復！第二界「約頓海姆」開放了，龍鱗和神器武器也能做「巨人體重鍊」','ok'),700)}}
+    toast(nx?`委託完成！解鎖 ${vNo(i+1)} ${nx.name}`+(nb.length?`，新圖紙：${nb.slice(0,4).join('、')}${nb.length>4?' 等 '+nb.length+' 張':''}`:''):'約頓海姆全部收復！','ok');if(i===9){ui.realm=1;setTimeout(()=>toast('米德加德全部收復！第二界「約頓海姆」開放了','ok'),700)}}
   else toast(`${bpOf(W(id)).n} 已駐守 ${VILLAGES[i].name}`,'ok');ui.sheet=null;render()}
 function recall(i){if(recallCore(i))toast(`武器已收回，${VILLAGES[i].name} 暫停狩獵。`);render()}
 const cheapList=()=>S.weapons.filter(w=>w.q<=1&&w.lv===0&&!busyW(w)&&!w.lock);
@@ -1674,23 +1675,22 @@ let NAV_H='';function renderNav(){const N=document.getElementById('nav'),h=TABS.
 function commissionCard(){const i=S.villages.findIndex(v=>v.status==='open');
   if(i<0)return `<div class="ui-card comm">${ptitle('目前委託')}<div class="small center">所有村莊都已收復</div></div>`;
   const v=VILLAGES[i],best=S.weapons.reduce((m,w)=>Math.max(m,power(w)),0);
-  return `<div class="ui-card comm">${ptitle('目前委託')}<div class="comm-in">${img('v'+(i+1),'comm-img')}<div><b>${vNo(i)} ${v.name}</b><div class="small muted">攻擊力 ${v.req}${v.need?'＋'+AFFIX[v.need].n:''}</div></div></div>
-   <div class="ui-prog prog sm"><i style="width:${Math.min(100,best/v.req*100)}%"></i></div><div class="small muted">最強武器 ${best}/${v.req}</div>
+  return `<div class="ui-card comm">${ptitle('目前委託')}<div class="comm-in">${img('v'+(i+1),'comm-img')}<div><b>${vNo(i)} ${v.name}</b><div class="small muted">任何武器都能交付</div></div></div>
    ${btn('前往村莊 »','tab',{cls:'btn-sec sm',attrs:'data-k="village"'})}</div>`}
 // 版型 E 場景互動：場景裡的物件本身就是按鈕（炭火桶＝熔解、鐵砧＝工坊升級、工具架＝鐵匠天賦），委託做成用鐵鍊吊著的告示牌
 function heroScene(){const i=S.villages.findIndex(v=>v.status==='open'),D=n=>A('dp/'+n);
   const obj=(cls,src,act,label,ic)=>`<button class="hs-obj ${cls}" data-act="${act}" aria-label="${label}"><img class="hs-img" src="${D(src)}" alt=""><span class="hs-tag">${img(ic)}${label}</span></button>`;
-  let board='';if(i>=0){const v=VILLAGES[i],best=S.weapons.reduce((m,w)=>Math.max(m,power(w)),0),f=Math.min(1,best/v.req);
-    board=`<button class="hs-board ${f>=1?'ok':''}" data-act="tab" data-k="village"><img class="hs-chain l" src="${D('prop_chains')}" alt=""><img class="hs-chain r" src="${D('prop_chains')}" alt=""><span class="hs-bin"><span class="hs-bt">目前委託</span>${img('v'+(i+1),'hs-vimg')}<b>${vNo(i)} ${v.name}</b><span class="small">攻擊力 ${v.req}</span><i class="cb-bar"><i style="width:${f*100}%"></i></i><span class="small">${f>=1?'可以交付了 ›':'最強 '+best+'/'+v.req}</span></span></button>`}
+  let board='';if(i>=0){const v=VILLAGES[i],f=S.weapons.some(w=>eligible(i,w))?1:0;
+    board=`<button class="hs-board ${f>=1?'ok':''}" data-act="tab" data-k="village"><img class="hs-chain l" src="${D('prop_chains')}" alt=""><img class="hs-chain r" src="${D('prop_chains')}" alt=""><span class="hs-bin"><span class="hs-bt">目前委託</span>${img('v'+(i+1),'hs-vimg')}<b>${vNo(i)} ${v.name}</b><span class="small">${f>=1?'可以交付了 ›':'先去鍛造一把武器'}</span></span></button>`}
   return board}   // v4.36 工坊／熔解／天賦入口拿掉
 // 版型 F 上橫幅＋下工具列：委託一行橫幅貼在上緣，三顆功能鈕排在下緣霧氣上
 function heroRibbon(){const i=S.villages.findIndex(v=>v.status==='open');let rb='';
-  if(i>=0){const v=VILLAGES[i],best=S.weapons.reduce((m,w)=>Math.max(m,power(w)),0),f=Math.min(1,best/v.req);
-    rb=`<button class="hf-rib ${f>=1?'ok':''}" data-act="tab" data-k="village">${img('v'+(i+1),'hf-img')}<span class="hf-t"><span class="small">目前委託</span><b>${vNo(i)} ${v.name}・攻擊力 ${best}/${v.req}</b></span><i class="cb-bar"><i style="width:${f*100}%"></i></i><span class="hf-go">前往 ›</span></button>`}
+  if(i>=0){const v=VILLAGES[i],f=S.weapons.some(w=>eligible(i,w))?1:0;
+    rb=`<button class="hf-rib ${f>=1?'ok':''}" data-act="tab" data-k="village">${img('v'+(i+1),'hf-img')}<span class="hf-t"><span class="small">目前委託</span><b>${vNo(i)} ${v.name}</b></span><span class="hf-go">前往 ›</span></button>`}
   return rb}   // v4.36 Mochi：工坊升級、熔解回收、鐵匠天賦先拿掉（大改版中）
 // 委託縮小成徽章（版型 B）：村莊縮圖＋進度，點一下前往村莊
-function commBadge(){const i=S.villages.findIndex(v=>v.status==='open');if(i<0)return '';const v=VILLAGES[i],best=S.weapons.reduce((m,w)=>Math.max(m,power(w)),0),f=Math.min(1,best/v.req);
-  return `<button class="comm-badge ${f>=1?'ok':''}" data-act="tab" data-k="village">${img('v'+(i+1),'cb-img')}<span class="cb-t"><b>${vNo(i)} ${v.name}</b><span class="small">攻擊力 ${best}/${v.req}</span></span><i class="cb-bar"><i style="width:${f*100}%"></i></i></button>`}
+function commBadge(){const i=S.villages.findIndex(v=>v.status==='open');if(i<0)return '';const v=VILLAGES[i],f=S.weapons.some(w=>eligible(i,w))?1:0;
+  return `<button class="comm-badge ${f>=1?'ok':''}" data-act="tab" data-k="village">${img('v'+(i+1),'cb-img')}<span class="cb-t"><b>${vNo(i)} ${v.name}</b><span class="small">${f>=1?'可以交付了':'先去鍛造一把武器'}</span></span></button>`}
 // v3.82 點圖紙後自動往下捲，讓詳情（品質機率、材料、開始鍛造鈕）露出來；只往下捲、不超過圖紙列頂端
 function bpReveal(){requestAnimationFrame(()=>{const sel=document.querySelector('.sel-bp'),row=document.querySelector('.hscroll'),nav=document.getElementById('nav');if(!sel||!row)return;
   const top=(document.getElementById('res')?.getBoundingClientRect().bottom||0)+6,bot=(nav?nav.getBoundingClientRect().top:innerHeight)-10,goal=(sel.querySelector('.forge-go')||sel.querySelector('.bp-qual')||sel).getBoundingClientRect().bottom;
@@ -1937,7 +1937,7 @@ function sheetWeapon(id,mode){
   if(mode==='give'){const vs=VILLAGES.map((v,k)=>[v,k]).filter(([v,k])=>S.villages[k].status!=='locked');
     return head+showcase('mini')+`<div class="ui-panel panel">${ptitle('可交付的村莊')}${vs.length?vs.map(([v,k])=>{const ok=eligible(k,w),st=S.villages[k],cur=st.weaponId!=null&&W(st.weaponId);
       return `<button class="ui-card ui-card--row vrow ${ok?'':'dim'}" data-act="deliver" data-i="${k}" data-id="${id}" ${ok?'':'disabled'}>${img('v'+(k+1),'vthumb')}<div class="grow"><b>${vNo(k)} ${v.name}</b>
-      <div class="small ${ok?'muted':'t-danger'}">${ok?(cur?'替換 '+bpOf(cur).n+'（'+power(cur)+'）':'需求 '+v.req)+'・每輪 '+fmtT(gameDur(k,w,st.strat)):(power(w)<v.req?'攻擊力不足 '+v.req:'缺少「'+AFFIX[v.need].n+'」')}</div></div><span class="pill ${ok?'gold':''}">${ok?'交付':'不符'}</span></button>`}).join(''):'<div class="empty">目前沒有村莊需要這類武器。</div>'}</div>`;
+      <div class="small ${ok?'muted':'t-danger'}">${ok?(cur?'替換 '+bpOf(cur).n+'（'+power(cur)+'）':'可以交付')+'・每輪 '+fmtT(gameDur(k,w,st.strat)):(power(w)<v.req?'攻擊力不足 '+v.req:'缺少「'+AFFIX[v.need].n+'」')}</div></div><span class="pill ${ok?'gold':''}">${ok?'交付':'不符'}</span></button>`}).join(''):'<div class="empty">目前沒有開放的村莊。</div>'}</div>`;
   }
 }
 function slotHtml(w,s,pick){const e=w.ench[s],open=slotOpen(s);
@@ -1962,7 +1962,7 @@ const hpBar=i=>`<div class="ui-prog prog hpbar"><i class="hp-g"></i><i data-vhp=
 function monDex(i){const r0=Math.floor(i/10)*10,sm=ui.sheet&&ui.sheet.m,m=sm!=null&&sm>=r0&&sm<r0+10?sm:i,lk=S.villages[m].status==='locked',v=VILLAGES[m],go=k=>r0+(k-r0+10)%10;
   return `<div class="mon-dex"><div class="md-stage"><button class="md-arr" data-act="mondex" data-k="${go(m-1)}" aria-label="上一隻">${ic('arrow-left')}</button>${img('mon_'+(m+1),'md-big'+(lk?' lk':''),lk?'':MONS[m])}<button class="md-arr" data-act="mondex" data-k="${go(m+1)}" aria-label="下一隻">${ic('arrow-right')}</button></div>
    <div class="md-nm">${lk?'？？？':MON_T[m]+'・'+MONS[m]}</div><div class="md-sub">${vNo(m)} ${lk?'未解鎖的村莊':v.name}${m===i?(/神/.test(MON_T[m])?'・本村要打的神明':'・本村要打的怪物'):''}</div>
-   ${lk?`<div class="md-req">完成 ${vNo(m-1)} ${VILLAGES[m-1].name} 後解鎖</div>`:`<div class="md-req">要打${/神/.test(MON_T[m])?"祂":"牠"}：攻擊力 <b>${v.req}</b>${v.need?`＋<b class="t-danger">${AFFIX[v.need].n}</b>`:''}</div><div class="md-lore">${MON_LORE[m]}</div>`}
+   ${lk?`<div class="md-req">完成 ${vNo(m-1)} ${VILLAGES[m-1].name} 後解鎖</div>`:`<div class="md-req">任何武器都能挑戰${/神/.test(MON_T[m])?"祂":"牠"}</div><div class="md-lore">${MON_LORE[m]}</div>`}
    <div class="md-strip">${Array.from({length:10},(_,k)=>{const j=r0+k,l=S.villages[j].status==='locked';return `<button class="${j===m?'on':''} ${l?'lk':''}" data-act="mondex" data-k="${j}" aria-label="${vNo(j)}">${img('mon_'+(j+1))}</button>`}).join('')}</div></div>`}
 function vMon(i,k,bs){const art=MON_ART.includes(i);return `<div class="vmon ${k} ${art?'has-art':''} ${bs?'bs-tap':''}" data-mon="${i}" ${bs?`data-act="bsopen" data-i="${i}" role="button" aria-label="展開戰鬥畫面"`:''}>${art?img('mon_'+(i+1),'vthumb vmon-m',MONS[i]):img('v'+(i+1),'vthumb vmon-bg')}</div>`}
 function monPop(el,kind,txt,dx){if(!(el.classList.contains('bs-mon')&&/bleed|poison/.test(kind))){el.classList.remove('hit','kill');void el.offsetWidth;el.classList.add(kind==='kill'?'kill':'hit')}   // v4.20 戰鬥條：流血／中毒的小傷害不播受擊
@@ -2055,7 +2055,7 @@ function viewVillage(){
    if(k==='open'){let has;
      has=S.weapons.filter(x=>eligible(i,x)&&where(x)<0).sort((a,b)=>power(b)-power(a))[0]||null;
      return `<div class="ui-card vcard open next" data-act="vopen" data-i="${i}" role="button" tabindex="0"><span class="next-tag">下一個挑戰</span>${has?'<i class="dot give-dot"></i>':''}${img('v'+(i+1),'vthumb')}<div class="grow"><div class="row nowrap"><b class="grow">${vNo(i)} ${v.name}</b><span class="vst open">${lab}</span></div>
-      <div class="small">${v.who}需要 攻擊力 <b>${v.req}</b>${v.need?`＋<b class="t-danger">${AFFIX[v.need].n}</b>`:''}</div>${st.status!=='cleared'&&FIRST_GOLD[i]?`<div class="small t-gold">首次收復獎勵 ${img('it_gold','fg-ic')} ${fmt(FIRST_GOLD[i])} 金幣</div>`:''}
+      <div class="small">${v.who}</div>${st.status!=='cleared'&&FIRST_GOLD[i]?`<div class="small t-gold">首次收復獎勵 ${img('it_gold','fg-ic')} ${fmt(FIRST_GOLD[i])} 金幣</div>`:''}
       <div class="small ${has?'t-ok':'muted'}">${has?`可交付 ${S.weapons.filter(x=>eligible(i,x)&&where(x)<0).length} 把，最強：${bpOf(has).n}（${power(has)}）`:'武器庫還沒有符合的武器'}</div></div>
       <div class="vside">${has?btn('交付','deliver',{cls:'btn-primary sm',attrs:`data-i="${i}" data-id="${has.id}"`}):btn('去鍛造','forgeCat',{cls:'btn-sec sm',attrs:'data-k="all"'})}</div></div>`}
    const bs=knOn(w)&&ui.bsOpen===i;   // v4.21 點怪物小圖才展開戰鬥畫面，一次只開一個
@@ -2078,7 +2078,7 @@ function sheetVillage(i){
   if(w){const gd=gameDur(i,w),gs=goldMul(i,w),gph=Math.round(3600000/gd*v.gold*STRATS[st.strat].gold*gs);
     const vv=ui.villV||'2';   // v3.19 村莊詳細頁版型預覽：O 原版／1 分頁／2 精簡一頁
     if(vv!=='O'){const hd=`<div class="sheet-head"><span style="width:44px"></span><h2>${vNo(i)} ${v.name}</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>`;
-      const top=`<div class="vv-top" style="background-image:url(${A('v'+(i+1))})"><div class="vv-w" data-act="wopen" data-id="${w.id}" role="button">${wArt(w.b,{frame:fq(w)})}</div><div class="grow"><b class="${lc(w)}">${bpOf(w).n} +${w.lv}</b><div class="small">攻擊力 ${fmt(power(w))}・需求 ${v.req}</div><div class="small t-ok">狩獵時間 ${Math.round(gd/(v.sec*1000)*100)}%</div></div>
+      const top=`<div class="vv-top" style="background-image:url(${A('v'+(i+1))})"><div class="vv-w" data-act="wopen" data-id="${w.id}" role="button">${wArt(w.b,{frame:fq(w)})}</div><div class="grow"><b class="${lc(w)}">${bpOf(w).n} +${w.lv}</b><div class="small">攻擊力 ${fmt(power(w))}</div><div class="small t-ok">狩獵時間 ${Math.round(gd/(v.sec*1000)*100)}%</div></div>
         <button class="vv-lb" data-act="lbopen" data-i="${i}">${img('ic_star')}<span>${lbRank(i)?'第 '+lbRank(i)+' 名':'排行榜'}</span></button></div>
         ${betterIdle(i)?`<button class="goal goal-tap" data-act="vswap" data-i="${i}">武器庫有更強的武器，換上能加快狩獵。<b>去武器庫選 ›</b></button>`:''}
         <div class="row small vv-prog"><span class="muted grow">怪物血量</span><span class="num" data-vtime="${i}"></span></div>${hpBar(i)}${monLore(i)}`;
@@ -2090,7 +2090,7 @@ function sheetVillage(i){
       if(vv==='1'){const t=ui.villTab||'hunt';return hd+`<div class="ev vv1">${top}<div class="subtabs vv-tabs">${[['hunt','狩獵'],['strat','策略'],['drop','掉落']].map(([k,n])=>`<button class="ui-tab ${t===k?'on':''}" data-act="villtab" data-k="${k}">${n}</button>`).join('')}</div>
         ${t==='hunt'?kvs+bankRow:t==='strat'?strat+'<div class="small muted">切換只影響之後的狩獵，本輪重新計時。</div>':dropRow+'<div class="small muted">每輪掉落機率，紫框是稀有材料。點材料看用途。</div>'}${bar}</div>`}
       return hd+`<div class="ev vv2">${top}${kvs}<div class="vv-k">狩獵策略</div>${strat}<div class="vv-k">每輪掉落</div>${dropRow}${bankRow}${bar}</div>`}
-    return head+`<div class="ui-panel panel"><div class="row nowrap"><div class="tilebox">${wTile(w,`data-act="wopen" data-id="${w.id}"`)}</div><div class="grow"><b class="${lc(w)}">${bpOf(w).n} +${w.lv}</b><div class="small muted">攻擊力 ${fmt(power(w))}・需求 ${v.req}</div>
+    return head+`<div class="ui-panel panel"><div class="row nowrap"><div class="tilebox">${wTile(w,`data-act="wopen" data-id="${w.id}"`)}</div><div class="grow"><b class="${lc(w)}">${bpOf(w).n} +${w.lv}</b><div class="small muted">攻擊力 ${fmt(power(w))}</div>
       <div class="small t-ok">狩獵時間 ${Math.round(gd/(v.sec*1000)*100)}%（越低越快）</div></div></div>
       ${betterIdle(i)?`<button class="goal goal-tap" data-act="vswap" data-i="${i}">武器庫有更強的武器，換上能加快狩獵。<b>去武器庫選 ›</b></button>`:''}
       <div class="row small"><span class="muted grow">怪物血量</span><span class="num" data-vtime="${i}"></span></div>${hpBar(i)}
@@ -2101,16 +2101,15 @@ function sheetVillage(i){
      <div class="acts3">${btn('收回武器','recall',{attrs:`data-i="${i}"`})}</div>`;
   }
   const ok=S.weapons.filter(x=>eligible(i,x)&&where(x)<0).sort((a,b)=>power(b)-power(a));
-  return head+`<div class="ui-panel panel"><div class="kvgrid">${kv('需要',v.need?'任何武器＋'+AFFIX[v.need].n:'任何武器')}${kv('需求攻擊力',v.req)}${kv('每輪金幣',v.gold)}${kv('基礎時間',fmtT(v.sec*1000))}${FIRST_GOLD[i]?kv('首次收復獎勵',st.status==='cleared'?'<span class="muted">已領取</span>':'<span class="t-gold">'+fmt(FIRST_GOLD[i])+' 金幣</span>').replace('class="kv"','class="kv kv-wide"'):''}</div></div>
+  return head+`<div class="ui-panel panel"><div class="kvgrid">${kv('需要','任何武器')}${kv('每輪金幣',v.gold)}${kv('基礎時間',fmtT(v.sec*1000))}${FIRST_GOLD[i]?kv('首次收復獎勵',st.status==='cleared'?'<span class="muted">已領取</span>':'<span class="t-gold">'+fmt(FIRST_GOLD[i])+' 金幣</span>').replace('class="kv"','class="kv kv-wide"'):''}</div></div>
    ${vNeedPanel(i)}<div class="ui-panel panel">${ptitle('可取得材料')}${drops('normal')}</div>${bank}
    <div class="ui-panel panel">${ptitle(st.status==='open'?'交付委託':'指派駐守武器')}${ok.length?`<div class="wgrid">${ok.map(x=>wTile(x,`data-act="deliver" data-i="${i}" data-id="${x.id}"`)).join('')}</div><div class="small muted">點武器即可交付。</div>`:`<div class="empty">沒有攻擊力夠的武器。到鐵匠鋪鍛造，或到武器庫強化、附魔。</div>`}</div>`;
 }
 // v4.14 村莊需求寫清楚：點圖紙直接跳到那把的鍛造頁；要附魔的另外說明怎麼拿到
 // v4.37 不限類別：列出目前開放的最高材質圖紙（攻擊力高的在前）
 function vNeedPanel(i){const v=VILLAGES[i],av=BPS.filter(b=>!GOD[b.id]&&(cleared()+1>=b.unlock||b.t===0)),tm=Math.max(0,...av.map(b=>b.t)),bs=av.filter(b=>b.t===tm).sort((x,y)=>y.base-x.base);
-  return `<div class="ui-panel panel vneed">${ptitle('需要的武器：任何類別')}<div class="small muted">攻擊力 ${v.req} 以上${v.need?`，而且要帶「${AFFIX[v.need].n}」附魔`:''}。點圖紙直接去鍛造。</div>
-   <div class="hscroll">${bs.map(b=>bpTile(b,false).replace('data-act="bp"','data-act="vforge"')).join('')}</div>
-   ${v.need?`<div class="vneed-aff">${img(AFFIX_ICON[v.need])}<span class="small"><b>「${AFFIX[v.need].n}」</b>：鍛造後到武器庫用符文碎片附魔，隨機抽到。${v.need==='holy'?'凡鐵傷不了神，打神一定要神聖。':''}</span></div>`:''}</div>`}
+  return `<div class="ui-panel panel vneed">${ptitle('需要的武器：任何類別')}<div class="small muted">任何武器都能交付，越強狩獵越快。點圖紙直接去鍛造。</div>
+   <div class="hscroll">${bs.map(b=>bpTile(b,false).replace('data-act="bp"','data-act="vforge"')).join('')}</div></div>`}
 const gph=(i,w)=>{const v=VILLAGES[i],st=S.villages[i],gs=goldMul(i,w);return Math.round(3600000/gameDur(i,w)*v.gold*STRATS[st.strat].gold*gs*(1+(tal('gold')+gdGold())/100))};
 const harvestMini=g=>Object.entries(g).filter(([k,n])=>n).slice(0,4).map(([k,n])=>`<span class="hm">${img(k==='gold'?'it_gold':MATART[k])}${fmt(n)}</span>`).join('');
 const harvestIcons=g=>Object.entries(g).filter(([k,n])=>n).map(([k,n])=>`<div class="hico">${img(k==='gold'?'it_gold':MATART[k]||ITEMS[k][1])}<span class="num">×${fmt(n)}</span></div>`).join('')||'<div class="small muted">沒有獎勵</div>';
@@ -2134,13 +2133,13 @@ function sheetLb(i){i=Math.max(0,Math.min(VILLAGES.length-1,i));const pend=lbRew
   const head=`<div class="sheet-head"><span style="width:44px"></span><h2>排行榜</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>`;
   const tabs=`<div class="lb-tabs">${VILLAGES.map((x,k)=>{if(k>=10&&!rfOpen())return'';const lk=S.villages[k].status==='locked',r=lbRank(k);return `<button class="lb-tab ${k===i?'on':''} ${lk?'lk':''}" data-act="lbopen" data-i="${k}" ${lk?'disabled':''}><img src="${A('v'+(k+1))}" alt=""><span>${vNo(k)}</span>${r&&r<=10?`<i class="lb-rk r${Math.min(r,4)}">${r}</i>`:''}${lk?img('ic_lock','lb-lk'):''}</button>`}).join('')}</div>`;
   const me=b?`<div class="lb-me" data-act="lbw" data-i="${i}" data-k="${rows.findIndex(x=>x.me)}" role="button">${wArt(b.b,{frame:fq(b)})}<div class="grow"><div class="small muted">你的最佳紀錄</div><b class="${lc(b)}">${BP[b.b].n} +${b.lv}</b><div class="small">攻擊力 <b class="t-gold">${fmt(b.p)}</b></div></div><div class="lb-mypos"><span class="small muted">名次</span><b>${rk||'…'}</b><span class="small muted">／${npc.length+1}</span></div></div>`
-    :`<div class="lb-me empty"><div class="grow"><b>還沒有交付武器</b><div class="small muted">交付攻擊力 ${v.req} 以上的武器就會上榜</div></div></div>`;
+    :`<div class="lb-me empty"><div class="grow"><b>還沒有交付武器</b><div class="small muted">交付武器就會上榜</div></div></div>`;
   const nxt=b&&rk>1?npc.filter(x=>x.p>b.p).slice(-1)[0]:null;
   const goal=AUTH&&!LBR.t?'<div class="small muted center lb-goal">讀取排行榜中…</div>':nxt?`<div class="small muted center lb-goal">再提升 <b class="t-gold">${fmt(nxt.p-b.p+1)}</b> 攻擊力就能超越第 ${rk-1} 名 ${nxt.n}</div>`:b?'<div class="small t-ok center lb-goal">你是這座村莊最強的鐵匠！</div>':'';
   const rws=`<div class="lb-rws">${LB_RW.map(([t,r,n])=>{const ok=got.includes(t);return `<div class="lb-rw ${ok?'ok':''}"><span class="small">${n}</span>${Object.entries(r).map(([k,c])=>`${img(ITEMS[k][1])}<b>×${c}</b>`).join('')}<span class="small ${ok?'t-ok':'muted'}">${ok?'已領取':'未達成'}</span></div>`}).join('')}</div>`;
   const myIx=rows.findIndex(x=>x.me),show=rows.map((x,k)=>({...x,k})).filter(x=>x.k<10||x.me);
   const row=x=>`<button class="lb-row ${x.me?'me':''} ${x.k<3?'top':''}" data-act="lbw" data-i="${i}" data-k="${x.k}"><span class="lb-no r${Math.min(x.k+1,4)}">${x.k+1}</span>${wArt(x.w.b,{frame:fq(x.w),cls:'lb-art'})}<div class="grow"><b>${x.n}</b><div class="small ${lc(x.w)}">${BP[x.w.b].n} +${x.w.lv}</div></div><b class="lb-p">${fmt(x.p)}</b><span class="muted lb-more">›</span></button>`;
-  return head+tabs+`<div class="lb-vh"><b>${vNo(i)} ${v.name}</b><span class="small muted">委託需求 ${v.req}${v.need?'・需'+AFFIX[v.need].n:''}</span></div>`+me+goal+rws
+  return head+tabs+`<div class="lb-vh"><b>${vNo(i)} ${v.name}</b></div>`+me+goal+rws
     +`<div class="ui-panel panel lb-list">${show.map((x,k)=>(k>0&&x.k-show[k-1].k>1?'<div class="lb-gap">⋯</div>':'')+row(x)).join('')}</div>
     <div class="small muted center">${!AUTH?'登入後才會顯示其他玩家（測試版）':LBR.err?'⚠ '+LBR.err:LBR.loading&&!LBR.t?'讀取中…':'封測玩家真實紀錄，每分鐘更新'}</div>`}
 // v3.15 委託成就：正式版型 A（進度清單）；開發模式下可切換原版／B／C／D 比較
@@ -2196,13 +2195,13 @@ function sheetAch(){const v=ui.achV||'A',nDone=ACH.filter(a=>S.ach[a.id]).length
 // v3.84 附魔一行一個、直接寫效果（Mochi 選方案 A）
 const AFF_EFF={flame:v=>`攻擊力 +${v}%`,frost:v=>`攻擊力 +${v}%`,swift:v=>`所有村莊：狩獵時間 −${v}%`,loot:v=>`所有材料掉落 +${v}%`,greed:v=>`每輪金幣 +${v}%`,seek:v=>`稀有素材掉落 +${v}%`,
  harvest:v=>`每輪 ${v}% 機率一般材料多 1 個`,thunder:v=>`攻擊力 +${v}%`,venom:v=>`攻擊力 +${v}%`,holy:v=>`攻擊力 +${v}%`,giant:v=>`可交付巨人委託・巨人村莊金幣 +${v}%`,dragon:v=>`可交付龍族委託・龍族村莊金幣 +${v}%`};
-const AFF_HELP={flame:'武器攻擊力提高。攻擊力類附魔（烈焰、霜寒、雷霆、劇毒、神聖）可以互相疊加。',frost:'武器攻擊力提高，可以和其他攻擊力類附魔疊加。火要用霜壓：1-9 灰燼要塞的委託<b>一定要</b>帶霜寒；火巨人蘇爾特討伐時，帶霜寒的武器傷害 ×1.5。',
- thunder:'武器攻擊力提高，可以和其他攻擊力類附魔疊加。',venom:'武器攻擊力提高，可以和其他攻擊力類附魔疊加。',holy:'比較少出現的攻擊力附魔，數值也比較高（8～15%），可以和其他攻擊力類附魔疊加。凡鐵傷不了神：1-10 彩虹橋頭、2-10 索列姆海姆的委託<b>一定要</b>帶神聖才能交付。',
+const AFF_HELP={flame:'武器攻擊力提高。攻擊力類附魔（烈焰、霜寒、雷霆、劇毒、神聖）可以互相疊加。',frost:'武器攻擊力提高，可以和其他攻擊力類附魔疊加。火要用霜壓：火巨人蘇爾特討伐時，帶霜寒的武器傷害 ×1.5。',
+ thunder:'武器攻擊力提高，可以和其他攻擊力類附魔疊加。',venom:'武器攻擊力提高，可以和其他攻擊力類附魔疊加。',holy:'比較少出現的攻擊力附魔，數值也比較高（8～15%），可以和其他攻擊力類附魔疊加。',
  harvest:'每輪狩獵，每一種掉下來的一般材料（沒標「稀有」的）都有這個機率多 1 個，最多 50%。',
  swift:'不論交給哪座村莊，每輪狩獵時間都縮短。',loot:'這座村莊所有材料的掉落機率都提升，最多 +60%。',greed:'每輪狩獵拿到的金幣增加。最多 +40%。',
  seek:'稀有素材（村莊掉落表中標「稀有」的材料）的掉落機率提升。最多 +50%。',
- giant:'巨人足跡的委託<b>一定要</b>帶剋巨人才能交付。另外交給<b>巨人類</b>村莊時，每輪金幣增加同樣的百分比；霜巨人王索列姆討伐時傷害 ×1.5。',
- dragon:'2-6 蠕龍礦坑的委託<b>一定要</b>帶剋龍才能交付（林德蟲是龍）。另外交給<b>龍族</b>村莊時，每輪金幣增加同樣的百分比；每週首領尼德霍格討伐時傷害 ×1.5。'};
+ giant:'交給<b>巨人類</b>村莊時，每輪金幣增加同樣的百分比；霜巨人王索列姆討伐時傷害 ×1.5。',
+ dragon:'交給<b>龍族</b>村莊時，每輪金幣增加同樣的百分比；每週首領尼德霍格討伐時傷害 ×1.5。'};
 function affInfo(k,v){const a=AFFIX[k],tw=affPool().reduce((x,y)=>x+AFFIX[y].w,0),lk=affWait(k);return{icon:AFFIX_ICON[k],title:v?`${a.n} +${v}%`:`${a.n} ${a.min}～${a.max}%`,html:`${AFF_HELP[k]}<br><br>${lk?`<span class="small t-danger">還沒學會：${lk}（${AFF_STORY[k]}）。已經附在武器上的不受影響。</span>`:`<span class="small muted">附魔一律隨機：每次附魔出現${a.n}的機率 ${Math.round(a.w/tw*100)}%，數值在 ${a.min}～${a.max}% 之間隨機。${k in AFF_OPEN?`<br>在 ${vNo(AFF_OPEN[k])} 學會：${AFF_STORY[k]}。`:''}</span>`}`}}
 const r1=x=>Math.round(x*10)/10;
 function effRows(w,mine){const b=bpOf(w),nE=(w.ench||[]).filter(Boolean).length;
@@ -2774,8 +2773,8 @@ const TIPS={
  ws_t:['鐵匠天賦','收成、鍛造、強化成功、收復村莊、熔解都會累積聲望。每升 1 級得到 1 天賦點和聲望寶箱，可以點在 6 種天賦上；聲望等級沒有上限。'],
  evt:['首領討伐','全服一起打同一隻首領。首領整週開打，每週日 0 點結算換下一隻。最多派 3 把武器駐守，每小時造成攻擊力的傷害（打中弱點 ×1.5），離線也會繼續打，結算後武器留著繼續打；駐守首領的武器不能同時打村莊。全服血量打到 25／50／75／100% 時，本週有駐守的人都能領獎；結算後再依上週個人傷害排名領獎。'],
  ws_m:['熔解回收','不要的武器可以熔解，退回部分材料和一半鍛造金幣。一鍵熔解只會熔掉普通、精良、+0、沒有收藏的閒置武器。'],
- need:['特殊委託','這座村莊要的武器必須帶有特定附魔（例如剋巨人）。附魔是隨機的，先到武器庫幫武器附魔，抽到再來交付。']};
-function tipKey(){const s=ui.sheet;if(s){if(s.t==='w'&&s.m==='enh'){const w=W(s.id);return w&&w.lv+1>stable(w)&&w.lv<15?'danger':null}if(s.t==='w'&&s.m==='ench')return'ench';if(s.t==='v'){const v=VILLAGES[s.i];return v.need&&S.villages[s.i].status!=='cleared'?'need':S.villages[s.i].weaponId!=null?'vdetail':null}
+};
+function tipKey(){const s=ui.sheet;if(s){if(s.t==='w'&&s.m==='enh'){const w=W(s.id);return w&&w.lv+1>stable(w)&&w.lv<15?'danger':null}if(s.t==='w'&&s.m==='ench')return'ench';if(s.t==='v'){return S.villages[s.i].weaponId!=null?'vdetail':null}
   if(s.t==='lb')return'lb';if(s.t==='a')return'ach';if(s.t==='ws')return'ws_'+s.k;if(s.t==='evt')return'evt';return null}
   return ui.tab==='forge'&&ui.ftab==='mat'?'mat':ui.tab==='armory'&&S.weapons.length?'armory':ui.tab==='shop'?'shop':null}
 // v3.70 每天第一次進遊戲（導覽結束後）自動打開簽到
