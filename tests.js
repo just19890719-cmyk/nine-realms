@@ -401,7 +401,11 @@ function realm2Tests(){const res=[];
     res.push(T('K3 巨人體重鍊已拿掉：舊的重鍊等級不加攻擊力、武器詳情沒有重鍊按鈕',power(w)===p0&&!/重鍊|data-m="rf"/.test(h),`攻擊力 ${p0}→${power(w)}`));
   });
   return res}
-function evtTests(){const res=[];
+// v4.38 首領先關掉：照樣把首領邏輯測一遍（暫時打開），另外確認關掉時沒有入口、武器不會被首領佔住
+function evtTests(){const b0=BOSS_OFF;let r;BOSS_OFF=false;try{r=evtTests0()}finally{BOSS_OFF=b0}
+  const S0=S;S=fresh();const w=makeWeapon('t1_woodaxe',0,0,[]);S.evt={wk:evtNow().wk,dmg:0,gs:0,slots:[{id:w.id,at:NOW(),pw:10},null,null]};const off=BOSS_OFF&&evtBanner()===''&&bossSlotOf(w)<0&&!bossDot()&&evtSt().slots.every(x=>!x);S=S0;
+  return[...r,T('J0 首領討伐關閉：村莊頁沒有橫幅、駐守的武器放回武器庫',!!off,off?'正常':'還看得到首領或武器被佔住')]}
+function evtTests0(){const res=[];
   withSandbox(()=>{const keepW=EVT_WK;try{
     // v3.87 整週首領：台灣時間週日 00:00 換週；取消雙倍收成
     const sun=Date.UTC(2026,9,25,0,0)-TZ8,sat=sun-60e3,mon=sun+DAY,nsun=sun+7*DAY;
@@ -483,9 +487,14 @@ function storyTests(){const pr=[...MON_LORE,...VILLAGES.map(v=>v.txt)].map((t,i)
 // v4.27 神明用「祂」：神的傳說、村莊文字不能用他／她／牠
 function godWordTests(){const bad=VILLAGES.map((v,i)=>i).filter(i=>/神/.test(MON_T[i]||'')&&/[他她牠]/.test(MON_LORE[i]+VILLAGES[i].txt));
   return[T('H 神明用「祂」：神的傳說、村莊文字都不用他／她／牠',!bad.length,bad.length?'傳說：'+bad.map(vNo).join('、'):'都用祂')]}
+// v4.38 駐守村莊不開詳情：點武器只出小卡（收回／換武器），沒有狩獵策略、沒有排行榜
+function vPickTests(){const S0=S,sv=ui.sheet;S=fresh();const w=makeWeapon('t1_woodaxe',0,0,[]);const st=S.villages[0];st.status='cleared';st.weaponId=w.id;st.cycleStart=NOW();
+  const h=sheetVillage(0),card=(()=>{ui.tab='village';ui.realm=0;return typeof viewVillage==='function'?viewVillage():''})();S=S0;ui.sheet=sv;
+  const ok=/data-act="recall"/.test(h)&&/data-act="vswap"/.test(h)&&!/data-act="strat"/.test(h)&&!/lbopen/.test(h)&&LB_OFF&&lbRank(0)==null&&!lbReward(0).length;
+  return[T('H 駐守村莊小卡：只有看武器／換武器／收回，沒有策略和排行榜；排行榜關閉',!!ok,ok?'正常':'小卡內容不對')]}
 // v4.14 村莊需求：每座村莊的需求面板都列得出同類圖紙
-function vNeedTests(){const bad=VILLAGES.map((v,i)=>i).filter(i=>{const h=vNeedPanel(i);return !/data-act="vforge"/.test(h)||/data-act="bp"/.test(h)});
-  return[T('H 村莊需求：每座村莊都列出可點的同類圖紙（點了跳到鍛造頁）',!bad.length,bad.length?'沒有圖紙：'+bad.map(vNo).join('、'):VILLAGES.length+' 座都有')]}
+function vNeedTests(){const o=ui.sheet;let bad=[];VILLAGES.forEach((v,i)=>{if(S.villages[i].weaponId!=null)return;const h=sheetVillage(i);if(/vneed|需要的武器|data-act="vforge"/.test(h))bad.push(i)});ui.sheet=o;
+  return[T('H 村莊詳情不再有「需要的武器」（v4.38 不限武器）',typeof vNeedPanel==='undefined'&&!bad.length,bad.length?'還有：'+bad.map(vNo).join('、'):'都拿掉了')]}
 // v4.02 武器打法：每種還在的武器類別都有打法與說明，連擊間隔加起來比攻擊間隔短
 function hitTests(){const cats=[...new Set(BPS.map(b=>b.cat))],miss=cats.filter(c=>!HIT[c]||!HIT_N[c]);
   const bad=Object.entries(HIT).filter(([k,h])=>{const z={};let sum=0;for(let n=0;n<400;n++){const p=h.plan(z);if(p.some(x=>x[0]>=h.iv*.85))return true;sum+=p.reduce((a,x)=>a+x[1],0)}return k!=='shield'&&Math.abs(sum/400/h.E-1)>.15});
@@ -524,7 +533,7 @@ function gwTests(){const ck=godCheck(),bad=ck.filter(x=>!x.ok);
     T('GW4 覺醒：+6 沒有、+7 狩獵 −3%、+11 攻擊力 ×1.1、+13 四段、+15 稱號',n6===0&&Math.abs(tr-.03)<1e-9&&p10===b10&&p11===b11&&n13===4&&!t0&&t1,`+6 段數 ${n6}；+7 縮短 ${tr}；+10 ${p10}/${b10}；+11 ${p11}/${b11}；+13 段數 ${n13}；稱號 ${t0}→${t1}`)]}
 function runTests(mode){
   if(mode==='econ')return econHtml(12)+econHtml(8);
-  const r=runAll({N:100000});r.res.push(...frameLvTests(),...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...storyTests(),...curveTests(),...vNeedTests(),...godWordTests(),...hitTests(),...enchTests(),...wsTests(),...gwTests());const pass=r.res.filter(x=>x.pass).length;
+  const r=runAll({N:100000});r.res.push(...frameLvTests(),...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...storyTests(),...curveTests(),...vNeedTests(),...vPickTests(),...godWordTests(),...hitTests(),...enchTests(),...wsTests(),...gwTests());const pass=r.res.filter(x=>x.pass).length;
   return `<div><b>${pass}/${r.res.length} 通過</b>（${r.ms} 毫秒）</div>`+resHtml(r.res);
 }
 // v4.34 武器框顏色看強化等級
