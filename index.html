@@ -1863,6 +1863,8 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .rl-acts{display:flex;gap:8px;margin-top:10px}.rl-acts>*{flex:1;min-width:0}
 .rl-got{justify-content:center}.rl-got .hico{height:auto;padding-bottom:4px}.rl-got .hn{display:block;font-size:11px;color:var(--ash);text-align:center;line-height:1.2;margin-top:2px}.rl-w{margin-top:8px;font-size:13px}.rl-w b{display:block;margin-bottom:2px}
 .vx-drop{margin-top:6px}
+/* v4.55 同款武器疊一格：右下角數量，跟道具同一個樣式 */
+.wt-art .wt-x{right:7%;bottom:7%;z-index:3;pointer-events:none;font-size:12px;padding:2px 5px}
 </style>
 <div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div><div class="news" id="news" aria-live="polite" data-act="chatsys"></div></div>
 <main class="wrap" id="view"></main>
@@ -2321,7 +2323,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.54';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.55';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -3185,6 +3187,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.55',d:'10/24',t:'同款武器疊一格',b:['道具欄的武器頁：<b>一模一樣的武器</b>（同一把、同強化等級、同屬性）放在同一格，右下角顯示數量','點進去強化、附魔、駐守、上架、熔解都只會動其中一把，動過的會自己分出來一格','駐守中的武器還是一把一格；道具欄上限 200 把照算每一把'],g:['bag']},
  {v:'4.54',d:'10/24',t:'新材料・附魔石・英靈遺物',b:['新增 <b>8 種材料</b>，名字都跟怪物故事有關：第一界每關掉中庭鐵礦、松林硬木，第二界掉約頓霜鐵、約頓巨木；1-7 石皮巨魔掉巨魔石皮、2-8 幻術巨人王掉骨頭、1-10 海姆達爾掉彩虹橋碎晶、2-10 索爾掉索爾雷晶','新武器的配方改成<b>金幣＋材料</b>（開局 7 把還是只花金幣），一般武器大約掛機 30 分鐘就湊得齊','新道具<b>附魔石</b>：附魔一次花 1 顆加金幣，打倒怪物有機率掉','<b>英靈・遺物</b>開始會掉了：每打倒一隻 2% 掉 1 個，越後面的關卡越容易掉紅光、金光','遺物可以打開：金幣、材料、強化石、附魔石、Boss 素材，運氣好還會開到武器','強化石、附魔石有新圖示了；村莊詳情會列出每打倒一隻可能掉的東西'],g:['forge','ench','bag']},
  {v:'4.53',d:'10/24',t:'交易所武器資訊',b:['交易所列表、上架清單、待領取的武器名稱會顯示<b>屬性</b>（例如「+7 冰封 霜溪鋼劍」）','點商品看到的詳情改成跟武器小卡一樣：攻擊力、攻速、附加效果、相剋、屬性弱點倍率都看得到'],g:['mk']},
  {v:'4.52',d:'10/24',t:'60 秒限時挑戰',b:['還沒收復的村莊改成<b>限時挑戰</b>：選一把武器，60 秒內打倒怪物就收復','整場戰鬥都看得到：血條、倒數計時、每一下的傷害，沒有快轉，打倒或時間到才出結果','輸了可以馬上再挑戰或換武器，沒有任何懲罰；選武器時會先顯示<b>預估秒數</b>','攻擊力剛好等於需求約 48 秒打倒，每一界最後兩關（神明關）剛好 60 秒，要再強一點才穩','收復後可以<b>留下來掛機</b>：每打倒一隻收成一次，卡片顯示每小時約打倒幾隻、多少金幣','強化石改成每打倒一隻有機率掉（1-1 約 0.4%，越後面越高）','弱點、時間限制、血量都在點開村莊的詳情裡看，卡片上不再顯示弱點標籤'],g:['vil','hp']},
@@ -3250,7 +3253,7 @@ const GUIDE=[
   {k:'wpn',ic:'cat_sword',n:'武器數值與相剋',s:'攻速、附加效果、相剋，點武器看小卡',v:'4.46',h:'點武器會跳出小卡。<b>攻擊力＝每秒傷害</b>，已經算進附加效果的平均。<br>七類武器攻速：雙刀 0.6 秒、劍 1.0、弓 1.1、長柄 1.2、斧 1.3、弩 1.6、錘 1.8 秒；每秒傷害都差不多，攻速慢的單擊比較重。<br><b>附加效果</b>：劍會心、斧流血、錘震碎、雙刀中毒、長柄貫穿、弓穿心、弩破甲；+1～+6 每級觸發率 2%，+7 起 16／20／25／30／35／40%。<br><b>相剋</b>：怪物分人形、野獸、巨型、飛行。劍、雙刀剋人形，長柄、斧剋野獸，錘、弩剋巨型，弓剋飛行；打被剋的怪物傷害多「強化等級 %」，+12 為 +12%，跟屬性弱點一起算。<br>武器名稱是「+7 寒霜 鐵劍」：強化等級、附魔、武器名。'},
   {k:'enh',ic:'it_bless',n:'強化',s:'每次 1 顆強化石，最高 +12',v:'4.50',h:'每次強化用 <b>1 顆強化石</b>，不花金幣，成功或失敗都會用掉。強化石從村莊收成拿（越後面的關卡掉越多），熔解武器也會退 1 顆。<br>+1～+6 一定成功。+7 起是危險區：+7 35%、+8 32.5%、+9 30%，失敗就爆裝；+10～+12 每級 1%，失敗時 1/3 維持原樣、2/3 爆裝。最高 <b>+12</b>。<br>攻擊倍率：+6 ×1.6、+7 ×1.9、+8 ×2.25、+9 ×2.65、+10 ×3.3、+11 ×4、+12 ×4.8。<br>武器的框色看強化等級：+0 灰、+1～+6 綠、+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石，+9 以上的框有電流繞著跑。'},
   {k:'ench',ic:'mat_shard',n:'屬性附魔',s:'6 種屬性 × 3 個等級，打中怪物弱點加傷害',v:'4.54',h:'鍛造出來的武器一律<b>無屬性</b>。每次附魔花 <b>1 顆附魔石</b>加金幣，隨機附魔，得到 1 種屬性（每把武器只有 1 欄，重抽會蓋掉舊的）。<br>屬性 6 種：<b>烈焰、霜寒、雷霆、劇毒、神聖、暗影</b>，機率一樣。等級越高越難抽：一級 70%、二級 25%、三級 5%。<br>名稱：烈焰 餘燼／烈焰／滅世之焰；霜寒 寒霜／冰封／永凍之霜；雷霆 雷光／雷鳴／雷神之怒；劇毒 蝕毒／蛇毒／巨蟒之毒；神聖 微光／聖光／光神聖輝；暗影 幽影／暗夜／盲神之影。<br><b>相剋（三對宿敵）</b>：烈焰⇄霜寒、雷霆⇄劇毒、神聖⇄暗影。每隻怪物都有屬性，弱點就是對手屬性。<br>打中弱點：一級 ×1.2、二級 ×1.4、三級 ×1.6，狩獵更快、收成更多。沒打中或無屬性都是正常傷害，不會扣。屬性不加攻擊力。'},
-  {k:'bag',ic:'nav_forge',n:'道具欄',s:'同一種道具疊一格，沒有上限',v:'4.54',h:'下方導覽的「<b>道具欄</b>」（原本的武器庫）分「武器／材料」兩頁，道具在「材料」頁。同一種道具放在同一格，右下角顯示數量，沒有上限。<br>道具：<b>強化石</b>（強化用）、<b>附魔石</b>（附魔用）、<b>英靈・遺物</b>（綠光、藍光、紅光、金光四種，光芒越亮內容越好）。三種都是打倒怪物有機率掉，越後面的關卡掉越多、好遺物越多。<br>點遺物可以看開出機率，按「打開 1 個」或「全部打開」：可能開到金幣、材料、強化石、附魔石、Boss 素材或武器。<br>材料：每一界 2 種一般材料，加上怪物部位和 Boss 素材，點一下看哪裡掉、哪把武器會用到。'},
+  {k:'bag',ic:'nav_forge',n:'道具欄',s:'同一種道具疊一格，沒有上限',v:'4.55',h:'下方導覽的「<b>道具欄</b>」（原本的武器庫）分「武器／材料」兩頁，道具在「材料」頁。<br>武器頁：一模一樣的武器（同一把、同強化等級、同屬性）疊在同一格，右下角是數量；點進去的操作只動其中一把。上限 200 把照算每一把。同一種道具放在同一格，右下角顯示數量，沒有上限。<br>道具：<b>強化石</b>（強化用）、<b>附魔石</b>（附魔用）、<b>英靈・遺物</b>（綠光、藍光、紅光、金光四種，光芒越亮內容越好）。三種都是打倒怪物有機率掉，越後面的關卡掉越多、好遺物越多。<br>點遺物可以看開出機率，按「打開 1 個」或「全部打開」：可能開到金幣、材料、強化石、附魔石、Boss 素材或武器。<br>材料：每一界 2 種一般材料，加上怪物部位和 Boss 素材，點一下看哪裡掉、哪把武器會用到。'},
   {k:'melt',ic:'mat_iron',n:'熔解',s:'不要的武器換回金幣',v:'4.43',h:'在武器詳情按「熔解」：退回一半鍛造金幣。<br>收藏（上鎖）的武器不能熔解。'}]],
  ['村莊與戰鬥',[
   {k:'vil',ic:'nav_village',n:'村莊委託與收成',s:'交武器收復村莊、自動狩獵收成',v:'4.52',h:'還沒收復的村莊要<b>限時挑戰</b>：任何武器都能上（駐守中的也可以），<b>60 秒內打倒怪物</b>就收復，解鎖下一座村莊和新圖紙，第一次收復有金幣獎勵。整場戰鬥看得到血條和倒數，輸了馬上再試、沒有懲罰；選武器時會顯示預估秒數。<br>收復後可以讓武器駐守掛機，<b>每打倒一隻收成一次</b>，自動帶回金幣，<b>離線最多累積 12 小時</b>。換上更強的武器打得更快。<br>每輪會掉什麼直接看村莊卡片右邊。<b>點卡片上的武器</b>會跳出小卡，可以看武器詳情、換武器或收回武器。<br>「全部收成」只收目前在看的這一界；另一界可以收成時，地圖圖示會亮紅點。'},
@@ -3715,9 +3718,14 @@ const btnVariant=cls=>/btn-primary/.test(cls)?'primary':/btn-danger|btn-risk/.te
 const btn=(label,act,{cls='btn-sec',attrs='',dis=false}={})=>`<button class="ui-btn ui-btn--${btnVariant(cls)} btn ${cls}" data-act="${act}" ${attrs} ${dis?'disabled':''}>${label}</button>`;
 const ptitle=t=>`<div class="ui-title ptitle"><span>${t}</span></div>`;
 const kv=(k,v)=>`<div class="kv"><span>${k}</span><b>${v}</b></div>`;
-function wTile(w,act,dot){const b=bpOf(w),i=where(w);
+// v4.55 同款武器疊一格（Mochi）：同圖紙、同強化等級、同屬性、同收藏／測試狀態，而且閒置中才疊；駐守中的一把一格
+const wKey=w=>[w.b,w.lv|0,(e=>e?e.k+e.t:'')(wElem(w)),w.lock?1:0,w.test?1:0].join('|');
+const wStackable=w=>where(w)<0&&bossSlotOf(w)<0;
+function wStacks(ws){const m=new Map(),out=[];ws.forEach(w=>{if(!wStackable(w))return out.push({w,n:1,nw:wNew(w)});const k=wKey(w);let g=m.get(k);if(!g){g={w,n:0,nw:false};m.set(k,g);out.push(g)}g.n++;g.nw=g.nw||wNew(w)});return out}
+const wSame=w=>wStackable(w)?S.weapons.filter(x=>wStackable(x)&&wKey(x)===wKey(w)).length:1;
+function wTile(w,act,dot,n=1,nw=wNew(w)){const b=bpOf(w),i=where(w);
   return `<button class="wt ${lc(w)}b ${i>=0?'posted':''} ${w.lock?'locked-fav':''}" ${act}>${dot?'<i class="dot give-dot" title="可以交付村莊"></i>':''}<span class="wt-art">${wArt(b.id,{frame:fq(w)})}
-   ${i>=0?`<span class="wt-post">駐守 ${vNo(i)}</span>`:bossSlotOf(w)>=0?'<span class="wt-post boss">討伐首領</span>':''}${wNew(w)?'<span class="new-tag">NEW</span>':''}</span>
+   ${i>=0?`<span class="wt-post">駐守 ${vNo(i)}</span>`:bossSlotOf(w)>=0?'<span class="wt-post boss">討伐首領</span>':''}${nw?'<span class="new-tag">NEW</span>':''}${n>1?`<i class="ib-x wt-x">×${fmt(n)}</i>`:''}</span>
    <span class="wt-name ${lc(w)}"><span class="wt-lv">+${w.lv}</span>${(e=>e?`<span class="wn-el e-${e.k} t${e.t}">${e.tn}</span>`:'')(wElem(w))}${b.n}${w.lock?img('ic_lock','wt-lk','已收藏'):''}</span></button>`}
 function bpTile(b,on){const l=bpLock(b);return `<button class="wt bp ${on?'on':''} ${l?'locked':''}" data-act="bp" data-k="${b.id}"><span class="wt-art">${wArt(b.id,{frame:'bp'})}${l?`<span class="wt-lock">${img('ic_lock')}</span>`:''}${bpNew(b)?'<span class="new-tag">NEW</span>':''}</span><span class="wt-name">${b.n}</span>${l?`<span class="wt-pow wt-lockline">${l}</span>`:`<span class="wt-pow">${kindN(b)}・${CATS[b.cat]}</span>`}</button>`}
 const matBox=(k,need)=>need==null?`<button class="matbox mb-tap" data-act="matinfo" data-k="${k}">${img(MATART[k])}<span class="mb-n">${MATS[k]}</span><span class="mb-c">${fmt(S.mats[k])}</span></button>`
@@ -3908,7 +3916,7 @@ function viewArmory(){
    
    <label class="sel"><span>狀態</span><select id="ast">${[['all','全部'],['idle','閒置'],['post','駐守'],['lock','收藏'],['test','測試']].map(([k,n])=>`<option value="${k}" ${ast===k?'selected':''}>${n}</option>`).join('')}</select></label></div>
   ${filtered?`<div class="filterbar"><span>顯示 ${ws.length}／${S.weapons.length} 把</span><button class="ui-btn ui-btn--chip chipbtn on" data-act="aclear">${ic('clear')} 清除篩選，顯示全部</button></div>`:''}</div>
-  <div class="wlist">${ws.length?`<div class="wgrid">${(gm=>ws.map(w=>wTile(w,`data-act="wopen" data-id="${w.id}"`,canGive(w,gm))).join(''))(giveMin())}</div>`
+  <div class="wlist">${ws.length?`<div class="wgrid">${(gm=>wStacks(ws).map(({w,n,nw})=>wTile(w,`data-act="wopen" data-id="${w.id}"`,canGive(w,gm),n,nw)).join(''))(giveMin())}</div>`
    :S.weapons.length?`<div class="empty-state">${img(ui.acat==='all'?'nav_armory':CAT_ICON[ui.acat])}<b>${ui.acat!=='all'?`目前沒有此類武器（${CATS[ui.acat]}）`:'目前沒有符合條件的武器'}</b><span class="small muted">可以返回全部武器，或直接去鍛造。</span>${btn('顯示全部武器','aclear',{cls:'btn-primary'})}${ui.acat!=='all'?btn(`去鍛造${CATS[ui.acat]}`,'forgeCat',{attrs:`data-k="${ui.acat}"`}):''}</div>`
    :`<div class="empty-state">${img('nav_forge')}<b>道具欄是空的</b><span class="small muted">先到鐵匠鋪鍛造第一把武器。</span>${btn('前往鐵匠鋪','tab',{cls:'btn-primary',attrs:'data-k="forge"'})}</div>`}</div>`;
 }
@@ -3954,7 +3962,7 @@ function sheetWeapon(id,mode){
      <div class="wp-a">${btn('強化','wmode',{cls:'btn-primary',attrs:`data-m="enh" data-id="${id}"`,dis:busy})}${btn(w.lv>=stable(w)?`已 +${stable(w)}`:`一鍵 +${stable(w)}`,'autoEnh',{cls:'btn-primary',attrs:`data-id="${id}"`,dis:busy||w.lv>=stable(w)||(!w.test&&stones()<enhCost(w))})}${btn('附魔','wmode',{cls:'btn-primary',attrs:`data-m="ench" data-id="${id}"`,dis:busy})}
       ${i>=0?btn('收回','recall',{attrs:`data-i="${i}"`}):bs>=0?btn('收回','bossout',{attrs:`data-s="${bs}"`}):btn('駐守'+(canGive(w)?'<i class="dot give-dot"></i>':''),'wmode',{attrs:`data-m="give" data-id="${id}"`})}
       ${btn('上架','mksellw',{attrs:`data-id="${id}"`,dis:w.test||!mkSellable(w)})}${btn(ui.meltArm===id?'確認':'熔解','melt',{cls:'btn-danger',attrs:`data-id="${id}"`,dis:busy||w.lock})}</div>
-     ${ui.meltArm===id?'<div class="small t-danger center wp-note">再按一次確認熔解，熔解後無法復原。</div>':busy?'<div class="small muted center wp-note">駐守中的武器要先收回，才能強化、附魔或熔解。</div>':w.lv<stable(w)?`<div class="small muted center wp-note">一鍵 +${stable(w)}：${w.test?'測試武器免費':'要 '+fmt(autoEnhCost(w))+' 顆強化石・持有 '+fmt(stones())}，不會爆裝</div>`:''}</div>`;
+     ${(n=>n>1?`<div class="small muted center wp-note wp-stk">同款共 ${n} 把，強化、附魔、駐守、上架、熔解只會動這一把</div>`:'')(wSame(w))}${ui.meltArm===id?'<div class="small t-danger center wp-note">再按一次確認熔解，熔解後無法復原。</div>':busy?'<div class="small muted center wp-note">駐守中的武器要先收回，才能強化、附魔或熔解。</div>':w.lv<stable(w)?`<div class="small muted center wp-note">一鍵 +${stable(w)}：${w.test?'測試武器免費':'要 '+fmt(autoEnhCost(w))+' 顆強化石・持有 '+fmt(stones())}，不會爆裝</div>`:''}</div>`;
   }
   if(bs>=0)return head+showcase()+`<div class="goal">這把武器正在討伐首領，要先收回。</div>${btn('從首領收回','bossout',{cls:'btn-primary big',attrs:`data-s="${bs}"`})}`;
   if(i>=0&&mode!=='give')return head+showcase()+`<div class="goal">這把武器正在 ${VILLAGES[i].name} 駐守，要先收回。</div>${btn('從村莊收回','recall',{cls:'btn-primary big',attrs:`data-i="${i}"`})}`;
@@ -4322,6 +4330,7 @@ function sheetDev(){
   const body={
    res:`<div class="label">貨幣</div><div class="devgrid">${B('gold','金幣 +5,000')}${B('gems','鑽石 +1,000')}</div>
      <div class="label">v4.43 道具欄（舊道具、材料已刪除）</div><div class="devgrid">${B('matall','v4.54 材料各 +100、附魔石 +20')}${B('relicsim','v4.54 遺物掉落機率＋開箱 1000 次統計')}${B('dropsim','v4.54 打倒 1000 隻的掉落')}${B('relic5','四種英靈・遺物各 +5')}${B('relic0','英靈・遺物全部歸零')}${B('relicbag','打開道具欄')}${B('relicinfo','點英靈・遺物看說明')}</div>
+     <div class="label">v4.55 同款武器疊一格</div><div class="devgrid">${B('wstack','產生同款武器（6 把 +0、3 把 +3、2 把附魔）並打開道具欄')}</div>
      <div class="label">v3.71 鐵匠聲望／天賦</div><div class="devgrid">${B('rep1','聲望升 1 級')}${B('rep10','聲望升 10 級')}${B('represet','天賦點全部退回')}${B('repzero','聲望歸零（Lv.1）')}${B('repopen','打開鐵匠天賦')}</div>
      <div class="label">v3.87 首領討伐（整週・週日結算・目前：${evtNow().boss.n}）</div><div class="devgrid">${B('evtnext','模擬換週（下一隻首領）')}${B('evtfast','首領駐守時間 −10 小時')}${B('evtdmg','我的傷害 +5,000（只改顯示）')}${B('evtreset','本週首領進度清空')}${B('evtgdead','模擬全服打倒首領')}${B('evtgalive','模擬全服血量剩 45%＋排名武器')}${B('evtgrank','模擬上週排名第 2')}</div>
      <div class="label">v3.76 第二界約頓海姆（目前：${rfOpen()?'已開放':'未開放'}・收復 ${cleared()}/${VILLAGES.length}）</div><div class="devgrid">${B('r2open','開放第二界（收復 1-1～1-10）')}${B('r2mats','金幣 +20 萬')}${B('r2wpn','送史詩測試斧＋剋巨人')}${B('r2all','第二界全部收復')}${B('r2lock','第二界改回未開放')}${B('r2fur','熔爐升到 Lv6（可鍛造巨人武器）')}${B('r2t4','顯示 8 把巨人武器（測試）')}</div>
@@ -4545,6 +4554,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   ({gold:()=>S.gold+=5000,gems:()=>S.gems+=1000,relic5:()=>RELICS.forEach(k=>S.items[k]=(S.items[k]||0)+5),
    matall:()=>{for(const k in MATS)S.mats[k]+=100;S.items[ENSTONE]=(S.items[ENSTONE]|0)+20;toast('8 種材料各 +100、附魔石 +20','ok')},
    relicsim:()=>{const tops=[0,9,19];ui.testOut='<b>v4.54 英靈・遺物</b><br>'+tops.map(i=>{const o=relicOdds(i);return `${vNo(i)} 掉到：`+RELICS.map(k=>ITEMS[k][3]+' '+r1(o[k])+'%').join('、')}).join('<br>')+'<br><b>各開 1000 個（不入帳，用目前進度）</b><br>'+RELICS.map(k=>{const S0=S;S=JSON.parse(JSON.stringify(S0));S.weapons=[];const c=[0,0,0,0,0,0],got={};for(let n=0;n<1000;n++)c[relicRoll(k,got)]++;S=S0;return ITEMS[k][3]+'：'+RELIC_KN.map((x,j)=>x+' '+c[j]/10+'%').join('、')}).join('<br>')},
+   wstack:()=>{const b=(BPS.find(x=>!x.dev&&!x.unlock)||BPS[0]).id,ek=Object.keys(ELEM)[0];for(let n=0;n<11;n++){const w=makeWeapon(b,0,n<6?0:3);if(n>=9)w.ench[0]={k:ek,v:1}}S.seenW=S.nextId-4;save();ui.sheet=null;ui.tab='armory';ui.atab='w';ui.acat='all';ui.aq='all';ui.ast='all';ui.asort='recent';scrollTo(0,0);toast('已產生 11 把：應該只多 3 格（×6、×3、×2）','ok')},
    dropsim:()=>{const out=[0,6,9,19].map(i=>{const st={strat:'normal',bank:{cycles:0,gold:0,mats:{},events:0}};for(let c=0;c<1000;c++)rollCycle(i,null,st,NOW());return vNo(i)+'：'+Object.entries(st.bank.mats).map(([k,n])=>itemName(k)+' '+n).join('、')});ui.testOut='<b>v4.54 打倒 1000 隻掉的東西</b><br>'+out.join('<br>')},relic0:()=>RELICS.forEach(k=>S.items[k]=0),relicbag:()=>{ui.sheet=null;ui.tab='armory';ui.atab='m'},relicinfo:()=>{ui.sheet=null;ui.tab='armory';ui.atab='m';ui.result={t:'info',...itemInfo('relic_y')}},
    bsall:()=>{Object.keys(KN).forEach((c,i)=>{const b=BPS.filter(x=>x.cat===c).sort((x,y)=>x.t-y.t)[0];if(!b)return;const st=S.villages[i];
        const w=makeWeapon(b.id,2,6);if(st.status!=='cleared')st.status='cleared';st.weaponId=w.id;st.cycleStart=NOW()-dur(i,w)*.3;delete MONFX.hp[i]});

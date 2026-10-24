@@ -1847,4 +1847,6 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .rl-acts{display:flex;gap:8px;margin-top:10px}.rl-acts>*{flex:1;min-width:0}
 .rl-got{justify-content:center}.rl-got .hico{height:auto;padding-bottom:4px}.rl-got .hn{display:block;font-size:11px;color:var(--ash);text-align:center;line-height:1.2;margin-top:2px}.rl-w{margin-top:8px;font-size:13px}.rl-w b{display:block;margin-bottom:2px}
 .vx-drop{margin-top:6px}
+/* v4.55 同款武器疊一格：右下角數量，跟道具同一個樣式 */
+.wt-art .wt-x{right:7%;bottom:7%;z-index:3;pointer-events:none;font-size:12px;padding:2px 5px}
 </style>

@@ -544,7 +544,7 @@ function withTestBps(f){const keep=BPS.slice(),add=TEST_BPS.filter(b=>!BP[b.id])
   try{return f()}finally{BPS.length=0;BPS.push(...keep);VILLAGES.forEach((v,i)=>v.req=rq[i]);add.forEach(b=>delete BP[b.id]);S.weapons=S.weapons.filter(w=>BP[w.b]);S.jobs=S.jobs.filter(j=>BP[j.b])}}   // 測試留下的舊圖紙武器一起清掉
 function runTests0(mode,bd){
   if(mode==='econ')return econHtml(12)+econHtml(8);
-  const r=runAll({N:100000});r.res.push(...bd,...frameLvTests(),...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...storyTests(),...curveTests(),...vNeedTests(),...vPickTests(),...bsTglTests(),...godWordTests(),...hitTests(),...enchTests(),...wsTests(),...wpnTests());const pass=r.res.filter(x=>x.pass).length;
+  const r=runAll({N:100000});r.res.push(...bd,...frameLvTests(),...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...storyTests(),...curveTests(),...vNeedTests(),...vPickTests(),...bsTglTests(),...godWordTests(),...hitTests(),...enchTests(),...wsTests(),...wpnTests(),...stackTests());const pass=r.res.filter(x=>x.pass).length;
   return `<div><b>${pass}/${r.res.length} 通過</b>（${r.ms} 毫秒）</div>`+resHtml(r.res);
 }
 // v4.34 武器框顏色看強化等級
@@ -582,6 +582,14 @@ function matTests(real){return withSandbox(()=>{const src=new Set(),bad=[];
    T('MT4 鍛造扣材料，不夠就擋下',fOk&&typeof f2==='string',fOk?'扣材料正常、不夠時「'+f2+'」':'扣材料不對')]})}
 const r1x=x=>Math.round(x*10)/10;
 // v4.52 限時挑戰：血量公式、需求剛好約 48 秒、60 秒內打倒才收復、收復只發一次獎勵、卡片不顯示弱點和「限時挑戰」
+// v4.55 同款武器疊一格
+function stackTests(){return withSandbox(()=>{const S0=S;S=fresh();const b=(BPS.find(x=>!x.dev)||BPS[0]).id,ek=Object.keys(ELEM)[0];
+  for(let n=0;n<6;n++)makeWeapon(b,0,0);makeWeapon(b,0,3);const e=makeWeapon(b,0,0);e.ench[0]={k:ek,v:1};const lk=makeWeapon(b,0,0);lk.lock=true;
+  const g=wStacks(S.weapons),six=g.find(x=>x.n===6),one=S.weapons[0];ui.tab='armory';ui.atab='w';ui.acat='all';ui.aq='all';ui.ast='all';
+  const h=viewArmory(),tiles=(h.match(/data-act="wopen"/g)||[]).length,badge=/wt-x">×6</.test(h);
+  ui.sheet={t:'w',id:one.id,m:'main'};const sh=sheetWeapon(one.id,'main');one.lv=1;const g2=wStacks(S.weapons);S=S0;
+  return[T('ST1 同圖紙同等級同屬性才疊一格：6 把 +0 一格，+3、附魔、收藏各自一格',g.length===4&&!!six&&tiles===4&&badge,`${g.length} 格・畫面 ${tiles} 格`),
+   T('ST2 點進去只動一把：強化其中一把就分出來，小卡寫「同款共 6 把」',/同款共 6 把/.test(sh)&&g2.length===5&&g2.find(x=>x.n===5),`強化後 ${g2.length} 格`)]})}
 function chTests(){return withSandbox(chTests0)}
 function chTests0(){const mk=(id,lv)=>({id:-1,b:id,q:0,lv,ench:[null,null,null,null],traits:[]}),w0=mk('w0_sword',0);
   const hpOk=VHP(0)===Math.round(VILLAGES[0].req*48)&&VHP(9)===VILLAGES[9].req*60&&VHP(18)===VILLAGES[18].req*60;
