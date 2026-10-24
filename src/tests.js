@@ -14,6 +14,9 @@ function dailyTests(){return withSandbox(()=>{const res=[];S=sanitize(fresh());
   res.push(T('H2 換日後每日任務重置',p2===10&&S.daily.box.length===0,`換日後活躍度 ${p2}、已領寶箱 ${S.daily.box.length}`));
   const gems0=S.gems,got=[];for(let d=0;d<8;d++){S.sign.last='';got.push(claimSign())}S.sign.last=today();const dup=claimSign();
   res.push(T('H3 七日簽到每天一次、第 7 天後回到第 1 天',got[3].gems===50&&got[6].gems===100&&got[7].gold===1000&&!dup&&S.gems===gems0+230,`第 4 天 ${rwText(got[3])}；第 7 天 ${rwText(got[6])}；第 8 次 ${rwText(got[7])}；同一天重領 ${dup?'可以（錯）':'擋下'}`));
+  {const g0=S.gold,m0=S.gems,t0=S.mats.thor|0;S.gold=6000;S.gems=1000;shopBuyMat('thor','gold',10);const okG=S.gold===0&&(S.mats.thor|0)===t0+10;shopBuyMat('thor','gold',10);const blk=(S.mats.thor|0)===t0+10;shopBuyMat('thor','gems',10);const okM=S.gems===700&&(S.mats.thor|0)===t0+20;
+   S.gems=1;shopBuyMat('miron','gems',1);const ceil=S.gems===0;S.gold=g0;S.gems=m0;S.mats.thor=t0;
+   res.push(T('H5 v4.59 商城材料：金幣／鑽石扣款、錢不夠擋下、鑽石無條件進位',okG&&blk&&okM&&ceil,`金幣 ${okG}、不夠擋下 ${blk}、鑽石 ${okM}、進位 ${ceil}`))}
   const n0=NEWS.out.length;newsQueue('t2_longsword',12,true);
   res.push(T('H4 測試中強化不會送出跑馬燈公告',NEWS.out.length===n0,`排隊 ${NEWS.out.length-n0} 則`));
   return res})}
