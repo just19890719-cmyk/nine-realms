@@ -1568,6 +1568,8 @@ html.scrimmed .cbar{display:none}
 .vneed .hscroll{margin-top:6px}
 .vneed-aff{display:flex;align-items:center;gap:8px;margin-top:8px;padding:6px 8px;border-radius:6px;background:rgba(0,0,0,.25)}
 .vneed-aff img{width:28px;height:28px;flex:none}
+/* v4.16 附魔詞條池：還沒學會的詞條 */
+.ec-t.ec-lk{opacity:.5}.ec-t.ec-lk img{border-radius:0;object-fit:contain;padding:3px}.ec-t.ec-lk em{color:var(--ash)}
 </style>
 <div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div><div class="news" id="news" aria-live="polite" data-act="chatsys"></div></div>
 <main class="wrap" id="view"></main>
@@ -1806,6 +1808,13 @@ const AFFIX={
 };
 const AFF_G=[['pow','攻擊力'],['hunt','狩獵'],['anti','剋制（交付資格＋金幣）']];
 const POW_AFF=Object.keys(AFFIX).filter(k=>AFFIX[k].g==='pow');
+// v4.16 附魔隨關卡開放（Mochi 選 A）：那一關「開放」時學會新符文（值＝VILLAGES 索引）；沒列的開局就會；已經附在武器上的詞條保留
+const AFF_OPEN={seek:2,greed:5,thunder:6,giant:7,holy:9,venom:15,dragon:15};
+const AFF_STORY={seek:'獵人教你追蹤哈提留下的稀有獵物',greed:'港口商人用金幣符文換貨，克拉肯拖沉的長船上全是財寶',thunder:'山怪的石皮只怕雷，軍團從索爾的傳說學會雷符文',giant:'先鋒軍帶回巨人的弱點',holy:'海姆達爾要你證明凡人的武器配得上神界',venom:'林德蟲的毒牙教會你毒符文',dragon:'第一次正面對上龍族，學會屠龍符文'};
+const vOpenAt=i=>!!(S.villages[i]&&S.villages[i].status!=='locked');
+const affOpen=k=>!(k in AFF_OPEN)||vOpenAt(AFF_OPEN[k]);
+const affPool=()=>Object.keys(AFFIX).filter(affOpen);
+const affWait=k=>affOpen(k)?'':vNo(AFF_OPEN[k])+' '+VILLAGES[AFF_OPEN[k]].name+' 開放後學會';
 // 先天鍛造特性：數值 = 隨機(min,max) × (1 + 0.2 × 品質等級)
 const TRAITS={
   sharp:{n:'鋒利',min:4,max:10,d:'野獸委託狩獵時間縮短'},
@@ -1872,6 +1881,10 @@ const ITEMS={scroll:['防爆卷','it_scroll'],bless:['祝福石','it_bless'],blu
 // 祈願權重（千分比），總和 = 1000；保底池 = 權重 ≤ 100 的獎勵
 const GACHA=[['fang',3,270],['silver',3,240],['shard',2,150],['rune',1,100],['scale',1,80],['bless',1,60],['scroll',1,40],['fur',1,15],['icecore',1,15],['fireheart',1,10],['serpent',1,10],['blueprint',1,10]];
 const PITY_MAX_W=100;
+// v4.16 祈願獎勵池隨關卡開放（Mochi 選 A）：符文只給你去過的土地上的寶物（值＝那種材料第一次掉落的 VILLAGES 索引）；還沒開放的機率平分給霜銀和狼牙，總和維持 1000
+const GACHA_OPEN={fur:2,serpent:5,scale:6,blueprint:6,icecore:7,fireheart:8};
+function gachaPool(){const g=GACHA.map(x=>[...x]);let m=0;for(const x of g)if(x[0] in GACHA_OPEN&&!vOpenAt(GACHA_OPEN[x[0]])){m+=x[2];x[2]=0}
+  if(m){g.find(x=>x[0]==='silver')[2]+=m/2;g.find(x=>x[0]==='fang')[2]+=m/2}return g.filter(x=>x[2]>0)}
 const RATE=[0,.95,.9,.85,.8,.75,.7,.45,.35,.25,.18,.12,.08,.05,.03,.02];   // v4.00 Mochi 選難度 B（天堂W 風格）：+7～+15 原本 60/50/40/30/22/15/10/7/5%
 const ACH=[
   {id:'c3',n:'收復 1-3 狼嚎谷',g:'v',ic:'v3',p:()=>[cleared(),3],test:()=>cleared()>=3,r:{scroll:1}},
@@ -2017,7 +2030,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.14';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.16';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -2800,14 +2813,14 @@ function enchantCore(id,slot){   // v3.84 只能隨機附魔
   const w=W(id);if(!w)return{err:'找不到武器'};if(busyW(w))return{err:'駐守中的武器要先收回'};if(!slotOpen(slot))return{err:'鐵砧 Lv'+SLOT_ANVIL[slot]+' 才能使用這一格'};
   const c=enchCost(w),sh=1;
   if(S.mats.shard<sh||S.gold<c)return{err:`需要 ${sh} 個符文碎片和 ${c} 金幣`};
-  S.mats.shard-=sh;S.gold-=c;const k=weighted(Object.keys(AFFIX),x=>AFFIX[x].w),a=AFFIX[k];
+  S.mats.shard-=sh;S.gold-=c;const k=weighted(affPool(),x=>AFFIX[x].w),a=AFFIX[k];
   w.ench[slot]={k,v:rnd(a.min,a.max)};save();return{k,v:w.ench[slot].v};
 }
 function claimAch(id){const a=ACH.find(x=>x.id===id);if(!a||S.ach[id]||!a.test())return false;S.ach[id]=true;
   for(const k in a.r){if(MATS[k])S.mats[k]+=a.r[k];else S.items[k]+=a.r[k]}save();return true}
 function slagTrade(ix){const[k,n,c]=SLAG_SHOP[ix];if(S.slag<c)return false;S.slag-=c;S.mats[k]+=n;save();return true}
 function pullCore(n){const cost=n===10?900:100;if(S.gems<cost)return null;S.gems-=cost;const res=[];let hit=false;
-  for(let i=0;i<n;i++){let p=weighted(GACHA,x=>x[2]);if(n===10&&i===9&&!hit)p=weighted(GACHA.filter(x=>x[2]<=PITY_MAX_W),x=>x[2]);
+  const G=gachaPool();for(let i=0;i<n;i++){let p=weighted(G,x=>x[2]);if(n===10&&i===9&&!hit)p=weighted(G.filter(x=>x[2]<=PITY_MAX_W),x=>x[2]);
     if(p[2]<=PITY_MAX_W)hit=true;res.push(p);if(MATS[p[0]])S.mats[p[0]]+=p[1];else S.items[p[0]]+=p[1]}save();return res}
 function spendGems(n){if(S.gems<n){toast('鑽石不夠，可以先用「儲值測試」補充。');return false}S.gems-=n;return true}
 
@@ -2832,6 +2845,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.16',d:'10/24',t:'符文一關一關學會',b:['附魔不再一開始就抽得到全部 12 種：開局會<b>烈焰、霜寒、迅捷、掠奪、豐收</b>，之後 1-3 學會尋珍、1-6 貪婪、1-7 雷霆、1-8 剋巨人、1-10 神聖、2-6 劇毒和剋龍','還沒學會的詞條在附魔頁會鎖住並寫出哪一關開放，剩下的詞條機率變高，卡關時比較好抽到剋巨人、神聖','已經附在武器上的詞條全部保留','符文祈願只會給你去過的土地上的寶物：還沒開放的關卡素材抽不到，那份機率平分給霜銀和狼牙'],g:['ench','shop']},
  {v:'4.14',d:'10/24',t:'每一關都跟故事對得上',b:['關卡改名：1-1 魅影林場、1-5 鴉巢堡、1-6 巨怪灣、1-7 巨魔山口、2-2 鐵森林、2-3 巨鷹之崖、2-6 蠕龍礦坑、2-8 烏特加德城','條件跟著故事走：打神一定要<b>神聖</b>（2-10 斯卡蒂改成<b>弓＋神聖</b>）、2-6 蠕龍要<b>剋龍</b>、1-9 火焰騎兵要<b>霜寒</b>','掉落也對得上：1-10 掉新材料<b>虹橋碎晶</b>，2-6 蠕龍掉龍鱗；1-3 是對月長嚎的哈提、1-4 是咬住太陽的斯庫爾','村莊詳情多了「需要的武器」：列出這類所有圖紙，點一下直接跳到那把的鍛造頁','已經駐守的武器不會被收回，換武器時才看新條件'],g:['vil','hp','ench']},
  {v:'4.12',d:'10/24',t:'怪物大圖改到村莊詳情',b:['村莊卡片的縮圖不再翻頁，換回村莊圖','點開村莊，上方有這裡要打的<b>怪物大圖</b>、稱號、需要的武器和傳說','按 ‹ › 或下方小圖可以翻看這一界 10 隻，還沒解鎖的只顯示黑影'],g:['hp']},
  {v:'4.09',d:'10/24',t:'還沒駐守也看得到怪物',b:['還沒交付或沒有駐守武器的村莊卡，縮圖每 3 秒在<b>村莊</b>和<b>怪物</b>之間翻一次','先看清楚下一關要打誰，再去鍛造'],g:['hp']},
@@ -2863,7 +2877,7 @@ const GUIDE=[
   {k:'forge',ic:'t1_ironhammer_disp',n:'鍛造',s:'選圖紙、放材料，5 秒打好一批',v:'3.86',h:'在鐵匠鋪「圖紙」選一張圖紙，材料和金幣夠就能按「開始鍛造」。<br>一次一批（最多 10 把），不管幾把都是 <b>5 秒</b>完成。<br>熔爐等級決定能打哪種材質：鐵製 Lv1、霜銀 Lv2、龍鱗 Lv4、神器 Lv5、巨人 Lv6。<br>收復村莊會解鎖新圖紙。'},
   {k:'qual',ic:'tr_sharp',n:'品質與先天特性',s:'普通到傳說，攻擊力最多 2.3 倍',v:'3.77',h:'品質：普通 ×1、精良 ×1.2、稀有 ×1.45、史詩 ×1.8、傳說 ×2.3。鐵砧等級越高，好品質機率越高。<br>霜銀以上有保底：連續 9 把低於稀有，第 10 把必定稀有。<br>鍛造時會隨機帶<b>先天特性</b>（鋒利、堅固、輕巧、尋寶、巨人獵手、符文親和），品質越高特性越多、數值越高。'},
   {k:'enh',ic:'it_bless',n:'強化',s:'+1～+6 安定，+7 起有機率爆裝',v:'4.00',h:'所有材質的安定值都是 <b>+6</b>：+1～+6 失敗只扣金幣，不會爆裝。<br>+7 起是危險區，成功率依序 45／35／25／18／12／8／5／3／2%（+7～+15）。失敗時爆裝機率 50% 起，每級 +5%，最高 90%。<br><b>防爆卷</b>：爆裝時保住武器。<b>祝福石</b>：成功率 +10%。<br>爆裝會留下殘渣，可以換材料。'},
-  {k:'ench',ic:'mat_shard',n:'附魔',s:'符文碎片隨機出 12 種詞條',v:'4.14',h:'用 1 個符文碎片＋金幣隨機附魔一種詞條，重新附魔會蓋掉那一格。<br><b>攻擊力</b>：烈焰、霜寒、雷霆、劇毒、神聖。凡鐵傷不了神，打神（1-10、2-10）一定要<b>神聖</b>。<br><b>狩獵</b>：迅捷、掠奪、貪婪、尋珍、豐收。<br><b>剋制</b>：剋巨人（1-8 巨人足跡一定要有）、剋龍（2-6 蠕龍礦坑一定要有、打尼德霍格）。1-9 灰燼要塞要<b>霜寒</b>。<br>附魔欄：鐵砧 Lv1 開 2 格、Lv3 第 3 格、Lv5 第 4 格。'},
+  {k:'ench',ic:'mat_shard',n:'附魔',s:'符文碎片隨機出 12 種詞條，一關一關學會',v:'4.16',h:'用 1 個符文碎片＋金幣隨機附魔一種詞條，重新附魔會蓋掉那一格。<br>符文要<b>一關一關學會</b>：開局會烈焰、霜寒、迅捷、掠奪、豐收；1-3 開放學會尋珍、1-6 貪婪、1-7 雷霆、1-8 剋巨人、1-10 神聖、2-6 劇毒和剋龍。已經附在武器上的不受影響。<br><b>攻擊力</b>：烈焰、霜寒、雷霆、劇毒、神聖。凡鐵傷不了神，打神（1-10、2-10）一定要<b>神聖</b>。<br><b>狩獵</b>：迅捷、掠奪、貪婪、尋珍、豐收。<br><b>剋制</b>：剋巨人（1-8 巨人足跡一定要有）、剋龍（2-6 蠕龍礦坑一定要有、打尼德霍格）。1-9 灰燼要塞要<b>霜寒</b>。<br>附魔欄：鐵砧 Lv1 開 2 格、Lv3 第 3 格、Lv5 第 4 格。'},
   {k:'melt',ic:'mat_iron',n:'熔解回收',s:'不要的武器換回金幣和材料',v:'3.71',h:'熔解退回一半鍛造金幣、三成材料，25% 機率多得符文碎片。<br>收藏（上鎖）的武器不會被熔解。<br>爆裝留下的殘渣可以在熔解回收頁換鐵礦、霜銀、符文碎片。'},
   {k:'ws',ic:'nav_forge',n:'工坊升級',s:'熔爐開材質、鐵砧提品質',v:'3.90',h:'<b>熔爐</b>解鎖高階材質；<b>鐵砧</b>提高好品質機率、開附魔欄。<br>升級前要先收復足夠的村莊：熔爐 Lv2～Lv6 需要 3／5／6／7／10 座，鐵砧 Lv2～Lv5 需要 2／4／7／10 座。<br>已經升上去的等級會保留。'},
   {k:'tal',ic:'ic_star',n:'鐵匠天賦',s:'累積聲望、點天賦，沒有等級上限',v:'3.76',h:'收成、鍛造、強化成功、收復村莊、熔解都會累積聲望。<br>每升 1 級得 1 天賦點和聲望寶箱，等級沒有上限。<br>天賦：商隊議價（收成金幣）、拾荒專家（一般材料）、尋寶直覺（稀有素材）、巨匠之手（好品質）、熔解大師（熔解回收）。'}]],
@@ -2876,7 +2890,7 @@ const GUIDE=[
   {k:'lb',ic:'ui_player_emblem',n:'排行榜',s:'每座村莊比最強交付武器',v:'3.68',h:'每座村莊比誰交付的武器攻擊力最高，攻擊力由伺服器計算。<br>第一次進前 10、前 3、第 1 名各有獎勵。'}]],
  ['成長與獎勵',[
   {k:'quest',ic:'ic_check',n:'每日任務・簽到・成就',s:'每天領活躍度寶箱',v:'3.74',h:'<b>每日任務</b>：完成登入、收成、鍛造、強化、熔解累積活躍度，40／70／100 點各開一個寶箱。<br><b>七日簽到</b>：漏簽不會歸零，第 7 天領完從第 1 天重新開始。<br><b>委託成就</b>：免費拿防爆卷和祝福石。'},
-  {k:'shop',ic:'nav_shop',n:'商城',s:'月卡、防爆卷、祝福石、祈願',v:'3.69',h:'封測期間<b>月卡免費</b>：立得鑽石，之後每天再領。<br>可以用鑽石買防爆卷、祝福石、狩獵號角，也可以祈願抽獎（有保底）。<br>旅行商人用金幣賣鐵礦、橡木、皮革。'}]],
+  {k:'shop',ic:'nav_shop',n:'商城',s:'月卡、防爆卷、祝福石、祈願',v:'4.15',h:'封測期間<b>月卡免費</b>：立得鑽石，之後每天再領。<br>可以用鑽石買防爆卷、祝福石、狩獵號角，也可以祈願抽獎（有保底）。祈願只抽得到已經開放的關卡會掉的素材。<br>旅行商人用金幣賣鐵礦、橡木、皮革。'}]],
  ['玩家互動',[
   {k:'mk',ic:'nav_market',n:'交易所',s:'金幣或鑽石買賣武器',v:'4.08',h:'用金幣或鑽石上架武器，最低 10，成交收 5% 手續費。<br>賣出或上架 3 天沒賣出時，交易所會亮紅點，最上面「待領取」列出賣了什麼、收多少，按「全部領取」才入帳、退回的武器才放回武器庫。<br>最多同時上架 10 件。<br>收藏（上鎖）或駐守中的武器不能上架。'},
   {k:'chat',ic:'it_horn',n:'聊天與跑馬燈',s:'世界頻道、系統公告、武器卡',v:'3.93',h:'世界頻道可以和全服玩家聊天（鐵匠 Lv3 以上可以發言），系統頻道會顯示全服 +10 以上的強化公告。<br>點名字可以看玩家名片；聊天可以貼出自己的武器卡、戴稱號。<br>跑馬燈出現強化公告時可以按「恭喜」。'},
@@ -3357,7 +3371,7 @@ const matBox=(k,need)=>need==null?`<button class="matbox mb-tap" data-act="matin
   :`<div class="matbox need ${S.mats[k]<need?'lack':'ok'}">${img(MATART[k])}<span class="mb-n">${MATS[k]}</span><span class="mb-have">持有 ${fmt(S.mats[k])}</span><span class="mb-need">需要 ${fmt(need)}</span></div>`;
 // v3.61 材料倉庫：點材料顯示用途（哪些材質的圖紙會用到）與取得方式，直接從圖紙配方、村莊掉落、商店資料算出來
 function matInfo(k,vp){const tiers=[...new Set(BPS.filter(b=>recipe(b)[k]).map(b=>TIERS[b.t].n))],named=BPS.filter(b=>b.r&&b.r[k]).map(b=>b.n);
-  const use=[];if(tiers.length)use.push(`鍛造 <b>${tiers.join('、')}</b> 武器${named.length?`（神器：${named.join('、')}）`:''}`);if(k==='shard')use.push('武器<b>附魔</b>（一般 1 個、指定 4 個）');if(RF_COST.some(c=>c&&c[0][k]))use.push('龍鱗／神器武器<b>巨人體重鍊</b>');if(k==='rainbow')use.push('海姆達爾守的彩虹橋碎片，第九界<b>阿斯嘉</b>的武器會用到（還沒開放，先存著）');
+  const use=[];if(tiers.length)use.push(`鍛造 <b>${tiers.join('、')}</b> 武器${named.length?`（神器：${named.join('、')}）`:''}`);if(k==='shard')use.push('武器<b>附魔</b>（每次 1 個，隨機抽詞條）');if(RF_COST.some(c=>c&&c[0][k]))use.push('龍鱗／神器武器<b>巨人體重鍊</b>');if(k==='rainbow')use.push('海姆達爾守的彩虹橋碎片，第九界<b>阿斯嘉</b>的武器會用到（還沒開放，先存著）');
   const shop=SHOP_MATS.find(x=>x[0]===k),src=[];if(shop)src.push(`商城旅行商人 ${shop[1]} 金幣／個`);
   const vs=VILLAGES.map((v,i)=>v.drops.some(d=>d[0]===k)?vNo(i)+' '+v.name:null).filter(Boolean);if(vs.length)src.push('村莊狩獵：'+vs.join('、'));
   if(SLAG_SHOP.some(x=>x[0]===k))src.push('殘渣兌換');if(k==='shard')src.push('熔解武器有機率得到');
@@ -3637,14 +3651,14 @@ function sheetWeapon(id,mode){
       <div class="small"><b>規則</b>：失敗不會降級。目標等級超過安定值時，失敗才會判定爆裝，機率為 50% + 5% ×（目標等級 − 安定值 − 1），最高 90%。祝福石與防爆卷：只要勾選，每次強化都會消耗 1 張（防爆卷只在危險區使用）。</div></details>`;
   }
   if(mode==='ench'){   // v3.84 附魔頁改版（Mochi 2026-10-22，精簡版選方案 B 雙欄清單）：只能隨機；欄位 → 目前詞條 → 詞條池（範圍、機率）→ 底部單一按鈕
-    const s=ui.enchSlot,open=slotOpen(s),c1=enchCost(w),e=w.ench[s],rm=runicMul(w),tw=Object.values(AFFIX).reduce((a,x)=>a+x.w,0),P=x=>Math.round(x/tw*100)+'%';
+    const s=ui.enchSlot,open=slotOpen(s),c1=enchCost(w),e=w.ench[s],rm=runicMul(w),tw=affPool().reduce((a,k)=>a+AFFIX[k].w,0),P=x=>Math.round(x/tw*100)+'%';
     const mini=`<div class="nv-head">${wArt(b.id,{frame:w.q,cls:'nv-art'})}<div class="grow"><b class="q${w.q}">${b.n} +${w.lv}</b><div class="ec-have">${img('mat_shard')}<b>${S.mats.shard}</b>${img('it_gold')}<b>${fmt(S.gold)}</b></div>${traitVal(w,'runic')?`<div class="small t-ok">符文親和：附魔數值 ×${rm.toFixed(2)}</div>`:''}</div></div>`;
     const slots=`<div class="nv-sec"><span class="nv-k">選擇欄位</span><div class="slots nv-slots">${[0,1,2,3].map(k=>slotHtml(w,k,true)).join('')}</div></div>`;
     const cur=!open?`<div class="ec-cur locked">${img('ic_lock')}<div class="grow"><span class="ec-k">第 ${s+1} 格</span><b>還沒開放<span class="ec-e">鐵砧 Lv${SLOT_ANVIL[s]} 開放</span></b></div></div>`
       :e?`<div class="ec-cur">${img(AFFIX_ICON[e.k])}<div class="grow"><span class="ec-k">第 ${s+1} 格目前詞條</span><b>${AFFIX[e.k].n} <i>+${r1(e.v*rm)}%</i><span class="ec-e">${AFF_EFF[e.k](r1(e.v*rm))}</span></b></div><span class="ec-w">重抽會覆蓋</span></div>`
       :`<div class="ec-cur none"><span class="ec-q">?</span><div class="grow"><span class="ec-k">第 ${s+1} 格・空欄位</span><b>隨機獲得 1 種詞條</b></div></div>`;
     const pool=AFF_G.map(([g,gn])=>{const xs=Object.entries(AFFIX).filter(([k,a])=>a.g===g);
-      return `<div class="ec-gl">${gn.replace(/（.*/,'')}<i>${P(xs.reduce((a,[k,x])=>a+x.w,0))}</i></div><div class="ec-g">${xs.map(([k,a])=>`<button class="ec-t" data-act="affinfo" data-k="${k}">${img(AFFIX_ICON[k])}<span class="grow"><b>${a.n}${a.nw?'<i class="ec-nw">新</i>':''}</b><span>${a.min}～${a.max}%</span></span><em>${P(a.w)}</em></button>`).join('')}</div>`}).join('');
+      return `<div class="ec-gl">${gn.replace(/（.*/,'')}<i>${P(xs.reduce((a,[k,x])=>a+(affOpen(k)?x.w:0),0))}</i></div><div class="ec-g">${xs.map(([k,a])=>affOpen(k)?`<button class="ec-t" data-act="affinfo" data-k="${k}">${img(AFFIX_ICON[k])}<span class="grow"><b>${a.n}${a.nw?'<i class="ec-nw">新</i>':''}</b><span>${a.min}～${a.max}%</span></span><em>${P(a.w)}</em></button>`:`<button class="ec-t ec-lk" data-act="affinfo" data-k="${k}">${img('ic_lock')}<span class="grow"><b>${a.n}</b><span>${vNo(AFF_OPEN[k])} 開放</span></span><em>—</em></button>`).join('')}</div>`}).join('');
     const lack=open&&(S.mats.shard<1?'符文碎片不足（熔解武器、村莊掉落、每日任務可以取得）':S.gold<c1?'金幣不足':'');
     const bar=`<div class="ev-bar">${btn(`${!open?'欄位未開放':'附魔'}<span class="small">1 符文碎片＋${fmt(c1)} 金幣</span>`,'enchant',{cls:'btn-primary big nv-b',attrs:`data-id="${id}" data-s="${s}"`,dis:!open||!!lack})}${lack?`<div class="small t-danger center">${lack}</div>`:''}</div>`;
     return head+`<div class="ev ec">${mini}${slots}${cur}<div class="ec-pool"><div class="ec-ph"><b>✦ 隨機詞條池</b><span class="small muted">範圍・機率（點詞條看效果）</span></div>${pool}</div>${bar}</div>`;
@@ -3894,7 +3908,7 @@ const AFF_HELP={flame:'武器攻擊力提高。攻擊力類附魔（烈焰、霜
  seek:'稀有素材（村莊掉落表中標「稀有」的材料）的掉落機率提升。和特性「尋寶」合計最多 +50%。',
  giant:'巨人足跡的委託<b>一定要</b>帶剋巨人才能交付。另外交給<b>巨人類</b>村莊時，每輪金幣增加同樣的百分比；霜巨人王索列姆討伐時傷害 ×1.5。',
  dragon:'2-6 蠕龍礦坑的委託<b>一定要</b>帶剋龍才能交付（林德蟲是龍）。另外交給<b>龍族</b>村莊時，每輪金幣增加同樣的百分比；每週首領尼德霍格討伐時傷害 ×1.5。'};
-function affInfo(k,v){const a=AFFIX[k],tw=Object.values(AFFIX).reduce((x,y)=>x+y.w,0);return{icon:AFFIX_ICON[k],title:v?`${a.n} +${v}%`:`${a.n} ${a.min}～${a.max}%`,html:`${AFF_HELP[k]}<br><br><span class="small muted">附魔一律隨機：每次附魔出現${a.n}的機率 ${Math.round(a.w/tw*100)}%，數值在 ${a.min}～${a.max}% 之間隨機。特性「符文親和」會讓附魔數值再提高。</span>`}}
+function affInfo(k,v){const a=AFFIX[k],tw=affPool().reduce((x,y)=>x+AFFIX[y].w,0),lk=affWait(k);return{icon:AFFIX_ICON[k],title:v?`${a.n} +${v}%`:`${a.n} ${a.min}～${a.max}%`,html:`${AFF_HELP[k]}<br><br>${lk?`<span class="small t-danger">還沒學會：${lk}（${AFF_STORY[k]}）。已經附在武器上的不受影響。</span>`:`<span class="small muted">附魔一律隨機：每次附魔出現${a.n}的機率 ${Math.round(a.w/tw*100)}%，數值在 ${a.min}～${a.max}% 之間隨機。特性「符文親和」會讓附魔數值再提高。${k in AFF_OPEN?`<br>在 ${vNo(AFF_OPEN[k])} 學會：${AFF_STORY[k]}。`:''}</span>`}`}}
 const r1=x=>Math.round(x*10)/10;
 function effRows(w,mine){const b=bpOf(w),rm=runicMul(w),nE=(w.ench||[]).filter(Boolean).length;
   const row=(ic,n,v,eff,act,k,cls)=>`<button class="eff-row ${cls||''}" data-act="${act}" data-k="${k}" data-v="${v}">${img(ic)}<span class="grow"><b>${n} <i>+${v}%</i></b><span class="small muted">${eff}</span></span><em>ⓘ</em></button>`;
@@ -3911,7 +3925,7 @@ const INFO={
   bless:()=>({icon:'it_bless',title:'祝福石',html:'勾選後，該次強化成功率 +10%（最高 100%）。<br><br>每次強化消耗 1 個，不論成功或失敗。'}),
   horn:()=>({icon:'it_horn',title:'狩獵號角',html:'所有有駐守武器的村莊，立即完成 30 分鐘份量的狩獵，獎勵直接放進各村莊的累積獎勵，不會超過離線上限。'}),
   monthly:()=>({icon:'it_monthly',title:'北境月卡（免費）',html:'領取後立即獲得 300 鑽石，30 天內每天可以領 50 鑽石。<br><br>封測期間免費。'}),
-  gacha:()=>({icon:'mat_rune',title:'符文祈願機率',html:`<div class="tblwrap"><table class="tbl"><tr><th>獎勵</th><th>數量</th><th>機率</th><th>保底池</th></tr>${GACHA.map(([k,n,p])=>`<tr><td>${itemName(k)}</td><td>×${n}</td><td>${p/10}%</td><td>${p<=PITY_MAX_W?'✓':''}</td></tr>`).join('')}</table></div><div class="small muted" style="margin-top:8px">十連保底：前 9 抽都沒有出現保底池（✓）的獎勵時，第 10 抽改從保底池抽出，取代原本的結果。單抽沒有保底。</div>`}),
+  gacha:()=>({icon:'mat_rune',title:'符文祈願機率',html:`<div class="tblwrap"><table class="tbl"><tr><th>獎勵</th><th>數量</th><th>機率</th><th>保底池</th></tr>${((G)=>GACHA.map(([k,n])=>{const x=G.find(y=>y[0]===k),p=x?x[2]:0;return `<tr class="${p?'':'muted'}"><td>${itemName(k)}</td><td>×${n}</td><td>${p?Math.round(p)/10+'%':vNo(GACHA_OPEN[k])+' 開放'}</td><td>${p&&p<=PITY_MAX_W?'✓':''}</td></tr>`}).join(''))(gachaPool())}</table></div><div class="small muted" style="margin-top:8px">十連保底：前 9 抽都沒有出現保底池（✓）的獎勵時，第 10 抽改從保底池抽出，取代原本的結果。單抽沒有保底。<br>符文只會給你去過的土地上的寶物：還沒開放的關卡的素材抽不到，那一份機率平分給霜銀和狼牙。</div>`}),
   merchant:()=>({icon:'mat_iron',title:'旅行商人',html:`販售一階材料：${SHOP_MATS.map(([k,p])=>MATS[k]+' '+p+' 金幣').join('、')}。<br><br>也收購多出來的一階材料，每個 ${SELL_PRICE.iron} 金幣（低於售價，不能套利）。高階材料要靠村莊狩獵取得。`}),
   slag:()=>({icon:'mat_shard',title:'鍛造殘渣',html:'危險區強化爆裝時回收的殘渣，不可交易。<br><br>鐵製 1、霜銀 4、龍鱗 10、神器 25 個。可以兌換少量鐵礦、霜銀或符文碎片。'})
 };
@@ -3957,7 +3971,7 @@ function sheetDev(){
      <div class="label">v3.67 分頁美術預熱</div><div class="devgrid">${B('uiwarm','預熱狀態')}${B('uiwarmrun','連切 5 個分頁測出圖')}</div>
      <div class="label">時間流速（正式版 1×）</div><div class="row">${[1,10,30,60].map(n=>`<button class="ui-btn ui-btn--chip chipbtn ${S.speed===n?'on':''}" data-act="speed" data-k="${n}">${n}×</button>`).join('')}</div>
      <div class="label">離線累積上限</div><div class="row">${[1,OFFLINE_H].map(n=>`<button class="ui-btn ui-btn--chip chipbtn ${S.capH===n?'on':''}" data-act="cap" data-k="${n}">${n} 小時</button>`).join('')}</div>
-     <div class="label">村莊與鍛造</div><div class="devgrid">${B('hunt','所有村莊立即 +10 輪')}${B('monhp','怪物血條：本輪剩 10 秒')}${B('monall','怪物打法：8 種武器各駐守一村')}${B('offline',`模擬離線 ${OFFLINE_H} 小時`)}${B('forge','鍛造立即完成')}${B('unlock','解鎖全部村莊與圖紙')}${B('maxup','工坊滿級')}${B('wsgate','工坊改回 Lv1＋20 萬金幣（看解鎖條件）')}${B('f5','鍛造 5 秒測試（最高階可打的圖紙）')}${B('tlack','缺料鍛造提示（獵弓）')}${B('tbprev','點圖紙自動捲到詳情')}${B('tharvest','2 秒後完成一輪（看收成按鈕）')}${B('tmon','怪物血條：3 秒後擊倒一隻')}${B('monlore','v4.04 神話怪物：依序打開村莊詳情看傳說')}${B('mondex','v4.12 怪物大圖：打開下一個挑戰的村莊詳情')}${B('godreq','v4.06 彩虹橋頭要神聖：給神聖／剋龍長戟各 1 把')}${B('vneed','v4.14 村莊需求：依序打開村莊看可點的圖紙')}${B('storyreq','v4.14 故事條件：給霜寒劍／剋龍短刃／神聖弓')}${B('achall','達成全部成就條件')}${B('daily','重置月卡今日領取')}</div>
+     <div class="label">村莊與鍛造</div><div class="devgrid">${B('hunt','所有村莊立即 +10 輪')}${B('monhp','怪物血條：本輪剩 10 秒')}${B('monall','怪物打法：8 種武器各駐守一村')}${B('offline',`模擬離線 ${OFFLINE_H} 小時`)}${B('forge','鍛造立即完成')}${B('unlock','解鎖全部村莊與圖紙')}${B('maxup','工坊滿級')}${B('wsgate','工坊改回 Lv1＋20 萬金幣（看解鎖條件）')}${B('f5','鍛造 5 秒測試（最高階可打的圖紙）')}${B('tlack','缺料鍛造提示（獵弓）')}${B('tbprev','點圖紙自動捲到詳情')}${B('tharvest','2 秒後完成一輪（看收成按鈕）')}${B('tmon','怪物血條：3 秒後擊倒一隻')}${B('monlore','v4.04 神話怪物：依序打開村莊詳情看傳說')}${B('affopen','v4.16 附魔／祈願開放：模擬 1000 次看抽得到哪些')}${B('mondex','v4.12 怪物大圖：打開下一個挑戰的村莊詳情')}${B('godreq','v4.06 彩虹橋頭要神聖：給神聖／剋龍長戟各 1 把')}${B('vneed','v4.14 村莊需求：依序打開村莊看可點的圖紙')}${B('storyreq','v4.14 故事條件：給霜寒劍／剋龍短刃／神聖弓')}${B('achall','達成全部成就條件')}${B('daily','重置月卡今日領取')}</div>
      <div class="label">時間防作弊</div><div class="devgrid">${B('back','裝置時間倒退 1 小時')}${B('fwd','裝置時間恢復')}</div>`,
    enh:`<div class="label">1. 送出測試武器（標示「測試」，強化不扣資源、不能交付村莊）</div>
      <div class="row">${['鐵製','霜銀','龍鱗','神器'].map((n,t)=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devTier??0)===t?'on':''}" data-act="devset" data-k="devTier" data-v="${t}">${n}</button>`).join('')}</div>
@@ -4122,6 +4136,8 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='vneed'){const n=((ui.vneedI==null?-1:ui.vneedI)+1)%VILLAGES.length;ui.vneedI=n;S.villages[n].status=S.villages[n].status==='locked'?'open':S.villages[n].status;if(S.villages[n].weaponId!=null)recallCore(n);ui.sheet={t:'v',i:n};render();return toast(`${vNo(n)}：看「需要的武器」，點圖紙應該跳到鍛造頁（再按一次換下一座）`)}   // v4.14
   if(k==='godreq'){S.anvil=Math.max(S.anvil,5);makeWeapon('t3_halberd',3,8,[],[{k:'holy',v:15},null,null,null]);makeWeapon('t3_halberd',3,8,[],[{k:'dragon',v:40},null,null,null]);ui.sheet={t:'v',i:9};render();return toast('已給 2 把 +8 長戟：一把神聖、一把剋龍。1-10 彩虹橋頭應該只有神聖那把能交付','ok')}   // v4.06
   if(k==='mondex'){const n=Math.max(0,S.villages.findIndex(v=>v.status==='open'));ui.tab='village';ui.sheet={t:'v',i:n};render();return toast(`${vNo(n)} 上方是怪物大圖，按 ‹ › 或小圖翻看這一界 10 隻`)}   // v4.12
+  if(k==='affopen'){const c={};for(let i=0;i<1000;i++){const x=weighted(affPool(),y=>AFFIX[y].w);c[x]=(c[x]||0)+1}const lk=Object.keys(AFFIX).filter(x=>!affOpen(x)),gl=Object.keys(GACHA_OPEN).filter(x=>!vOpenAt(GACHA_OPEN[x]));   // v4.15
+    return toast(`附魔 1000 次：${Object.entries(c).map(([x,n])=>AFFIX[x].n+' '+n).join('、')}<br>還沒學會：${lk.map(x=>AFFIX[x].n+'（'+vNo(AFF_OPEN[x])+'）').join('、')||'無'}<br>祈願抽不到：${gl.map(itemName).join('、')||'無'}<br>（按「解鎖全部村莊」後再按一次會全部開放）`,'ok')}
   if(k==='monlore'){const n=((ui.monLoreI==null?-1:ui.monLoreI)+1)%VILLAGES.length;ui.monLoreI=n;ui.sheet={t:'v',i:n};render();return toast(`${vNo(n)} ${MON_T[n]}・${MONS[n]}（再按一次看下一隻）`)}   // v4.04
   if(k==='tmon'){const i=S.villages.findIndex(st=>st.weaponId!=null&&st.cycleStart!=null&&W(st.weaponId));if(i<0)return toast('先交付一把武器到村莊','bad');const w=W(S.villages[i].weaponId);   // v3.73
     S.villages[i].cycleStart=NOW()-dur(i,w)+3000;ui.sheet=null;ui.tab='village';render();setTimeout(()=>{const c=document.querySelector(`#view .vcard[data-i="${i}"]`);if(c)c.scrollIntoView({block:'center'})},50);
