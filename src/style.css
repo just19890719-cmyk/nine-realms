@@ -1888,4 +1888,9 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .enh-stage.tier.ownbolt .stage-sq .rn-light{filter:none} /* v4.61 金、鑽石主閃電用專屬圖，不換色 */
 .stage-sq .ex-fail{left:8%;top:2%;width:84%;height:84%;z-index:6;mix-blend-mode:screen}
 .stage-sq .ex-fail img{position:absolute;inset:0;width:100%;height:100%;opacity:0}
+/* v4.62 開發者工具「依版本」 */
+.dv-h{display:flex;align-items:baseline;gap:8px;margin:10px 0 2px;padding-top:8px;border-top:1px solid var(--line);font-size:14px;line-height:1.4;color:var(--ash)}
+.dv-h b{flex:none;color:var(--gold-hi);font-size:15px}
+.dv-now{flex:none;font-size:11px;padding:1px 6px;border-radius:999px;background:var(--gold);color:#1a1208;font-weight:700}
+.dv-more{margin-top:12px;width:100%}
 </style>

@@ -1904,6 +1904,11 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .enh-stage.tier.ownbolt .stage-sq .rn-light{filter:none} /* v4.61 金、鑽石主閃電用專屬圖，不換色 */
 .stage-sq .ex-fail{left:8%;top:2%;width:84%;height:84%;z-index:6;mix-blend-mode:screen}
 .stage-sq .ex-fail img{position:absolute;inset:0;width:100%;height:100%;opacity:0}
+/* v4.62 開發者工具「依版本」 */
+.dv-h{display:flex;align-items:baseline;gap:8px;margin:10px 0 2px;padding-top:8px;border-top:1px solid var(--line);font-size:14px;line-height:1.4;color:var(--ash)}
+.dv-h b{flex:none;color:var(--gold-hi);font-size:15px}
+.dv-now{flex:none;font-size:11px;padding:1px 6px;border-radius:999px;background:var(--gold);color:#1a1208;font-weight:700}
+.dv-more{margin-top:12px;width:100%}
 </style>
 <div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div><div class="news" id="news" aria-live="polite" data-act="chatsys"></div></div>
 <main class="wrap" id="view"></main>
@@ -2362,7 +2367,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.61';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.62';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -3298,6 +3303,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.62',d:'10/24',t:'開發者工具整理',b:['管理員用的開發者工具改成<b>依版本</b>排列，新的在最上面；拿掉已刪除系統的測試按鈕','一般玩家的遊戲內容沒有改變']},
  {v:'4.61',d:'10/24',t:'強化時石碑不再晃動・新閃電',b:['+7 以上強化失敗時，符文能量會聚起來又熄滅散掉、冒一縷灰煙','爆裝的黑煙換成新圖：武器被一團帶紫光餘燼的黑煙吞掉後散去','強化動畫播放時，符文石碑固定不動（不再推近、震動），只有光、閃電和武器有動作','+10 換成新的<b>金色閃電</b>、+12 換成新的<b>鑽石閃電</b>（水晶碎片和稜鏡光）']},
  {v:'4.60',d:'10/24',t:'一鍵安定值・同款連按',b:['武器小卡的「一鍵 +6」改名<b>「一鍵安定值」</b>','同款武器疊在一格時，按一鍵安定值後小卡會自動換到<b>下一把同款</b>，可以一直按下去，不用回道具欄重點'],g:['enh','bag']},
  {v:'4.59',d:'10/24',t:'商城整理：簽到搬家・材料可以買',b:['<b>七日簽到</b>從任務搬到<b>商城</b>，每天第一次進遊戲會自動打開商城簽到（簽到獎勵之後會換新）','商城可以用<b>金幣或鑽石</b>買 8 種材料，點材料選數量購買','<b>狩獵號角</b>拿掉了','其他商品等正式上線再補齊'],g:['shop','quest']},
@@ -3348,7 +3354,6 @@ const NW_LOG=[
  {v:'4.04',d:'10/24',t:'北歐神話怪物',b:['20 座村莊的怪物換成北歐神話裡的角色，例如克拉肯、山怪特羅爾、九頭巨人、雪山女獵手斯卡蒂','點村莊看詳情，血條下方有怪物的稱號和傳說','9 隻怪物和每週首領塵世巨蟒換上新圖'],g:['hp']},
  {v:'4.03',d:'10/23',t:'遊戲內公告與玩法說明',b:['右上角喇叭換成<b>齒輪</b>：裡面有更新公告、玩法說明和音效設定','每次更新的新玩法都會寫在這裡，沒看過的會標 <b>NEW</b>，看過就消失'],g:['set']},
  {v:'4.02',d:'10/23',t:'武器打法各有特色・戰力改名攻擊力',b:['8 類武器在村莊有各自的打法：劍連斬、短刃爆擊、錘重擊、斧旋風斬、弓三連射、弩破甲、長柄流血、盾越打越痛','狩獵時間和收成都不變，只是打法不同','「戰力」全部改叫「攻擊力」，數值不變'],g:['hit']},
- {v:'4.01',d:'10/23',t:'村莊怪物血條',b:['怪物被武器打中才會扣血，扣多少就是造成的傷害','點村莊看詳情，血條同步顯示'],g:['hp']},
  {v:'4.00',d:'10/23',t:'安定值 +6・強化難度調整',b:['所有材質安定值都是 <b>+6</b>，+1～+6 失敗不會爆裝','+7～+15 成功率改成 45／35／25／18／12／8／5／3／2%','危險區失敗時爆裝機率 50% 起，每級 +5%，最高 90%','2-3 雷鳴峽谷需求攻擊力 320 → 260'],g:['enh']},
  {v:'3.99',d:'10/23',t:'全部收成只收目前這一界',b:['「全部收成」只收和計算目前在看的這一界'],g:['vil']},
  {v:'3.98',d:'10/23',t:'好友與公會',b:['可以加好友（最多 30 人）','建立或加入公會：捐獻、公會等級加成、貢獻商店、公會聊天'],g:['gd']},
@@ -4535,34 +4540,64 @@ function viewShop(){
    <div class="small muted center ms-tip">點材料選數量，用金幣或鑽石購買</div></div>
 `;
 }
-const DEV_TABS=[['res','資源'],['chat','聊天'],['prog','進度'],['enh','強化動畫'],['test','自動測試'],['save','存檔'],['mk','交易所'],['ui','UI 元件']];
+// v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
+// v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
+const DEV_LOG=[
+ {v:'4.61',t:'強化特效：石碑不動、金／鑽石閃電、燈光同色、失敗與爆裝新特效',b:[['fx_ok','危險區・成功'],['fx_fail','危險區・失敗'],['fx_broke','危險區・爆裝'],['fxt_10','升階 +10（金閃電）'],['fxt_12','升階 +12（鑽石閃電）']]},
+ {v:'4.60',t:'同款武器疊一格・一鍵安定值連按',b:[['wstack','產生同款武器（6 把 +0、3 把 +3、2 把附魔）並打開道具欄']]},
+ {v:'4.59',t:'商城整理：七日簽到搬進商城、材料可以買、拿掉狩獵號角',b:[['shopsg','簽到可再領並打開商城'],['sg_d7','簽到：跳到第 7 天'],['sg_reset','簽到：今天可再領'],['shopbroke','金幣鑽石歸零（看買不起）']]},
+ {v:'4.58',t:'強化特效：綠光、外框色石碑、閃電、黑煙爆裝、強化小卡',b:[['autoenh','一鍵強化到安定值（每級綠光連續演出）'],['fxt_7','升階 +7（藍）'],['fxt_8','+8（藍、不升階）'],['fxt_9','升階 +9（紅）'],['fxt_10','升階 +10（金）'],['fxt_11','升階 +11（紫）'],['fxt_12','升階 +12（鑽石）'],['fx_broke','爆裝（黑煙）'],['fxs_ok','安全區・成功（綠光）']]},
+ {v:'4.57',t:'新手導覽重做（22 步：伐木斧 → 挑戰 1-1 → 收成 → 強化 → 附魔 → 月卡 → 任務）',b:[['tutnew','用新存檔從頭跑導覽（會清空目前進度）'],['tutch','跳到導覽「挑戰 1-1」那一步（給伐木斧）'],['tutrestart','保留存檔，從第 1 步重看'],['tutnext','導覽跳下一步']]},
+ {v:'4.56',t:'交易所可以賣道具（單價＋數量、買家可買一部分）',b:[['mkisell','上架道具（補 50 顆強化石）'],['mkisim','假裝有人買走我上架的道具一半（離線模擬）'],['mkopen','開啟交易所']]},
+ {v:'4.54',t:'8 種新材料、附魔石、英靈・遺物掉落',b:[['matall','材料各 +100、附魔石 +20'],['dropsim','打倒 1000 隻的掉落'],['relicsim','遺物掉落機率＋開箱 1000 次統計'],['relic5','四種英靈・遺物各 +5'],['relic0','英靈・遺物全部歸零'],['relicbag','打開道具欄'],['relicinfo','點英靈・遺物看說明']]},
+ {v:'4.53',t:'交易所商品詳情改用武器小卡',b:[['mkcard','商品詳情新版（+7 冰封武器）']]},
+ {v:'4.52',t:'60 秒限時挑戰村莊，收復後照擊殺掛機',b:[['chwin','給最強武器 +12 直接挑戰下一關（看贏）'],['chlose','用開局劍 +0 挑戰下一關（看輸）'],['chsim','限時挑戰模擬表（每關 +0／+6／+7／+8 勝率）']]},
+ {v:'4.51',t:'17 把新武器（開局 7 把＋第一、二界圖紙）',b:[['nw17','給 17 把新武器（各 1 把 +0）'],['nwtab','新武器數值與村莊需求表']]},
+ {v:'4.50',t:'強化石：每次 1 顆、最高 +12',b:[['stone50','強化石 +50'],['stone0','強化石歸零'],['stonereal','給一把真的 +6 劍，開強化頁（真的會爆）'],['stonedrop','模擬 1-1／1-10／2-10 各打 1000 隻掉幾顆強化石'],['odds','強化機率表']]},
+ {v:'4.46',t:'新武器系統：武器小卡、攻速、附加效果、怪物形態相剋',b:[['wpntest','七類各一把 +6，看攻速／單擊／附加效果／相剋']]},
+ {v:'4.45',t:'屬性附魔與怪物弱點',b:[['elall','給 6 把不同屬性的武器（看弱點提示）'],['elforce','下一次附魔必定三級'],['affopen','屬性附魔機率：模擬 6000 次'],['godreq','海姆達爾弱點暗影：給暗影／神聖長戟各 1 把'],['storyreq','給打中 1-9／2-6／2-10 弱點的武器']]},
+ {v:'4.39',t:'村莊卡片箭頭展開戰鬥畫面＋掉落＋已打到',b:[['gwbstgl','展開 1-2 的戰鬥畫面和掉落']]},
+ {v:'4.38',t:'駐守村莊點武器跳小卡（收回／換武器）',b:[['gwvpick','駐守村莊點武器的小卡']]},
+ {v:'4.35',t:'戰鬥背景取景',b:[['bsbg','依序打開背景有怪物的關卡']]},
+ {v:'4.34',t:'武器框顏色看強化等級',b:[['flvtest','產生 +0～+12 九把，看框的顏色']]},
+ {v:'4.32',t:'卡片小怪物打法統一、怪物不再被切到',b:[['bsthumb','7 種武器各駐守 1-1～1-7、收起戰鬥畫面、附加效果必定觸發'],['bsmon','依序展開每隻全身怪物（看有沒有被切到）']]},
+ {v:'4.26',t:'第一、二界故事串成主線（1-8／2-9 對調、2-10 索爾）',b:[['gwstory','看 1-8、2-9、2-10 新故事（開村莊詳情）']]},
+ {v:'4.20',t:'村莊卡片戰鬥條',b:[['bsall','7 種武器各駐守 1-1～1-7'],['bs11','1-1 換下一種武器'],['bsproc',()=>`附加效果必定觸發：${ui.bsProc?'開':'關'}`]]},
+ {v:'4.19',t:'改名諸神鐵匠＋新開場故事與登入封面',b:[['gtstory','播放開場故事'],['gtlogin','顯示登入畫面'],['gtreset','重設「已看過開場」']]},
+ {v:'4.18',t:'封測暫停公告',b:[['maintprev',()=>`預覽維護公告畫面（目前 MAINT=${MAINT}）`]]},
+ {v:'4.12',t:'怪物大圖改到村莊詳情',b:[['mondex','打開下一個挑戰的村莊詳情']]},
+ {v:'4.08',t:'交易所「待領取」：賣出／過期按全部領取才入帳',b:[['mkclaimt','待領取測試（2 賣出＋1 退回）'],['mksettle','立即結算我的成交／過期']]},
+ {v:'4.04',t:'北歐神話怪物與傳說',b:[['monlore','依序打開村莊詳情看傳說']]},
+ {v:'4.03',t:'遊戲內公告與玩法說明（右上角齒輪）',b:[['nw_open','打開齒輪設定'],['nw_new1','模擬新版本：最新一則變 NEW'],['nw_all','全部公告和玩法變 NEW'],['nw_seen','全部標成已讀']]},
+ {v:'4.01',t:'村莊怪物血條：打中才扣血',b:[['monhp','怪物血條：本輪剩 10 秒'],['tmon','3 秒後擊倒一隻']]},
+ {v:'3.98',t:'好友＋公會',b:[['gdopen','打開公會'],['gdnone','模擬：還沒加入公會'],['gdlead','模擬：我是會長（有入會申請）'],['gdmem','模擬：我是一般成員'],['gdlv5','模擬：公會升到 Lv.5'],['gdchat','打開公會聊天'],['fropen','打開好友（有 2 個申請）']]},
+ {v:'3.95',t:'另一界可收成時地圖列亮紅點',b:[['rdot1','米德加德 1-1 可收成，切到約頓海姆看'],['rdot2','約頓海姆 2-1 可收成，切到米德加德看']]},
+ {v:'3.89',t:'聊天武器卡、稱號、恭喜',b:[['chwcard','模擬別人貼一張武器卡'],['chtitle','解鎖本機 4 個稱號'],['chtitle0','卸下稱號'],['chcheer','模擬收到 3 位鐵匠恭喜'],['chsys','打開系統頻道（按恭喜）']]},
+ {v:'3.88',t:'世界聊天＋玩家名片',b:[['chopen','打開聊天視窗'],['chnew','模擬收到 3 則新訊息'],['chlong','模擬一則 60 字長訊息'],['chcd','模擬發言冷卻 5 秒'],['chbar',()=>'底部聊天條：'+(S.chatBar===false?'目前隱藏':'目前顯示')],['pcme','看自己的名片'],['pcother','看別人的名片（模擬）'],['chunblk',()=>'清空封鎖名單（'+chatBlk().length+' 人）'],['chfilter','測試輸入檢查（網址、電話、字數）']]},
+ {v:'3.76',t:'第二界約頓海姆',b:[['r2open','開放第二界（收復 1-1～1-10）'],['r2all','第二界全部收復'],['r2lock','第二界改回未開放']]},
+ {v:'3.74',t:'每日任務、跑馬燈',b:[['qopen','打開任務視窗'],['dq_all','每日任務全部達成'],['dq_reset','每日任務換日重置'],['news_ok','跑馬燈：模擬 +12 成功'],['news_brk','跑馬燈：模擬 +11 爆裝']]},
+ {v:'3.64',t:'紅點提醒',b:[['uidot_st','目前哪些紅點會亮'],['uidot_w','道具欄：最新一把標 NEW'],['uidot_bp','鐵匠鋪：最新圖紙標 NEW'],['uidot_mk','交易所：模擬有成交'],['uidot_mon','商城：月卡今天可領']]},
+ {v:'3.41',t:'交易所（未登入時是離線模擬）',b:[['mksold','模擬：我最新的上架被買走'],['mkexp','模擬：我的上架全部過期'],['mkreset','重設模擬市場']]},
+ {v:'3.38',t:'註冊後取暱稱',b:[['cnameprev','預覽取名流程（輸入「冰脊」看重複提示）']]},
+];
+const DEV_NEW=8;   // 前 8 個版本直接展開，更早的收在「更早的版本」
+const DEV_TABS=[['ver','依版本'],['res','資源・武器'],['prog','時間・村莊'],['enh','強化動畫'],['test','自動測試'],['save','存檔'],['ui','UI 元件']];
+function devVer(B){const g=(x,i)=>`<div class="dv-h"><b>v${x.v}</b>${x.v===BUILD_ID?'<span class="dv-now">本版</span>':i===0?'<span class="dv-now">最新</span>':''}<span class="grow">${x.t}</span></div><div class="devgrid">${x.b.map(([k,t,c])=>B(k,typeof t==='function'?t():t,c)).join('')}</div>${ui.testOut&&x.b.some(y=>y[0]===ui.devLast)?`<div class="test-out">${ui.testOut}</div>`:''}`;
+  const old=DEV_LOG.length-DEV_NEW;
+  return `<div class="small muted">新的版本在最上面；每段是那一版改的東西和可以測的按鈕。一般工具（金幣、時間、存檔…）在其他分頁。</div>`+DEV_LOG.slice(0,DEV_NEW).map(g).join('')
+   +(old>0?`<button class="ui-btn ui-btn--secondary btn btn-sec sm dv-more" data-act="devset" data-k="devOld" data-v="${ui.devOld?0:1}">${ui.devOld?'收起更早的版本':'展開更早的版本（'+old+' 個）'}</button>`+(ui.devOld?DEV_LOG.slice(DEV_NEW).map((x,i)=>g(x,i+DEV_NEW)).join(''):''):'')}
 function sheetDev(){
-  const B=(k,t,c='btn-sec')=>`<button class="ui-btn ui-btn--${btnVariant(c)} btn ${c} sm" data-act="devdo" data-k="${k}">${t}</button>`,tab=ui.devTab||'res';
+  const B=(k,t,c='btn-sec')=>`<button class="ui-btn ui-btn--${btnVariant(c)} btn ${c} sm" data-act="devdo" data-k="${k}">${t}</button>`,tab=DEV_TABS.some(x=>x[0]===ui.devTab)?ui.devTab:'ver';
   const body={
-   res:`<div class="label">貨幣</div><div class="devgrid">${B('gold','金幣 +5,000')}${B('gems','鑽石 +1,000')}</div>
-     <div class="label">v4.43 道具欄（舊道具、材料已刪除）</div><div class="devgrid">${B('matall','v4.54 材料各 +100、附魔石 +20')}${B('relicsim','v4.54 遺物掉落機率＋開箱 1000 次統計')}${B('dropsim','v4.54 打倒 1000 隻的掉落')}${B('relic5','四種英靈・遺物各 +5')}${B('relic0','英靈・遺物全部歸零')}${B('relicbag','打開道具欄')}${B('relicinfo','點英靈・遺物看說明')}</div>
-     <div class="label">v4.55 同款武器疊一格</div><div class="devgrid">${B('wstack','產生同款武器（6 把 +0、3 把 +3、2 把附魔）並打開道具欄')}</div>
-     <div class="label">v3.71 鐵匠聲望／天賦</div><div class="devgrid">${B('rep1','聲望升 1 級')}${B('rep10','聲望升 10 級')}${B('represet','天賦點全部退回')}${B('repzero','聲望歸零（Lv.1）')}${B('repopen','打開鐵匠天賦')}</div>
-     <div class="label">v3.87 首領討伐（整週・週日結算・目前：${evtNow().boss.n}）</div><div class="devgrid">${B('evtnext','模擬換週（下一隻首領）')}${B('evtfast','首領駐守時間 −10 小時')}${B('evtdmg','我的傷害 +5,000（只改顯示）')}${B('evtreset','本週首領進度清空')}${B('evtgdead','模擬全服打倒首領')}${B('evtgalive','模擬全服血量剩 45%＋排名武器')}${B('evtgrank','模擬上週排名第 2')}</div>
-     <div class="label">v3.76 第二界約頓海姆（目前：${rfOpen()?'已開放':'未開放'}・收復 ${cleared()}/${VILLAGES.length}）</div><div class="devgrid">${B('r2open','開放第二界（收復 1-1～1-10）')}${B('r2mats','金幣 +20 萬')}${B('r2wpn','送史詩測試斧＋剋巨人')}${B('r2all','第二界全部收復')}${B('r2lock','第二界改回未開放')}${B('r2fur','熔爐升到 Lv6（可鍛造巨人武器）')}${B('r2t4','顯示 8 把巨人武器（測試）')}</div>
-     <div class="label">v4.24 故事</div><div class="devgrid">${B('gwstory','v4.24 看 1-8、2-9、2-10 新故事（開村莊詳情）')}</div>
-     <div class="label">v3.95 另一界可收成紅點（地圖列圖示）</div><div class="devgrid">${B('rdot1','米德加德 1-1 可收成，切到約頓海姆看（全部收成應該不能按）')}${B('rdot2','約頓海姆 2-1 可收成，切到米德加德看（全部收成應該不能按）')}</div>
-     <div class="label">全部武器顯示測試（測試武器：不扣資源、不能交付村莊）</div>
-     <div class="small muted">品質</div><div class="row">${[[-1,'輪替'],[0,'普通'],[1,'精良'],[2,'稀有'],[3,'史詩'],[4,'傳說']].map(([v,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devAllQ??-1)===v?'on':''}" data-act="devset" data-k="devAllQ" data-v="${v}">${n}</button>`).join('')}</div>
+   ver:tab==='ver'?devVer(B):'',
+   res:`<div class="label">貨幣</div><div class="devgrid">${B('gold','金幣 +5,000')}${B('gems','鑽石 +1,000')}${B('r2mats','金幣 +20 萬')}</div>
+     <div class="label">道具</div><div class="devgrid">${B('matall','材料各 +100、附魔石 +20')}${B('stone50','強化石 +50')}${B('stone0','強化石歸零')}${B('relic5','四種英靈・遺物各 +5')}</div>
+     <div class="label">測試武器（不扣資源、不能交付村莊）</div>
      <div class="small muted">強化等級</div><div class="row">${[[-1,'輪替'],[0,'+0'],[6,'+6'],[7,'+7'],[10,'+10'],[12,'+12']].map(([v,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devAllLv??-1)===v?'on':''}" data-act="devset" data-k="devAllLv" data-v="${v}">${n}</button>`).join('')}</div>
-     <div class="devgrid">${B('allw','產生全部 '+BPS.length+' 把測試圖紙武器','btn-primary')}${B('bpdel','v4.44 檢查：舊武器圖紙已刪（開鍛造頁）')}${B('cleartest','清除所有測試武器')}</div>
-     <div class="devgrid">${B('flvtest','v4.34 武器框顏色：產生 +0～+12 九把')}${B('wpntest','v4.46 新武器系統：七類各一把 +6，看攻速／單擊／附加效果／相剋')}</div>
-     <div class="label">v4.50 強化石・最高 +12</div><div class="devgrid">${B('stone50','強化石 +50')}${B('stone0','強化石歸零')}${B('stonereal','給一把真的 +6 劍，開強化頁（會用掉強化石、真的會爆）')}${B('stonedrop','模擬 1-1／1-10／2-10 各收成 100 輪，看掉幾顆強化石')}</div>
-     <div class="label">測試武器</div><div class="devgrid">${B('chsim','v4.52 限時挑戰模擬表（每關 +0／+6／+7／+8 勝率）')}${B('chwin','v4.52 給最強武器 +12 直接挑戰下一關（看贏）')}${B('chlose','v4.52 用開局劍 +0 挑戰下一關（看輸）')}${B('nw17','v4.51 給 17 把新武器（各 1 把 +0）')}${B('nwtab','v4.51 新武器數值與村莊需求表')}${B('rmold','v4.37 舊特性／重鍊／盾武器（檢查都不顯示）')}${B('wt','3 把傳說測試武器')}${B('w6','+6 測試劍（剛好到安定值 +6）')}${B('wm','+0 史詩測試長柄（安定值 +6）')}${B('wg6','v4.00 +6 測試劍（安定值 +6，下一次進危險區）')}${B('w8','+8 測試長柄')}${B('wench','v3.84 新附魔測試武器（雷霆・貪婪・豐收・剋巨人＋堅固）')}${B('wench2','v3.84 新附魔測試武器 2（神聖・劇毒・尋珍・剋龍）')}${B('fill','道具欄塞到 195 把')}</div>`,
-   prog:`<div class="label">v3.61 介面測試</div><div class="devgrid">${B('uiv','村莊：跳到待交付關卡')}${B('uiarm','道具欄：往下捲看分類置頂')}${B('uiforge','鐵匠鋪：圖紙區上下滑')}${B('uimat','材料倉庫：點材料看用途')}${B('uishop','旅行商人：輸入數量買賣')}</div>
-   <div class="label">v3.79 村莊換武器／掉落說明</div><div class="devgrid">${B('uiswap','村莊：送一把更強的（不亮紅點）')}${B('uidropinfo','村莊詳情：點掉落看說明')}</div>
-   <div class="label">v3.64 紅點提醒</div><div class="devgrid">${B('uigive','送一把可交付的武器')}${B('uidot_w','道具欄：最新一把標 NEW')}${B('uidot_bp','鐵匠鋪：最新圖紙標 NEW')}${B('uidot_full','村莊倉庫滿（醒目紅點）')}${B('uidot_mk','交易所：模擬有成交')}${B('uidot_mon','商城：月卡今天可領')}${B('uidot_st','目前哪些紅點會亮')}</div>
-   <div class="label">v4.03 公告與玩法說明（右上角齒輪）</div><div class="devgrid">${B('nw_open','打開齒輪設定')}${B('nw_new1','模擬新版本：最新一則變 NEW')}${B('nw_all','全部公告和玩法變 NEW')}${B('nw_seen','全部標成已讀')}</div>
-   <div class="label">v3.70 每日任務・簽到・跑馬燈</div><div class="devgrid">${B('dq_all','每日任務全部達成')}${B('dq_reset','每日任務換日重置')}${B('sg_reset','簽到：今天可再領')}${B('shopsg','v4.59 商城：簽到可再領並打開商城')}${B('shopbroke','v4.59 商城：金幣鑽石歸零（看買不起）')}${B('sg_d7','簽到：跳到第 7 天')}${B('news_ok','跑馬燈：模擬 +12 成功')}${B('news_brk','跑馬燈：模擬 +11 爆裝')}${B('qopen','打開任務視窗')}</div>
-     <div class="label">v3.67 分頁美術預熱</div><div class="devgrid">${B('uiwarm','預熱狀態')}${B('uiwarmrun','連切 5 個分頁測出圖')}</div>
-     <div class="label">時間流速（正式版 1×）</div><div class="row">${[1,10,30,60].map(n=>`<button class="ui-btn ui-btn--chip chipbtn ${S.speed===n?'on':''}" data-act="speed" data-k="${n}">${n}×</button>`).join('')}</div>
+     <div class="devgrid">${B('allw','產生全部 '+BPS.length+' 把測試圖紙武器','btn-primary')}${B('cleartest','清除所有測試武器')}${B('nw17','給 17 把新武器（各 1 把 +0）')}${B('w6','+6 測試劍（剛好到安定值）')}${B('fill','道具欄塞到 195 把')}</div>`,
+   prog:`<div class="label">時間流速（正式版 1×）</div><div class="row">${[1,10,30,60].map(n=>`<button class="ui-btn ui-btn--chip chipbtn ${S.speed===n?'on':''}" data-act="speed" data-k="${n}">${n}×</button>`).join('')}</div>
      <div class="label">離線累積上限</div><div class="row">${[1,OFFLINE_H].map(n=>`<button class="ui-btn ui-btn--chip chipbtn ${S.capH===n?'on':''}" data-act="cap" data-k="${n}">${n} 小時</button>`).join('')}</div>
-     <div class="label">村莊與鍛造</div><div class="devgrid">${B('hunt','所有村莊立即 +10 輪')}${B('monhp','怪物血條：本輪剩 10 秒')}${B('gwvpick','v4.38 駐守村莊點武器的小卡（收回／換武器）')}${B('gwbstgl','v4.39 村莊卡片箭頭展開戰鬥畫面＋掉落＋已打到')}${B('monall','怪物打法：8 種武器各駐守一村')}${B('bsall','v4.20 戰鬥條：7 種武器各駐守 1-1～1-7')}${B('bs11','v4.20 戰鬥條：1-1 換下一種武器')}${B('bsthumb','v4.32 卡片小怪物新打法：7 種武器各駐守 1-1～1-7、收起戰鬥畫面、附加效果必定觸發')}${B('bsmon','v4.32 戰鬥畫面：依序展開每隻全身怪物（看有沒有被切到）')}${B('bsbg','v4.35 戰鬥背景取景：依序打開背景有怪物的關卡')}${B('bsproc',`v4.20 附加效果必定觸發：${ui.bsProc?'開':'關'}`)}${B('offline',`模擬離線 ${OFFLINE_H} 小時`)}${B('forge','鍛造立即完成')}${B('unlock','解鎖全部村莊與圖紙')}${B('maxup','工坊滿級')}${B('wsgate','工坊改回 Lv1＋20 萬金幣（看解鎖條件）')}${B('f5','鍛造 5 秒測試（最高階可打的圖紙）')}${B('tlack','缺料鍛造提示（獵弓）')}${B('tbprev','點圖紙自動捲到詳情')}${B('tharvest','2 秒後完成一輪（看收成按鈕）')}${B('tmon','怪物血條：3 秒後擊倒一隻')}${B('monlore','v4.04 神話怪物：依序打開村莊詳情看傳說')}${B('affopen','v4.44 屬性附魔機率：模擬 6000 次')}${B('elall','v4.44 給 6 把不同屬性的武器（看弱點提示）')}${B('elforce','v4.44 下一次附魔必定三級')}${B('mondex','v4.12 怪物大圖：打開下一個挑戰的村莊詳情')}${B('godreq','v4.44 海姆達爾弱點暗影：給暗影／神聖長戟各 1 把')}${B('storyreq','v4.44 給打中 1-9／2-6／2-10 弱點的武器')}${B('achall','達成全部成就條件')}${B('daily','重置月卡今日領取')}</div>
+     <div class="label">村莊與鍛造</div><div class="devgrid">${B('offline',`模擬離線 ${OFFLINE_H} 小時`)}${B('unlock','解鎖全部村莊與圖紙')}${B('forge','鍛造立即完成')}${B('f5','鍛造 5 秒測試（最高階可打的圖紙）')}${B('tlack','缺料鍛造提示（獵弓）')}${B('tbprev','點圖紙自動捲到詳情')}${B('achall','達成全部成就條件')}${B('daily','重置月卡今日領取')}${B('tipreset','重設各系統第一次說明')}</div>
      <div class="label">時間防作弊</div><div class="devgrid">${B('back','裝置時間倒退 1 小時')}${B('fwd','裝置時間恢復')}</div>`,
    enh:`<div class="label">1. 送出測試武器（標示「測試」，強化不扣資源、不能交付村莊）</div>
      <div class="row">${['鐵製','霜銀','龍鱗','神器'].map((n,t)=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devTier??0)===t?'on':''}" data-act="devset" data-k="devTier" data-v="${t}">${n}</button>`).join('')}</div>
@@ -4574,28 +4609,14 @@ function sheetDev(){
      <div class="small muted" style="white-space:pre-wrap;max-height:160px;overflow:auto">${SFX_LOG.slice().reverse().join('\n')||'（還沒有紀錄）'}</div>
      ${SFX_VAR_KEYS.length?`<div class="label">音效試用（v3.32，只是試聽，選定後再正式換）</div><div class="sfxalt">${SFX_VAR_KEYS.map(n=>`<div class="sfxalt-r"><span>${SFX_NO[n]}. ${SFX_NAME[n]}</span>${SFX_VARS[n].map(v=>`<button class="ui-btn ui-btn--chip chipbtn ${(SFX_VARS[n].includes(SFX_ALT[n])?SFX_ALT[n]||'':'')===v?'on':''}" data-act="sfxalt" data-k="${n}" data-v="${v}">${v||'原'}</button>`).join('')}</div>`).join('')}</div>
      <div class="devgrid">${B('sfxaltclr','全部切回原版')}</div>`:''}
-     <div class="label">登入與開場（v3.20）</div><div class="devgrid">${B('gtlogin','顯示登入畫面')}${B('gtstory','播放開場故事')}${B('gtreset','重設「已看過開場」')}</div>
-     <div class="label">新手導覽（v4.57 重做）</div><div class="devgrid">${B('tutnew','用新存檔從頭跑導覽（會清空目前進度）')}${B('tutch','v4.57 跳到導覽「挑戰 1-1」那一步（給伐木斧）')}${B('tutrestart','保留存檔，從第 1 步重看')}${B('tutnext','導覽跳下一步')}${B('tipreset','重設各系統第一次說明')}</div>
-     <div class="label">排行榜（v3.46 真人版）</div><div class="devgrid">${B('lbtop','上傳我的紀錄並重新讀取')}${B('lbmid','重新讀取排行榜')}${B('lbreset','清除排行榜紀錄與獎勵')}${B('lbtie','測試同攻擊力名次（先達成在前）')}</div>
      <div class="label">2. 指定下一次強化結果（只對測試武器有效）</div>
      <div class="row">${[['ok','成功'],['fail','普通失敗'],['break','爆裝'],['saved','防爆'],['','不指定']].map(([k,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(DEV.force||'')===k?'on':''}" data-act="devforce" data-k="${k}">${n}</button>`).join('')}</div>
      <div class="small muted">目前：${DEV.force?{ok:'成功',fail:'普通失敗',break:'爆裝',saved:'防爆'}[DEV.force]:'不指定（照正常機率）'}</div>
      <div class="label">3. 只播放強化動畫（不做任何判定）</div><div class="small muted">爆裝／失敗／防爆時停在第幾道符文</div><div class="row">${[[-1,'隨機'],[0,'第 1 道'],[2,'第 3 道'],[4,'第 5 道'],[6,'第 7 道']].map(([v,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devStop??-1)===v?'on':''}" data-act="devset" data-k="devStop" data-v="${v}">${n}</button>`).join('')}</div><div class="small muted">武器類型</div><div class="row">${Object.entries({axe:'斧',sword:'劍',spear:'長矛',bow:'弓'}).map(([k,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devFxW||'axe')===k?'on':''}" data-act="devsets" data-k="devFxW" data-v="${k}">${n}</button>`).join('')}</div><div class="small muted">安全區（約 0.5 秒）</div><div class="devgrid">${B('fxs_ok','安全區・成功')}${B('fxs_fail','安全區・失敗')}</div>
      <div class="small muted">危險區（約 2.8 秒）</div><div class="devgrid">${B('fx_ok','危險區・成功')}${B('fx_fail','危險區・失敗')}${B('fx_broke','危險區・爆裝')}${B('fx_saved','危險區・防爆')}</div>`,
-   test:`<div class="devgrid">${B('tsec','安全設定檢查（v3.65）','btn-primary')}${B('tlbsv','排行榜上傳檢查')}${B('tquick','執行快速測試')}${B('odds','v4.00 強化機率表（難度 B）')}${B('curve','v4.07 難度曲線：每關需求')}${B('tecon','執行 30 天經濟模擬')}${B('ticon','檢查 App icon')}</div>${ui.testOut?`<div class="test-out">${ui.testOut}</div>`:''}`,
+   test:`<div class="devgrid">${B('tsec','安全設定檢查（v3.65）','btn-primary')}${B('tquick','執行快速測試')}${B('odds','強化機率表')}${B('curve','難度曲線：每關需求')}${B('tecon','執行 30 天經濟模擬')}${B('ticon','檢查 App icon')}</div>${ui.testOut?`<div class="test-out">${ui.testOut}</div>`:''}`,
    ui:tab==='ui'?uiGallery():'',
-   chat:`<div class="label">v3.88～3.89 世界聊天＋玩家名片（${chatOn()?'連線真實伺服器':chatMock()?'未登入：離線模擬，只看畫面':'未連線'}）</div>
-     <div class="devgrid">${B('chopen','打開聊天視窗','btn-primary')}${B('chnew','模擬收到 3 則新訊息')}${B('chlong','模擬一則 60 字長訊息')}${B('chcd','模擬發言冷卻 5 秒')}${B('chsys','打開系統頻道')}${B('chbar','底部聊天條：'+(S.chatBar===false?'目前隱藏':'目前顯示'))}</div>
-     <div class="label">玩家名片</div><div class="devgrid">${B('pcme','看自己的名片')}${B('pcother','看別人的名片（模擬）')}${B('chunblk','清空封鎖名單（'+chatBlk().length+' 人）')}</div>
-     <div class="label">v3.89 武器卡、稱號、恭喜</div><div class="devgrid">${B('chwcard','模擬別人貼一張武器卡')}${B('chtitle','解鎖本機 4 個稱號（+12、傳說、10 村、2-1）')}${B('chtitle0','卸下稱號')}${B('chcheer','模擬收到 3 位鐵匠恭喜')}${B('chsys','打開系統頻道（按恭喜）')}</div>
-     <div class="label">v3.98 好友＋公會</div><div class="small muted" style="margin-bottom:6px">${chatOn()?'已登入：打開的是真的公會／好友；模擬按鈕只在本機未登入時可用':'未登入：公會、好友用離線模擬'}</div><div class="devgrid">${B('gdopen','打開公會','btn-primary')}${B('gdnone','模擬：還沒加入公會')}${B('gdlead','模擬：我是會長（有入會申請）')}${B('gdmem','模擬：我是一般成員')}${B('gdlv5','模擬：公會升到 Lv.5')}${B('gdchat','打開公會聊天')}${B('fropen','打開好友（有 2 個申請）')}${B('gdbonus','檢查公會加成（金幣、首領）')}</div>
-     <div class="label">檢查</div><div class="devgrid">${B('chfilter','測試輸入檢查（網址、電話、字數）')}${B('tsec','安全設定檢查（含聊天 SQL）')}</div>`,
-   mk:`<div class="label">交易所（v3.41）</div><div class="small muted" style="margin-bottom:6px">${AUTH?'目前連線真實伺服器（'+esc(S.nick||AUTH.user.email)+'）':'未登入：交易所使用「離線模擬」，只存在這支手機，用來測試畫面與流程'}</div>
-     <div class="devgrid">${B('mkopen','開啟交易所')}${B('mksettle','立即結算我的成交／過期')}${B('mkclaimt','待領取測試（2 賣出＋1 退回）')}${B('mkcard','v4.53 商品詳情新版（+7 冰封武器）')}${B('mkisell','v4.56 上架道具（補 50 顆強化石）')}${B('mkisim','v4.56 假裝有人買走我上架的道具一半（離線模擬）')}</div>
-     <div class="label">離線模擬專用（未登入時）</div><div class="devgrid">${B('mksold','模擬：我最新的上架被買走')}${B('mkexp','模擬：我的上架全部過期')}${B('mkreset','重設模擬市場')}</div>`,
-   save:`<div class="label">v4.18 封測暫停（目前 MAINT=${MAINT}）</div><div class="devgrid">${B('maintprev','預覽維護公告畫面')}</div>
-     <div class="label">取暱稱預覽（v3.38，不用登入、不連伺服器）</div><div class="devgrid">${B('cnameprev','預覽「註冊後取名」流程')}</div><div class="small muted" style="margin:4px 0 8px">輸入「冰脊」或「測試重複」可看重複暱稱的提示；確定後會接著播開場故事。</div>
-     <div class="label">雲端存檔（v3.34）</div><div class="small" style="margin-bottom:6px">${AUTH?`帳號：${AUTH.user.email}<br>狀態：${CLOUD.busy?'同步中…':CLOUD.err?'⚠ '+CLOUD.err:CLOUD.last?'已同步 '+new Date(CLOUD.last).toLocaleTimeString():'尚未同步'}${CLOUD.dirty?'（有未上傳的變更）':''}`:'目前是訪客（只存在這支手機）'}</div>
+   save:`<div class="label">雲端存檔</div><div class="small" style="margin-bottom:6px">${AUTH?`帳號：${AUTH.user.email}<br>狀態：${CLOUD.busy?'同步中…':CLOUD.err?'⚠ '+CLOUD.err:CLOUD.last?'已同步 '+new Date(CLOUD.last).toLocaleTimeString():'尚未同步'}${CLOUD.dirty?'（有未上傳的變更）':''}`:'目前是訪客（只存在這支手機）'}</div>
      <div class="devgrid">${AUTH?B('cpush','立即上傳到雲端')+B('cpull','從雲端下載（覆蓋本機）')+B('clogout','登出')+B('cname','開啟取名畫面'):B('gtlogin','開啟登入畫面')}</div>
      <div class="devgrid">${B('v2','載入 v2 測試存檔（遷移）')}${B('reset',ui.confirmReset?'再按一次確認重置':'重置存檔','btn-danger')}</div>
      <div class="label">開發者模式</div><div class="devgrid"><button class="ui-btn ui-btn--secondary btn btn-sec sm" data-act="devoff">關閉開發者模式</button></div><div class="small muted">再次開啟：連點左上角鐵匠徽章 20 下（正式網站只限管理員帳號）。</div>`}[tab];
@@ -4926,7 +4947,7 @@ document.addEventListener('click',e=>{
    bosspost:async()=>{if(ui.bossBusy)return;ui.bossBusy=true;let r;try{r=AUTH?await bossPostCloud(+d.id):bossPostCore(+d.id)}finally{ui.bossBusy=false}if(r.err){render();return toast(r.err,'bad')}snd(r.weak?'enh_ok':'deliver');toast(`已派去討伐 ${evtNow().boss.n}，每小時 <b>${fmt(r.pw)}</b> 傷害${r.weak?'（打中弱點！）':''}${r.vi>=0?`<br>已從 ${vNo(r.vi)} 收回`:''}`,'ok');render()},
    bossout:async()=>{if(ui.bossBusy)return;ui.bossBusy=true;let r;try{r=AUTH?await bossUnpostCloud(+d.s):bossUnpostCore(+d.s)}finally{ui.bossBusy=false}if(!r)return render();if(r.err)return toast(r.err,'bad');snd('deliver');toast(`已收回，這把武器這次打了 <b>${fmt(r.dmg)}</b> 傷害`,'ok');render()},
    talup:()=>{const e=talentUp(d.k);if(e)return toast(e,'bad');snd('upgrade');render()},
-   devdo:()=>devdo(d.k),speed:()=>{tick();const t=NOW(),old=S.speed,nw=+d.k;
+   devdo:()=>{ui.devLast=d.k;ui.testOut='';devdo(d.k)},speed:()=>{tick();const t=NOW(),old=S.speed,nw=+d.k;
      S.villages.forEach(st=>{if(st.cycleStart!=null)st.cycleStart=t-(t-st.cycleStart)*old/nw});S.jobs.forEach(j=>{j.start=t-(t-j.start)*old/nw;j.end=t+(j.end-t)*old/nw});S.speed=nw;save();render()},
    cap:()=>{S.capH=+d.k;save();render()},ftab:()=>{ui.tab='forge';ui.ftab=d.k;ui.sheet=null;render()},atab:()=>{ui.tab='armory';ui.atab=d.k;ui.sheet=null;scrollTo(0,0);render()},cat:()=>{ui.cat=d.k;render()},acat:()=>{ui.acat=d.k;render()},
    aidle:()=>{ui.aidle=!ui.aidle;render()},alock:()=>{ui.alock=!ui.alock;render()},bp:()=>{ui.bp=d.k;ui.qty=1;if(!bpSeen().includes(d.k)){S.bpSeen.push(d.k);save()}render();bpReveal()},qty:()=>{ui.qty=Math.max(1,Math.min(10,+d.k));render()},forge:startForge,
