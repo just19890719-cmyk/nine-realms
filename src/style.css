@@ -1555,17 +1555,6 @@ html.scrimmed .cbar{display:none}
 /* v4.28 附魔詞條池：還沒學會的詞條 */
 .ec-t.ec-lk{opacity:.5}.ec-t.ec-lk img{border-radius:0;object-fit:contain;padding:3px}.ec-t.ec-lk em{color:var(--ash)}
 /* v4.15 神明武器：神格覺醒面板、光環、標籤 */
-.god-tag{display:inline-block;padding:1px 8px;border-radius:6px;font-size:12px;background:#6e5018;color:#ffe9b0;border:1px solid #c9a24a;white-space:nowrap}
-.wart .wart-aura{position:absolute;inset:4%;width:92%;height:92%;z-index:0;pointer-events:none;mix-blend-mode:screen;opacity:.9}
-.awk{margin:8px 0;padding:10px 12px;border:1px solid rgba(232,190,110,.55);background:linear-gradient(180deg,rgba(60,44,20,.55),rgba(20,16,10,.6))}
-.awk-h{display:flex;align-items:center;gap:8px;margin-bottom:4px}.awk-h b{color:#f3c76b;font-size:15px}
-.awk-dots{display:flex;gap:4px}.awk-dots i{width:9px;height:9px;border-radius:50%;background:rgba(243,199,107,.25)}.awk-dots i.on{background:#f3c76b}
-.awk-h .small{margin-left:auto}
-.awk-lore{margin-bottom:6px}
-.awk-r{display:flex;gap:8px;align-items:flex-start;padding:5px 0;border-top:1px solid rgba(255,255,255,.07);opacity:.5}.awk-r.on{opacity:1}
-.awk-lv{min-width:32px;color:#aaa}.awk-r.on .awk-lv{color:#f3c76b}
-.awk-e{display:block}
-.awk-next{margin:6px 0;padding:6px 10px;border-radius:8px;border:1px solid rgba(232,190,110,.45);background:rgba(60,44,20,.45);color:#f3dfae;text-align:center}
 .gate-maint .gt-logo{width:min(72vw,340px)}
 .mt-box{max-height:calc(100% - 150px - env(safe-area-inset-bottom,0px));overflow:auto;gap:10px}
 .mt-body{font-size:14px;line-height:1.7;color:var(--bone)}.mt-body p{margin:0 0 8px}
@@ -1745,4 +1734,5 @@ html.scrimmed .cbar{display:none}
 .ib-gl{font-size:11px;font-weight:700;line-height:1.2}
 .info-ico .ph-ico{width:96px;height:96px;font-size:13px;margin:0 auto}
 .modal-card .ui-btn+.ui-btn{margin-top:8px}
+.bp-empty{margin:12px 0;padding:28px 16px;line-height:1.7}.bp-empty b{font-size:16px;color:#f3c76b}   /* v4.46 舊圖紙刪除後的空白提示 */
 </style>

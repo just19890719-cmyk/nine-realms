@@ -471,8 +471,8 @@ function godReqTests(){const v=VILLAGES[9],u=VILLAGES[19],mk=e=>({id:-1,b:'t3_ha
   return[T('H 關卡跟故事一致：神的關卡都要神聖、2-10 要戰錘、1-9 要霜寒、2-6 蠕龍要剋龍、舊名稱都換掉（v4.43 掉落刪除，不再檢查）',!!ok,`沒要神聖的神：${badGod.map(vNo).join('、')||'無'}；舊名稱：${old.map(x=>x.name).join('、')||'無'}；不該掉龍鱗：${noScale.map(x=>x.name).join('、')||'無'}`)]}
 // v4.24 第一、二界故事主線：1-8／2-9 對調、2-10 索爾、代名詞（神＝祂，怪物＝牠，不用他／她／它）
 function storyTests(){const pr=[...MON_LORE,...VILLAGES.map(v=>v.txt)].map((t,i)=>[i,t]).filter(([i,t])=>/[他它]|(?<!巨人女巫放話：先打贏)她/.test(t.replace(/其他|試試它/g,'')));
-  const ok=MONS[7]==='莫庫卡爾菲'&&MONS[18]==='赫朗格尼爾'&&MONS[19]==='索爾'&&MON_T[19]==='雷神'&&VILLAGES[18].name==='石籬原'&&!VILLAGES[18].drops.some(d=>d[0]==='fireheart')&&KN_FULL.includes(18)&&KN_FULL.includes(7)&&KN_FULL.includes(19)&&!Object.keys(ART_WAIT).length&&BP.g_skadi.n==='索爾之錘'&&BP.g_skadi.cat==='hammer'&&BP.g_skadi.inn[0]==='thunder'&&GOD.g_skadi.god==='索爾';
-  return[T('H 故事主線：1-8 泥巨人、2-9 石籬原赫朗格尼爾（全身圖跟著搬）、2-10 雷神索爾＋索爾之錘',!!ok,`1-8 ${MONS[7]}、2-9 ${VILLAGES[18].name} ${MONS[18]}、2-10 ${MONS[19]}`),
+  const ok=MONS[7]==='莫庫卡爾菲'&&MONS[18]==='赫朗格尼爾'&&MONS[19]==='索爾'&&MON_T[19]==='雷神'&&VILLAGES[18].name==='石籬原'&&!VILLAGES[18].drops.some(d=>d[0]==='fireheart')&&KN_FULL.includes(18)&&KN_FULL.includes(7)&&KN_FULL.includes(19)&&!Object.keys(ART_WAIT).some(k=>!/^dev_/.test(k));   // v4.46 索爾之錘（神明武器）刪掉了，不再檢查
+  return[T('H 故事主線：1-8 泥巨人、2-9 石籬原赫朗格尼爾（全身圖跟著搬）、2-10 雷神索爾',!!ok,`1-8 ${MONS[7]}、2-9 ${VILLAGES[18].name} ${MONS[18]}、2-10 ${MONS[19]}`),
     T('H 代名詞：怪物傳說和關卡說明不用他／她／它（指武器的「它」除外）',!pr.length,pr.length?'還有：'+pr.map(x=>x[0]).join('、'):'都改好了')]}
 // v4.27 神明用「祂」：神的傳說、村莊文字不能用他／她／牠
 function godWordTests(){const bad=VILLAGES.map((v,i)=>i).filter(i=>/神/.test(MON_T[i]||'')&&/[他她牠]/.test(MON_LORE[i]+VILLAGES[i].txt));
@@ -515,19 +515,37 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   const want={1:14,4:44,5:55,7:155,9:310,10:280,13:545,14:420,15:420,18:900},miss=Object.entries(want).filter(([i,r])=>VILLAGES[i].req!==r||!txt.includes(({石籬原:'熔岩裂口'}[VILLAGES[i].name]||VILLAGES[i].name)+' '+r))   // v4.24 2-9 改名，4.07 公告裡還是舊名;
   return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
-// v4.15 神明武器：滿加成弱於下一界、遺物只在神的關卡掉、覺醒等級和效果、稱號
-function gwTests(){const ck=godCheck(),bad=ck.filter(x=>!x.ok);
-  const rel=VILLAGES.map((v,i)=>[i,v.drops.filter(d=>d[0]==='hrelic'||d[0]==='srelic').map(d=>d[0])]).filter(x=>x[1].length),relOk=rel.length===2&&rel[0][0]===9&&rel[0][1][0]==='hrelic'&&rel[1][0]===19&&rel[1][1][0]==='srelic';
-  const S0=S;S=fresh();const lk0=!!bpLock(BP.g_hofund);S.villages.forEach((v,i)=>{if(i<10)v.status='cleared'});S.furnace=5;const lk1=!bpLock(BP.g_hofund)&&!!bpLock(BP.g_skadi);
-  const w=makeWeapon('g_hofund',0,6,[]),n6=awkN(w),p10=power(w,10),p11=power(w,11),b10=Math.round(15*12*1.15*enhMult(10)),b11=Math.round(15*12*1.15*enhMult(11)*1.1);
-  w.lv=7;const tr=timeReduction(9,w);w.lv=13;const n13=awkN(w);const t0=titleLocal('watcher');w.lv=15;const t1=titleLocal('watcher');S=S0;
-  return[T('GW1 神明武器滿加成弱於下一界的新材質',!bad.length,ck.map(x=>x.n+' ×'+x.max.toFixed(1)+'＜×'+x.next).join('；')),
-    T('GW2 v4.43 舊材料刪除：神的關卡不再掉遺物',!rel.length,rel.length?rel.map(x=>vNo(x[0])+' '+x[1]).join('、'):'都不掉'),
-    T('GW3 圖紙解鎖：收復 1-10 才能打霍夫德、索爾之錘要 2-10',lk0&&lk1,`收復前鎖 ${lk0}；收復 1-10 後 ${lk1}`),
-    T('GW4 覺醒：+6 沒有、+7 狩獵 −3%、+11 攻擊力 ×1.1、+13 四段、+15 稱號',n6===0&&Math.abs(tr-.03)<1e-9&&p10===b10&&p11===b11&&n13===4&&!t0&&t1,`+6 段數 ${n6}；+7 縮短 ${tr}；+10 ${p10}/${b10}；+11 ${p11}/${b11}；+13 段數 ${n13}；稱號 ${t0}→${t1}`)]}
-function runTests(mode){
+function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.46 舊武器刪除：要在放回測試資料前檢查
+  const bd=[T('BD1 正式圖紙全部刪除（含神明武器），只剩開發者測試圖紙',!real.length&&!BP.g_hofund&&!BP.t1_woodaxe&&BPS.every(b=>b.dev&&b.t===0),real.length?real.map(b=>b.n).join('、'):`測試圖紙 ${BPS.length} 張`),
+    T('BD2 神明材質階、神格覺醒拿掉',TIERS.length===5&&typeof GOD==='undefined'&&typeof awkN==='undefined',`材質 ${TIERS.length} 階`)];
+  return withTestBps(()=>runTests0(mode,bd))}
+// v4.46 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
+const TEST_BPS=[
+ ['t1_woodaxe','伐木斧','axe',0,14,0],['t1_handaxe','手斧','axe',0,12,0],
+ ['t1_farmspear','農用長矛','polearm',0,11,1],['t1_shortspear','短矛','polearm',0,10,1],['t1_pickaxe','礦鎬','tool',0,11,1],
+ ['t1_huntbow','獵弓','bow',0,10,2],['t1_sling','投石索','throw',0,7,2],['t1_huntknife','獵刀','dagger',0,9,2],
+ ['t1_ironsword','鐵劍','sword',0,12,3],['t1_roundshield','圓盾','shield',0,10,3],['t1_crossbow','十字弩','crossbow',0,13,3],['t1_ironhammer','鐵錘','hammer',0,16,3],
+ ['t2_wolfaxe','霜狼戰斧','axe',1,15],['t2_daneaxe','丹麥長斧','axe',1,14],['t2_longsword','霜銀長劍','sword',1,13],['t2_broadsword','霜銀闊劍','sword',1,14],
+ ['t2_longbow','霜銀長弓','bow',1,11],['t2_crossbow','霜銀重弩','crossbow',1,13],['t2_warspear','霜銀戰矛','polearm',1,12],['t2_glaive','霜銀長柄刀','polearm',1,13],['t2_twindagger','霜銀雙匕','dagger',1,10],
+ ['t2_seax','霜銀短刀','dagger',1,9],['t2_warhammer','霜獅戰錘','hammer',1,16],['t2_throwaxe','霜銀飛斧','throw',1,9],['t2_kiteshield','霜狼鳶盾','shield',1,11],
+ ['t3_greataxe','龍首巨斧','axe',2,16],['t3_doubleaxe','龍鱗雙刃斧','axe',2,15],['t3_greatsword','龍鱗巨劍','sword',2,15],['t3_saber','龍鱗彎刀','sword',2,13],
+ ['t3_bow','龍骨長弓','bow',2,12],['t3_crossbow','龍鱗重弩','crossbow',2,14],['t3_spear','龍鱗長矛','polearm',2,12],['t3_halberd','龍鱗戟','polearm',2,14],
+ ['t3_scythe','龍鱗鐮刀','polearm',2,13],['t3_hammer','龍鱗戰錘','hammer',2,17],['t3_dagger','龍牙匕首','dagger',2,10],['t3_shield','龍鱗塔盾','shield',2,12],
+ ['m_fenrir','芬里爾魔狼斧','axe',3,16,8,{fur:3,scale:3,rune:2},['swift',15]],
+ ['m_frostgiant','霜巨人戰錘','hammer',3,17,8,{icecore:3,silver:4,rune:2},['giant',30]],
+ ['m_firegiant','火巨人焰劍','sword',3,15,9,{fireheart:3,scale:3,rune:2},['flame',20]],
+ ['m_nidhogg','尼德霍格龍矛','polearm',3,14,8,{scale:5,rune:3,fur:1},['dragon',35]],
+ ['m_iceraven','冰鴉長弓','bow',3,12,8,{icecore:2,fang:6,rune:2},['frost',20]],
+ ['m_serpent','海蛇三叉戟','polearm',3,13,8,{serpent:3,silver:4,rune:2},['loot',30]],
+ ['t4_axe','霜巨人戰斧','axe',4,16,13,null,['giant',20]],['t4_sword','巨人王劍','sword',4,15],['t4_bow','風暴巨弓','bow',4,12],['t4_crossbow','雷鳴攻城弩','crossbow',4,14],
+ ['t4_hammer','熔岩巨錘','hammer',4,17],['t4_polearm','狂風巨戟','polearm',4,14],['t4_dagger','霜晶獠刃','dagger',4,11],['t4_shield','巨骨塔盾','shield',4,12]
+].map(([id,n,cat,t,base,unlock,r,inn])=>({id,n,cat,t,base,unlock:unlock??TIERS[t].unlock,r:r||undefined,inn,test:true}))
+ .filter(b=>!['t1_handaxe','t1_shortspear','t2_daneaxe','t2_broadsword','t2_warspear','t2_seax','t3_doubleaxe','t3_saber','t3_spear','t3_scythe','t1_pickaxe','t1_sling','t2_throwaxe','t1_roundshield','t2_kiteshield','t3_shield','t4_shield'].includes(b.id));
+function withTestBps(f){const keep=BPS.slice(),add=TEST_BPS.filter(b=>!BP[b.id]);BPS.length=0;BPS.push(...add,...keep.filter(b=>b.dev));add.forEach(b=>BP[b.id]=b);
+  try{return f()}finally{BPS.length=0;BPS.push(...keep);add.forEach(b=>delete BP[b.id]);S.weapons=S.weapons.filter(w=>BP[w.b]);S.jobs=S.jobs.filter(j=>BP[j.b])}}   // 測試留下的舊圖紙武器一起清掉
+function runTests0(mode,bd){
   if(mode==='econ')return econHtml(12)+econHtml(8);
-  const r=runAll({N:100000});r.res.push(...frameLvTests(),...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...storyTests(),...curveTests(),...vNeedTests(),...vPickTests(),...bsTglTests(),...godWordTests(),...hitTests(),...enchTests(),...wsTests(),...gwTests());const pass=r.res.filter(x=>x.pass).length;
+  const r=runAll({N:100000});r.res.push(...bd,...frameLvTests(),...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...storyTests(),...curveTests(),...vNeedTests(),...vPickTests(),...bsTglTests(),...godWordTests(),...hitTests(),...enchTests(),...wsTests());const pass=r.res.filter(x=>x.pass).length;
   return `<div><b>${pass}/${r.res.length} 通過</b>（${r.ms} 毫秒）</div>`+resHtml(r.res);
 }
 // v4.34 武器框顏色看強化等級
