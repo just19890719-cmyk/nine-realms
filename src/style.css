@@ -1735,4 +1735,39 @@ html.scrimmed .cbar{display:none}
 .info-ico .ph-ico{width:96px;height:96px;font-size:13px;margin:0 auto}
 .modal-card .ui-btn+.ui-btn{margin-top:8px}
 .bp-empty{margin:12px 0;padding:28px 16px;line-height:1.7}.bp-empty b{font-size:16px;color:#f3c76b}   /* v4.44 舊圖紙刪除後的空白提示 */
+/* v4.45 屬性附魔與怪物弱點 */
+.vweak{flex:none;display:inline-flex;align-items:center;gap:2px;margin:0 6px 0 4px;padding:1px 6px 1px 4px;border-radius:9px;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.12);font-size:11px;font-weight:700;color:#e9dcc2;white-space:nowrap;line-height:16px}
+.vweak i{font-style:normal;font-weight:400;color:var(--ash);margin-right:2px;font-size:10px}
+.vweak img{width:16px;height:16px;object-fit:contain}
+.vweak.hit{border-color:rgba(120,200,120,.6);background:rgba(40,90,40,.45);color:#cdf0c4}
+.vwho{align-items:center}.vwho .grow{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.vwho .vweak{margin-right:0}
+.md-el{margin-top:3px;font-size:12px;line-height:20px;color:#e9dcc2}
+.md-el img{display:inline-block;width:18px;height:18px;object-fit:contain;vertical-align:-4px}.md-el span{white-space:nowrap;display:inline}
+.ec .ec-t .grow>span{white-space:normal;line-height:1.25}
+.ec .ec-t{height:auto;min-height:44px;padding:4px 2px}
+.ec-tier{display:flex;justify-content:space-between;gap:6px;margin:8px 2px 4px;padding:6px 8px;border-radius:8px;background:rgba(0,0,0,.28);color:var(--ash)}
+.ec-tier span{white-space:nowrap}.ec-tier b{color:var(--gold-hi)}
+.ec-pair{margin:4px 2px 0;line-height:1.45}
+.el-tag{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:700;white-space:nowrap}.el-tag img{width:16px;height:16px;object-fit:contain}
+.el-tag.el-t3{color:var(--gold-hi)}
+.vside.vside-c{flex-direction:column;align-items:flex-end;justify-content:center;gap:5px}
+.vweak>span{display:inline-flex;align-items:center;gap:2px}
+.vside-c .vweak{margin:0;flex-direction:column;align-items:center;gap:0;padding:2px 6px;border-radius:8px;line-height:14px}.vside-c .vweak i{margin:0;font-size:9px;line-height:11px}
+.vweak-row{margin-top:3px}.vweak-row .vweak{margin-left:0}
+/* v4.44 屬性一律文字標示（不用圖示）：每種屬性一個顏色 */
+.elc-fire{--ec:#ff8a4c}.elc-ice{--ec:#8fe3ff}.elc-bolt{--ec:#c79bff}.elc-toxic{--ec:#8ed865}.elc-light{--ec:#ffd66b}.elc-dark{--ec:#a99bc9}
+[class*="elc-"]{color:var(--ec)}
+.vweak.hit [class*="elc-"]{color:#cdf0c4}
+.el-box{flex:none;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:8px;border:1px solid var(--ec);background:rgba(0,0,0,.4);box-shadow:inset 0 0 8px color-mix(in srgb,var(--ec) 35%,transparent);font-size:14px;font-weight:700;letter-spacing:1px;line-height:1}
+.el-box.el-big{width:84px;height:84px;font-size:28px;border-radius:14px;margin:0 auto}
+.ec-t .el-box{width:34px;height:34px;font-size:12px}
+/* v4.44 附魔小卡（跟武器詳情小卡同一種彈窗） */
+.scrim.wpopc{align-items:center;padding:16px}
+.sheet.wpop{max-width:400px;max-height:88%;border-radius:16px;border-bottom:1px solid var(--line2);padding:14px 14px 12px;box-shadow:0 12px 40px rgba(0,0,0,.7)}
+.ec-pop{padding-bottom:0}
+.ec-pop .ec-ph{display:flex;justify-content:space-between;align-items:baseline;margin:12px 2px 6px}
+.ec-g3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.ec-c{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:52px;padding:4px;border-radius:10px;border:1px solid var(--ec);background:rgba(0,0,0,.35);color:var(--ec)}
+.ec-c b{font-size:16px;letter-spacing:1px}.ec-c span{font-size:11px;color:#a89a84}
+.ec-pop .ev-bar{position:static;margin:12px 0 0;padding:0;background:none;border:0}
 </style>
