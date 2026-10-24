@@ -515,7 +515,7 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.44 舊武器刪除：要在放回測試資料前檢查
-  const bd=[...newWpnTests(real),...chTests(),...matTests(real),...mkCardTests(),...mkItemTests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
+  const bd=[...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
     T('BD2 神明材質階、神格覺醒拿掉',TIERS.length===5&&typeof GOD==='undefined'&&typeof awkN==='undefined',`材質 ${TIERS.length} 階`)];
   return withTestBps(()=>runTests0(mode,bd))}
 // v4.44 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
@@ -566,6 +566,9 @@ function wpnTests(){if(typeof CSPD==='undefined')return[];const cats=Object.keys
 if(typeof module!=='undefined')module.exports={runAll,econReport,simulate,levelCheck};
 
 // v4.51 新武器 17 把（武器系統定案第 9 節）：開局 7 把、兩界一階數值、解鎖關卡、偏難需求、金幣配方、暫代圖
+// v4.57 新手導覽：用的圖紙都是正式開局武器、每一步都有文字、提到的配方材料跟實際一樣
+function tutTests(){const bad=TUT.map((x,i)=>x.t||x.tf?null:i+1).filter(Boolean),bpOk=BP[TUT_BP]&&!BP[TUT_BP].unlock&&BP.w0_sword&&!BP.w0_sword.unlock,r=recipe(BP.w1_spear),rOk=r.miron>0&&r.pine>0&&BP.w1_spear.unlock===2,end=TUT[TUT.length-1].end===1;
+  return[T('TU1 新手導覽：'+TUT.length+' 步都有文字、用開局伐木斧／鐵劍、松林長矛配方提示正確、最後一步結束',!bad.length&&bpOk&&rOk&&end&&BPS.some(b=>!b.dev),bad.length?'沒文字：第 '+bad.join('、')+' 步':'正常')]}
 // v4.54 新材料・附魔石・英靈遺物
 function matTests(real){return withSandbox(()=>{const src=new Set(),bad=[];
   for(let i=0;i<=VILLAGES.length;i++){real.filter(b=>b.unlock===i).forEach(b=>{const ms=Object.keys(recipe(b)).filter(m=>!src.has(m));if(ms.length)bad.push(b.n)});if(VILLAGES[i])VILLAGES[i].drops.forEach(d=>src.add(d[0]))}

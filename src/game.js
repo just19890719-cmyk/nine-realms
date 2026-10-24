@@ -283,7 +283,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.56';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.57';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1219,6 +1219,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.57',d:'10/24',t:'新手導覽重做',b:['新玩家的<b>新手導覽</b>重新開放，照現在的玩法一步一步教','流程：打造鐵爐村伐木斧 → 60 秒挑戰 1-1 → 留下來掛機 → 收成 → 看材料和遺物 → 打鐵劍練強化 → 附魔 → 新圖紙 → 領月卡','挑戰輸了導覽會提示再挑戰，不會卡住','完成導覽一樣送 <b>50 鑽石</b>'],g:[]},
  {v:'4.56',d:'10/24',t:'交易所可以賣道具',b:['強化石、附魔石、英靈・遺物和所有材料都能上架：在道具欄點道具，按「上架交易所」，填<b>單價</b>和<b>數量</b>','買家可以只買一部分，填要買幾個就好，買剩的繼續掛著','交易所的「上架武器」分頁改成<b>待領取</b>：賣出的錢、沒賣出退回的武器和道具都放這裡，有東西時亮紅點','上架武器改成在道具欄點武器，按「上架」'],g:['mk']},
  {v:'4.55',d:'10/24',t:'同款武器疊一格',b:['道具欄的武器頁：<b>一模一樣的武器</b>（同一把、同強化等級、同屬性）放在同一格，右下角顯示數量','點進去強化、附魔、駐守、上架、熔解都只會動其中一把，動過的會自己分出來一格','駐守中的武器還是一把一格；道具欄上限 200 把照算每一把'],g:['bag']},
  {v:'4.54',d:'10/24',t:'新材料・附魔石・英靈遺物',b:['新增 <b>8 種材料</b>，名字都跟怪物故事有關：第一界每關掉中庭鐵礦、松林硬木，第二界掉約頓霜鐵、約頓巨木；1-7 石皮巨魔掉巨魔石皮、2-8 幻術巨人王掉骨頭、1-10 海姆達爾掉彩虹橋碎晶、2-10 索爾掉索爾雷晶','新武器的配方改成<b>金幣＋材料</b>（開局 7 把還是只花金幣），一般武器大約掛機 30 分鐘就湊得齊','新道具<b>附魔石</b>：附魔一次花 1 顆加金幣，打倒怪物有機率掉','<b>英靈・遺物</b>開始會掉了：每打倒一隻 2% 掉 1 個，越後面的關卡越容易掉紅光、金光','遺物可以打開：金幣、材料、強化石、附魔石、Boss 素材，運氣好還會開到武器','強化石、附魔石有新圖示了；村莊詳情會列出每打倒一隻可能掉的東西'],g:['forge','ench','bag']},
@@ -2397,7 +2398,7 @@ function sheetDev(){
      ${SFX_VAR_KEYS.length?`<div class="label">音效試用（v3.32，只是試聽，選定後再正式換）</div><div class="sfxalt">${SFX_VAR_KEYS.map(n=>`<div class="sfxalt-r"><span>${SFX_NO[n]}. ${SFX_NAME[n]}</span>${SFX_VARS[n].map(v=>`<button class="ui-btn ui-btn--chip chipbtn ${(SFX_VARS[n].includes(SFX_ALT[n])?SFX_ALT[n]||'':'')===v?'on':''}" data-act="sfxalt" data-k="${n}" data-v="${v}">${v||'原'}</button>`).join('')}</div>`).join('')}</div>
      <div class="devgrid">${B('sfxaltclr','全部切回原版')}</div>`:''}
      <div class="label">登入與開場（v3.20）</div><div class="devgrid">${B('gtlogin','顯示登入畫面')}${B('gtstory','播放開場故事')}${B('gtreset','重設「已看過開場」')}</div>
-     <div class="label">新手導覽（v3.20）</div><div class="devgrid">${B('tutnew','用新存檔從頭跑導覽（會清空目前進度）')}${B('tutrestart','保留存檔，從第 1 步重看')}${B('tutnext','導覽跳下一步')}${B('tipreset','重設各系統第一次說明')}</div>
+     <div class="label">新手導覽（v4.57 重做）</div><div class="devgrid">${B('tutnew','用新存檔從頭跑導覽（會清空目前進度）')}${B('tutch','v4.57 跳到導覽「挑戰 1-1」那一步（給伐木斧）')}${B('tutrestart','保留存檔，從第 1 步重看')}${B('tutnext','導覽跳下一步')}${B('tipreset','重設各系統第一次說明')}</div>
      <div class="label">排行榜（v3.46 真人版）</div><div class="devgrid">${B('lbtop','上傳我的紀錄並重新讀取')}${B('lbmid','重新讀取排行榜')}${B('lbreset','清除排行榜紀錄與獎勵')}${B('lbtie','測試同攻擊力名次（先達成在前）')}</div>
      <div class="label">2. 指定下一次強化結果（只對測試武器有效）</div>
      <div class="row">${[['ok','成功'],['fail','普通失敗'],['break','爆裝'],['saved','防爆'],['','不指定']].map(([k,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(DEV.force||'')===k?'on':''}" data-act="devforce" data-k="${k}">${n}</button>`).join('')}</div>
@@ -2540,6 +2541,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='lbtop'||k==='lbmid'){if(k==='lbtop'){lbSync().then(()=>lbFetch(true));toast('已上傳我的紀錄並重新讀取')}else{lbFetch(true);toast('重新讀取排行榜')}ui.sheet={t:'lb',i:0};return render()}
   if(k==='lbreset'){S.best={};S.lbRw={};save();toast('排行榜紀錄已清除');ui.sheet={t:'lb',i:0};return render()}
   if(k==='tutnew'){localStorage.removeItem(KEY);S=fresh();S.tut=0;save();ui.sheet=null;ui.tab='forge';ui.ftab='bp';render();return toast('已換成新存檔，從第 1 步開始導覽')}
+  if(k==='tutch'){S.villages[0].status='open';S.villages[0].weaponId=null;if(!S.weapons.some(w=>w.b===TUT_BP&&!busyW(w)))makeWeapon(TUT_BP,0,0,[]);ui.sheet=null;ui.result=null;ui.tab='forge';tutStep(2);render();return}
   if(k==='tutrestart'){S.tut=0;save();ui.sheet=null;ui.tab='forge';ui.ftab='bp';render();return}
   if(k==='tipreset'){S.tips={};save();return toast('各系統說明已重設，第一次打開時會再出現')}
   if(k==='tutnext'){if(typeof S.tut==='number'&&S.tut<TUT.length)tutStep(S.tut+1);return}
@@ -2867,32 +2869,38 @@ function showStory(){document.body.classList.add('gating');const list=STORY.filt
 
 /* ---------- v3.20 新手導覽：光圈框住要點的地方＋鐵匠提示；不擋操作，條件達成自動下一步 ---------- */
 const tutW=()=>S.weapons.filter(w=>!w.test&&!busyW(w)).sort((a,b)=>a.id-b.id)[0];   // 導覽用：第一把沒有駐守的武器
+// v4.57 新手導覽照新流程重做（Mochi 選）：鍛造開局武器 → 60 秒挑戰 1-1 → 留下來掛機 → 收成 → 材料 → 強化 → 附魔 → 新圖紙
+const TUT_BP='w0_axe';   // 1-1 林中魅妖專騙伐木工，第一把打伐木斧最貼故事
+const tutCh=()=>ui.chr&&ui.sheet&&ui.sheet.t==='chr'?ui.chr:null;   // 挑戰結果畫面
 const TUT=[
- // 一、鍛造與交付
- {t:'歡迎來到鐵爐村！先幫伐木工打一把<b>伐木斧</b>。按「開始鍛造」。',sel:()=>ui.tab!=='forge'?'.nav [data-act=tab][data-k=forge]':ui.ftab!=='bp'?'[data-act=ftab][data-k=bp]':ui.bp!=='t1_woodaxe'?'[data-act=bp][data-k=t1_woodaxe]':'[data-act=forge]',done:()=>S.jobs.length>0||S.weapons.length>0},
- {t:'鍛造只要 <b>5 秒</b>，完成的武器會自動放進<b>道具欄</b>。打出來的<b>品質</b>（普通～傳說）是隨機的，品質越高攻擊力越強。',tf:()=>{const j=S.jobs[0];return `鍛造中${j?`…剩 <b>${Math.max(0,Math.ceil((j.end-NOW())/1000))} 秒</b>`:''}，完成的武器會自動放進<b>道具欄</b>。打出來的<b>品質</b>（普通～傳說）是隨機的，品質越高攻擊力越強。`},sel:()=>ui.tab!=='forge'?'.nav [data-act=tab][data-k=forge]':ui.ftab!=='queue'?'[data-act=ftab][data-k=queue]':S.jobs.length?'.qrow .prog':null,done:()=>S.weapons.some(w=>!w.test)},
- {t:'武器打好了！到<b>村莊</b>把它交給委託人。',sel:()=>'.nav [data-act=tab][data-k=village]',done:()=>ui.tab==='village'||S.villages[0].weaponId!=null},
- {t:'點 <b>1-1 魅影林場</b>。卡片上寫著需要的<b>武器類別</b>和<b>攻擊力</b>。',sel:()=>ui.tab!=='village'?'.nav [data-act=tab][data-k=village]':'[data-act=vopen][data-i="0"]',done:()=>(ui.sheet&&ui.sheet.t==='v')||S.villages[0].weaponId!=null},
- {t:'點武器就能<b>交付</b>。武器會留在村莊幫忙狩獵，完成委託會解鎖下一座村莊和新圖紙。',sel:()=>ui.sheet&&ui.sheet.t==='v'?'.sheet [data-act=deliver]':ui.tab!=='village'?'.nav [data-act=tab][data-k=village]':'[data-act=vopen][data-i="0"]',done:()=>S.villages[0].weaponId!=null},
- // 二、狩獵與收成
- {t:'委託完成！村莊開始<b>自動狩獵</b>，帶回金幣和材料。導覽先幫你把第一輪跑完了，按「<b>全部收成</b>」領取！',go:()=>{const st=S.villages[0],w=st.weaponId!=null&&W(st.weaponId);if(w&&st.cycleStart!=null&&!st.bank.cycles){st.cycleStart=NOW()-dur(0,w)-500;tick()}},sel:()=>ui.sheet?'.sheet [data-act=close]':ui.tab!=='village'?'.nav [data-act=tab][data-k=village]':'[data-act=collectAll]',done:()=>S.stats.harvest>0},
- {t:'收成會一直累積，<b>離線</b>也照樣狩獵（最多 '+OFFLINE_H+' 小時）。之後記得常回來收成。',sel:()=>null,ok:'知道了'},
- // 三、重型／輕型
- {t:'回<b>鐵匠鋪</b>再打一把<b>伐木斧</b>，這把拿來練習<b>強化</b>。',sel:()=>ui.result?'.modal-card [data-act=rclose]':ui.sheet?'.sheet [data-act=close]':ui.tab!=='forge'?'.nav [data-act=tab][data-k=forge]':ui.ftab!=='bp'?'[data-act=ftab][data-k=bp]':ui.bp!=='t1_woodaxe'?'[data-act=bp][data-k=t1_woodaxe]':'[data-act=forge]',done:()=>S.jobs.length>0||!!tutW()},
- {t:'鍛造中…看下方的<b>進度條</b>，打好後會自動放進道具欄。',tf:()=>{const j=S.jobs[0];return j&&!tutW()?`鍛造中…剩 <b>${Math.max(0,Math.ceil((j.end-NOW())/1000))} 秒</b>。看下方的<b>進度條</b>，打好後會自動放進道具欄。`:'打好了！打開<b>道具欄</b>看看這把新的伐木斧。'},
-  sel:()=>{if(!tutW()&&!S.jobs.length&&tutOn()){setTimeout(()=>{if(!tutW()&&!S.jobs.length)tutStep(S.tut-1)},0);return null}return !tutW()?(ui.tab!=='forge'?'.nav [data-act=tab][data-k=forge]':ui.ftab!=='bp'?'[data-act=ftab][data-k=bp]':'.qrow .prog'):'.nav [data-act=tab][data-k=armory]'},done:()=>!!tutW()&&ui.tab==='armory'},
+ // 一、鍛造
+ {t:'諸神熄了鐵匠的爐火，九界的門跟著打開了。先幫鐵爐村的伐木工打一把<b>鐵爐村伐木斧</b>：點圖紙，再按「開始鍛造」。',sel:()=>ui.result?'.modal-card [data-act=rclose]':ui.sheet?'.sheet [data-act=close]':ui.tab!=='forge'?'.nav [data-act=tab][data-k=forge]':ui.bp!==TUT_BP?`[data-act=bp][data-k=${TUT_BP}]`:'[data-act=forge]',done:()=>S.jobs.length>0||S.weapons.some(w=>!w.test)},
+ {t:'鍛造只要 <b>5 秒</b>，打好會自動放進<b>道具欄</b>。',tf:()=>{const j=S.jobs[0];return j?`鍛造中…剩 <b>${Math.max(0,Math.ceil((j.end-NOW())/1000))} 秒</b>，打好會自動放進<b>道具欄</b>。`:'打好了！'},sel:()=>S.jobs.length&&ui.tab==='forge'?'.qrow .prog':null,done:()=>S.weapons.some(w=>!w.test)},
+ // 二、60 秒挑戰
+ {t:'武器打好了！到<b>村莊</b>去，林中魅妖正把伐木工騙進森林深處。',sel:()=>ui.sheet?'.sheet [data-act=close]':'.nav [data-act=tab][data-k=village]',done:()=>ui.tab==='village'||S.villages[0].status==='cleared'},
+ {t:'還沒收復的村莊要<b>限時挑戰</b>：<b>60 秒內</b>打倒怪物就收復。按 1-1 的「<b>挑戰</b>」。',sel:()=>ui.tab!=='village'?'.nav [data-act=tab][data-k=village]':'.vcard [data-act=vopen][data-i="0"]',done:()=>(ui.sheet&&['v','ch','chr'].includes(ui.sheet.t))||S.villages[0].status==='cleared'},
+ {t:'這裡看得到怪物的<b>血量</b>、<b>弱點</b>，每把武器下方是<b>預估幾秒打倒</b>。點伐木斧開始挑戰！',sel:()=>ui.sheet&&ui.sheet.t==='v'?'.sheet .ch-pick':ui.tab!=='village'?'.nav [data-act=tab][data-k=village]':'.vcard [data-act=vopen][data-i="0"]',done:()=>!!ui.ch||!!tutCh()||S.villages[0].status==='cleared'},
+ {t:'戰鬥開始！上方是<b>血條</b>和每一下的傷害，下方是<b>倒數</b>。看騎士把牠打倒吧。',tf:()=>{const c=tutCh();return c&&!c.win?'時間到了，差一點！輸了<b>沒有任何損失</b>，按「<b>再挑戰</b>」再打一次。':'戰鬥開始！上方是<b>血條</b>和每一下的傷害，下方是<b>倒數</b>。看騎士把牠打倒吧。'},sel:()=>{const c=tutCh();return c&&!c.win?'.sheet [data-act=chgo]':null},top:1,done:()=>S.villages[0].status==='cleared'},
+ {t:'收復成功！按「<b>留下來掛機</b>」，讓伐木斧駐守這裡繼續打怪。',sel:()=>tutCh()?'.sheet [data-act=chstay]':ui.sheet&&ui.sheet.t==='v'?'.sheet [data-act=deliver]':ui.tab!=='village'?'.nav [data-act=tab][data-k=village]':'.vcard [data-act=vopen][data-i="0"]',done:()=>S.villages[0].weaponId!=null},
+ // 三、掛機與收成
+ {t:'駐守的武器會<b>一直打怪</b>，每打倒一隻就收成一次。導覽先幫你打了幾隻，按「<b>全部收成</b>」領取！',go:()=>{const st=S.villages[0],w=st.weaponId!=null&&W(st.weaponId);if(w&&st.cycleStart!=null&&!st.bank.cycles){st.cycleStart=NOW()-dur(0,w)*5-500;tick()}},sel:()=>ui.result?'.modal-card [data-act=rclose]':ui.sheet?'.sheet [data-act=close]':ui.tab!=='village'?'.nav [data-act=tab][data-k=village]':'[data-act=collectAll]',done:()=>S.stats.harvest>0},
+ {t:'每打倒一隻會掉<b>金幣、材料</b>，有機率掉<b>強化石、附魔石、英靈・遺物</b>。<b>離線</b>也照樣打（最多 '+OFFLINE_H+' 小時），記得常回來收成。',sel:()=>null,ok:'知道了'},
+ {t:'打開<b>道具欄</b>的「<b>材料</b>」頁看看收成到的東西。',sel:()=>ui.result?'.modal-card [data-act=rclose]':ui.sheet?'.sheet [data-act=close]':ui.tab!=='armory'?'.nav [data-act=tab][data-k=armory]':'[data-act=atab][data-k=m]',done:()=>ui.tab==='armory'&&ui.atab==='m'},
+ {t:'<b>材料</b>用來打造新武器，每一界有自己的材料；<b>英靈・遺物</b>點一下就能打開，可能開出強化石、附魔石甚至武器。',sel:()=>null,ok:'知道了'},
  // 四、強化
- {t:'點這把<b>新的伐木斧</b>打開武器詳情。',sel:()=>ui.tab!=='armory'?'.nav [data-act=tab][data-k=armory]':tutW()?`[data-act=wopen][data-id="${tutW().id}"]`:null,done:()=>ui.sheet&&ui.sheet.t==='w'},
- {t:'這裡看得到武器的<b>攻擊力、附魔</b>。按「<b>強化</b>」。',sel:()=>ui.sheet&&ui.sheet.t==='w'?'.sheet [data-act=wmode][data-m=enh]':null,done:()=>ui.sheet&&ui.sheet.t==='w'&&ui.sheet.m==='enh'},
- {t:'石碑左上角寫著<b>安定區</b>：在<b>安定值</b>以內強化，失敗也不會壞。按下強化試試看！',sel:()=>ui.sheet&&ui.sheet.m==='enh'?'.sheet [data-act=enhance]':null,done:()=>S.stats.enhTry>0},
- {t:'超過安定值就是<b>危險區</b>，失敗可能<b>爆裝</b>（武器消失）。安定區內可以用「<b>一鍵強化</b>」直接衝到安定值。',sel:()=>ui.busy?null:'.sheet .ev-stats',ok:'知道了'},
- {t:'<b>附魔</b>花金幣幫武器隨機加一種<b>屬性</b>。每隻怪物都有弱點，屬性打中弱點傷害 ×1.2～1.6，看村莊卡片的「弱點」標籤。',go:()=>{const w=tutW();if(w){ui.enhLast=null;ui.sheet={t:'w',id:w.id,m:'main'}}},sel:()=>'.sheet [data-act=wmode][data-m=ench]',ok:'知道了'},
- // 五、其他系統
- {t:'每把武器<b>5 秒</b>就打好。不要的武器可以在武器詳情裡<b>熔解</b>，換回材料。',go:()=>{ui.sheet=null;ui.tab='forge';scrollTo(0,0)},ok:'知道了'},
- {t:'<b>商城</b>可以領月卡鑽石，也可以用鑽石買狩獵號角，讓村莊立刻狩獵。',go:()=>{ui.sheet=null;ui.tab='shop';scrollTo(0,0)},sel:()=>'.nav [data-act=tab][data-k=shop]',ok:'知道了'},
+ {t:'再打一把<b>鐵爐村鐵劍</b>拿來練習<b>強化</b>（伐木斧正在駐守，不能強化）。',sel:()=>ui.result?'.modal-card [data-act=rclose]':ui.sheet?'.sheet [data-act=close]':ui.tab!=='forge'?'.nav [data-act=tab][data-k=forge]':ui.bp!=='w0_sword'?'[data-act=bp][data-k=w0_sword]':'[data-act=forge]',done:()=>S.jobs.length>0||!!tutW()},
+ {t:'鍛造中…',tf:()=>{const j=S.jobs[0];return j&&!tutW()?`鍛造中…剩 <b>${Math.max(0,Math.ceil((j.end-NOW())/1000))} 秒</b>。`:'打好了！打開<b>道具欄</b>的「<b>武器</b>」頁。'},
+  sel:()=>{if(!tutW()&&!S.jobs.length&&tutOn()){setTimeout(()=>{if(!tutW()&&!S.jobs.length)tutStep(S.tut-1)},0);return null}return !tutW()?(ui.tab==='forge'?'.qrow .prog':null):ui.tab!=='armory'?'.nav [data-act=tab][data-k=armory]':'[data-act=atab][data-k=w]'},done:()=>!!tutW()&&ui.tab==='armory'&&(ui.atab||'w')==='w'},
+ {t:'點這把<b>鐵爐村鐵劍</b>打開武器小卡。',sel:()=>ui.tab!=='armory'?'.nav [data-act=tab][data-k=armory]':tutW()?`[data-act=wopen][data-id="${tutW().id}"]`:null,done:()=>ui.sheet&&ui.sheet.t==='w'},
+ {t:'小卡上有武器的<b>攻擊力</b>和<b>屬性</b>。按「<b>強化</b>」。',sel:()=>ui.sheet&&ui.sheet.t==='w'?'.sheet [data-act=wmode][data-m=enh]':null,done:()=>ui.sheet&&ui.sheet.t==='w'&&ui.sheet.m==='enh'},
+ {t:'每次強化用 <b>1 顆強化石</b>。<b>+6 以內一定成功</b>，按下強化試試看！',sel:()=>ui.sheet&&ui.sheet.m==='enh'?'.sheet [data-act=enhance]':null,done:()=>S.stats.enhTry>0},
+ {t:'+7 以上是<b>危險區</b>，失敗會<b>爆裝</b>（武器消失）。所以多打幾把武器來衝裝吧！強化等級越高，武器框的顏色也越亮。',sel:()=>ui.busy?null:'.sheet .ev-stats',ok:'知道了'},
+ {t:'<b>附魔</b>花 1 顆<b>附魔石</b>加金幣，隨機幫武器加一種<b>屬性</b>。打中怪物弱點（點村莊看詳情）傷害 ×1.2～1.6。',go:()=>{const w=tutW();if(w){ui.enhLast=null;ui.sheet={t:'w',id:w.id,m:'main'}}},sel:()=>'.sheet [data-act=wmode][data-m=ench]',ok:'知道了'},
+ // 五、新圖紙與其他系統
+ {t:'收復村莊會<b>解鎖新圖紙</b>：收復 1-2 就能打<b>松林長矛</b>，要用中庭鐵礦和松林硬木。缺材料時鐵匠鋪會告訴你去哪一關刷。',go:()=>{ui.sheet=null;ui.tab='forge';scrollTo(0,0)},ok:'知道了'},
  {t:'封測期間<b>北境月卡免費</b>！按「<b>免費領取</b>」立刻拿 <b>300 鑽石</b>，之後 30 天每天回來還能再領 50 鑽。',go:()=>{ui.sheet=null;ui.result=null;ui.tab='shop';scrollTo(0,0)},sel:()=>ui.result?'.modal-card [data-act=rclose]':ui.tab!=='shop'?'.nav [data-act=tab][data-k=shop]':monthlyOn()?null:'[data-act=monthly]',done:()=>monthlyOn()},
- {t:'村莊頁的<b>任務</b>有每日任務、七日簽到和委託成就，可以免費領金幣和鑽石。',go:()=>{ui.sheet=null;ui.tab='village';scrollTo(0,0)},sel:()=>'.vbar',ok:'知道了'},
- {go:()=>{ui.sheet=null;ui.tab='forge';scrollTo(0,0)},t:'基本就是這樣：<b>鍛造 → 交付 → 收成 → 強化 → 附魔</b>，一路收復九界！送你 <b>50 鑽石</b>當開工禮。',sel:()=>null,ok:'開始冒險',end:1}];
+ {t:'村莊頁的<b>任務</b>有每日任務、七日簽到和成就，可以免費領金幣和鑽石。',go:()=>{ui.sheet=null;ui.result=null;ui.tab='village';scrollTo(0,0)},sel:()=>'.vbar',ok:'知道了'},
+ {go:()=>{ui.sheet=null;ui.tab='forge';scrollTo(0,0)},t:'基本就是這樣：<b>鍛造 → 挑戰 → 掛機收成 → 強化 → 附魔</b>，一路收復九界、向諸神討回爐火！送你 <b>50 鑽石</b>當開工禮。',sel:()=>null,ok:'開始冒險',end:1}];
 // 各系統第一次打開時的說明（導覽結束後才會出現，每個只出現一次）
 const TIPS={
  mat:['道具欄','同一種道具放在同一格，右下角是數量，沒有上限。點一下看說明。'],
@@ -2938,7 +2946,7 @@ function tutDraw(force){let o=document.getElementById('tut');document.body.class
     if((r0.top<rs.top+60||r0.bottom>rs.bottom-20)&&o.dataset.sc!==key){o.dataset.sc=key;el.scrollIntoView({block:'center'})}}
   if(el){const r=el.getBoundingClientRect(),p=6;Object.assign(ring.style,{display:'block',left:r.left-p+'px',top:r.top-p+'px',width:r.width+p*2+'px',height:r.height+p*2+'px'});
     const below=r.top+r.height/2<innerHeight/2;box.style.top=below?Math.min(innerHeight-170,r.bottom+14)+'px':'auto';box.style.bottom=below?'auto':Math.max(90,innerHeight-r.top+14)+'px';o.classList.remove('nohole')}
-  else{ring.style.display='none';box.style.top='auto';box.style.bottom='120px';o.classList.add('nohole')}}
+  else{ring.style.display='none';box.style.top=st.top?'64px':'auto';box.style.bottom=st.top?'auto':'120px';o.classList.add('nohole')}o.classList.toggle('clear',!el&&!!st.top)}   // v4.57 top：說明放上方、不加暗幕（看戰鬥用）
 // v3.55 捲動時金框立即跟著移動
 if(typeof window!=='undefined')document.addEventListener('scroll',()=>{if(tutOn()&&!tutDraw._raf)tutDraw._raf=requestAnimationFrame(()=>{tutDraw._raf=0;tutDraw()})},{passive:true,capture:true});
 function tutInit(){if(S.tut==null)S.tut=(!S.weapons.length&&!S.jobs.length&&cleared()===0)?0:99;
@@ -2959,7 +2967,7 @@ function start(){try{if(localStorage.getItem('nrs-dpv')!=='0')document.body.clas
     else showLogin()})}}catch(e){}
   if(migrated)toast('已把 v2 存檔升級成 v3。');
   if(after>before)toast(`離線期間村莊狩獵了 ${after-before} 輪，記得收成！`);
-  else if(!S.weapons.length&&!S.jobs.length&&!(S.tut<TUT.length))toast('歡迎來到米德加德。先鍛造一把伐木斧，交給鐵爐村的伐木工。');
+  else if(!S.weapons.length&&!S.jobs.length&&!(S.tut<TUT.length))toast('歡迎來到米德加德。先鍛造一把鐵爐村伐木斧，去挑戰 1-1 魅影林場。');
   // v3.59 村莊分頁也要重畫：以前停在村莊分頁時，狩獵完成一輪不會出現「收成」按鈕（要切分頁才看得到）
   setInterval(()=>{if(tick()){if(PTR_DOWN)PTR_PEND=true;else render()}updateLive()},250);setInterval(save,3000);
   try{if(/dev-ui/.test(location.hash)&&devMode()){ui.sheet={t:'d'};ui.devTab='ui';render()}}catch(e){}  // 網址加 #dev-ui 直接開啟 UI 元件總覽
