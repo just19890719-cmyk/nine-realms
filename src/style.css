@@ -1873,7 +1873,8 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .stage-sq .ex-bolt{width:60%;height:60%;z-index:4;mix-blend-mode:screen;transform-origin:50% 0}
 .stage-sq .ex-bolt img{position:absolute;inset:0;width:100%;height:100%;opacity:0}
 .ev-stats.over .ev-st.stone i{display:block;color:var(--gold-hi);font-size:11px} /* v4.58 強化小卡顯示強化石剩幾顆 */
-.stage-sq .ex-smoke{left:12%;top:4%;width:76%;height:76%;z-index:5;filter:grayscale(1) brightness(.13) contrast(1.4);pointer-events:none}
+.stage-sq .ex-smoke{left:4%;top:-2%;width:92%;height:92%;z-index:5;pointer-events:none}
+.stage-sq .ex-smoke img{position:absolute;inset:0;width:100%;height:100%;opacity:0}
 /* v4.59 商城：七日簽到、材料 */
 .sg-panel,.ms-panel{position:relative}
 .ms-box{gap:2px}.ms-p{display:inline-flex;align-items:center;gap:2px;font-size:11px;color:var(--gold);font-variant-numeric:tabular-nums}.ms-box .ms-p img{width:14px;height:14px}
