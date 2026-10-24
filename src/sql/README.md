@@ -13,3 +13,4 @@
 11. `11_chat_v3.88.sql`：v3.88 世界聊天＋玩家名片（chat 表、chat_send 冷卻／禁言／髒話過濾、chat_list、chat_sys、檢舉、管理員禁言、pc_card／pc_like 按讚）。不改 save_game、不改 ac_version，用 `select chat_version();` 確認（應該顯示 3.88）。要先跑過 06、08。
 12. `12_social_v3.89.sql`：v3.89 聊天武器卡（chat_send 多一個 p_wid，伺服器從存檔核對武器）、稱號（chat_titles／chat_title，pc_card 回傳稱號）、恭喜（news_cheer 資料表、news_cheer_add、news_cheer_inbox，chat_sys 多回傳恭喜數）。不改 save_game、不改 ac_version，用 `select chat_version();` 確認（應該顯示 3.89）。要先跑過 10、11。
 M. `15_stable6_v4.00.sql`：v4.00 安定值全部改成 +6，只換掉 `ac_stable`（save_game 不用重貼）。最後一行的 select 四欄都要顯示 6。要先跑過 08。
+16. `16_god_weapons_v4.15.sql`：v4.15 神明武器＋神格覺醒（ac_mult、lb_bp 認得霍夫德之劍／斯卡蒂之弓，lb_power +11 攻擊力 ×1.1，boss_pw +13 首領傷害 ×1.15，chat_titles 多「守望者」「雪山之主」）。最後一行的 select 應該顯示 4.15、569、18。要先跑過 08、09、12、14、15。
