@@ -2181,7 +2181,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.22';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.23';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -3001,6 +3001,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.23',d:'10/24',t:'戰鬥畫面新增瓦爾拉文全身圖',b:['1-5 鴉巢堡的瓦爾拉文（戰場鴉魔）換成全身圖：半鴉半狼，爪子還抓著撕破的戰旗','點怪物小圖展開戰鬥畫面就能看到牠展翅撲擊'],g:['hit']},
  {v:'4.22',d:'10/24',t:'戰鬥畫面新增 3 隻全身怪物',b:['1-2 賽赫利姆尼爾（不死野豬）、1-3 哈提（追月之狼）、1-4 斯庫爾（追日之狼）換成全身圖','點怪物小圖展開戰鬥畫面，就會看到牠們待機和撲上來攻擊的動作'],g:['hit']},
  {v:'4.21',d:'10/24',t:'戰鬥畫面改成點了才展開',b:['村莊卡片平常維持原本的怪物小圖動畫','<b>點怪物小圖</b>才會展開騎士與怪物的戰鬥畫面，一次只會開一個；點戰鬥畫面就收起來','戰鬥畫面裡兩下連續傷害的數字分開一點，不再疊在一起'],g:['hit']},
  {v:'4.20',d:'10/24',t:'村莊戰鬥條（管理員試玩）',b:['村莊卡片上方新增<b>戰鬥條</b>：怪物在左、騎士在右，騎士拿著駐守的武器打怪物','7 類武器各有不同的雙手攻擊動作，攻速照新武器系統：劍 1.0、斧 1.3、錘 1.8、短刃 0.6、長柄 1.2、弓 1.1、弩 1.6 秒','打中時怪物閃白、停頓後被打退；強化越高越常觸發<b>附加效果</b>（會心、流血、震碎、中毒、貫穿、穿心、破甲）','1-1 是全身怪物圖，其他關卡的全身圖還在製作，先用頭像'],g:['hit']},
@@ -3887,7 +3888,7 @@ const hitOf=w=>HIT[bpOf(w).cat]||HIT.sword;
 // 強化越高越常觸發附加效果（每次都是額外約 1.5 擊）：劍會心、斧流血、錘震碎、雙刀中毒、長柄貫穿、弓穿心、弩破甲
 const KN={sword:{k:'sw',K:1000,ph:450,n:3},axe:{k:'ax',K:1300,ph:100,n:2},hammer:{k:'hm',K:1800,ph:910,n:2,hv:1},dagger:{k:'dg',K:600,ph:240,n:4},
   polearm:{k:'sp',K:1200,ph:680,n:2},bow:{k:'bw',K:1100,ph:600,n:3},crossbow:{k:'cb',K:1600,ph:800,n:2}};
-const KN_FULL=[0,1,2,3];   // 已有全身怪物圖（art/mon_N_idle／mon_N_atk）的關卡；其他關卡先用怪物頭像
+const KN_FULL=[0,1,2,3,4];   // 已有全身怪物圖（art/mon_N_idle／mon_N_atk）的關卡；其他關卡先用怪物頭像
 const knProc=lv=>ui.bsProc?1:lv<=0?0:lv<=6?lv*.02:[.16,.2,.25,.3,.35,.4][Math.min(5,lv-7)];
 const KHIT={};
 function knHit(w){const c=bpOf(w).cat,kn=KN[c];if(!kn)return null;const p=knProc(w.lv),key=c+p;if(KHIT[key])return KHIT[key];
