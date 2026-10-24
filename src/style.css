@@ -1873,7 +1873,8 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .stage-sq .ex-bolt{width:60%;height:60%;z-index:4;mix-blend-mode:screen;transform-origin:50% 0}
 .stage-sq .ex-bolt img{position:absolute;inset:0;width:100%;height:100%;opacity:0}
 .ev-stats.over .ev-st.stone i{display:block;color:var(--gold-hi);font-size:11px} /* v4.58 強化小卡顯示強化石剩幾顆 */
-.stage-sq .ex-smoke{left:12%;top:4%;width:76%;height:76%;z-index:5;filter:grayscale(1) brightness(.13) contrast(1.4);pointer-events:none}
+.stage-sq .ex-smoke{left:4%;top:-2%;width:92%;height:92%;z-index:5;pointer-events:none}
+.stage-sq .ex-smoke img{position:absolute;inset:0;width:100%;height:100%;opacity:0}
 /* v4.59 商城：七日簽到、材料 */
 .sg-panel,.ms-panel{position:relative}
 .ms-box{gap:2px}.ms-p{display:inline-flex;align-items:center;gap:2px;font-size:11px;color:var(--gold);font-variant-numeric:tabular-nums}.ms-box .ms-p img{width:14px;height:14px}
@@ -1882,4 +1883,9 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .ms-step{display:flex;align-items:center;justify-content:center;gap:6px;margin:12px 0 8px}.ms-step .ms-n{min-width:64px;text-align:center;font-size:22px;font-variant-numeric:tabular-nums}
 .ms-quick{display:flex;justify-content:center;gap:6px;margin-bottom:12px}
 .ms-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ms-buy{display:inline-flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap}.ms-buy img{width:18px;height:18px}
+/* v4.61 強化動畫時石碑固定不動（Mochi）：鏡頭推近、震動都關掉，光效、閃電、武器照常 */
+.enh-stage.rune,.enh-stage .stage-sq,.enh-stage .stage-sq .rn-cam{transform:none!important}
+.enh-stage.tier.ownbolt .stage-sq .rn-light{filter:none} /* v4.61 金、鑽石主閃電用專屬圖，不換色 */
+.stage-sq .ex-fail{left:8%;top:2%;width:84%;height:84%;z-index:6;mix-blend-mode:screen}
+.stage-sq .ex-fail img{position:absolute;inset:0;width:100%;height:100%;opacity:0}
 </style>

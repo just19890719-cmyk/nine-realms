@@ -283,7 +283,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.60';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.61';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1219,6 +1219,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.61',d:'10/24',t:'強化時石碑不再晃動・新閃電',b:['+7 以上強化失敗時，符文能量會聚起來又熄滅散掉、冒一縷灰煙','爆裝的黑煙換成新圖：武器被一團帶紫光餘燼的黑煙吞掉後散去','強化動畫播放時，符文石碑固定不動（不再推近、震動），只有光、閃電和武器有動作','+10 換成新的<b>金色閃電</b>、+12 換成新的<b>鑽石閃電</b>（水晶碎片和稜鏡光）']},
  {v:'4.60',d:'10/24',t:'一鍵安定值・同款連按',b:['武器小卡的「一鍵 +6」改名<b>「一鍵安定值」</b>','同款武器疊在一格時，按一鍵安定值後小卡會自動換到<b>下一把同款</b>，可以一直按下去，不用回道具欄重點'],g:['enh','bag']},
  {v:'4.59',d:'10/24',t:'商城整理：簽到搬家・材料可以買',b:['<b>七日簽到</b>從任務搬到<b>商城</b>，每天第一次進遊戲會自動打開商城簽到（簽到獎勵之後會換新）','商城可以用<b>金幣或鑽石</b>買 8 種材料，點材料選數量購買','<b>狩獵號角</b>拿掉了','其他商品等正式上線再補齊'],g:['shop','quest']},
  {v:'4.58',d:'10/24',t:'強化特效加強',b:['<b>一鍵強化</b>改成連續演出：每升一級跳出大數字、符文一道道亮起綠光、音調越來越高，最後一下爆出光芒（點畫面可以略過）','+1～+6 單按強化不再播動畫，按下去直接出結果，石碑亮一下綠光；強化頁改成小卡，顯示強化石剩幾顆','<b>+7 以上</b>強化時，整塊符文石碑的燈光改成外框顏色：+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石；成功換到新顏色時跳出「升階」','+7 起石碑上會打閃電，等級越高閃電越多越強，+12 最華麗','強化成功率、爆裝率都沒有改']},
@@ -1466,7 +1467,7 @@ function playSfx(n){if(n==='sfx_enh_charge')return snd('enh_start');const k=n.re
 const ENH='art/enh/',VF=(n,i)=>`art/vfx16_${n}_${String(i).padStart(2,'0')}.webp`,rng=(a,b)=>Array.from({length:b-a+1},(_,i)=>a+i);
 // 暫代：新素材（rune_*）到之前先用現有 16 格特效；換成新素材只要改這張表
 const RN='art/rune/',RS=(n,a,b)=>rng(a,b).map(i=>`${RN}${n}_${i}.webp`);
-const RUNE_FX={light:RS('lightning',1,8),eclipse:RS('eclipse',1,8),climax:RS('climax',1,8),ok:RS('success',1,8),broke:RS('shatter',1,8),spark:RS('success',1,3)};
+const RUNE_FX={light:RS('lightning',1,8),eclipse:RS('eclipse',1,8),climax:RS('climax',1,8),ok:RS('success',1,8),broke:RS('shatter',1,8),spark:RS('success',1,3),boltGold:RS('bolt_gold',1,8),boltDia:RS('bolt_dia',1,8),fail:RS('fail',1,8),smoke:RS('smoke',1,8)};   // v4.61 +10 金色、+12 鑽石閃電（Mochi AI 圖）
 const RUNE_HAS_STONE=true;
 const seqHtml=(k,cls)=>`<div class="ly seq ${cls}" data-seq="${k}">${RUNE_FX[k].map(src=>`<img src="${src}" alt="">`).join('')}</div>`;
 function stageHtml(o){return `<div class="enh-stage rune ${o.danger?'danger':'safe tier'} ${o.cls||''}" id="enhStage"${o.danger?'':` style="--tf:${TIER_FLT[1]}"`}><img class="dp dp-sback" src="${A('dp/rune_back')}" alt=""><div class="stage-sq" id="enhSq">
@@ -1480,7 +1481,7 @@ function stageHtml(o){return `<div class="enh-stage rune ${o.danger?'danger':'sa
    <div class="dp dp-sfog"></div><div class="dp dp-smotes">${[0,1,2,3,4,5].map(k=>`<img class="m${k} gold" src="${A('dp/'+['fx_mote_gold','fx_dust_gold','fx_rune_gold','fx_mote_gold','fx_shard_gold','fx_mote_gold'][k])}" alt=""><img class="m${k} blue" src="${A('dp/'+['fx_mote_blue','fx_mote_blue','fx_rune_blue','fx_mote_blue','fx_mote_blue','fx_mote_blue'][k])}" alt="">`).join('')}</div>
    ${seqHtml('climax','rn-climax')}${seqHtml('ok','rn-res')}${seqHtml('broke','rn-res rn-shatter')}
    <div class="fx2-flash" id="fxFlash"></div></div>
-   <div class="enh-top"><span class="enh-zone">${o.zone}</span><span class="enh-lv"><span class="lvt">+${o.from}</span><span class="arrow">${ic('arrow-next')}</span><span class="lvt big">+${o.to}</span></span></div>
+   <div class="enh-top"><span class="enh-zone">${o.zone}</span>${o.from==null?'':`<span class="enh-lv"><span class="lvt">+${o.from}</span><span class="arrow">${ic('arrow-next')}</span><span class="lvt big">+${o.to}</span></span>`}</div>
    <div class="enh-ribbon k-${o.rk||''} ${o.ribbon?'show':''}" id="enhRibbon">${o.ribbon||''}</div>
    <div class="enh-hint" id="enhHint">點畫面略過</div></div>`}
 // 每個圖層只用一條時間軸：stops=[[毫秒,樣式,緩動]]
@@ -1544,8 +1545,7 @@ function runRune(k,danger){
           // v4.58 爆裝改成武器化成一團黑煙消失（Mochi）：不再碎片、紅光、白閃
           tl(wi,T,[...wpre,[C-60,{filter:'brightness(.15)',opacity:1}],[C+220,{filter:'brightness(0)',opacity:0}]]);
           {const shd=document.getElementById('rnShadow');if(shd)tl(shd,T,[[0,{opacity:.6}],[C,{opacity:.6}],[C+200,{opacity:0}],[T,{opacity:0}]])}
-          [0,1,2].forEach(i=>{const m=document.createElement('img');m.className='ly ex-smoke';m.src=ENH+'smoke.webp';m.alt='';sq.appendChild(m);const r=[0,120,240][i],t=C-80+i*90;
-            tl(m,T,[[0,{opacity:0,transform:`rotate(${r}deg) scale(.35)`}],[t,{opacity:0,transform:`rotate(${r}deg) scale(.35)`}],[t+160,{opacity:.95,transform:`rotate(${r+12}deg) scale(.9)`},'ease-out'],[T-260,{opacity:.6,transform:`rotate(${r+30}deg) scale(1.35)`}],[T,{opacity:0,transform:`rotate(${r+36}deg) scale(1.5)`}]])});
+          {const m=document.createElement('div');m.className='ly ex-smoke';m.innerHTML=RUNE_FX.smoke.map(src=>`<img src="${src}" alt="">`).join('');sq.appendChild(m);cutImgs([...m.children],T,C-80,T-60,{X:60,peak:1})}   // v4.61 黑煙改用 Mochi AI 圖（8 格硬切）
           tl(sq,T,[[0,{filter:'none'}],[C+400,{filter:'none'}],[T-200,{filter:'brightness(.5)'}],[T,{filter:'brightness(.6)'}]]);shk.push(...shake(C,5));
         }else{
           tl(wi,T,[...wpre,[C-10,{filter:redw,opacity:1}],[C+200,{filter:`brightness(1.3) drop-shadow(0 0 16px rgba(${GC2},1))`,opacity:1}],[T,{filter:`brightness(1.05) drop-shadow(0 0 8px rgba(${GC2},.6))`,opacity:1}]]);
@@ -1571,14 +1571,16 @@ function playFx(danger,w,next,res){
   document.querySelectorAll('.sheet [data-act="enhance"]').forEach(b=>{b.disabled=true;b.textContent='強化中…'});
   fxState={res,w,anims:[],raf:0,done:false,timer:0};ui.fxDone=finishFx;
   if(matchMedia('(prefers-reduced-motion: reduce)').matches)return finishFx();
-  {const fl=FLV(next);stage.classList.toggle('tier',!!danger);stage.style.setProperty('--tf',TIER_FLT[fl]);res.hue=danger?TIER_HUE[fl]:0}   // v4.58 危險區整塊石碑的燈光用外框顏色（+7～+8 藍、+9 紅…）
-  const tm=runRune(res.k,!!danger);if(danger)enhBolts(next,res.k,tm);if(res.k==='ok')enhExtra(!!danger,next,tm,res.id);
+  {const fl=FLV(next);stage.classList.toggle('tier',!!danger);stage.style.setProperty('--tf',TIER_FLT[fl]);res.hue=danger?TIER_HUE[fl]:0;
+   const own=danger&&(fl===6?RUNE_FX.boltGold:fl===5?RUNE_FX.boltDia:null);stage.classList.toggle('ownbolt',!!own);   // v4.61 金、鑽石：成功時那道主閃電也換成專屬圖
+   document.querySelectorAll('#enhStage [data-seq="light"] img').forEach((im,i)=>{const src=(own||RUNE_FX.light)[i];if(im.getAttribute('src')!==src)im.src=src})}   // v4.58 危險區整塊石碑的燈光用外框顏色（+7～+8 藍、+9 紅…）
+  const tm=runRune(res.k,!!danger);if(danger)enhBolts(next,res.k,tm);if(danger&&res.k==='fail')enhFailFx(tm);if(res.k==='ok')enhExtra(!!danger,next,tm,res.id);
 }
 /* v4.58 強化演出加強（Mochi 選 B）：疊在符文動畫上面的額外圖層，不改符文時間軸、不改任何數值
    +1～+6 單按不播動畫；+7～+12 整場石碑燈光用外框顏色，成功時：光效換成新外框顏色，進到新顏色時跳「升階」；一鍵強化：逐級連擊播放 */
 const TIER_RGB=['200,200,200','120,220,120','110,170,255','255,70,60','190,110,255','170,235,255','255,205,90'];   // 依 FLV：灰、綠、藍、紅、紫、鑽石、金
-const TIER_HUE=[0,75,180,-40,235,150,0];   // TIER_FLT 裡的色相旋轉，下一道符文的紅色警告要轉回來
-const TIER_FLT=['grayscale(1)','hue-rotate(75deg) saturate(1.7) brightness(1.3)','hue-rotate(180deg) saturate(1.5)','hue-rotate(-40deg) saturate(2.4)','hue-rotate(235deg) saturate(1.6)','hue-rotate(150deg) saturate(.55) brightness(1.4)','saturate(1.3) brightness(1.1)'];   // 現有金色特效圖換色
+const TIER_HUE=[0,75,180,-40,235,173,5];   // TIER_FLT 裡的色相旋轉，下一道符文的紅色警告要轉回來
+const TIER_FLT=['grayscale(1)','hue-rotate(75deg) saturate(1.7) brightness(1.3)','hue-rotate(180deg) saturate(1.5)','hue-rotate(-40deg) saturate(2.4)','hue-rotate(235deg) saturate(1.6)','hue-rotate(173deg) saturate(.35) brightness(1.5)','hue-rotate(5deg) saturate(1.05) brightness(1.3)'];   // v4.61 金、鑽石對齊新閃電圖的顏色（Mochi：燈光要跟閃電同色）   // 現有金色特效圖換色
 const exNum=(t,cls='',st='')=>{const e=document.createElement('div');e.className='ex-num '+cls;e.innerHTML=t;if(st)e.style.cssText=st;return e};
 const POP=(s=1)=>({transform:`translate(-50%,-50%) scale(${s})`});
 function exOv(){const st=document.getElementById('enhStage');if(!st)return null;st.querySelectorAll('.ex-ov').forEach(e=>e.remove());const ov=document.createElement('div');ov.className='ex-ov';st.appendChild(ov);return ov}
@@ -1605,10 +1607,14 @@ function greenFlash(){const st=document.getElementById('enhStage');if(!st||match
   document.querySelectorAll('#rnSpokes .sp').forEach(e=>e.animate([{opacity:1,filter:'brightness(1.6)'},{opacity:1,filter:'brightness(1.6)',offset:.25},{opacity:0,filter:'brightness(1)'}],o));
   const wi=document.querySelector('#fxW .wimg');if(wi)wi.animate([{filter:`brightness(1.6) drop-shadow(0 0 12px rgba(${TIER_RGB[1]},1))`},{filter:'brightness(1)'}],o)}
 // v4.58 +7 起符文亮起時加打閃電（外框顏色）：+7 一道、每高一級多一道，+10 起成功後再補打，+12 最多；只加圖層，不改符文時間軸
+// v4.61 危險區強化失敗：符文能量聚起來又熄滅、冒一縷灰煙（Mochi AI 圖），硬切播放
+function enhFailFx({T,REV}){const sq=document.getElementById('enhSq');if(!sq)return;const b=document.createElement('div');b.className='ly ex-fail';b.innerHTML=RUNE_FX.fail.map(src=>`<img src="${src}" alt="">`).join('');sq.appendChild(b);
+  cutImgs([...b.children],T,REV-200,T-120,{X:60,peak:1})}
 function enhBolts(next,k,{T,REV}){const sq=document.getElementById('enhSq');if(!sq||next<7)return;const fl=FLV(next),rgb=TIER_RGB[fl],n=next-6,after=k==='ok'?Math.max(0,next-9):0,P=[[18.7,-.2,1,0],[2,6,-1,-14],[40,4,1,16],[10,-6,-1,8],[34,-8,1,-10],[24,2,-1,4]];
   const end=REV-160,t0=620,gap=Math.max(140,(end-t0)/n),jolt=[[0,{transform:'none'}]];
   const bolt=(t,i,big)=>{const[x,y,fx,r]=P[i%P.length],s=(big?1.25:1)*(1+(next-7)*.05),b=document.createElement('div');b.className='ly ex-bolt';
-    b.style.cssText=`left:${x}%;top:${y}%;filter:${TIER_FLT[fl]} brightness(${1+(next-7)*.12});transform:scaleX(${fx}) rotate(${r}deg) scale(${s})`;b.innerHTML=RUNE_FX.light.map(src=>`<img src="${src}" alt="">`).join('');sq.appendChild(b);
+    const own=fl===6?RUNE_FX.boltGold:fl===5?RUNE_FX.boltDia:null;   // 金、鑽石用專屬閃電圖，其他用原本閃電換色
+    b.style.cssText=`left:${x}%;top:${y}%;filter:${own?'':TIER_FLT[fl]} brightness(${1+(next-7)*.12});transform:scaleX(${fx}) rotate(${r}deg) scale(${s})`;b.innerHTML=(own||RUNE_FX.light).map(src=>`<img src="${src}" alt="">`).join('');sq.appendChild(b);
     cutImgs([...b.children],T,t,t+300,{X:30,peak:1});const f=document.createElement('div');f.className='ex-fl';f.style.background=`radial-gradient(closest-side,rgba(${rgb},.55),rgba(${rgb},0))`;sq.appendChild(f);
     tl(f,T,[[0,{opacity:0}],[t,{opacity:0}],[t+40,{opacity:big?.9:.6}],[t+220,{opacity:0}]]);const p=1+(next-7)*.6;jolt.push([t,{transform:'none'}],[t+30,{transform:`translate(${p}px,${-p}px)`}],[t+70,{transform:`translate(${-p}px,${p/2}px)`}],[t+110,{transform:'none'}])};
   for(let i=0;i<n;i++)bolt(t0+gap*i,i,false);for(let i=0;i<after;i++)bolt(REV+260+i*190,n+i,true);
@@ -2050,7 +2056,7 @@ function wpGrid(w){const c=bpOf(w).cat,pr=PROC[c],sp=CSPD[c],rc=raceOf(w),e=wEle
 function sheetWeapon(id,mode){
   const w=W(id);if(!w){const last=ui.enhLast&&ui.enhLast.id===id&&ui.enhLast.k==='broke'?ui.enhLast:null;
     if(last)return `<div class="sheet-head"><span style="width:44px"></span><h2>強化</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>`
-      +stageHtml({art:null,danger:true,from:'?',to:'?',zone:'武器已消失',ribbon:`<b>${last.t}</b><span>${last.d}</span>`,rk:'broke'})
+      +stageHtml({art:null,danger:true,from:null,to:null,zone:'武器已消失',ribbon:`<b>${last.t}</b><span>${last.d}</span>`,rk:'broke'})
       +`<div class="acts3">${btn('回道具欄','backArmory',{cls:'btn-primary big'})}${btn('去鐵匠鋪','tab',{cls:'btn-sec big',attrs:'data-k="forge"'})}</div>`;
     return`<div class="sheet-head"><h2>武器詳情</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img'})}</div><div class="empty">這把武器已經不在了。</div>`}
   const b=bpOf(w),i=where(w),bs=bossSlotOf(w),busy=i>=0||bs>=0,highValue=w.lock||w.q>=2||w.lv>=3||b.t>=2;
