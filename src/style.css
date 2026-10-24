@@ -1731,7 +1731,7 @@ html.scrimmed .cbar{display:none}
 .bs-d{display:flex;align-items:center;gap:4px;padding:3px 8px 3px 3px;border:1px solid var(--line);border-radius:6px;background:rgba(0,0,0,.3);color:inherit;font-size:12px;cursor:pointer}
 .bs-d img{width:26px;height:26px}.bs-d b{color:#e8c27a;font-weight:600}.bs-d.rare{border-color:#8a5cc7}
 .bs-got{display:flex;flex-wrap:wrap;gap:6px}.bs-got .hico{min-width:0;padding:4px 8px;flex-direction:row;gap:4px}.bs-got .hico img{width:28px;height:28px}
-/* v4.41 道具欄：同一種道具疊一格，右下角數量；還沒有圖的道具用虛線框 */
+/* v4.43 道具欄：同一種道具疊一格，右下角數量；還沒有圖的道具用虛線框 */
 .atabs{margin:0 0 8px}
 .ib-h{display:flex;justify-content:space-between;align-items:baseline;margin:12px 0 6px;color:var(--gold-hi,#e6c88a)}
 .ib-h span{font-size:12px;color:var(--ash)}

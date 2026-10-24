@@ -6,7 +6,7 @@ const ART_V='?v=3';  // 武器顯示圖改過透明度：加版本號，避免�
 const ART_WAIT={};
 const ART_NEW=/^(g_skadi|g_skadi_disp|mat_srelic)$/;   // v4.30 斯卡蒂之弓的舊圖換成索爾之錘、雷神錘柄：檔名沒變，加版本號避免沿用快取
 const A=n=>(n=ART_WAIT[n]||n,(typeof UI_ART!=='undefined'&&UI_ART[n])||'art/'+n+'.webp'+(n.endsWith('_disp')?ART_V:/^(mon|boss|bg)_|^v\d+$/.test(n)?'?m=4.30':'')+(ART_NEW.test(n)?(n.endsWith('_disp')?'&':'?')+'g=4.30':''));  // UI_ART（skin.js）可把既有圖示換成新素材路徑；預設空白＝不變
-const MATS={};   // v4.41 舊材料全部刪除（Mochi 會重新設計新的材料）
+const MATS={};   // v4.43 舊材料全部刪除（Mochi 會重新設計新的材料）
 const MATART={};
 const CATS={axe:'斧',sword:'劍',dagger:'短刃',polearm:'長柄',hammer:'錘',bow:'弓',crossbow:'弩',shield:'盾',throw:'投擲',tool:'工具'};
 // sec = 正式版 1× 秒數；試玩可在測試工具調整時間流速
@@ -69,7 +69,7 @@ const godCheck=()=>Object.keys(GOD).map(id=>{const b=BP[id],inn=b.inn&&AFFIX[b.i
   const max=TIERS[b.t].mult*(1+inn/100)*(1+pw/100);return{id,n:b.n,max,next:GOD_NEXT[id],ok:max<GOD_NEXT[id]}});
 const awkN=(w,lv)=>godOf(w)?AWK_LV.filter(l=>(lv??w.lv)>=l).length:0;   // 已覺醒幾段
 const awkVal=(w,k,lv)=>{const g=godOf(w);if(!g)return 0;const n=awkN(w,lv);return g.aw.slice(0,n).filter(a=>a[1]===k).reduce((s,a)=>s+a[2],0)};
-function recipe(b){return{}}   // v4.41 舊材料刪除：鍛造暫時只花金幣
+function recipe(b){return{}}   // v4.43 舊材料刪除：鍛造暫時只花金幣
 // v4.34 武器框顏色看強化等級（Mochi 選）：+0 灰、+1～+6 綠、+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石；框圖 art/frame_lv0～6（AI 細雷電框，3＝紅、6＝金），+9 以上有一道電流繞著框跑（v4.36）
 const FLV=lv=>(lv|=0)<=0?0:lv<=6?1:lv<=8?2:lv===9?3:lv===10?6:lv===11?4:5,FLV_N=['灰','綠','藍','紅','紫','鑽石','金'],FLV_T=['凡鐵','精鍛','寒鋒','血刃','星魂','永恆','神鑄'],FLV_ORD=[0,1,2,3,6,4,5];const tn=w=>FLV_T[FLV(w.lv)];   // v4.36 品階名稱（Mochi 選 B），取代武器上顯示的品質；FLV_ORD＝由低到高
 const fq=w=>'_lv'+FLV(w.lv),lc=w=>'l'+FLV(w.lv);
@@ -143,8 +143,8 @@ const TAGN={labor:'勞務',beast:'野獸',giant:'巨人',dragon:'龍族',god:'�
 const FURNACE_COST=[0,3000,6000,15000,40000,150000],ANVIL_COST=[0,2000,8000,25000,50000],SLOT_COST=[0,3000,15000,40000];
 // v3.90 工坊升級依關卡進度解鎖（Mochi 選方案 A）：要升到 Lv(i) 需要收復 WS_GATE[kind][i] 座村莊；已經升上去的等級保留
 const WS_GATE={furnace:[0,0,3,5,6,7,10],anvil:[0,0,2,4,7,10]};
-VILLAGES.forEach(v=>v.drops=[]);   // v4.41 舊材料刪除：村莊暫時只掉金幣（新的掉落等 Mochi 重新設計）
-// v4.41 舊道具（防爆卷、祝福石、傳說圖紙、殘渣）全部刪除。新道具：英靈・遺物（打開內容等 Mochi 設定，圖待生成）
+VILLAGES.forEach(v=>v.drops=[]);   // v4.43 舊材料刪除：村莊暫時只掉金幣（新的掉落等 Mochi 重新設計）
+// v4.43 舊道具（防爆卷、祝福石、傳說圖紙、殘渣）全部刪除。新道具：英靈・遺物（打開內容等 Mochi 設定，圖待生成）
 // [名稱, 圖示（null＝還沒有圖）, 說明]
 const ITEMS={relic:['英靈・遺物',null,'英靈留在戰場上的遺物，打開會得到東西（內容設計中）。']};
 const RATE=[0,.95,.9,.85,.8,.75,.7,.45,.35,.25,.18,.12,.08,.05,.03,.02];   // v4.00 Mochi 選難度 B（天堂W 風格）：+7～+15 原本 60/50/40/30/22/15/10/7/5%
@@ -157,7 +157,7 @@ const ACH=[
   {id:'e50',n:'強化成功 50 次',g:'f',ic:'mat_rune',p:()=>[S.stats.enhOk,50],test:()=>S.stats.enhOk>=50,r:{gems:50}},
   {id:'m30',n:'熔解 30 把武器',g:'f',ic:'mat_shard',p:()=>[S.stats.melted,30],test:()=>S.stats.melted>=30,r:{gems:50}},
   {id:'f50',n:'鍛造 50 把武器',g:'f',ic:'nav_forge',p:()=>[S.stats.forged.reduce((a,b)=>a+b,0),50],test:()=>S.stats.forged.reduce((a,b)=>a+b,0)>=50,r:{gems:50}}
-];   // v4.41 成就獎勵的防爆卷、祝福石、符文碎片改成鑽石
+];   // v4.43 成就獎勵的防爆卷、祝福石、符文碎片改成鑽石
 // v3.71 鐵匠聲望與天賦（不封頂長線養成）：收成、鍛造、強化成功、收復村莊、熔解都累積聲望；每升 1 級得 1 天賦點和聲望寶箱，等級沒有上限
 const REP_XP={harvest:1,forge:[1,3,8,20,40,80,120],first:50,melt:1};   // 強化成功：經驗＝強化後等級
 const repNeed=l=>Math.round(30*Math.pow(l,1.4));   // Lv.l 升到 Lv.l+1 需要的經驗
@@ -221,7 +221,7 @@ const DAILY=[
   {id:'enh',n:'強化武器 5 次',pt:25,m:5,ic:'mat_rune',p:()=>S.stats.enhTry-S.daily.b.enhTry},
   {id:'melt',n:'熔解 1 把武器',pt:25,m:1,ic:'mat_shard',p:()=>S.stats.melted-S.daily.b.melted}
 ];
-const DAILY_BOX=[[40,()=>({gold:200+200*cleared()})],[70,()=>({gold:500+300*cleared()})],[100,()=>({gems:30})]];   // v4.41 舊道具、材料刪除，改金幣和鑽石
+const DAILY_BOX=[[40,()=>({gold:200+200*cleared()})],[70,()=>({gold:500+300*cleared()})],[100,()=>({gems:30})]];   // v4.43 舊道具、材料刪除，改金幣和鑽石
 const SIGN=[{gold:1000},{gold:1500},{gems:30},{gems:50},{gold:3000},{gems:50},{gems:100}];
 
 /* ---------- 工具 ---------- */
@@ -257,7 +257,7 @@ function migrateV2(o){
   return s;
 }
 function sanitize(s){
-  {const m=s.mats||{},it=s.items||{};s.mats={};s.items={};for(const k in MATS)s.mats[k]=Math.max(0,Math.floor(+m[k]||0));for(const k in ITEMS)s.items[k]=Math.max(0,Math.floor(+it[k]||0))}   // v4.41 舊材料、道具直接丟掉
+  {const m=s.mats||{},it=s.items||{};s.mats={};s.items={};for(const k in MATS)s.mats[k]=Math.max(0,Math.floor(+m[k]||0));for(const k in ITEMS)s.items[k]=Math.max(0,Math.floor(+it[k]||0))}   // v4.43 舊材料、道具直接丟掉
   s.gold=Math.max(0,Math.floor(+s.gold||0));s.gems=Math.max(0,Math.floor(+s.gems||0));delete s.slag;
   s.stats=Object.assign(freshStats(),s.stats||{});s.ach=s.ach||{};s.sign=s.sign&&typeof s.sign==='object'?{n:Math.max(0,Math.min(SIGN.length,s.sign.n|0)),last:String(s.sign.last||'')}:{n:0,last:''};if(s.daily&&!(s.daily.b&&Array.isArray(s.daily.box)))s.daily=null;s.best=s.best||{};s.lbRw=s.lbRw||{};s.speed=GAME_SPEED;s.capH=OFFLINE_H;s.pity=s.pity||0;
   {const r=s.rep||{};s.rep={lv:Math.max(1,Math.floor(+r.lv||1)),xp:Math.max(0,Math.floor(+r.xp||0)),t:{}};for(const k in TALENTS)s.rep.t[k]=Math.max(0,Math.min(TALENTS[k].max,Math.floor(+(r.t||{})[k]||0)))}
@@ -293,7 +293,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.41';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.43';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -504,7 +504,7 @@ const GD_LV=[0,1000,3000,6000,10000,16000,24000,35000,50000,70000],GD_GOLD=[0,2,
 const gdLvOf=x=>GD_LV.filter(t=>t<=(x||0)).length,gdCap=l=>l>=8?40:l>=5?30:20;
 const GD_COST=50000,GD_MK_LV=5,GD_DAY=3,GD_CD_H=12,FR_MAX=30;
 const GD_DON=[{k:'gold',n:'5,000 金幣',ic:'it_gold',c:5000,p:50},{k:'gems',n:'20 鑽石',ic:'it_gems',c:20,p:150}];
-const GD_SHOP=[];   // v4.41 舊道具刪除：貢獻商店先空著，等新道具設計好再上架
+const GD_SHOP=[];   // v4.43 舊道具刪除：貢獻商店先空著，等新道具設計好再上架
 const GD_PERK=[[2,'狩獵金幣 +2%'],[3,'首領傷害 +3%'],[4,'狩獵金幣 +4%'],[5,'成員上限 30'],[6,'首領傷害 +5%'],[7,'狩獵金幣 +6%'],[8,'成員上限 40'],[9,'狩獵金幣 +8%'],[10,'首領傷害 +8%']];
 const GD_ROLE={lead:'會長',vice:'副會長'};
 const GD_MSG={in:'你已經在公會裡了',lv:`鐵匠等級 Lv.${GD_MK_LV} 才能建立公會（加入公會要 Lv.${CHAT_LV}）`,lvj:`鐵匠等級 Lv.${CHAT_LV} 才能加入公會`,cd:`離開公會後 ${GD_CD_H} 小時內不能加入或建立公會`,name:'公會名稱要 2～8 個字，不能有空白、網址或不雅字',dup:'這個公會名稱已經有人用了',gold:`金幣不足：建立公會要 ${fmt(GD_COST)} 金幣`,
@@ -1059,7 +1059,7 @@ function enhanceCore(id,opt={}){
   if(!test&&S.gold<cost)return{err:'金幣不夠',need:'gold'};
   if(!test){S.gold-=cost;S.stats.enhTry++}
   // v3.14：危險區勾選防爆卷，每次強化都消耗 1 張（不論成功、失敗或爆裝）
-  const usedScroll=!!(opt.scroll&&danger&&test);   // v4.41 防爆卷刪除，只剩測試武器的開發選項
+  const usedScroll=!!(opt.scroll&&danger&&test);   // v4.43 防爆卷刪除，只剩測試武器的開發選項
   let r=RATE[next];const bc=breakChance(w,next);
   let usedBless=false;if(opt.bless&&test){r=Math.min(1,r+.1);usedBless=true}
   const f=test?opt.force:null;
@@ -1073,7 +1073,7 @@ function enhanceCore(id,opt={}){
 }
 function enchantCore(id,slot){   // v3.84 只能隨機附魔
   const w=W(id);if(!w)return{err:'找不到武器'};if(busyW(w))return{err:'駐守中的武器要先收回'};if(!slotOpen(slot))return{err:'這一格暫不開放'};
-  const c=enchCost(w);   // v4.41 符文碎片刪除：附魔暫時只花金幣
+  const c=enchCost(w);   // v4.43 符文碎片刪除：附魔暫時只花金幣
   if(S.gold<c)return{err:`需要 ${c} 金幣`};
   S.gold-=c;const k=weighted(affPool(),x=>AFFIX[x].w),a=AFFIX[k];
   w.ench[slot]={k,v:rnd(a.min,a.max)};save();return{k,v:w.ench[slot].v};
@@ -1102,7 +1102,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
- {v:'4.41',d:'10/24',t:'舊道具和材料全部刪除・新道具欄',b:['舊的<b>防爆卷、祝福石、傳說圖紙、殘渣</b>和<b>所有材料</b>全部刪除，新的道具和材料重新設計中','鍛造、附魔暫時<b>只花金幣</b>；村莊暫時只掉金幣','商城拿掉旅行商人、符文祈願、殘渣兌換；任務、簽到、成就的獎勵改成金幣和鑽石','下方的「武器庫」改名「<b>道具欄</b>」，分「武器／材料」兩頁；材料頁的道具同一種疊一格，右下角是數量，沒有上限（鐵匠鋪的材料分頁拿掉）','新道具<b>英靈・遺物</b>：打開會得到什麼還在設計中'],g:['bag','forge','shop','quest']},
+ {v:'4.43',d:'10/24',t:'舊道具和材料全部刪除・新道具欄',b:['舊的<b>防爆卷、祝福石、傳說圖紙、殘渣</b>和<b>所有材料</b>全部刪除，新的道具和材料重新設計中','鍛造、附魔暫時<b>只花金幣</b>；村莊暫時只掉金幣','商城拿掉旅行商人、符文祈願、殘渣兌換；任務、簽到、成就的獎勵改成金幣和鑽石','下方的「武器庫」改名「<b>道具欄</b>」，分「武器／材料」兩頁；材料頁的道具同一種疊一格，右下角是數量，沒有上限（鐵匠鋪的材料分頁拿掉）','新道具<b>英靈・遺物</b>：打開會得到什麼還在設計中'],g:['bag','forge','shop','quest']},
  {v:'4.39',d:'10/24',t:'村莊卡片可以展開戰鬥畫面',b:['駐守中的村莊卡片下方多了<b>往下的箭頭</b>，點一下展開騎士打怪物的戰鬥畫面，再點一次收起','展開後還看得到這隻怪物<b>每輪會掉什麼</b>（附機率，點材料看用途）和<b>已經打到、還沒收成</b>的東西'],g:['hit']},
  {v:'4.38',d:'10/24',t:'畫面精簡：拿掉用不到的功能',b:['駐守中的村莊不再開詳情頁：掉落直接看卡片，<b>點卡片上的武器</b>跳出小卡，可以看武器、換武器、收回武器','村莊詳情的「需要的武器」拿掉（已經不限武器）','<b>狩獵策略</b>拿掉，一律一般狩獵','<b>排行榜</b>先全部關掉','鐵匠鋪的「<b>鍛造中</b>」分頁拿掉，進度條直接顯示在「開始鍛造」下方','<b>全服首領討伐</b>先拿掉，駐守首領的武器放回武器庫'],g:['vil','forge']},
  {v:'4.37',d:'10/24',t:'村莊不限武器・拿掉特性、重鍊和盾',b:['村莊委託<b>不限武器</b>：不指定類別、不看攻擊力、不用特定附魔，任何武器都能交（武器越強狩獵越快）','鍛造不再帶<b>先天特性</b>（鋒利、堅固、輕巧、尋寶、巨人獵手、符文親和）','<b>巨人體重鍊</b>拿掉了，第二界材料用來鍛造巨人武器','<b>盾</b>拿掉了：4 張盾圖紙不再出現；1-5 鴉巢堡、2-5 永凍湖的故事跟著改寫'],g:['vil','qual','realm']},
@@ -1152,25 +1152,25 @@ const NW_LOG=[
 ];
 const GUIDE=[
  ['基礎',[
-  {k:'forge',ic:'t1_ironhammer_disp',n:'鍛造',s:'選圖紙、付金幣，5 秒打好一批',v:'4.41',h:'在鐵匠鋪「圖紙」選一張圖紙，金幣夠就能按「開始鍛造」（v4.41 起舊材料刪除，鍛造暫時只花金幣）。<br>一次一批（最多 10 把），不管幾把都是 <b>5 秒</b>完成，進度條就在「開始鍛造」下方，可以取消（金幣全退）。<br>熔爐等級決定能打哪種材質：鐵製 Lv1、霜銀 Lv2、龍鱗 Lv4、神器 Lv5、巨人 Lv6。<br>收復村莊會解鎖新圖紙。'},
+  {k:'forge',ic:'t1_ironhammer_disp',n:'鍛造',s:'選圖紙、付金幣，5 秒打好一批',v:'4.43',h:'在鐵匠鋪「圖紙」選一張圖紙，金幣夠就能按「開始鍛造」（v4.43 起舊材料刪除，鍛造暫時只花金幣）。<br>一次一批（最多 10 把），不管幾把都是 <b>5 秒</b>完成，進度條就在「開始鍛造」下方，可以取消（金幣全退）。<br>熔爐等級決定能打哪種材質：鐵製 Lv1、霜銀 Lv2、龍鱗 Lv4、神器 Lv5、巨人 Lv6。<br>收復村莊會解鎖新圖紙。'},
   {k:'qual',ic:'it_blueprint',n:'品質',s:'普通到傳說，攻擊力最多 2.3 倍',v:'4.37',h:'品質：普通 ×1、精良 ×1.2、稀有 ×1.45、史詩 ×1.8、傳說 ×2.3。鐵砧等級越高，好品質機率越高。<br>霜銀以上有保底：連續 9 把低於稀有，第 10 把必定稀有。<br>v4.37 起鍛造不再帶先天特性，武器強度只看材質、品質、強化和附魔。'},
-  {k:'enh',ic:'it_bless',n:'強化',s:'+1～+6 安定，+7 起有機率爆裝',v:'4.41',h:'所有材質的安定值都是 <b>+6</b>：+1～+6 失敗只扣金幣，不會爆裝。<br>+7 起是危險區，成功率依序 45／35／25／18／12／8／5／3／2%（+7～+15）。失敗時爆裝機率 50% 起，每級 +5%，最高 90%。<br>v4.41 起防爆卷、祝福石、殘渣都已刪除，爆裝就是失去武器。<br>武器的<b>品階</b>和框色看強化等級：+0 凡鐵（灰）、+1～+6 精鍛（綠）、+7～+8 寒鋒（藍）、+9 血刃（紅）、+10 神鑄（金）、+11 星魂（紫）、+12 永恆（鑽石），+9 以上的框有電流繞著跑。'},
-  {k:'ench',ic:'mat_shard',n:'附魔',s:'花金幣隨機出 12 種詞條，一關一關學會',v:'4.41',h:'花金幣隨機附魔一種詞條，重新附魔會蓋掉那一格。<br>符文要<b>一關一關學會</b>：開局會烈焰、霜寒、迅捷、掠奪、豐收；1-3 開放學會尋珍、1-6 貪婪、1-7 雷霆、1-8 剋巨人、1-10 神聖、2-6 劇毒和剋龍。已經附在武器上的不受影響。<br><b>攻擊力</b>：烈焰、霜寒、雷霆、劇毒、神聖。<br><b>狩獵</b>：迅捷、掠奪、貪婪、尋珍、豐收。<br><b>剋制</b>：剋巨人、剋龍（打尼德霍格）。1-9 灰燼要塞要<b>霜寒</b>。<br>附魔欄：目前開放 2 格。'},
+  {k:'enh',ic:'it_bless',n:'強化',s:'+1～+6 安定，+7 起有機率爆裝',v:'4.43',h:'所有材質的安定值都是 <b>+6</b>：+1～+6 失敗只扣金幣，不會爆裝。<br>+7 起是危險區，成功率依序 45／35／25／18／12／8／5／3／2%（+7～+15）。失敗時爆裝機率 50% 起，每級 +5%，最高 90%。<br>v4.43 起防爆卷、祝福石、殘渣都已刪除，爆裝就是失去武器。<br>武器的<b>品階</b>和框色看強化等級：+0 凡鐵（灰）、+1～+6 精鍛（綠）、+7～+8 寒鋒（藍）、+9 血刃（紅）、+10 神鑄（金）、+11 星魂（紫）、+12 永恆（鑽石），+9 以上的框有電流繞著跑。'},
+  {k:'ench',ic:'mat_shard',n:'附魔',s:'花金幣隨機出 12 種詞條，一關一關學會',v:'4.43',h:'花金幣隨機附魔一種詞條，重新附魔會蓋掉那一格。<br>符文要<b>一關一關學會</b>：開局會烈焰、霜寒、迅捷、掠奪、豐收；1-3 開放學會尋珍、1-6 貪婪、1-7 雷霆、1-8 剋巨人、1-10 神聖、2-6 劇毒和剋龍。已經附在武器上的不受影響。<br><b>攻擊力</b>：烈焰、霜寒、雷霆、劇毒、神聖。<br><b>狩獵</b>：迅捷、掠奪、貪婪、尋珍、豐收。<br><b>剋制</b>：剋巨人、剋龍（打尼德霍格）。1-9 灰燼要塞要<b>霜寒</b>。<br>附魔欄：目前開放 2 格。'},
   {k:'god',ic:'g_hofund_disp',n:'神明武器與神格覺醒',s:'用神的遺物鍛造，強化越高覺醒越多',v:'4.26',h:'每一界最後一關是神。駐守神的關卡狩獵，每輪有 20% 機率掉<b>神的遺物</b>（1-10 霍夫德劍柄、2-10 雷神錘柄）。<br>收集 6 個遺物加材料，就能在鐵匠鋪鍛造<b>霍夫德之劍</b>（熔爐 Lv5）或<b>索爾之錘</b>（熔爐 Lv6）。它們是那一界最強的武器，但比不上下一界的新材質。<br><b>神格覺醒</b>：強化到 +7、+9、+11、+13、+15 會逐段覺醒，效果只算在這把武器身上（狩獵時間、稀有素材或材料、攻擊力 +10%、首領傷害 +15%）。+15 完全覺醒有專屬稱號、全服公告和金色光環。<br>強化規則和一般武器一樣，+7 以上失敗還是可能爆裝，記得用防爆卷。'},
-  {k:'bag',ic:'nav_forge',n:'道具欄',s:'同一種道具疊一格，沒有上限',v:'4.41',h:'下方導覽的「<b>道具欄</b>」（原本的武器庫）分「武器／材料」兩頁，道具在「材料」頁。同一種道具放在同一格，右下角顯示數量，沒有上限。<br>目前只有<b>英靈・遺物</b>：英靈留在戰場上的遺物，打開會得到東西（內容設計中）。<br>舊的防爆卷、祝福石、傳說圖紙、殘渣和所有舊材料都已刪除，新的道具和材料重新設計中。'},
-  {k:'melt',ic:'mat_iron',n:'熔解',s:'不要的武器換回金幣',v:'4.41',h:'在武器詳情按「熔解」：退回一半鍛造金幣。<br>收藏（上鎖）的武器不能熔解。'}]],
+  {k:'bag',ic:'nav_forge',n:'道具欄',s:'同一種道具疊一格，沒有上限',v:'4.43',h:'下方導覽的「<b>道具欄</b>」（原本的武器庫）分「武器／材料」兩頁，道具在「材料」頁。同一種道具放在同一格，右下角顯示數量，沒有上限。<br>目前只有<b>英靈・遺物</b>：英靈留在戰場上的遺物，打開會得到東西（內容設計中）。<br>舊的防爆卷、祝福石、傳說圖紙、殘渣和所有舊材料都已刪除，新的道具和材料重新設計中。'},
+  {k:'melt',ic:'mat_iron',n:'熔解',s:'不要的武器換回金幣',v:'4.43',h:'在武器詳情按「熔解」：退回一半鍛造金幣。<br>收藏（上鎖）的武器不能熔解。'}]],
  ['村莊與戰鬥',[
-  {k:'vil',ic:'nav_village',n:'村莊委託與收成',s:'交武器收復村莊、自動狩獵收成',v:'4.41',h:'任何武器都能交給村莊收復（不限類別、攻擊力和附魔），解鎖下一座村莊和新圖紙，第一次收復有金幣獎勵。<br>交付後武器會駐守狩獵，自動帶回金幣（v4.41 起舊材料刪除，新的掉落設計中），<b>離線最多累積 12 小時</b>。換上更強的武器狩獵更快。<br>每輪會掉什麼直接看村莊卡片右邊。<b>點卡片上的武器</b>會跳出小卡，可以看武器詳情、換武器或收回武器。<br>「全部收成」只收目前在看的這一界；另一界可以收成時，地圖圖示會亮紅點。'},
+  {k:'vil',ic:'nav_village',n:'村莊委託與收成',s:'交武器收復村莊、自動狩獵收成',v:'4.43',h:'任何武器都能交給村莊收復（不限類別、攻擊力和附魔），解鎖下一座村莊和新圖紙，第一次收復有金幣獎勵。<br>交付後武器會駐守狩獵，自動帶回金幣（v4.43 起舊材料刪除，新的掉落設計中），<b>離線最多累積 12 小時</b>。換上更強的武器狩獵更快。<br>每輪會掉什麼直接看村莊卡片右邊。<b>點卡片上的武器</b>會跳出小卡，可以看武器詳情、換武器或收回武器。<br>「全部收成」只收目前在看的這一界；另一界可以收成時，地圖圖示會亮紅點。'},
   {k:'hp',ic:'mon_1',n:'怪物血條',s:'打中才扣血，扣多少＝傷害',v:'4.26',h:'村莊卡上的怪物有血條，武器打中才會扣血，扣多少就是造成的傷害。<br>還沒交付或沒有駐守武器的村莊，點開詳情上方有怪物大圖，按 ‹ › 翻看這一界 10 隻（還沒解鎖的只顯示黑影）。<br>怪物被打倒就完成一輪狩獵，換下一隻。<br>點村莊看詳情，血條同步顯示，下方還有這隻北歐神話怪物的稱號和傳說。每一界的最後一關都是神，每一關的名稱、條件、掉落都跟那隻怪物或神的故事有關：打神要神聖、打龍要剋龍、火要霜寒。'},
   {k:'hit',ic:'cat_sword',n:'武器打法',s:'攻速不同、強化越高越常觸發附加效果',v:'4.39',h:'點村莊卡片下方的<b>往下箭頭</b>（或怪物小圖），會展開戰鬥畫面（一次一個，再點一下收起），下面還列出每輪掉落和已經打到、還沒收成的東西：騎士拿著駐守的武器打怪物，打中時怪物閃一下、停頓後被打退，跳出的數字就是傷害。戰鬥畫面收起時，卡片上的小怪物也是同樣的攻速和附加效果。<br>攻速：<b>劍</b> 1.0 秒、<b>斧</b> 1.3 秒（兩連斬）、<b>錘</b> 1.8 秒、<b>短刃</b> 0.6 秒、<b>長柄</b> 1.2 秒、<b>弓</b> 1.1 秒、<b>弩</b> 1.6 秒。<br>強化越高越常觸發附加效果（+1～+6 每級 2%，+7 起 16%～40%）：劍<b>會心</b>、斧<b>流血</b>、錘<b>震碎</b>、短刃<b>中毒</b>、長柄<b>貫穿</b>、弓<b>穿心</b>、弩<b>破甲</b>。狩獵時間和收成不受影響。'},
   {k:'realm',ic:'realm_2',n:'第二界 約頓海姆',s:'收復 1-10 後開放',v:'4.37',h:'收復 1-10 彩虹橋頭、打倒海姆達爾後開放第二界，用上方地圖列切換。<br>10 座新村莊、4 種新材料（巨人骨、永凍霜晶、雷鳴鐵、世界樹古根），第五階巨人武器要熔爐 Lv6。<br>v4.37 起巨人體重鍊已經拿掉，第二界材料用來鍛造巨人武器。'}]],
  ['成長與獎勵',[
-  {k:'quest',ic:'ic_check',n:'每日任務・簽到・成就',s:'每天領活躍度寶箱',v:'4.41',h:'<b>每日任務</b>：完成登入、收成、鍛造、強化、熔解累積活躍度，40／70／100 點各開一個寶箱。<br><b>七日簽到</b>：漏簽不會歸零，第 7 天領完從第 1 天重新開始。<br><b>委託成就</b>：免費拿鑽石。<br>v4.41 起所有獎勵都是金幣或鑽石。'},
-  {k:'shop',ic:'nav_shop',n:'商城',s:'月卡、狩獵號角',v:'4.41',h:'封測期間<b>月卡免費</b>：立得鑽石，之後每天再領。<br>可以用鑽石買狩獵號角。<br>v4.41 起防爆卷、祝福石、符文祈願、旅行商人、殘渣兌換都已拿掉。'}]],
+  {k:'quest',ic:'ic_check',n:'每日任務・簽到・成就',s:'每天領活躍度寶箱',v:'4.43',h:'<b>每日任務</b>：完成登入、收成、鍛造、強化、熔解累積活躍度，40／70／100 點各開一個寶箱。<br><b>七日簽到</b>：漏簽不會歸零，第 7 天領完從第 1 天重新開始。<br><b>委託成就</b>：免費拿鑽石。<br>v4.43 起所有獎勵都是金幣或鑽石。'},
+  {k:'shop',ic:'nav_shop',n:'商城',s:'月卡、狩獵號角',v:'4.43',h:'封測期間<b>月卡免費</b>：立得鑽石，之後每天再領。<br>可以用鑽石買狩獵號角。<br>v4.43 起防爆卷、祝福石、符文祈願、旅行商人、殘渣兌換都已拿掉。'}]],
  ['玩家互動',[
   {k:'mk',ic:'nav_market',n:'交易所',s:'金幣或鑽石買賣武器',v:'4.08',h:'用金幣或鑽石上架武器，最低 10，成交收 5% 手續費。<br>賣出或上架 3 天沒賣出時，交易所會亮紅點，最上面「待領取」列出賣了什麼、收多少，按「全部領取」才入帳、退回的武器才放回道具欄。<br>最多同時上架 10 件。<br>收藏（上鎖）或駐守中的武器不能上架。'},
   {k:'chat',ic:'it_horn',n:'聊天與跑馬燈',s:'世界頻道、系統公告、武器卡',v:'3.93',h:'世界頻道可以和全服玩家聊天（鐵匠 Lv3 以上可以發言），系統頻道會顯示全服 +10 以上的強化公告。<br>點名字可以看玩家名片；聊天可以貼出自己的武器卡、戴稱號。<br>跑馬燈出現強化公告時可以按「恭喜」。'},
-  {k:'gd',ic:'ui_player_emblem',n:'好友與公會',s:'捐獻升級、公會加成、貢獻商店',v:'4.41',h:'好友最多 30 人。<br>鐵匠 Lv5 可以建立公會（50,000 金幣），Lv3 可以加入。<br>捐獻金幣或鑽石增加公會經驗和個人貢獻；公會升級會加狩獵金幣、首領傷害和成員上限。<br>貢獻商店的舊道具已拿掉，新道具設計中。離開公會後 12 小時內不能再加入。'},
+  {k:'gd',ic:'ui_player_emblem',n:'好友與公會',s:'捐獻升級、公會加成、貢獻商店',v:'4.43',h:'好友最多 30 人。<br>鐵匠 Lv5 可以建立公會（50,000 金幣），Lv3 可以加入。<br>捐獻金幣或鑽石增加公會經驗和個人貢獻；公會升級會加狩獵金幣、首領傷害和成員上限。<br>貢獻商店的舊道具已拿掉，新道具設計中。離開公會後 12 小時內不能再加入。'},
   {k:'set',ic:'ic_gear',n:'設定與公告',s:'右上角齒輪',v:'4.03',h:'右上角齒輪裡有更新公告、玩法說明和音效設定。<br>有新的公告或玩法時，齒輪會亮紅點；沒看過的項目標 <b>NEW</b>，看過就消失。'}]]
 ];
 const GUIDE_ALL=GUIDE.flatMap(x=>x[1]);
@@ -1236,7 +1236,7 @@ function enhance(id){
   if(ui.busy)return;                          // 動畫播放中鎖定，只能點舞台略過
   if(Date.now()<(ui.lockUntil||0))return;     // 結果剛出現時防止連點誤觸
   const w=W(id);if(!w)return;
-  const useSc=false,useBl=false;   // v4.41 防爆卷、祝福石刪除
+  const useSc=false,useBl=false;   // v4.43 防爆卷、祝福石刪除
   const next=w.lv+1,danger=next>stable(w),guarded=danger&&useSc;
   // 沒有防爆卷保護的危險強化：同一次進入強化頁只需要確認一次
   if(danger&&!guarded&&!w.test&&ui.riskOk!==id){if(ui.riskArm===id){ui.riskOk=id}else{ui.riskArm=id;renderLayer();return}}
@@ -1629,8 +1629,8 @@ function wTile(w,act,dot){const b=bpOf(w),i=where(w);
 function bpTile(b,on){const l=bpLock(b);return `<button class="wt bp ${on?'on':''} ${l?'locked':''}" data-act="bp" data-k="${b.id}"><span class="wt-art">${wArt(b.id,{frame:'bp'})}${l?`<span class="wt-lock">${img('ic_lock')}</span>`:''}${bpNew(b)?'<span class="new-tag">NEW</span>':''}</span><span class="wt-name">${b.n}</span>${l?`<span class="wt-pow wt-lockline">${l}</span>`:`<span class="wt-pow">${TIERS[b.t].n}・${CATS[b.cat]}</span>`}</button>`}
 const matBox=(k,need)=>need==null?`<button class="matbox mb-tap" data-act="matinfo" data-k="${k}">${img(MATART[k])}<span class="mb-n">${MATS[k]}</span><span class="mb-c">${fmt(S.mats[k])}</span></button>`
   :`<div class="matbox need ${S.mats[k]<need?'lack':'ok'}">${img(MATART[k])}<span class="mb-n">${MATS[k]}</span><span class="mb-have">持有 ${fmt(S.mats[k])}</span><span class="mb-need">需要 ${fmt(need)}</span></div>`;
-// v4.41 道具欄：同一種道具疊在同一格，右下角是數量（Mochi 選），沒有上限
-// v4.41 下方導覽「武器庫」改成「道具欄」，分「武器／材料」兩頁（Mochi）；材料頁放道具（英靈・遺物）和材料
+// v4.43 道具欄：同一種道具疊在同一格，右下角是數量（Mochi 選），沒有上限
+// v4.43 下方導覽「武器庫」改成「道具欄」，分「武器／材料」兩頁（Mochi）；材料頁放道具（英靈・遺物）和材料
 const atabs=()=>`<div class="subtabs atabs">${[['w','武器'],['m','材料']].map(([k,n])=>`<button class="ui-tab ${(ui.atab||'w')===k?'on':''}" data-act="atab" data-k="${k}">${n}</button>`).join('')}</div>`;
 function viewBag(){const mk=Object.keys(MATS);
   return `<div class="pagehead"><h2>道具欄</h2></div>${atabs()}<div class="ui-panel panel"><div class="small muted">同一種東西放同一格，右下角是數量，沒有上限。點一下看說明。</div>
@@ -1683,7 +1683,7 @@ function bpReveal(){requestAnimationFrame(()=>{const sel=document.querySelector(
 function viewForge(){
   const done=S.jobs.filter(j=>NOW()>=j.end).length;
   if(ui.ftab==='queue'||ui.ftab==='mat')ui.ftab='bp';   // v4.38 「鍛造中」分頁拿掉（Mochi）：進度條改放在圖紙頁的開始鍛造下面
-  const tabs=[['bp','圖紙']];   // v4.41 材料搬到下方「道具欄」頁（原武器庫）的「材料」分頁
+  const tabs=[['bp','圖紙']];   // v4.43 材料搬到下方「道具欄」頁（原武器庫）的「材料」分頁
   let body='';
   if(ui.ftab==='bp'){
     const cats=['all',...Object.keys(CATS).filter(c=>BPS.some(b=>b.cat===c&&cleared()>=b.unlock))];
@@ -1857,7 +1857,7 @@ function sheetWeapon(id,mode){
     const last=ui.enhLast&&ui.enhLast.id===id?ui.enhLast:null,rib=last?`<b>${last.t}</b><span>${last.d}</span>`:'';
     const nameRow=`<div class="enh-name"><b class="${lc(w)}">${b.n}</b><span class="qpill ${lc(w)}b">${tn(w)}</span>${w.test?'<span class="testtag">測試</span>':''}</div>`;
     if(w.lv>=15)return head+nameRow+stageHtml({art:A(b.id),from:15,to:15,zone:'已達最高等級',ribbon:rib,rk:last&&last.k})+'<div class="goal">已達最高等級 +15。</div>';
-    const hasBl=false,hasSc=false;   // v4.41 防爆卷、祝福石刪除
+    const hasBl=false,hasSc=false;   // v4.43 防爆卷、祝福石刪除
     const next=w.lv+1,danger=next>stable(w),bl=ui.useBless&&hasBl,sc=ui.useScroll&&danger&&hasSc;
     const r=Math.min(1,RATE[next]+(bl?.1:0)),bc=breakChance(w,next),total=(1-r)*bc,cost=enhCost(w),free=!!w.test;
     const lackGold=!free&&S.gold<cost,lackBless=false,lackScroll=false;
@@ -2193,7 +2193,7 @@ function sheetDev(){
   const B=(k,t,c='btn-sec')=>`<button class="ui-btn ui-btn--${btnVariant(c)} btn ${c} sm" data-act="devdo" data-k="${k}">${t}</button>`,tab=ui.devTab||'res';
   const body={
    res:`<div class="label">貨幣</div><div class="devgrid">${B('gold','金幣 +5,000')}${B('gems','鑽石 +1,000')}</div>
-     <div class="label">v4.41 道具欄（舊道具、材料已刪除）</div><div class="devgrid">${B('relic5','英靈・遺物 +5')}${B('relic0','英靈・遺物歸零')}${B('relicbag','打開道具欄')}${B('relicinfo','點英靈・遺物看說明')}</div>
+     <div class="label">v4.43 道具欄（舊道具、材料已刪除）</div><div class="devgrid">${B('relic5','英靈・遺物 +5')}${B('relic0','英靈・遺物歸零')}${B('relicbag','打開道具欄')}${B('relicinfo','點英靈・遺物看說明')}</div>
      <div class="label">v3.71 鐵匠聲望／天賦</div><div class="devgrid">${B('rep1','聲望升 1 級')}${B('rep10','聲望升 10 級')}${B('represet','天賦點全部退回')}${B('repzero','聲望歸零（Lv.1）')}${B('repopen','打開鐵匠天賦')}</div>
      <div class="label">v3.87 首領討伐（整週・週日結算・目前：${evtNow().boss.n}）</div><div class="devgrid">${B('evtnext','模擬換週（下一隻首領）')}${B('evtfast','首領駐守時間 −10 小時')}${B('evtdmg','我的傷害 +5,000（只改顯示）')}${B('evtreset','本週首領進度清空')}${B('evtgdead','模擬全服打倒首領')}${B('evtgalive','模擬全服血量剩 45%＋排名武器')}${B('evtgrank','模擬上週排名第 2')}</div>
      <div class="label">v3.76 第二界約頓海姆（目前：${rfOpen()?'已開放':'未開放'}・收復 ${cleared()}/${VILLAGES.length}）</div><div class="devgrid">${B('r2open','開放第二界（收復 1-1～1-10）')}${B('r2mats','金幣 +20 萬')}${B('r2wpn','送史詩神器斧＋剋巨人')}${B('r2all','第二界全部收復')}${B('r2lock','第二界改回未開放')}${B('r2fur','熔爐升到 Lv6（可鍛造巨人武器）')}${B('r2t4','顯示 8 把巨人武器（測試）')}</div>
