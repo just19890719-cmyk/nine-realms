@@ -283,7 +283,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.63';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.64';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1219,6 +1219,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.64',d:'10/24',t:'開發者工具整理',b:['拿掉強化測試裡用不到的「安全區失敗」和「防爆」按鈕','一般玩家的遊戲內容沒有改變']},
  {v:'4.63',d:'10/24',t:'商城購買小卡更順',b:['商城買材料時，調數量或按購買只會更新數字和價格，小卡<b>不會再整張重新跳出</b>'],g:['shop']},
  {v:'4.62',d:'10/24',t:'開發者工具整理',b:['管理員用的開發者工具改成<b>依版本</b>排列，新的在最上面；拿掉已刪除系統的測試按鈕','一般玩家的遊戲內容沒有改變']},
  {v:'4.61',d:'10/24',t:'強化時石碑不再晃動・新閃電',b:['+7 以上強化失敗時，符文能量會聚起來又熄滅散掉、冒一縷灰煙','爆裝的黑煙換成新圖：武器被一團帶紫光餘燼的黑煙吞掉後散去','強化動畫播放時，符文石碑固定不動（不再推近、震動），只有光、閃電和武器有動作','+10 換成新的<b>金色閃電</b>、+12 換成新的<b>鑽石閃電</b>（水晶碎片和稜鏡光）']},
@@ -1722,7 +1723,7 @@ function sheetFxTest(o){const last=ui.enhLast&&ui.enhLast.test?ui.enhLast:null;
   return `<div class="sheet-head"><span style="width:44px"></span><h2>強化動畫測試</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>
   ${stageHtml({art:last&&last.k==='broke'?null:o.art,danger:o.danger,from:(o.next||8)-1,to:o.next||8,zone:o.danger?'危險區':'安定區',ribbon:last?`<b>${last.t}</b><span>${last.d}</span>`:'',rk:last&&last.k})}
   <div class="small muted center">使用道具欄裡攻擊力最高的武器播放，不會改動存檔。動畫中點畫面或按按鈕都能略過。</div>
-  <div class="fxt-btns">${[['fxs_ok','安全成功'],['fxs_fail','安全失敗（紅光）'],['fx_ok','危險成功'],['fx_fail','危險失敗'],['fx_broke','爆裝'],['fx_saved','防爆'],['fxg_ok','防爆中・成功（藍光）'],['fxg_fail','防爆中・失敗（藍光）'],['fxg_saved','防爆中・防爆生效（藍光）'],['autoenh','一鍵強化到安定值（新增 +0 鐵錘）'],['fxt_7','v4.58 升階 +7（藍）'],['fxt_8','v4.58 +8（藍、不升階）'],['fxt_9','v4.58 升階 +9（紅）'],['fxt_10','v4.58 升階 +10（金）'],['fxt_11','v4.58 升階 +11（紫）'],['fxt_12','v4.58 升階 +12（鑽石）']].map(([k,n])=>btn(n,'devdo',{cls:'btn-sec',attrs:`data-k="${k}"`})).join('')}</div>`}
+  <div class="fxt-btns">${[['fx_green','+1～+6 綠光'],['fx_ok','危險成功'],['fx_fail','危險失敗'],['fx_broke','爆裝'],['autoenh','一鍵強化到安定值（新增 +0 鐵錘）'],['fxt_7','升階 +7（藍）'],['fxt_8','+8（藍、不升階）'],['fxt_9','升階 +9（紅）'],['fxt_10','升階 +10（金）'],['fxt_11','升階 +11（紫）'],['fxt_12','升階 +12（鑽石）']].map(([k,n])=>btn(n,'devdo',{cls:'btn-sec',attrs:`data-k="${k}"`})).join('')}</div>`}
 
 /* ---------- 共用元件 ---------- */
 
@@ -2461,11 +2462,12 @@ function viewShop(){
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'4.64',t:'開發者工具：拿掉「安全區失敗」和防爆按鈕（安定區一定成功、防爆卷已刪除）',b:[['fx_green','+1～+6 綠光']]},
  {v:'4.63',t:'商城購買小卡：調數量、購買不再重新跳出',b:[['shopcard','打開松林硬木購買小卡（給 5,000 金幣）']]},
  {v:'4.61',t:'強化特效：石碑不動、金／鑽石閃電、燈光同色、失敗與爆裝新特效',b:[['fx_ok','危險區・成功'],['fx_fail','危險區・失敗'],['fx_broke','危險區・爆裝'],['fxt_10','升階 +10（金閃電）'],['fxt_12','升階 +12（鑽石閃電）']]},
  {v:'4.60',t:'同款武器疊一格・一鍵安定值連按',b:[['wstack','產生同款武器（6 把 +0、3 把 +3、2 把附魔）並打開道具欄']]},
  {v:'4.59',t:'商城整理：七日簽到搬進商城、材料可以買、拿掉狩獵號角',b:[['shopsg','簽到可再領並打開商城'],['sg_d7','簽到：跳到第 7 天'],['sg_reset','簽到：今天可再領'],['shopbroke','金幣鑽石歸零（看買不起）']]},
- {v:'4.58',t:'強化特效：綠光、外框色石碑、閃電、黑煙爆裝、強化小卡',b:[['autoenh','一鍵強化到安定值（每級綠光連續演出）'],['fxt_7','升階 +7（藍）'],['fxt_8','+8（藍、不升階）'],['fxt_9','升階 +9（紅）'],['fxt_10','升階 +10（金）'],['fxt_11','升階 +11（紫）'],['fxt_12','升階 +12（鑽石）'],['fx_broke','爆裝（黑煙）'],['fxs_ok','安全區・成功（綠光）']]},
+ {v:'4.58',t:'強化特效：綠光、外框色石碑、閃電、黑煙爆裝、強化小卡',b:[['autoenh','一鍵強化到安定值（每級綠光連續演出）'],['fxt_7','升階 +7（藍）'],['fxt_8','+8（藍、不升階）'],['fxt_9','升階 +9（紅）'],['fxt_10','升階 +10（金）'],['fxt_11','升階 +11（紫）'],['fxt_12','升階 +12（鑽石）'],['fx_broke','爆裝（黑煙）'],['fx_green','+1～+6 綠光']]},
  {v:'4.57',t:'新手導覽重做（22 步：伐木斧 → 挑戰 1-1 → 收成 → 強化 → 附魔 → 月卡 → 任務）',b:[['tutnew','用新存檔從頭跑導覽（會清空目前進度）'],['tutch','跳到導覽「挑戰 1-1」那一步（給伐木斧）'],['tutrestart','保留存檔，從第 1 步重看'],['tutnext','導覽跳下一步']]},
  {v:'4.56',t:'交易所可以賣道具（單價＋數量、買家可買一部分）',b:[['mkisell','上架道具（補 50 顆強化石）'],['mkisim','假裝有人買走我上架的道具一半（離線模擬）'],['mkopen','開啟交易所']]},
  {v:'4.54',t:'8 種新材料、附魔石、英靈・遺物掉落',b:[['matall','材料各 +100、附魔石 +20'],['dropsim','打倒 1000 隻的掉落'],['relicsim','遺物掉落機率＋開箱 1000 次統計'],['relic5','四種英靈・遺物各 +5'],['relic0','英靈・遺物全部歸零'],['relicbag','打開道具欄'],['relicinfo','點英靈・遺物看說明']]},
@@ -2529,10 +2531,10 @@ function sheetDev(){
      ${SFX_VAR_KEYS.length?`<div class="label">音效試用（v3.32，只是試聽，選定後再正式換）</div><div class="sfxalt">${SFX_VAR_KEYS.map(n=>`<div class="sfxalt-r"><span>${SFX_NO[n]}. ${SFX_NAME[n]}</span>${SFX_VARS[n].map(v=>`<button class="ui-btn ui-btn--chip chipbtn ${(SFX_VARS[n].includes(SFX_ALT[n])?SFX_ALT[n]||'':'')===v?'on':''}" data-act="sfxalt" data-k="${n}" data-v="${v}">${v||'原'}</button>`).join('')}</div>`).join('')}</div>
      <div class="devgrid">${B('sfxaltclr','全部切回原版')}</div>`:''}
      <div class="label">2. 指定下一次強化結果（只對測試武器有效）</div>
-     <div class="row">${[['ok','成功'],['fail','普通失敗'],['break','爆裝'],['saved','防爆'],['','不指定']].map(([k,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(DEV.force||'')===k?'on':''}" data-act="devforce" data-k="${k}">${n}</button>`).join('')}</div>
-     <div class="small muted">目前：${DEV.force?{ok:'成功',fail:'普通失敗',break:'爆裝',saved:'防爆'}[DEV.force]:'不指定（照正常機率）'}</div>
-     <div class="label">3. 只播放強化動畫（不做任何判定）</div><div class="small muted">爆裝／失敗／防爆時停在第幾道符文</div><div class="row">${[[-1,'隨機'],[0,'第 1 道'],[2,'第 3 道'],[4,'第 5 道'],[6,'第 7 道']].map(([v,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devStop??-1)===v?'on':''}" data-act="devset" data-k="devStop" data-v="${v}">${n}</button>`).join('')}</div><div class="small muted">武器類型</div><div class="row">${Object.entries({axe:'斧',sword:'劍',spear:'長矛',bow:'弓'}).map(([k,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devFxW||'axe')===k?'on':''}" data-act="devsets" data-k="devFxW" data-v="${k}">${n}</button>`).join('')}</div><div class="small muted">安全區（約 0.5 秒）</div><div class="devgrid">${B('fxs_ok','安全區・成功')}${B('fxs_fail','安全區・失敗')}</div>
-     <div class="small muted">危險區（約 2.8 秒）</div><div class="devgrid">${B('fx_ok','危險區・成功')}${B('fx_fail','危險區・失敗')}${B('fx_broke','危險區・爆裝')}${B('fx_saved','危險區・防爆')}</div>`,
+     <div class="row">${[['ok','成功'],['fail','普通失敗'],['break','爆裝'],['','不指定']].map(([k,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(DEV.force||'')===k?'on':''}" data-act="devforce" data-k="${k}">${n}</button>`).join('')}</div>
+     <div class="small muted">目前：${DEV.force?{ok:'成功',fail:'普通失敗',break:'爆裝'}[DEV.force]:'不指定（照正常機率）'}</div>
+     <div class="label">3. 只播放強化動畫（不做任何判定）</div><div class="small muted">爆裝／失敗時停在第幾道符文</div><div class="row">${[[-1,'隨機'],[0,'第 1 道'],[2,'第 3 道'],[4,'第 5 道'],[6,'第 7 道']].map(([v,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devStop??-1)===v?'on':''}" data-act="devset" data-k="devStop" data-v="${v}">${n}</button>`).join('')}</div><div class="small muted">武器類型</div><div class="row">${Object.entries({axe:'斧',sword:'劍',spear:'長矛',bow:'弓'}).map(([k,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devFxW||'axe')===k?'on':''}" data-act="devsets" data-k="devFxW" data-v="${k}">${n}</button>`).join('')}</div><div class="small muted">安定區 +1～+6（一定成功，不播動畫）</div><div class="devgrid">${B('fx_green','綠光')}</div>
+     <div class="small muted">危險區（約 2.8 秒）</div><div class="devgrid">${B('fx_ok','危險區・成功')}${B('fx_fail','危險區・失敗')}${B('fx_broke','危險區・爆裝')}</div>`,
    test:`<div class="devgrid">${B('tsec','安全設定檢查（v3.65）','btn-primary')}${B('tquick','執行快速測試')}${B('odds','強化機率表')}${B('curve','難度曲線：每關需求')}${B('tecon','執行 30 天經濟模擬')}${B('ticon','檢查 App icon')}</div>${ui.testOut?`<div class="test-out">${ui.testOut}</div>`:''}`,
    ui:tab==='ui'?uiGallery():'',
    save:`<div class="label">雲端存檔</div><div class="small" style="margin-bottom:6px">${AUTH?`帳號：${AUTH.user.email}<br>狀態：${CLOUD.busy?'同步中…':CLOUD.err?'⚠ '+CLOUD.err:CLOUD.last?'已同步 '+new Date(CLOUD.last).toLocaleTimeString():'尚未同步'}${CLOUD.dirty?'（有未上傳的變更）':''}`:'目前是訪客（只存在這支手機）'}</div>
@@ -2648,8 +2650,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='cname'){ui.sheet=null;render();return showName(!S.nick)}if(k==='sfxaltclr'){SFX_VAR_KEYS.forEach(n=>{if(SFX_ALT[n])sfxSetAlt(n,'')});toast('音效已全部切回原版');return render()}
   const m=S.mats,give=(b,q,lv,ench,traits)=>{makeWeapon(b,q,lv,traits,ench);toast('已放入道具欄')};
   if(k.startsWith('fxt_')){if(ui.busy)return;return testFx('ok',false,false,+k.slice(4))}   // v4.58 升階演出
-  if(k.startsWith('fxs_')){if(ui.busy)return;return testFx(k.slice(4),true)}
-  if(k.startsWith('fxg_')){if(ui.busy)return;return testFx(k.slice(4),false,true)}
+  if(k==='fx_green'){const f=FXW[ui.devFxW||'axe'];ui.enhLast=null;ui.sheet={t:'fxt',k:'ok',art:A(f[0]),next:3,danger:false};renderLayer();return greenFlash()}   // v4.64 安定區一定成功，只測綠光
   if(k.startsWith('fx_')){if(ui.busy)return;return testFx(k.slice(3))}
   if(k==='lbtie'){if(!AUTH)return toast('要先登入才能測試','bad');const R=LBR.rows,T=LBR.t,B0=S.best[0],me=AUTH.user.id,w={b:Object.keys(BP)[0],q:0,lv:0};
     S.best[0]={p:5000,...w,traits:[],ench:[],sub:true};LBR.t=1;LBR.rows={0:[{user_id:'a',nick:'早到',p:5000,w,updated_at:'2026-01-01T00:00:00Z'},{user_id:me,nick:'我',p:5000,w,updated_at:'2026-01-02T00:00:00Z'},{user_id:'b',nick:'晚到',p:5000,w,updated_at:'2026-01-03T00:00:00Z'}]};
