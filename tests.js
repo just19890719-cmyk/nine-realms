@@ -505,9 +505,19 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   return[T('N1 每關需求不低於難度曲線（中度）',!low.length,low.length?low.map(d=>d.v.name+' '+d.v.req+'<'+d.curve).join('、'):'20 關都 ≥ 曲線'),
     T('N2 1-1 以外普通 +0 不能直接交付',!free.length,free.length?free.map(d=>d.v.name).join('、'):'都要強化'),
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
+// v4.15 神明武器：滿加成弱於下一界、遺物只在神的關卡掉、覺醒等級和效果、稱號
+function gwTests(){const ck=godCheck(),bad=ck.filter(x=>!x.ok);
+  const rel=VILLAGES.map((v,i)=>[i,v.drops.filter(d=>d[0]==='hrelic'||d[0]==='srelic').map(d=>d[0])]).filter(x=>x[1].length),relOk=rel.length===2&&rel[0][0]===9&&rel[0][1][0]==='hrelic'&&rel[1][0]===19&&rel[1][1][0]==='srelic';
+  const S0=S;S=fresh();const lk0=!!bpLock(BP.g_hofund);S.villages.forEach((v,i)=>{if(i<10)v.status='cleared'});S.furnace=5;const lk1=!bpLock(BP.g_hofund)&&!!bpLock(BP.g_skadi);
+  const w=makeWeapon('g_hofund',0,6,[]),n6=awkN(w),p10=power(w,10),p11=power(w,11),b10=Math.round(15*12*1.15*enhMult(10)),b11=Math.round(15*12*1.15*enhMult(11)*1.1);
+  w.lv=7;const tr=timeReduction(9,w);w.lv=13;const n13=awkN(w);const t0=titleLocal('watcher');w.lv=15;const t1=titleLocal('watcher');S=S0;
+  return[T('GW1 神明武器滿加成弱於下一界的新材質',!bad.length,ck.map(x=>x.n+' ×'+x.max.toFixed(1)+'＜×'+x.next).join('；')),
+    T('GW2 遺物只在 1-10、2-10 掉，鍛造要 6 個',relOk&&BP.g_hofund.r.hrelic===6&&BP.g_skadi.r.srelic===6,rel.map(x=>vNo(x[0])+' '+x[1]).join('、')),
+    T('GW3 圖紙解鎖：收復 1-10 才能打霍夫德、斯卡蒂要 2-10',lk0&&lk1,`收復前鎖 ${lk0}；收復 1-10 後 ${lk1}`),
+    T('GW4 覺醒：+6 沒有、+7 狩獵 −3%、+11 攻擊力 ×1.1、+13 四段、+15 稱號',n6===0&&Math.abs(tr-.03)<1e-9&&p10===b10&&p11===b11&&n13===4&&!t0&&t1,`+6 段數 ${n6}；+7 縮短 ${tr}；+10 ${p10}/${b10}；+11 ${p11}/${b11}；+13 段數 ${n13}；稱號 ${t0}→${t1}`)]}
 function runTests(mode){
   if(mode==='econ')return econHtml(12)+econHtml(8);
-  const r=runAll({N:100000});r.res.push(...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...curveTests(),...vNeedTests(),...hitTests(),...enchTests(),...wsTests());const pass=r.res.filter(x=>x.pass).length;
+  const r=runAll({N:100000});r.res.push(...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...curveTests(),...vNeedTests(),...hitTests(),...enchTests(),...wsTests(),...gwTests());const pass=r.res.filter(x=>x.pass).length;
   return `<div><b>${pass}/${r.res.length} 通過</b>（${r.ms} 毫秒）</div>`+resHtml(r.res);
 }
 if(typeof module!=='undefined')module.exports={runAll,econReport,simulate,levelCheck};
