@@ -207,18 +207,20 @@ const bossWeak=(w,b)=>b.weak.cat?bpOf(w).cat===b.weak.cat:affixVal(w,b.weak.aff)
 const bossDmgOf=(w,b)=>Math.round(power(w)*(bossWeak(w,b)?1.5:1)*(1+gdBoss()/100)*(1+awkVal(w,'boss')/100));   // v4.15 神格覺醒首領傷害（伺服器 boss_pw 也一樣算）   // v3.98 公會首領傷害加成（伺服器 boss_pw 也一樣算）
 const stageGift=(g,b)=>Object.fromEntries(Object.entries(g).map(([k,v])=>[k==='M'?b.mat:k,v]));
 // 換週：傷害、全服階段歸零；駐守的武器留著，每小時傷害改用新首領的弱點重算
+// v4.38 全服首領討伐先拿掉（Mochi）：沒有入口、駐守的武器全部放回武器庫；資料和伺服器表留著，BOSS_OFF 改 false 就能恢復
+let BOSS_OFF=true;
 function evtSt(){const e=evtNow();let v=S.evt;
   if(!v||v.wk!==e.wk){const old=v&&Array.isArray(v.slots)?v.slots:[];v=S.evt={wk:e.wk,dmg:0,gs:0,slots:old.map(x=>x&&W(x.id)?{...x,pw:bossDmgOf(W(x.id),e.boss)}:null)}}v.gs=v.gs|0;v.dmg=+v.dmg||0;
-  if(!Array.isArray(v.slots))v.slots=[];v.slots=[0,1,2].map(i=>{const x=v.slots[i];return x&&W(x.id)?x:null});delete v.hits;delete v.day;return v}
+  if(!Array.isArray(v.slots))v.slots=[];v.slots=[0,1,2].map(i=>{const x=v.slots[i];return !BOSS_OFF&&x&&W(x.id)?x:null});delete v.hits;delete v.day;return v}
 // 駐守首領：第幾格（-1＝沒有）；換週也不會收回
-const bossSlotOf=w=>{const v=S.evt;return v&&Array.isArray(v.slots)?v.slots.findIndex(x=>x&&x.id===w.id):-1};
+const bossSlotOf=w=>{const v=S.evt;return !BOSS_OFF&&v&&Array.isArray(v.slots)?v.slots.findIndex(x=>x&&x.id===w.id):-1};
 const busyW=w=>where(w)>=0||bossSlotOf(w)>=0;
 // 本機估算的本週傷害（已收回的＋駐守中按時間累積，只算本週日 0 點以後）
 const bossAcc=(x,e=evtNow())=>x?Math.max(0,Math.floor(x.pw*(Math.min(NOW(),e.end)-Math.max(x.at,e.start))/3600e3)):0;
 const bossLive=()=>{const v=evtSt(),e=evtNow();return v.dmg+v.slots.reduce((a,x)=>a+bossAcc(x,e),0)};
 const bossRate=()=>evtSt().slots.reduce((a,x)=>a+(x?x.pw:0),0);
 const bossCands=()=>S.weapons.filter(w=>!w.test&&bossSlotOf(w)<0);
-const bossDot=()=>evtSt().slots.some(x=>!x)&&bossCands().length>0||bossStageN()>0||!!bossRankTier();
+const bossDot=()=>!BOSS_OFF&&(evtSt().slots.some(x=>!x)&&bossCands().length>0||bossStageN()>0||!!bossRankTier());
 // v3.70 每日任務（每天 0 點換日，進度＝今天的統計增加量）＋活躍度寶箱＋7 日簽到
 const DAILY=[
   {id:'login',n:'今天登入遊戲',pt:10,m:1,ic:'ic_check',p:()=>1},
@@ -1172,7 +1174,6 @@ const GUIDE=[
   {k:'vil',ic:'nav_village',n:'村莊委託與收成',s:'交武器收復村莊、自動狩獵收成',v:'4.37',h:'把武器交給村莊就能收復（v4.37 起不限類別、攻擊力和附魔，任何武器都可以），解鎖下一座村莊和新圖紙，第一次收復有金幣獎勵。<br>村莊詳情的「需要的武器」列出目前最高材質的圖紙，點一下直接去鍛造。<br>交付後武器會駐守狩獵，自動帶回金幣和材料，<b>離線最多累積 12 小時</b>。換上更強的武器狩獵更快。<br>「全部收成」只收目前在看的這一界；另一界可以收成時，地圖圖示會亮紅點。<br>狩獵策略：一般、素材追獵（材料多、金幣少）、稀有追蹤（稀有素材多、時間長）。<br><b>需求越往後越高</b>：每一界剛開始時普通品質大約要強化到 +6，越後面越需要好品質和 +7 以上的強化，第 9、10 關最難。'},
   {k:'hp',ic:'mon_1',n:'怪物血條',s:'打中才扣血，扣多少＝傷害',v:'4.26',h:'村莊卡上的怪物有血條，武器打中才會扣血，扣多少就是造成的傷害。<br>還沒交付或沒有駐守武器的村莊，點開詳情上方有怪物大圖，按 ‹ › 翻看這一界 10 隻（還沒解鎖的只顯示黑影）。<br>怪物被打倒就完成一輪狩獵，換下一隻。<br>點村莊看詳情，血條同步顯示，下方還有這隻北歐神話怪物的稱號和傳說。每一界的最後一關都是神，每一關的名稱、條件、掉落都跟那隻怪物或神的故事有關：打神要神聖、打龍要剋龍、火要霜寒。'},
   {k:'hit',ic:'cat_sword',n:'武器打法',s:'攻速不同、強化越高越常觸發附加效果',v:'4.37',h:'點村莊卡片上的怪物小圖，會展開戰鬥畫面（一次一個，再點一下收起）：騎士拿著駐守的武器打怪物，打中時怪物閃一下、停頓後被打退，跳出的數字就是傷害。戰鬥畫面收起時，卡片上的小怪物也是同樣的攻速和附加效果。<br>攻速：<b>劍</b> 1.0 秒、<b>斧</b> 1.3 秒（兩連斬）、<b>錘</b> 1.8 秒、<b>短刃</b> 0.6 秒、<b>長柄</b> 1.2 秒、<b>弓</b> 1.1 秒、<b>弩</b> 1.6 秒。<br>強化越高越常觸發附加效果（+1～+6 每級 2%，+7 起 16%～40%）：劍<b>會心</b>、斧<b>流血</b>、錘<b>震碎</b>、短刃<b>中毒</b>、長柄<b>貫穿</b>、弓<b>穿心</b>、弩<b>破甲</b>。狩獵時間和收成不受影響。'},
-  {k:'boss',ic:'boss_nidhogg',n:'每週首領',s:'派 3 把武器駐守，週日結算',v:'3.87',h:'全服一起打同一隻首領，整週開打，<b>每週日 00:00</b> 結算換下一隻。<br>最多派 3 把武器駐守，每小時傷害＝攻擊力，打中弱點 ×1.5，離線也會繼續打；結算後武器留著繼續打下一隻。<br>全服血量打到 25／50／75／100% 都有獎勵，上週個人傷害排名也有獎勵。<br>駐守首領的武器不能同時打村莊、強化、附魔、熔解、上架。'},
   {k:'realm',ic:'realm_2',n:'第二界 約頓海姆',s:'收復 1-10 後開放',v:'4.37',h:'收復 1-10 彩虹橋頭、打倒海姆達爾後開放第二界，用上方地圖列切換。<br>10 座新村莊、4 種新材料（巨人骨、永凍霜晶、雷鳴鐵、世界樹古根），第五階巨人武器要熔爐 Lv6。<br>v4.37 起巨人體重鍊已經拿掉，第二界材料用來鍛造巨人武器。'}]],
  ['成長與獎勵',[
   {k:'quest',ic:'ic_check',n:'每日任務・簽到・成就',s:'每天領活躍度寶箱',v:'3.74',h:'<b>每日任務</b>：完成登入、收成、鍛造、強化、熔解累積活躍度，40／70／100 點各開一個寶箱。<br><b>七日簽到</b>：漏簽不會歸零，第 7 天領完從第 1 天重新開始。<br><b>委託成就</b>：免費拿防爆卷和祝福石。'},
@@ -1214,7 +1215,7 @@ const queuedQty=()=>S.jobs.reduce((a,j)=>a+(j.qty||1),0);
 
 /* ---------- 行動（介面包裝） ---------- */
 function startForge(){const r=forgeStart(ui.bp,ui.qty,ui.useBp);if(typeof r==='string'){const el=document.querySelector('.sel-bp .lack-line,.sel-bp .goal');if(el)el.scrollIntoView({behavior:'smooth',block:'center'});return toast(r,'bad')}snd('forge_start');
-  ui.useBp=false;toast(`開始鍛造 ${BP[ui.bp].n}${r.qty>1?' ×'+r.qty:''}，完成需要 ${fmtT(r.end-r.start)}`,'ok');ui.ftab='queue';render()}
+  ui.useBp=false;toast(`開始鍛造 ${BP[ui.bp].n}${r.qty>1?' ×'+r.qty:''}，完成需要 ${fmtT(r.end-r.start)}`,'ok');render()}
 function maxQty(){const b=BP[ui.bp];if(!bulkOn()||bpLock(b))return 1;const c=recipe(b);let n=10;
   for(const k in c)n=Math.min(n,Math.floor(S.mats[k]/c[k]));n=Math.min(n,Math.floor(S.gold/goldOf(b)),CAP_WEAPONS-S.weapons.length-queuedQty());return Math.max(1,n)}
 function collect(i,silent){const r=collectCore(i);if(!r){if(!silent)toast('還沒有可收成的狩獵。');return null}
@@ -1699,7 +1700,8 @@ function bpReveal(){requestAnimationFrame(()=>{const sel=document.querySelector(
   const dy=Math.min(goal-bot,row.getBoundingClientRect().top-top);if(dy>4)scrollBy({top:dy,behavior:'smooth'})})}
 function viewForge(){
   const done=S.jobs.filter(j=>NOW()>=j.end).length;
-  const tabs=[['bp','圖紙'],['mat','材料'],['queue',`鍛造中${S.jobs.length?' (1)':''}`]];
+  if(ui.ftab==='queue')ui.ftab='bp';   // v4.38 「鍛造中」分頁拿掉（Mochi）：進度條改放在圖紙頁的開始鍛造下面
+  const tabs=[['bp','圖紙'],['mat','材料']];
   let body='';
   if(ui.ftab==='bp'){
     const cats=['all',...Object.keys(CATS).filter(c=>BPS.some(b=>b.cat===c&&cleared()>=b.unlock))];
@@ -1722,7 +1724,7 @@ function viewForge(){
       ${S.items.blueprint?`<label class="toggle">${img('it_blueprint')}<input type="checkbox" id="usebp" ${ui.useBp?'checked':''}>使用傳說圖紙（剩 ${S.items.blueprint}，第一把保證傳說）</label>`:''}
       <div class="qtyrow"><span class="label">數量</span>${bulkOn()?[1,5,10].map(n=>`<button class="ui-btn ui-btn--chip qchip ${qty===n?'on':''}" data-act="qty" data-k="${n}">×${n}</button>`).join(''):'<span class="small muted qhint">收復 1-5 後開放批量鍛造</span>'}
        <button class="ui-btn ui-btn--primary btn btn-primary forge-go ${ok?'':'is-disabled'}" data-act="forge" ${ok?'':'aria-disabled="true"'}><span class="fg-t">開始鍛造</span><span class="fg-s">${fmt(g)} 金幣・${fmtT(forgeSec(b)*1000*(qty>1?qty*.6:1)/S.speed)}</span></button></div>
-      ${!ok&&!lacks.length?`<div class="small t-danger forge-why">${why}</div>`:''}
+      ${S.jobs.length?S.jobs.map((j,n)=>`<div class="ui-card ui-card--row qrow">${wArt(j.b,{cls:'qimg'})}<div class="grow"><div class="row small"><b class="grow">${BP[j.b].n}${j.qty>1?' ×'+j.qty:''}${j.bp?'・傳說圖紙':''}</b><span class="num" data-jtime="${n}">${NOW()>=j.end?'完成':'剩 '+fmtT(j.end-NOW())}</span></div><div class="ui-prog prog"><i data-jprog="${n}" style="width:${Math.max(0,Math.min(100,(NOW()-j.start)/(j.end-j.start)*100))}%"></i></div></div>${btn('取消','cancelJob',{cls:'btn-sec sm',attrs:`data-i="${n}"`})}</div>`).join(''):!ok&&!lacks.length?`<div class="small t-danger forge-why">${why}</div>`:''}
       ${lackTxt?`<div class="lack-line">缺少：${lackTxt}${lackT1?` ${btn('到商人購買','tab',{cls:'btn-sec sm',attrs:'data-k="shop"'})}`:''}</div>`:''}
       `}</div>
 `;
@@ -1768,7 +1770,7 @@ function sheetTalent(){const r=S.rep,need=repNeed(r.lv),pts=repPts(),bx=repBox(r
       ${mx?'<span class="small t-ok tal-max">已滿</span>':btn('+1','talup',{cls:'btn-primary sm tal-btn',attrs:`data-k="${k}"`,dis:!pts})}</div>`}).join('')}</div>
    ${allMax?'<div class="small t-ok center">天賦全部滿級！之後每升一級仍然會拿到聲望寶箱。</div>':''}`}
 // v3.72 每週限時活動：村莊頁橫幅與首領討伐視窗
-function evtBanner(){const e=evtNow(),left=fmtLeft(e.end-NOW());if(AUTH&&Date.now()-BOSS_G.t>60000)setTimeout(()=>bossBoard(),0);
+function evtBanner(){if(BOSS_OFF)return'';const e=evtNow(),left=fmtLeft(e.end-NOW());if(AUTH&&Date.now()-BOSS_G.t>60000)setTimeout(()=>bossBoard(),0);
   const rk=bossRankTier(),rkLine=rk?`<button class="evt-rk" data-act="evtopen">${img('it_gems','evt-rk-ic')}<span class="grow">上週討伐 ${rk.b.n}：你排第 ${rk.g.rank} 名，排名獎勵可以領了</span><span class="evt-go">領取 ›</span><i class="dot"></i></button>`:'';
   const v=evtSt(),g=bossBoardNow(),f=g?Math.min(1,g.total/g.hp):0;
   return `<button class="evt-ban boss" data-act="evtopen">${img(e.boss.art,'evt-boss')}<div class="grow"><b>全服首領討伐</b><div class="small"><span class="nobr">${e.boss.n}</span>・<span class="nobr">駐守 ${v.slots.filter(Boolean).length}/${BOSS_SLOTS}</span>${bossRate()?`・<span class="nobr">每小時 ${fmt(bossRate())}</span>`:''}</div>${g?`<i class="cb-bar hp"><i style="width:${(1-f)*100}%"></i></i>`:''}<div class="small muted">${g?`<span class="nobr">全服血量 ${Math.round((1-f)*100)}%</span>・`:''}<span class="nobr">剩 ${left} 結算</span></div></div><span class="evt-go">${v.slots.some(x=>!x)?'派遣':'查看'} ›</span>${bossDot()?'<i class="dot"></i>':''}</button>${rkLine}`}
@@ -2506,7 +2508,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
 let HERO_KEEP=null;const WARM=new Map();
 function warmArt(html){(String(html).match(/art\/[\w\/.-]+?\.(?:webp|png)(?:\?v=\d+)?/g)||[]).forEach(u=>{if(WARM.has(u)||WARM.size>=400)return;const im=new Image();im.src=u;WARM.set(u,im);if(im.decode)im.decode().catch(()=>{})})}
 let WARM_T=0;function warmTabs(){clearTimeout(WARM_T);WARM_T=setTimeout(()=>{if(QUIET)return;const ft=ui.ftab;
-  [['bp'],['mat'],['queue']].forEach(([f])=>{ui.ftab=f;try{warmArt(viewForge())}catch(e){}});ui.ftab=ft;
+  [['bp'],['mat']].forEach(([f])=>{ui.ftab=f;try{warmArt(viewForge())}catch(e){}});ui.ftab=ft;
   [viewArmory,viewVillage,viewShop].forEach(f=>{try{warmArt(f())}catch(e){}});warmArt('art/dp/fog_band.webp art/bg_forge.webp')},400)}
 function render(){
   if(QUIET)return;if(ui.nwOn&&!(ui.sheet&&ui.sheet.t==='set'&&ui.sheet.k==='n')){ui.nwOn=false;nwMarkAll()}   // v4.03 離開更新公告頁才把 NEW 消掉
@@ -2584,7 +2586,7 @@ document.addEventListener('click',e=>{
   ({tab:()=>{if(ui.busy&&ui.fxDone)ui.fxDone();ui.pickV=null;if(ui.tab==='armory'&&d.k!=='armory'&&S.weapons.some(wNew)){S.seenW=S.nextId-1;save()}if(d.k==='market'&&S.mkNew){S.mkNew=0;save()}ui.tab=d.k;if(d.k==='market'&&(AUTH||mkMock())&&Date.now()-MK.t>20000)setTimeout(mkLoad,0);ui.sheet=null;ui.enhLast=null;render();warmTabs();d.k==='village'?scrollToNextVillage():scrollTo(0,0)},close:()=>{if(ui.busy)return;ui.sheet=null;ui.enhLast=null;ui.riskArm=null;ui.riskOk=null;render()},scrim:()=>{if(ui.busy)return;ui.sheet=null;ui.enhLast=null;render()},dev:()=>{ui.sheet={t:'d'};render()},achopen:()=>{ui.qTab=signReady()?'s':boxReadyN()||!achReadyN()?'d':'o';ui.sheet={t:'a'};render()},
    set:()=>{ui.result=null;ui.sheet={t:'set'};render()},setk:()=>{ui.sheet={t:'set',k:d.k||null};ui.glOpen=null;render();const sc=document.querySelector('.sheet');if(sc)sc.scrollTop=0},
    nwtog:()=>{ui.nwOpen=ui.nwOpen===d.k?null:d.k;render()},gltog:()=>{ui.glOpen=ui.glOpen===d.k?null:d.k;if(ui.glOpen)glMark(d.k);render()},
-   sheetW:()=>{ui.sheet={t:'ws',k:'w'};render()},sheetM:()=>{ui.sheet={t:'ws',k:'m'};render()},sheetT:()=>{ui.sheet={t:'ws',k:'t'};render()},evtopen:()=>{ui.sheet={t:'evt'};render()},bossw:()=>{ui.sheet={t:'bw',r:+d.r,j:+d.j};render()},
+   sheetW:()=>{ui.sheet={t:'ws',k:'w'};render()},sheetM:()=>{ui.sheet={t:'ws',k:'m'};render()},sheetT:()=>{ui.sheet={t:'ws',k:'t'};render()},evtopen:()=>{if(BOSS_OFF)return;ui.sheet={t:'evt'};render()},bossw:()=>{ui.sheet={t:'bw',r:+d.r,j:+d.j};render()},
    chatopen:()=>chatOpenSheet(),chattab:()=>{CHAT.tab=d.k;CHAT.pick=false;if(d.k==='s')CHAT.sysUnread=0;else if(d.k==='g')CHAT.gunread=0;else CHAT.unread=0;render();const L=document.getElementById('cxList');if(L)L.scrollTop=L.scrollHeight;if(chatOn())chatFetch(true)},
    chatq:()=>{const el=document.getElementById('cxIn');if(!el)return;const v=(el.value+(el.value&&!/\s$/.test(el.value)?' ':'')+d.k);el.value=Array.from(v).slice(0,CHAT_MAX).join('');CHAT.draft=el.value;el.focus()},chatsend:()=>chatSend(),cheer:()=>cheerAdd(+d.id),chatsys:()=>{if(chatOn()||chatMock())chatOpenSheet('s')},chatpick:()=>{CHAT.pick=!CHAT.pick;chatPaint(!CHAT.pick);const L=document.getElementById('cxList');if(L&&CHAT.pick)L.scrollTop=0;const b=document.querySelector('.cx-wb');if(b){b.textContent=CHAT.pick?'取消':'武器';b.classList.toggle('on',CHAT.pick)}},chatsendw:()=>chatSend(+d.id),
    chatw:()=>{const x=[...CHAT.rows,...CHAT.g].find(r=>r.id===+d.m);if(!x||!x.w||!BP[bpId(x.w.b)])return;ui.result={t:'info',title:x.mine?'我的武器':`${esc(x.nick)}的武器`,html:mkWeaponBox(x.w)};render()},
@@ -2728,7 +2730,7 @@ const TUT=[
  // 三、重型／輕型
  {t:'回<b>鐵匠鋪</b>再打一把<b>伐木斧</b>，這把拿來練習<b>強化</b>。',sel:()=>ui.result?'.modal-card [data-act=rclose]':ui.sheet?'.sheet [data-act=close]':ui.tab!=='forge'?'.nav [data-act=tab][data-k=forge]':ui.ftab!=='bp'?'[data-act=ftab][data-k=bp]':ui.bp!=='t1_woodaxe'?'[data-act=bp][data-k=t1_woodaxe]':'[data-act=forge]',done:()=>S.jobs.length>0||!!tutW()},
  {t:'鍛造中…看下方的<b>進度條</b>，打好後會自動放進武器庫。',tf:()=>{const j=S.jobs[0];return j&&!tutW()?`鍛造中…剩 <b>${Math.max(0,Math.ceil((j.end-NOW())/1000))} 秒</b>。看下方的<b>進度條</b>，打好後會自動放進武器庫。`:'打好了！打開<b>武器庫</b>看看這把新的伐木斧。'},
-  sel:()=>{if(!tutW()&&!S.jobs.length&&tutOn()){setTimeout(()=>{if(!tutW()&&!S.jobs.length)tutStep(S.tut-1)},0);return null}return !tutW()?(ui.tab!=='forge'?'.nav [data-act=tab][data-k=forge]':ui.ftab!=='queue'?'[data-act=ftab][data-k=queue]':'.qrow .prog'):'.nav [data-act=tab][data-k=armory]'},done:()=>!!tutW()&&ui.tab==='armory'},
+  sel:()=>{if(!tutW()&&!S.jobs.length&&tutOn()){setTimeout(()=>{if(!tutW()&&!S.jobs.length)tutStep(S.tut-1)},0);return null}return !tutW()?(ui.tab!=='forge'?'.nav [data-act=tab][data-k=forge]':ui.ftab!=='bp'?'[data-act=ftab][data-k=bp]':'.qrow .prog'):'.nav [data-act=tab][data-k=armory]'},done:()=>!!tutW()&&ui.tab==='armory'},
  // 四、強化
  {t:'點這把<b>新的伐木斧</b>打開武器詳情。',sel:()=>ui.tab!=='armory'?'.nav [data-act=tab][data-k=armory]':tutW()?`[data-act=wopen][data-id="${tutW().id}"]`:null,done:()=>ui.sheet&&ui.sheet.t==='w'},
  {t:'這裡看得到武器的<b>攻擊力、附魔</b>。按「<b>強化</b>」。',sel:()=>ui.sheet&&ui.sheet.t==='w'?'.sheet [data-act=wmode][data-m=enh]':null,done:()=>ui.sheet&&ui.sheet.t==='w'&&ui.sheet.m==='enh'},

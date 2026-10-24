@@ -401,7 +401,11 @@ function realm2Tests(){const res=[];
     res.push(T('K3 巨人體重鍊已拿掉：舊的重鍊等級不加攻擊力、武器詳情沒有重鍊按鈕',power(w)===p0&&!/重鍊|data-m="rf"/.test(h),`攻擊力 ${p0}→${power(w)}`));
   });
   return res}
-function evtTests(){const res=[];
+// v4.38 首領先關掉：照樣把首領邏輯測一遍（暫時打開），另外確認關掉時沒有入口、武器不會被首領佔住
+function evtTests(){const b0=BOSS_OFF;let r;BOSS_OFF=false;try{r=evtTests0()}finally{BOSS_OFF=b0}
+  const S0=S;S=fresh();const w=makeWeapon('t1_woodaxe',0,0,[]);S.evt={wk:evtNow().wk,dmg:0,gs:0,slots:[{id:w.id,at:NOW(),pw:10},null,null]};const off=BOSS_OFF&&evtBanner()===''&&bossSlotOf(w)<0&&!bossDot()&&evtSt().slots.every(x=>!x);S=S0;
+  return[...r,T('J0 首領討伐關閉：村莊頁沒有橫幅、駐守的武器放回武器庫',!!off,off?'正常':'還看得到首領或武器被佔住')]}
+function evtTests0(){const res=[];
   withSandbox(()=>{const keepW=EVT_WK;try{
     // v3.87 整週首領：台灣時間週日 00:00 換週；取消雙倍收成
     const sun=Date.UTC(2026,9,25,0,0)-TZ8,sat=sun-60e3,mon=sun+DAY,nsun=sun+7*DAY;
