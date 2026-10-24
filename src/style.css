@@ -1552,9 +1552,6 @@ html.scrimmed .cbar{display:none}
 .md-strip button img{display:block;width:100%;aspect-ratio:1;object-fit:cover}
 .md-strip button.on{opacity:1;outline:1.5px solid var(--gold);outline-offset:-1.5px}
 /* v4.14 村莊需求：可點的圖紙列＋附魔說明 */
-.vneed .hscroll{margin-top:6px}
-.vneed-aff{display:flex;align-items:center;gap:8px;margin-top:8px;padding:6px 8px;border-radius:6px;background:rgba(0,0,0,.25)}
-.vneed-aff img{width:28px;height:28px;flex:none}
 /* v4.28 附魔詞條池：還沒學會的詞條 */
 .ec-t.ec-lk{opacity:.5}.ec-t.ec-lk img{border-radius:0;object-fit:contain;padding:3px}.ec-t.ec-lk em{color:var(--ash)}
 /* v4.15 神明武器：神格覺醒面板、光環、標籤 */
