@@ -296,7 +296,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.18';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.19';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -353,7 +353,7 @@ function cloudKicked(){if(CLOUD.kicked||CLOUD.leaving)return;   // 頁面正在�
   if(CLOUD_ONLY){S=sanitize(fresh());ui.sheet=null;ui.result=null;render()}
   if(tab)return showKickTab();showLogin('這個帳號已經在其他裝置登入，這裡已自動登出。')}
 function showKickTab(){document.body.classList.add('gating');const g=gateEl();g.className='gate-login gate-loading';g.onclick=e=>{if(e.target.closest('[data-gk]'))location.reload()};
-  g.innerHTML=`<div class="gt-scene"><img class="gt-ly gt-bg" src="${LG('key_bg')}" alt=""><div class="gt-vig"></div></div><img class="gt-logo" src="${LG('logo')}" alt="九界鐵匠"><div class="gt-box gt-load"><div class="gt-ttl">遊戲已在另一個分頁開啟</div><div class="small muted center">同一個帳號一次只能在一個地方玩。要在這裡繼續，請按下方按鈕（另一個分頁會自動停止）。</div><button type="button" class="ui-btn ui-btn--primary btn btn-primary big" data-gk="1">在這裡繼續玩</button></div>`}
+  g.innerHTML=`<div class="gt-scene"><img class="gt-ly gt-bg" src="${LG('key2_bg')}" alt=""><div class="gt-vig"></div></div><img class="gt-logo" src="${LG('logo')}" alt="九界鐵匠"><div class="gt-box gt-load"><div class="gt-ttl">遊戲已在另一個分頁開啟</div><div class="small muted center">同一個帳號一次只能在一個地方玩。要在這裡繼續，請按下方按鈕（另一個分頁會自動停止）。</div><button type="button" class="ui-btn ui-btn--primary btn btn-primary big" data-gk="1">在這裡繼續玩</button></div>`}
 if(typeof window!=='undefined')window.addEventListener('storage',e=>{if(e.key==='nrs-sid'&&CLOUD.ready&&e.newValue&&e.newValue!==SID)cloudKicked()});
 async function cloudCheckSession(){if(!AUTH||!CLOUD.ready||CLOUD.kicked)return;try{const r=await sbRest('saves?select=session_id&user_id=eq.'+AUTH.user.id);if(r&&r[0]&&r[0].session_id&&r[0].session_id!==SID)cloudKicked()}catch(e){}}
 /* ---------- v3.70 全服強化跑馬燈：+10 以上成功或爆裝 → 存檔上傳後交給伺服器核對再公告；每 30 秒拿別人的公告 ---------- */
@@ -656,7 +656,7 @@ async function cloudSetNick(n){const old=S.nick;S.nick=n;
   catch(e){S.nick=old;if(/session/i.test(e.message)){cloudKicked();throw new Error('這個帳號已經在其他手機登入')}throw e}}
 // 取暱稱畫面（註冊後、或之前沒取過暱稱時出現；頭像→鐵匠等級可改名）
 function showName(first,preview){document.body.classList.add('gating');const g=gateEl();g.className='gate-login gate-name';
-  g.innerHTML=`<div class="gt-scene"><img class="gt-ly gt-bg" src="${LG('key_bg')}" alt=""><img class="gt-ly gt-glow" src="${LG('key_glow')}" alt=""><div class="gt-fog"></div><div class="gt-embers">${gEmb(10)}</div><div class="gt-vig"></div></div>
+  g.innerHTML=`<div class="gt-scene"><img class="gt-ly gt-bg" src="${LG('key2_bg')}" alt=""><img class="gt-ly gt-glow" src="${LG('key2_glow')}" alt=""><div class="gt-fog"></div><div class="gt-embers">${gEmb(10)}</div><div class="gt-vig"></div></div>
    <img class="gt-logo" src="${LG('logo')}" alt="九界鐵匠">
    <form class="gt-box" onsubmit="return false"><div class="gt-ttl">${first?'為你的鐵匠取個名字':'修改暱稱'}</div>
     <input id="gtNick" type="text" maxlength="16" autocomplete="off" placeholder="2～8 個字，不能和別人重複" value="${first?'':(S.nick||'')}">
@@ -1116,6 +1116,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.19',d:'10/24',t:'全新開場故事與封面',b:['登入畫面換成新封面：鐵匠站在崖邊，直視天上的<b>奧丁（眾神之父）</b>','開場故事改成 6 張：諸神逼鐵匠為祂們鍛造神兵，鐵匠拒絕，被奪走一切後在鐵爐村重燃熔爐，<b>武裝九界的勇士向諸神宣戰</b>','登入畫面下方可以按「重看開場故事」']},
  {v:'4.18',d:'10/24',t:'封測暫停・全面改版中',b:['感謝各位鐵匠這幾天參與封測！','遊戲還缺少許多機制，我們決定<b>全面改版</b>玩法，改版期間暫停開放遊玩','重新開放時，<b>所有進度都會清除</b>，大家從頭開始','改版很快就會完成，敬請期待，再次感謝大家的測試與回饋！']},
  {v:'4.15',d:'10/24',t:'神明武器與神格覺醒',b:['打倒神的關卡會掉<b>神的遺物</b>：1-10 掉霍夫德劍柄、2-10 掉斯卡蒂弓臂（每輪 20%）','收集 6 個遺物就能鍛造<b>霍夫德之劍</b>、<b>斯卡蒂之弓</b>，是那一界最強的武器','神明武器強化到 +7／+9／+11／+13／+15 會逐段<b>神格覺醒</b>，+15 有專屬稱號、全服公告和金色光環','強化成功率和爆裝規則都不變'],g:['god']},
  {v:'4.14',d:'10/24',t:'每一關都跟故事對得上',b:['關卡改名：1-1 魅影林場、1-5 鴉巢堡、1-6 巨怪灣、1-7 巨魔山口、2-2 鐵森林、2-3 巨鷹之崖、2-6 蠕龍礦坑、2-8 烏特加德城','條件跟著故事走：打神一定要<b>神聖</b>（2-10 斯卡蒂改成<b>弓＋神聖</b>）、2-6 蠕龍要<b>剋龍</b>、1-9 火焰騎兵要<b>霜寒</b>','掉落也對得上：1-10 掉新材料<b>虹橋碎晶</b>，2-6 蠕龍掉龍鱗；1-3 是對月長嚎的哈提、1-4 是咬住太陽的斯庫爾','村莊詳情多了「需要的武器」：列出這類所有圖紙，點一下直接跳到那把的鍛造頁','已經駐守的武器不會被收回，換武器時才看新條件'],g:['vil','hp','ench']},
@@ -2644,11 +2645,14 @@ function dpInit(){if(typeof window==='undefined'||window._dpOn)return;window._dp
   window._dpKick=()=>{if(!run){run=1;requestAnimationFrame(loop)}};const _set=set;set=(a,b)=>{_set(a,b);window._dpKick()}}
 
 /* ---------- v3.20 登入畫面＋開場故事（景深圖層；雲端帳號尚未接上前，登入／註冊先提示，用訪客進入） ---------- */
-const STORY=[['story_1','世界樹的枝幹開始枯裂，黑暗吞沒了九界，巨人與惡龍從迷霧中甦醒。','s1'],
- ['story_2','人類之境米德加德，村莊被狼群與巨人包圍，手上只剩生鏽的斧頭和斷弦的弓。','s2'],
- ['story_3','一名流浪的鐵匠，揹著鐵砧與鐵鎚，在黎明時走進了鐵爐村。','s3'],
- ['story_4','熄滅多年的熔爐再次燃起──為村莊打造武器，奪回九界，從這一鎚開始。','s4']];
-const STORY_HAS={story_1:1,story_2:1,story_3:1,story_4:1};
+// v4.19 新主線開場（6 張）：諸神逼鐵匠鍛造神兵 → 拒絕 → 懲罰 → 重燃熔爐 → 向諸神宣戰
+const STORY=[['op_1','諸神黃昏將至，眾神之父奧丁召集九界的神，準備最後一戰。','s1'],
+ ['op_2','祂們找上世間手藝最好的鐵匠：<br>「為諸神鍛造神兵，否則人類滅亡。」','s2'],
+ ['op_3','鐵匠放下鐵鎚：<br>「我的爐火，不為屠戮凡人而燃。」','s3'],
+ ['op_4','諸神降下懲罰，熔爐被熄、故鄉被焚，祂們的爪牙湧入米德加德。','s4'],
+ ['op_5','鐵匠逃到邊境的鐵爐村，重新點燃熔爐。','s5'],
+ ['op_6','「我要武裝九界的勇士，向諸神宣戰。」<br>從這一鎚開始。','s6']];
+const STORY_HAS={op_1:1,op_2:1,op_3:1,op_4:1,op_5:1,op_6:1};
 const LG=n=>'art/login/'+n+'.webp';
 function gateEl(){let g=document.getElementById('gate');if(!g){g=document.createElement('div');g.id='gate';document.body.appendChild(g)}return g}
 function gateClose(){const g=document.getElementById('gate');if(g){g.classList.add('out');setTimeout(()=>{if(g.classList.contains('out'))g.remove()},450)}document.body.classList.remove('gating')}
@@ -2657,23 +2661,23 @@ const gEmb=(n,cls)=>Array.from({length:n},(_,k)=>`<img class="gt-em e${k} ${cls|
 async function verCheck(){if(!CLOUD_ONLY||CLOUD.outdated)return false;try{const r=await fetch('version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return false;const j=await r.json();
   if(j&&j.v&&j.v!==BUILD_ID){if(CLOUD.ready)await cloudPush(true).catch(()=>{});CLOUD.outdated=j.v;showUpdate(j.v);return true}}catch(e){}return false}
 function showUpdate(v){document.body.classList.add('gating');const g=gateEl();g.className='gate-login gate-loading';g.onclick=e=>{if(e.target.closest('[data-gu]'))location.replace(location.pathname+'?v='+encodeURIComponent(v)+'&t='+Date.now())};
-  g.innerHTML=`<div class="gt-scene"><img class="gt-ly gt-bg" src="${LG('key_bg')}" alt=""><div class="gt-vig"></div></div><img class="gt-logo" src="${LG('logo')}" alt="九界鐵匠"><div class="gt-box gt-load"><div class="gt-ttl">有新版本 v${esc(v)}</div><div class="small muted center">目前是 v${BUILD_ID}，需要更新才能繼續玩。你的進度已存到雲端，不會遺失。</div><button type="button" class="ui-btn ui-btn--primary btn btn-primary big" data-gu="1">立即更新</button></div>`}
+  g.innerHTML=`<div class="gt-scene"><img class="gt-ly gt-bg" src="${LG('key2_bg')}" alt=""><div class="gt-vig"></div></div><img class="gt-logo" src="${LG('logo')}" alt="九界鐵匠"><div class="gt-box gt-load"><div class="gt-ttl">有新版本 v${esc(v)}</div><div class="small muted center">目前是 v${BUILD_ID}，需要更新才能繼續玩。你的進度已存到雲端，不會遺失。</div><button type="button" class="ui-btn ui-btn--primary btn btn-primary big" data-gu="1">立即更新</button></div>`}
 if(typeof window!=='undefined'){setInterval(()=>{if(!document.hidden)verCheck()},60000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')verCheck()});
   window.addEventListener('pagehide',()=>{if(AUTH&&CLOUD.ready){save();cloudPush(true,true)}CLOUD.leaving=true});window.addEventListener('pageshow',e=>{if(e.persisted)CLOUD.leaving=false})}
 // v4.18 封測暫停公告（全畫面擋住）；preview=開發者工具預覽，可關閉
 const MAINT_TXT=['感謝各位鐵匠這幾天參與封測！','目前遊戲還缺少許多機制，我們決定進行<b>全面改版</b>，重新打造玩法。改版期間暫停開放遊玩。','<b class="mt-warn">重新開放時，所有進度都會清除，大家將從頭開始。</b>','改版很快就會完成，敬請期待。再次感謝大家的測試與回饋！'];
 function showMaint(msg,preview){document.body.classList.add('gating');const g=gateEl();g.className='gate-login gate-maint';
-  g.innerHTML=`<div class="gt-scene"><img class="gt-ly gt-bg" src="${LG('key_bg')}" alt=""><img class="gt-ly gt-glow" src="${LG('key_glow')}" alt=""><div class="gt-fog"></div><div class="gt-embers">${gEmb(10)}</div><div class="gt-vig"></div></div><img class="gt-logo" src="${LG('logo')}" alt="九界鐵匠">
+  g.innerHTML=`<div class="gt-scene"><img class="gt-ly gt-bg" src="${LG('key2_bg')}" alt=""><img class="gt-ly gt-glow" src="${LG('key2_glow')}" alt=""><div class="gt-fog"></div><div class="gt-embers">${gEmb(10)}</div><div class="gt-vig"></div></div><img class="gt-logo" src="${LG('logo')}" alt="九界鐵匠">
    <div class="gt-box mt-box"><div class="gt-ttl">封測暫停・全面改版中</div><div class="mt-body">${MAINT_TXT.map(t=>`<p>${t}</p>`).join('')}<p class="mt-sign">— 九界鐵匠 開發團隊</p></div>
     ${msg?`<div class="gt-msg small bad">${esc(msg)}</div>`:''}${preview?'<button type="button" class="ui-btn ui-btn--secondary btn btn-sec" data-mt="close">關閉預覽</button>':''}
     <div class="gt-ver small"><button type="button" class="gt-replay" data-mt="admin">管理員登入</button>・${BUILD}</div></div>`;
   g.onclick=e=>{const b=e.target.closest('[data-mt]');if(!b)return;snd('ui_click');if(b.dataset.mt==='close')return gateClose();if(b.dataset.mt==='admin')showLogin()}}
 function showLoading(t){document.body.classList.add('gating');const g=gateEl();g.className='gate-login gate-loading';g.onclick=null;
-  g.innerHTML=`<div class="gt-scene"><img class="gt-ly gt-bg" src="${LG('key_bg')}" alt=""><img class="gt-ly gt-glow" src="${LG('key_glow')}" alt=""><div class="gt-fog"></div><div class="gt-embers">${gEmb(10)}</div><div class="gt-vig"></div></div><img class="gt-logo" src="${LG('logo')}" alt="九界鐵匠"><div class="gt-box gt-load"><div class="gt-ttl">${t}</div></div>`}
+  g.innerHTML=`<div class="gt-scene"><img class="gt-ly gt-bg" src="${LG('key2_bg')}" alt=""><img class="gt-ly gt-glow" src="${LG('key2_glow')}" alt=""><div class="gt-fog"></div><div class="gt-embers">${gEmb(10)}</div><div class="gt-vig"></div></div><img class="gt-logo" src="${LG('logo')}" alt="九界鐵匠"><div class="gt-box gt-load"><div class="gt-ttl">${t}</div></div>`}
 function showLogin(msg){document.body.classList.add('gating');const g=gateEl();g.className='gate-login';
   g.innerHTML=`<div class="gt-scene">
-    <img class="gt-ly gt-bg" src="${LG('key_bg')}" alt=""><img class="gt-ly gt-glow" src="${LG('key_glow')}" alt="">
-    <img class="gt-fg" src="${LG('key_fg')}" alt="">
+    <img class="gt-ly gt-bg" src="${LG('key2_bg')}" alt=""><img class="gt-ly gt-glow" src="${LG('key2_glow')}" alt="">
+    <img class="gt-fg" src="${LG('key2_fg')}" alt="">
     <div class="gt-fog"></div><div class="gt-embers">${gEmb(10)}</div><div class="gt-vig"></div></div>
    <img class="gt-logo" src="${LG('logo')}" alt="九界鐵匠">
    <form class="gt-box" onsubmit="return false">
@@ -2694,7 +2698,7 @@ function showLogin(msg){document.body.classList.add('gating');const g=gateEl();g
         .catch(e=>{say(SB_ERR(e.message),1)}).finally(()=>{delete g.dataset.busy;g.querySelectorAll('[data-gt]').forEach(x=>x.disabled=false)});return}}}
 function showStory(){document.body.classList.add('gating');const list=STORY.filter(s=>STORY_HAS[s[0]]);let i=0;const g=gateEl();g.className='gate-story';
   const draw=()=>{const [img,txt,cls]=list[i];
-    g.innerHTML=`<div class="st-scene ${cls}" data-gt="next"><img class="st-bg" src="${LG(img)}" alt=""><div class="st-fx">${cls==='s4'?gEmb(10,'big'):cls==='s1'?[0,1,2,3,4,5].map(k=>`<img class="st-mote m${k}" src="${A('dp/'+(k%2?'fx_mote_gold':'fx_dust_gold'))}" alt="">`).join(''):[0,1,2,3,4,5].map(k=>`<img class="st-mote m${k}" src="${A('dp/fx_mote_gold')}" alt="">`).join('')}</div><div class="st-fog"></div><div class="gt-vig"></div>
+    g.innerHTML=`<div class="st-scene ${cls}" data-gt="next"><img class="st-bg" src="${LG(img)}" alt=""><div class="st-fx">${cls==='s4'||cls==='s6'?gEmb(10,'big'):cls==='s5'?gEmb(8):cls==='s1'?[0,1,2,3,4,5].map(k=>`<img class="st-mote m${k}" src="${A('dp/'+(k%2?'fx_mote_gold':'fx_dust_gold'))}" alt="">`).join(''):[0,1,2,3,4,5].map(k=>`<img class="st-mote m${k}" src="${A('dp/fx_mote_gold')}" alt="">`).join('')}</div><div class="st-fog"></div><div class="gt-vig"></div>
      <div class="st-txt"><p>${txt}</p><div class="st-dots">${list.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('')}</div><span class="small">點畫面繼續</span></div></div>
      <button class="st-skip" data-gt="skip">略過 ›</button>`};
   draw();g.onclick=e=>{const b=e.target.closest('[data-gt]');if(!b)return;if(b.dataset.gt==='skip'||i>=list.length-1){S.introSeen=1;save();gateClose();return}i++;snd('ui_click');draw()}}
