@@ -1868,4 +1868,6 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .stage-sq .ex-seq{inset:0;z-index:5;mix-blend-mode:screen}
 .stage-sq .ex-seq img{position:absolute;inset:0;width:100%;height:100%;opacity:0}
 .stage-sq .ex-fl{inset:-10%;border-radius:50%;opacity:0;z-index:6;mix-blend-mode:screen;pointer-events:none}
+.enh-stage.tier .rn-stone.glow,.enh-stage.tier .stage-sq .rn-light,.enh-stage.tier .stage-sq .rn-climax,.enh-stage.tier .stage-sq .rn-spark,.enh-stage.tier .stage-sq .rn-res:not(.rn-shatter),.enh-stage.tier .dp-smotes{filter:var(--tf)}
+.enh-stage.tier .stage-sq .rn-spokes{filter:drop-shadow(0 0 4px rgba(255,154,46,.9)) var(--tf)}
 </style>
