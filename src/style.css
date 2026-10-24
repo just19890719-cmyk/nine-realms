@@ -1698,4 +1698,9 @@ html.scrimmed .cbar{display:none}
 .bs{cursor:pointer}
 /* v4.27 村莊詳情「首次收復獎勵」佔滿一整列，375／393 寬不再換行 */
 .kvgrid .kv-wide{grid-column:1/-1}
+:root{--l0:#b9b1a3;--l1:#7fcf8c;--l2:#62a8ee;--l3:#ef5b4c;--l4:#c27ff0;--l5:#dff1ff}
+/* v4.34 武器框顏色看強化等級：l0 灰、l1 綠(+1～+6)、l2 藍(+7～+8)、l3 紅(+9～+10)、l4 紫(+11)、l5 鑽石(+12) */
+.l0{color:var(--l0)}.l1{color:var(--l1)}.l2{color:var(--l2)}.l3{color:var(--l3)}.l4{color:var(--l4)}.l5{color:var(--l5);text-shadow:0 0 6px rgba(150,210,255,.55)}
+.l0b{--qc:var(--l0)}.l1b{--qc:var(--l1)}.l2b{--qc:var(--l2)}.l3b{--qc:var(--l3)}.l4b{--qc:var(--l4)}.l5b{--qc:var(--l5)}
+.fpv .wt.l0b:not(#_){--f:url(art/ui/fp_gray_plain.webp)}.fpv .wt.l1b:not(#_){--f:var(--fN)}.fpv .wt.l2b:not(#_){--f:var(--fU)}.fpv .wt.l3b:not(#_){--f:var(--fR)}.fpv .wt.l4b:not(#_){--f:url(art/ui/fp_purple_plain.webp)}.fpv .wt.l5b:not(#_){--f:var(--fI)}
 </style>
