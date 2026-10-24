@@ -77,8 +77,8 @@ function levelCheck(){
     v.drops.forEach(d=>sources.add(d[0]));
   }
   // 素材循環：每個圖紙的材料是否在其解鎖前就有來源
-  const src2=new Set(['iron','oak','leather']);const bad=[];
-  for(let i=0;i<=VILLAGES.length;i++){BPS.filter(b=>b.unlock===i).forEach(b=>{const ms=Object.keys(recipe(b)).filter(m=>!src2.has(m));if(ms.length)bad.push(b.n+'缺'+ms.map(m=>MATS[m]).join('、'))});if(VILLAGES[i])VILLAGES[i].drops.forEach(d=>src2.add(d[0]))}
+  const src2=new Set();const bad=[];   // v4.54 開局武器只花金幣，其他材料都要從村莊來
+  for(let i=0;i<=VILLAGES.length;i++){BPS.filter(b=>b.unlock===i&&(!b.r||BP_R[b.id])).forEach(b=>{const ms=Object.keys(recipe(b)).filter(m=>!src2.has(m));if(ms.length)bad.push(b.n+'缺'+ms.map(m=>MATS[m]).join('、'))});if(VILLAGES[i])VILLAGES[i].drops.forEach(d=>src2.add(d[0]))}
   // v4.37 村莊不限武器：+0 普通鐵製、沒附魔的武器每一關都能交
   {const w={id:-1,b:'t1_woodaxe',q:0,lv:0,traits:[],ench:[null,null,null,null]},bad=VILLAGES.map((v,i)=>i).filter(i=>!eligible(i,w));
    res.push(T('A12 任何武器都能交付每一關（+0 普通鐵製、沒附魔）',!bad.length,bad.length?'不能交：'+bad.map(vNo).join('、'):'20 關都能交'))}
@@ -165,7 +165,7 @@ function saveTests(){
   const res=[];
   withSandbox(()=>{
     // 新存檔
-    S=fresh();res.push(T('E1 新存檔結構完整',S.v===3&&S.villages.length===VILLAGES.length&&S.weapons.length===0&&S.stats&&!Object.keys(S.mats).length&&Object.keys(S.items).join()==='relic_g,relic_b,relic_r,relic_y,estone'&&RELICS.every(k=>S.items[k]===0)&&S.items.estone===10,'v'+S.v));
+    S=fresh();res.push(T('E1 新存檔結構完整',S.v===3&&S.villages.length===VILLAGES.length&&S.weapons.length===0&&S.stats&&Object.keys(S.mats).length===8&&Object.values(S.mats).every(x=>x===0)&&Object.keys(S.items).join()==='relic_g,relic_b,relic_r,relic_y,estone,enstone'&&RELICS.every(k=>S.items[k]===0)&&S.items.estone===10&&S.items.enstone===3,'v'+S.v));
     // v2 遷移
     const o={gold:999,gems:50,mats:{iron:5,oak:5,leather:5,silver:2,fang:1,scale:0,rune:0,shard:3},items:{scroll:2,bless:0,blueprint:0},furnace:2,anvil:1,slots:1,nextId:3,
       weapons:[{id:1,b:'t1_woodaxe',q:1,lv:3,ench:[{k:'swift',v:8}]},{id:1,b:'t1_farmspear',q:0,lv:2,ench:[]},{id:5,b:'xx_missing',q:0,lv:0}],jobs:[],
@@ -202,11 +202,11 @@ function saveTests(){
       if(neg||new Set(ids).size!==ids.length||new Set(posts).size!==posts.length||posts.some(id=>!W(id)))errs++}
     res.push(T('E9 3,000 次隨機操作：無負數、ID 不重複、同一把武器不會同時駐守兩村、熔解後真正消失',!errs,`異常 ${errs} 次；最終武器 ${S.weapons.length} 把`));
     // v4.44 屬性附魔：只有 1 欄、重抽覆蓋、扣費正確、等級機率 70：25：5、6 種平均、不加攻擊力
-    S=fresh();S.gold=1e9;const x=makeWeapon('t2_wolfaxe',2,0,[]);const p0=power(x),cnt={},tc=[0,0,0,0];
+    S=fresh();S.gold=1e9;S.items.enstone=1e5;const x=makeWeapon('t2_wolfaxe',2,0,[]);const p0=power(x),cnt={},tc=[0,0,0,0];
     for(let n=0;n<6000;n++){enchantCore(x.id,0);const e=x.ench[0];cnt[e.k]=(cnt[e.k]||0)+1;tc[e.v]++}
-    const g1=S.gold;enchantCore(x.id,0);const e2=enchantCore(x.id,1),e3=enchantCore(x.id,3);
+    const g1=S.gold,n1=S.items.enstone;enchantCore(x.id,0);const n2=S.items.enstone,e2=enchantCore(x.id,1),e3=enchantCore(x.id,3);S.items.enstone=0;const e4=enchantCore(x.id,0);
     const even=Object.keys(ELEM).every(k=>Math.abs((cnt[k]||0)/6000-1/6)<.025),tierOk=Math.abs(tc[1]/6000-.7)<.03&&Math.abs(tc[2]/6000-.25)<.03&&Math.abs(tc[3]/6000-.05)<.015;
-    res.push(T('E10 屬性附魔：1 欄、重抽覆蓋、只扣金幣、6 種平均、等級 70／25／5、不加攻擊力',x.ench.length===4&&!x.ench[1]&&!x.ench[2]&&!x.ench[3]&&g1-S.gold===enchCost(x)&&e2.err&&e3.err&&even&&tierOk&&power(x)===p0,
+    res.push(T('E10 屬性附魔：1 欄、重抽覆蓋、扣 1 顆附魔石＋金幣（沒有就擋下）、6 種平均、等級 70／25／5、不加攻擊力',x.ench.length===4&&!x.ench[1]&&!x.ench[2]&&!x.ench[3]&&g1-S.gold===enchCost(x)&&n1-n2===1&&e4.err==='附魔石不夠'&&e2.err&&e3.err&&even&&tierOk&&power(x)===p0,
       `6000 次：${Object.keys(ELEM).map(k=>ELEM[k].n+' '+(cnt[k]||0)).join('、')}；等級 ${tc[1]}／${tc[2]}／${tc[3]}；第 2 格「${e2.err||'可用(錯)'}」；攻擊力 ${p0}→${power(x)}`));
     // v4.44 舊附魔載入時清空、弱點倍率
     {const w={id:1,b:'t1_woodaxe',q:0,lv:0,ench:[{k:'flame',v:10},{k:'giant',v:30},{k:'fire',v:2},null]},w2={id:2,b:'t1_woodaxe',q:0,lv:0,ench:[{k:'ice',v:3},null,null,null]},w3={id:3,b:'t1_woodaxe',q:0,lv:0,ench:[{k:'bolt',v:9},null,null,null]};elemCleanW(w);elemCleanW(w2);elemCleanW(w3);
@@ -219,9 +219,9 @@ function saveTests(){
     S=fresh();S.gold=1e6;S.mats.iron=1e4;S.mats.oak=1e4;const lk=makeWeapon('t1_woodaxe',0,0,[]);lk.lock=true;const m1=meltCore(lk.id);
     while(S.weapons.length<CAP_WEAPONS)makeWeapon('t1_woodaxe',0,0,[]);const f1=forgeStart('t1_woodaxe',1,false);
     res.push(T('E14 收藏武器不能熔解、武器庫滿 200 把不能再鍛造',m1===null&&!!W(lk.id)&&typeof f1==='string',`收藏熔解${m1===null?'被擋下':'成功(錯誤)'}；滿倉鍛造：${typeof f1==='string'?f1:'成功(錯誤)'}`));
-    // v4.43 舊材料、道具刪除：材料表空、道具只剩英靈・遺物、村莊不掉材料、鍛造只花金幣、獎勵只有金幣鑽石
+    // v4.54 新材料 8 種、道具＝4 種遺物＋強化石＋附魔石、每界村莊掉該界材料、開局武器只花金幣；獎勵只有金幣鑽石
     const rw=[...ACH.map(a=>a.r),...SIGN,...DAILY_BOX.map(x=>x[1]()),repBox(10)].every(r=>Object.keys(r).every(k=>k==='gold'||k==='gems'));
-    res.push(T('E13 舊材料與道具已刪除，獎勵只剩金幣和鑽石',!Object.keys(MATS).length&&Object.keys(ITEMS).join()==='relic_g,relic_b,relic_r,relic_y,estone'&&RELICS.length===4&&VILLAGES.every(v=>!v.drops.length)&&BPS.every(b=>!Object.keys(recipe(b)).length)&&rw&&!GD_SHOP.length&&GD_DON.every(x=>x.k!=='iron'),
+    res.push(T('E13 新材料 8 種、道具 6 種，每關掉該界材料，開局武器只花金幣，獎勵只剩金幣和鑽石',Object.keys(MATS).length===8&&Object.keys(ITEMS).join()==='relic_g,relic_b,relic_r,relic_y,estone,enstone'&&RELICS.length===4&&VILLAGES.every((v,i)=>v.drops.filter(d=>d[1]===.5).map(d=>d[0]).join()===REALM_MAT[Math.floor(i/10)].join())&&BPS.filter(b=>!b.dev&&!b.unlock).every(b=>!Object.keys(recipe(b)).length)&&rw&&!GD_SHOP.length&&GD_DON.every(x=>x.k!=='iron'),
       `材料 ${Object.keys(MATS).length} 種；道具 ${Object.keys(ITEMS).map(itemName).join('、')}；獎勵${rw?'只有金幣鑽石':'還有舊道具(錯誤)'}`));
   });
   return res;
@@ -480,7 +480,7 @@ function godWordTests(){const bad=VILLAGES.map((v,i)=>i).filter(i=>/神/.test(MO
 // v4.39 卡片箭頭：駐守卡片有往下箭頭，展開後有戰鬥畫面、每輪掉落、已打到
 function bsTglTests(){const S0=S,o=ui.bsOpen;S=fresh();const w=makeWeapon('t1_woodaxe',0,0,[]);const st=S.villages[0];st.status='cleared';st.weaponId=w.id;st.cycleStart=NOW();st.bank={cycles:3,gold:30,mats:{},events:0};   // v4.43 舊材料刪除，只剩金幣
   ui.tab='village';ui.realm=0;ui.bsOpen=null;const c=viewVillage();ui.bsOpen=0;const op=viewVillage();S=S0;ui.bsOpen=o;
-  const ok=/class="bs-tgl "[^>]*data-act="bsopen"/.test(c)&&!/bs-more/.test(c)&&/class="bs-tgl up"[^>]*data-act="bsclose"/.test(op)&&/class="bs /.test(op)&&/bs-drops/.test(op)&&(op.match(/class="bs-d[ "]/g)||[]).length===VILLAGES[0].drops.length&&/新的掉落設計中/.test(op)&&/bs-got/.test(op)&&/×30/.test(op);
+  const ok=/class="bs-tgl "[^>]*data-act="bsopen"/.test(c)&&!/bs-more/.test(c)&&/class="bs-tgl up"[^>]*data-act="bsclose"/.test(op)&&/class="bs /.test(op)&&/bs-drops/.test(op)&&(op.match(/class="bs-d[ "]/g)||[]).length===VILLAGES[0].drops.length&&!/新的掉落設計中/.test(op)&&/bs-got/.test(op)&&/×30/.test(op);
   return[T('H 村莊卡片箭頭：收起時往下、展開有戰鬥畫面＋每輪掉落＋已打到、再點收起',!!ok,ok?'正常':'內容不對')]}
 function vPickTests(){const S0=S,sv=ui.sheet;S=fresh();const w=makeWeapon('t1_woodaxe',0,0,[]);const st=S.villages[0];st.status='cleared';st.weaponId=w.id;st.cycleStart=NOW();
   const h=sheetVillage(0),card=(()=>{ui.tab='village';ui.realm=0;return typeof viewVillage==='function'?viewVillage():''})();S=S0;ui.sheet=sv;
@@ -515,7 +515,7 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.44 舊武器刪除：要在放回測試資料前檢查
-  const bd=[...newWpnTests(real),...chTests(),...mkCardTests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
+  const bd=[...newWpnTests(real),...chTests(),...matTests(real),...mkCardTests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
     T('BD2 神明材質階、神格覺醒拿掉',TIERS.length===5&&typeof GOD==='undefined'&&typeof awkN==='undefined',`材質 ${TIERS.length} 階`)];
   return withTestBps(()=>runTests0(mode,bd))}
 // v4.44 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
@@ -566,6 +566,21 @@ function wpnTests(){if(typeof CSPD==='undefined')return[];const cats=Object.keys
 if(typeof module!=='undefined')module.exports={runAll,econReport,simulate,levelCheck};
 
 // v4.51 新武器 17 把（武器系統定案第 9 節）：開局 7 把、兩界一階數值、解鎖關卡、偏難需求、金幣配方、暫代圖
+// v4.54 新材料・附魔石・英靈遺物
+function matTests(real){return withSandbox(()=>{const src=new Set(),bad=[];
+  for(let i=0;i<=VILLAGES.length;i++){real.filter(b=>b.unlock===i).forEach(b=>{const ms=Object.keys(recipe(b)).filter(m=>!src.has(m));if(ms.length)bad.push(b.n)});if(VILLAGES[i])VILLAGES[i].drops.forEach(d=>src.add(d[0]))}
+  const has=(i,k)=>VILLAGES[i].drops.some(d=>d[0]===k),dr=has(6,'troll')&&!has(5,'troll')&&has(9,'bifrost')&&has(17,'ubone')&&has(19,'thor')&&!has(0,'frost')&&has(10,'frost');
+  const od=[0,9,10,19].map(relicOdds),sum=od.every(o=>Math.abs(Object.values(o).reduce((a,x)=>a+x,0)-100)<1e-9&&Object.values(o).every(x=>x>=0)),grow=od[1].relic_y>od[0].relic_y&&od[2].relic_r>od[0].relic_r&&od[3].relic_y>od[1].relic_y;
+  S=fresh();S.villages.forEach((v,i)=>{if(i<12)v.status='cleared'});S.items.relic_y=200;S.items.relic_g=1;const m0=Object.values(S.mats).reduce((a,x)=>a+x,0),e0=S.items.estone,w0=S.weapons.length,g0=S.gold;
+  const r=relicOpenCore('relic_y',0),r1=relicOpenCore('relic_g',1),r0=relicOpenCore('relic_g',1);const mats=Object.values(S.mats).reduce((a,x)=>a+x,0)-m0,ws=(r.got._w||[]).length,es=S.items.estone-e0;
+  const open=r.n===200&&S.items.relic_y===0&&r1.n===1&&r0===null&&mats>0&&es>0&&S.weapons.length-w0===ws+((r1.got._w||[]).length)&&ws>0&&S.weapons.slice(w0).every(w=>bpOf(w).k!=='b')&&S.mats.miron+S.mats.pine===0;
+  S=fresh();S.gold=1e6;S.villages.forEach((v,i)=>{if(i<2)v.status='cleared'});S.mats.miron=25;S.mats.pine=40;const f=forgeStart('w1_spear',1,false),fOk=typeof f!=='string'&&S.mats.miron===15&&S.mats.pine===25;
+  S.mats.pine=0;const f2=forgeStart('w1_spear',1,false);
+  return[T('MT1 新材料：每把圖紙解鎖時材料都已經有地方掉、部位／Boss 素材在對的關卡',!bad.length&&dr,bad.length?'缺來源：'+bad.join('、'):'正常'),
+   T('MT2 英靈・遺物：機率加起來 100%、越後面的關卡、越後面的界好遺物越多',sum&&grow,`1-1 金光 ${r1x(od[0].relic_y)}%、1-10 ${r1x(od[1].relic_y)}%、2-10 ${r1x(od[3].relic_y)}%`),
+   T('MT3 打開遺物：扣掉遺物、拿到材料（推到第二界給第二界材料）、強化石、武器（不含 Boss 武器），沒有就擋下',!!open,`金光 200 個：材料 ${mats}、強化石 +${es}、武器 ${ws} 把`),
+   T('MT4 鍛造扣材料，不夠就擋下',fOk&&typeof f2==='string',fOk?'扣材料正常、不夠時「'+f2+'」':'扣材料不對')]})}
+const r1x=x=>Math.round(x*10)/10;
 // v4.52 限時挑戰：血量公式、需求剛好約 48 秒、60 秒內打倒才收復、收復只發一次獎勵、卡片不顯示弱點和「限時挑戰」
 function chTests(){return withSandbox(chTests0)}
 function chTests0(){const mk=(id,lv)=>({id:-1,b:id,q:0,lv,ench:[null,null,null,null],traits:[]}),w0=mk('w0_sword',0);
@@ -589,7 +604,7 @@ function newWpnTests(real){const mk=(id,lv)=>({id:-1,b:id,q:0,lv,ench:[null,null
   return[T('NW1 新武器 17 把：開局 7 種各 1 把，第一界 2/4/6/7/10、第二界 1/3/5/8/10 關解鎖',real.length===17&&st.length===7&&cats.every(c=>st.some(b=>b.cat===c))&&ul==='2,4,6,7,10,11,13,15,18,20',`${real.length} 把・解鎖 ${ul}`),
    T('NW2 數值兩界一階：開局 12、一般 15（第一二界一樣）、怪物主題 ×1.1、Boss 含專屬特效約 +20%',pw==='12/15/15/17/18'&&BP.g_hofund.fx&&BP.w1_troll.k==='m',pw),
    T('NW3 偏難需求：1-10 要 +7、2-10 要 +8（+6／+7 不夠）',r1&&r2&&VREQ.length===20&&VILLAGES[0].req===12,`1-10 需求 ${VILLAGES[9].req}・2-10 需求 ${VILLAGES[19].req}`),
-   T('NW4 配方先只花金幣，各圖紙有自己的金幣價',real.every(b=>!Object.keys(recipe(b)).length&&goldOf(b)===b.gold&&b.gold>0)&&goldOf(BP.g_skadi)===10000,real.map(goldOf).join(',')),
+   T('NW4 配方：開局 7 把只花金幣，其他要金幣＋該界材料，各圖紙有自己的金幣價',real.every(b=>goldOf(b)===b.gold&&b.gold>0&&(!b.unlock?!Object.keys(recipe(b)).length:Object.keys(recipe(b)).some(k=>REALM_MAT[Math.floor((b.unlock-1)/10)].includes(k))))&&goldOf(BP.g_skadi)===10000,real.map(goldOf).join(',')),
    T('NW5 17 把都用自己的圖（15 把新圖＋2 把 Boss 現有圖），不再借舊圖',real.every(b=>!ART_WAIT[b.id+'_disp']&&!ART_WAIT[b.id])&&real.filter(b=>!b.fx).every(b=>WFIT[b.id]===.6),Object.keys(BP_TMP).length+' 把暫代')]}
 
 // v4.53 交易所：列表／詳情的武器名稱含屬性，詳情用武器小卡的四格數值
