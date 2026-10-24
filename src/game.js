@@ -283,7 +283,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.60';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.61';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1219,6 +1219,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.61',d:'10/24',t:'強化時石碑不再晃動',b:['強化動畫播放時，符文石碑固定不動（不再推近、震動），只有光、閃電和武器有動作']},
  {v:'4.60',d:'10/24',t:'一鍵安定值・同款連按',b:['武器小卡的「一鍵 +6」改名<b>「一鍵安定值」</b>','同款武器疊在一格時，按一鍵安定值後小卡會自動換到<b>下一把同款</b>，可以一直按下去，不用回道具欄重點'],g:['enh','bag']},
  {v:'4.59',d:'10/24',t:'商城整理：簽到搬家・材料可以買',b:['<b>七日簽到</b>從任務搬到<b>商城</b>，每天第一次進遊戲會自動打開商城簽到（簽到獎勵之後會換新）','商城可以用<b>金幣或鑽石</b>買 8 種材料，點材料選數量購買','<b>狩獵號角</b>拿掉了','其他商品等正式上線再補齊'],g:['shop','quest']},
  {v:'4.58',d:'10/24',t:'強化特效加強',b:['<b>一鍵強化</b>改成連續演出：每升一級跳出大數字、符文一道道亮起綠光、音調越來越高，最後一下爆出光芒（點畫面可以略過）','+1～+6 單按強化不再播動畫，按下去直接出結果，石碑亮一下綠光；強化頁改成小卡，顯示強化石剩幾顆','<b>+7 以上</b>強化時，整塊符文石碑的燈光改成外框顏色：+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石；成功換到新顏色時跳出「升階」','+7 起石碑上會打閃電，等級越高閃電越多越強，+12 最華麗','強化成功率、爆裝率都沒有改']},

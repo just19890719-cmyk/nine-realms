@@ -1882,4 +1882,6 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .ms-step{display:flex;align-items:center;justify-content:center;gap:6px;margin:12px 0 8px}.ms-step .ms-n{min-width:64px;text-align:center;font-size:22px;font-variant-numeric:tabular-nums}
 .ms-quick{display:flex;justify-content:center;gap:6px;margin-bottom:12px}
 .ms-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ms-buy{display:inline-flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap}.ms-buy img{width:18px;height:18px}
+/* v4.61 強化動畫時石碑固定不動（Mochi）：鏡頭推近、震動都關掉，光效、閃電、武器照常 */
+.enh-stage.rune,.enh-stage .stage-sq,.enh-stage .stage-sq .rn-cam{transform:none!important}
 </style>
