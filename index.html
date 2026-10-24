@@ -1890,6 +1890,14 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .stage-sq .ex-bolt img{position:absolute;inset:0;width:100%;height:100%;opacity:0}
 .ev-stats.over .ev-st.stone i{display:block;color:var(--gold-hi);font-size:11px} /* v4.58 強化小卡顯示強化石剩幾顆 */
 .stage-sq .ex-smoke{left:12%;top:4%;width:76%;height:76%;z-index:5;filter:grayscale(1) brightness(.13) contrast(1.4);pointer-events:none}
+/* v4.59 商城：七日簽到、材料 */
+.sg-panel,.ms-panel{position:relative}
+.ms-box{gap:2px}.ms-p{display:inline-flex;align-items:center;gap:2px;font-size:11px;color:var(--gold);font-variant-numeric:tabular-nums}.ms-box .ms-p img{width:14px;height:14px}
+.ms-tip{margin-top:8px}
+.ms-step>*,.ms-quick>*,.ms-btns>*{margin:0!important}
+.ms-step{display:flex;align-items:center;justify-content:center;gap:6px;margin:12px 0 8px}.ms-step .ms-n{min-width:64px;text-align:center;font-size:22px;font-variant-numeric:tabular-nums}
+.ms-quick{display:flex;justify-content:center;gap:6px;margin-bottom:12px}
+.ms-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ms-buy{display:inline-flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap}.ms-buy img{width:18px;height:18px}
 </style>
 <div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div><div class="news" id="news" aria-live="polite" data-act="chatsys"></div></div>
 <main class="wrap" id="view"></main>
@@ -2348,7 +2356,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.58';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.59';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -3042,7 +3050,7 @@ const dailyPts=()=>DAILY.reduce((a,q)=>a+(dailyP(q)>=q.m?q.pt:0),0);
 const boxReady=i=>dailyPts()>=DAILY_BOX[i][0]&&!S.daily.box.includes(i);
 const boxReadyN=()=>DAILY_BOX.filter((b,i)=>boxReady(i)).length;
 const signReady=()=>S.sign.last!==today();
-const questDotN=()=>achReadyN()+boxReadyN()+(signReady()?1:0);
+const questDotN=()=>achReadyN()+boxReadyN();   // v4.59 七日簽到搬到商城
 function giveRw(r){for(const k in r){if(k==='gold')S.gold+=r[k];else if(k==='gems')S.gems+=r[k];else if(MATS[k])S.mats[k]+=r[k];else if(ITEMS[k])S.items[k]=(S.items[k]||0)+r[k]}}
 const rwName=k=>k==='gold'?'金幣':k==='gems'?'鑽石':itemName(k);
 const rwIcon=k=>k==='gold'?'it_gold':k==='gems'?'it_gems':MATS[k]?MATART[k]:(ITEMS[k]&&ITEMS[k][1])||'it_gold';
@@ -3284,6 +3292,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.59',d:'10/24',t:'商城整理：簽到搬家・材料可以買',b:['<b>七日簽到</b>從任務搬到<b>商城</b>，每天第一次進遊戲會自動打開商城簽到（簽到獎勵之後會換新）','商城可以用<b>金幣或鑽石</b>買 8 種材料，點材料選數量購買','<b>狩獵號角</b>拿掉了','其他商品等正式上線再補齊'],g:['shop','quest']},
  {v:'4.58',d:'10/24',t:'強化特效加強',b:['<b>一鍵強化</b>改成連續演出：每升一級跳出大數字、符文一道道亮起綠光、音調越來越高，最後一下爆出光芒（點畫面可以略過）','+1～+6 單按強化不再播動畫，按下去直接出結果，石碑亮一下綠光；強化頁改成小卡，顯示強化石剩幾顆','<b>+7 以上</b>強化時，整塊符文石碑的燈光改成外框顏色：+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石；成功換到新顏色時跳出「升階」','+7 起石碑上會打閃電，等級越高閃電越多越強，+12 最華麗','強化成功率、爆裝率都沒有改']},
  {v:'4.57',d:'10/24',t:'新手導覽重做',b:['新玩家的<b>新手導覽</b>重新開放，照現在的玩法一步一步教','流程：打造鐵爐村伐木斧 → 60 秒挑戰 1-1 → 留下來掛機 → 收成 → 看材料和遺物 → 打鐵劍練強化 → 附魔 → 新圖紙 → 領月卡','挑戰輸了導覽會提示再挑戰，不會卡住','完成導覽一樣送 <b>50 鑽石</b>'],g:[]},
  {v:'4.56',d:'10/24',t:'交易所可以賣道具',b:['強化石、附魔石、英靈・遺物和所有材料都能上架：在道具欄點道具，按「上架交易所」，填<b>單價</b>和<b>數量</b>','買家可以只買一部分，填要買幾個就好，買剩的繼續掛著','交易所的「上架武器」分頁改成<b>待領取</b>：賣出的錢、沒賣出退回的武器和道具都放這裡，有東西時亮紅點','上架武器改成在道具欄點武器，按「上架」'],g:['mk']},
@@ -3361,8 +3370,8 @@ const GUIDE=[
   {k:'hit',ic:'cat_sword',n:'武器打法',s:'攻速不同、強化越高越常觸發附加效果',v:'4.39',h:'點村莊卡片下方的<b>往下箭頭</b>（或怪物小圖），會展開戰鬥畫面（一次一個，再點一下收起），下面還列出每輪掉落和已經打到、還沒收成的東西：騎士拿著駐守的武器打怪物，打中時怪物閃一下、停頓後被打退，跳出的數字就是傷害。戰鬥畫面收起時，卡片上的小怪物也是同樣的攻速和附加效果。<br>攻速：<b>劍</b> 1.0 秒、<b>斧</b> 1.3 秒（兩連斬）、<b>錘</b> 1.8 秒、<b>短刃</b> 0.6 秒、<b>長柄</b> 1.2 秒、<b>弓</b> 1.1 秒、<b>弩</b> 1.6 秒。<br>強化越高越常觸發附加效果（+1～+6 每級 2%，+7 起 16%～40%）：劍<b>會心</b>、斧<b>流血</b>、錘<b>震碎</b>、短刃<b>中毒</b>、長柄<b>貫穿</b>、弓<b>穿心</b>、弩<b>破甲</b>。狩獵時間和收成不受影響。'},
   {k:'realm',ic:'realm_2',n:'第二界 約頓海姆',s:'收復 1-10 後開放',v:'4.37',h:'收復 1-10 彩虹橋頭、打倒海姆達爾後開放第二界，用上方地圖列切換。<br>10 座新村莊、4 種新材料（巨人骨、永凍霜晶、雷鳴鐵、世界樹古根），第五階巨人武器要熔爐 Lv6。<br>v4.37 起巨人體重鍊已經拿掉，第二界材料用來鍛造巨人武器。'}]],
  ['成長與獎勵',[
-  {k:'quest',ic:'ic_check',n:'每日任務・簽到・成就',s:'每天領活躍度寶箱',v:'4.43',h:'<b>每日任務</b>：完成登入、收成、鍛造、強化、熔解累積活躍度，40／70／100 點各開一個寶箱。<br><b>七日簽到</b>：漏簽不會歸零，第 7 天領完從第 1 天重新開始。<br><b>委託成就</b>：免費拿鑽石。<br>v4.43 起所有獎勵都是金幣或鑽石。'},
-  {k:'shop',ic:'nav_shop',n:'商城',s:'月卡、狩獵號角',v:'4.43',h:'封測期間<b>月卡免費</b>：立得鑽石，之後每天再領。<br>可以用鑽石買狩獵號角。<br>v4.43 起防爆卷、祝福石、符文祈願、旅行商人、殘渣兌換都已拿掉。'}]],
+  {k:'quest',ic:'ic_check',n:'每日任務・成就',s:'每天領活躍度寶箱',v:'4.59',h:'<b>每日任務</b>：完成登入、收成、鍛造、強化、熔解累積活躍度，40／70／100 點各開一個寶箱。<br><b>委託成就</b>：免費拿鑽石。<br>v4.59 起<b>七日簽到</b>搬到商城。'},
+  {k:'shop',ic:'nav_shop',n:'商城',s:'月卡、七日簽到、材料',v:'4.59',h:'封測期間<b>月卡免費</b>：立得鑽石，之後每天再領。<br><b>七日簽到</b>：漏簽不會歸零，第 7 天領完從第 1 天重新開始；每天第一次進遊戲會自動打開。<br><b>材料</b>：8 種材料都可以用金幣或鑽石買，點材料跳出小卡選數量。<br>狩獵號角已拿掉，其他商品正式上線再補。'}]],
  ['玩家互動',[
   {k:'mk',ic:'nav_market',n:'交易所',s:'金幣或鑽石買賣武器和道具',v:'4.56',h:'用金幣或鑽石買賣，最低 10，成交收 5% 手續費。任何武器、道具都能買賣，不限關卡進度。<br><b>上架武器</b>：在道具欄點武器，按「上架」，填售價。收藏（上鎖）或駐守中的武器不能上架。<br><b>上架道具</b>：在道具欄點道具或材料，按「上架交易所」，填一個的單價和數量。買家可以只買一部分，買剩的繼續掛著。<br>賣出的錢、上架 3 天沒賣出退回的東西，都放在交易所的「待領取」分頁（有東西會亮紅點），按「全部領取」才入帳。<br>最多同時上架 10 件（一筆道具算一件）。'},
   {k:'chat',ic:'it_horn',n:'聊天與跑馬燈',s:'世界頻道、系統公告、武器卡',v:'3.93',h:'世界頻道可以和全服玩家聊天（鐵匠 Lv3 以上可以發言），系統頻道會顯示全服 +10 以上的強化公告。<br>點名字可以看玩家名片；聊天可以貼出自己的武器卡、戴稱號。<br>跑馬燈出現強化公告時可以按「恭喜」。'},
@@ -3453,8 +3462,6 @@ function upgradeCore(kind){const lv=S[kind],tbl=kind==='furnace'?FURNACE_COST:AN
   S.gold-=c;S[kind]++;return''}
 function upgrade(kind){const e=upgradeCore(kind);if(e)return e==='已滿級'?void 0:toast(e,'bad');
   snd('upgrade');toast((kind==='furnace'?'熔爐':'鐵砧')+' 升到 Lv'+S[kind]+(kind==='anvil'&&(S.anvil===3||S.anvil===5)?'，開放新的附魔欄位':''),'ok');save();render()}
-function speedHunt(){tick();const go=[];S.villages.forEach((st,i)=>{const w=st.weaponId!=null&&W(st.weaponId);if(w&&st.cycleStart!=null)go.push([st,i,w])});if(!go.length)return toast('目前沒有村莊在狩獵。');if(!spendGems(50))return;
-  go.forEach(([st,i,w])=>{const k=Math.min(capCycles(i,w)-st.bank.cycles,Math.max(1,Math.floor(30*60000/gameDur(i,w))));for(let c=0;c<k;c++)rollCycle(i,w,st)});toast(`${go.length} 座村莊立即完成 30 分鐘狩獵。`,'ok');save();render()}
 function monthly(){S.monthly.until=Math.max(NOW(),S.monthly.until)+30*864e5;S.gems+=300;toast('月卡啟用 30 天，立即獲得 300 鑽石。','ok');save();render()}
 function claimMonthly(){if(!monthlyOn())return;if(S.monthly.last===today())return toast('今天已經領過了。');S.monthly.last=today();S.gems+=50;toast('月卡每日領取 50 鑽石。','ok');save();render()}
 
@@ -3938,7 +3945,7 @@ let RES_H='';function renderRes(){const el=document.getElementById('res');if(!el
 const ART_HAS_NAV_MARKET=true;    // 交易所分頁圖示（AI 美術）到位後改 true
 const TABS=[['village','村莊','nav_village'],['forge','鐵匠鋪','nav_forge'],['armory','道具欄','nav_armory'],['market','交易所',ART_HAS_NAV_MARKET?'nav_market':'it_gold'],['shop','商城','nav_shop']];
 let NAV_H='';function renderNav(){const N=document.getElementById('nav'),h=TABS.map(([k,n,ic])=>{const dot=k==='village'?bossDot()||S.villages.some(v=>v.bank.cycles)||anyGive()||questDotN()>0:k==='armory'?anyGive()||ui.tab!=='armory'&&S.weapons.some(wNew)
-    :k==='forge'?forgeIdle()||BPS.some(bpNew):k==='market'?(S.mkNew>0||mkClaimN()>0)&&ui.tab!=='market':k==='shop'?monthlyDot():false,hot=k==='village'&&S.villages.some((st,i)=>vState(i)[0]==='full');
+    :k==='forge'?forgeIdle()||BPS.some(bpNew):k==='market'?(S.mkNew>0||mkClaimN()>0)&&ui.tab!=='market':k==='shop'?monthlyDot()||signReady():false,hot=k==='village'&&S.villages.some((st,i)=>vState(i)[0]==='full');
   return `<button data-act="tab" data-k="${k}" class="ui-navtab ${ui.tab===k?'on':''}">${img(ic)}<span>${n}</span>${dot||hot?`<i class="dot give-dot${hot?' hot':''}"></i>`:''}</button>`}).join('');if(h!==NAV_H||!N.firstChild){NAV_H=h;N.innerHTML=h}}
 
 /* ---------- 鐵匠鋪 ---------- */
@@ -3981,7 +3988,7 @@ function viewForge(){
     const need={};for(const k in c)need[k]=c[k]*qty;const full=S.weapons.length+queuedQty()+qty>CAP_WEAPONS;
     const lacks=lackList(need,g),ok=!lock&&free&&!lacks.length&&!full;const est=Math.round(b.base*TIERS[b.t].mult*bossE(b));
     const why=lock||(!free?'正在鍛造中，稍等幾秒':full?'道具欄已滿':lacks.length?'缺 '+lackStr(lacks):'');
-    const lackTxt=lacks.map(([k,n])=>`<b>${k==='gold'?'金幣':MATS[k]} ×${fmt(n)}</b>${matWhere(k)?`<span class="small muted">（${matWhere(k)}掉）</span>`:''}`).join('、'),lackT1=false;
+    const lackTxt=lacks.map(([k,n])=>`<b>${k==='gold'?'金幣':MATS[k]} ×${fmt(n)}</b>${matWhere(k)?`<span class="small muted">（${matWhere(k)}掉）</span>`:''}`).join('、'),lackT1=lacks.some(([k])=>MATS[k]);   // v4.59 缺材料可以到商城買
     body=`<div class="catbar">${cats.map(k=>`<button class="ui-btn ui-btn--toggle cat ${ui.cat===k?'on':''}" data-act="cat" data-k="${k}">${img(k==='all'?'nav_armory':CAT_ICON[k])}<span>${k==='all'?'全部':CATS[k]}</span></button>`).join('')}</div>
      <div class="hscroll">${list.map(x=>bpTile(x,x.id===ui.bp)).join('')}</div>
      <div class="ui-panel panel sel-bp">
@@ -3994,7 +4001,7 @@ function viewForge(){
       <div class="qtyrow"><span class="label">數量</span>${bulkOn()?[1,5,10].map(n=>`<button class="ui-btn ui-btn--chip qchip ${qty===n?'on':''}" data-act="qty" data-k="${n}">×${n}</button>`).join(''):'<span class="small muted qhint">收復 1-5 後開放批量鍛造</span>'}
        <button class="ui-btn ui-btn--primary btn btn-primary forge-go ${ok?'':'is-disabled'}" data-act="forge" ${ok?'':'aria-disabled="true"'}><span class="fg-t">開始鍛造</span><span class="fg-s">${fmt(g)} 金幣・${fmtT(forgeSec(b)*1000*(qty>1?qty*.6:1)/S.speed)}</span></button></div>
       ${S.jobs.length?S.jobs.map((j,n)=>`<div class="ui-card ui-card--row qrow">${wArt(j.b,{cls:'qimg'})}<div class="grow"><div class="row small"><b class="grow">${BP[j.b].n}${j.qty>1?' ×'+j.qty:''}${j.bp?'・傳說圖紙':''}</b><span class="num" data-jtime="${n}">${NOW()>=j.end?'完成':'剩 '+fmtT(j.end-NOW())}</span></div><div class="ui-prog prog"><i data-jprog="${n}" style="width:${Math.max(0,Math.min(100,(NOW()-j.start)/(j.end-j.start)*100))}%"></i></div></div>${btn('取消','cancelJob',{cls:'btn-sec sm',attrs:`data-i="${n}"`})}</div>`).join(''):!ok&&!lacks.length?`<div class="small t-danger forge-why">${why}</div>`:''}
-      ${lackTxt?`<div class="lack-line">缺少：${lackTxt}${lackT1?` ${btn('到商人購買','tab',{cls:'btn-sec sm',attrs:'data-k="shop"'})}`:''}</div>`:''}
+      ${lackTxt?`<div class="lack-line">缺少：${lackTxt}${lackT1?` ${btn('去商城買','tab',{cls:'btn-sec sm',attrs:'data-k="shop"'})}`:''}</div>`:''}
       `}</div>
 `;
   }else{
@@ -4447,8 +4454,8 @@ function viewSign(){const rd=signReady(),cur=rd?S.sign.n%SIGN.length:S.sign.n-1;
 function sheetAch(){const v=ui.achV||'A',nDone=ACH.filter(a=>S.ach[a.id]).length,nReady=ACH.filter(a=>achSt(a)==='ready').length;
   const qd=(n)=>n?`<i class="dot">${n}</i>`:'',qt=ui.qTab||'d';
   const head=`<div class="sheet-head"><span style="width:44px"></span><h2>任務</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img'})}</div>
-   <div class="subtabs ach-tabs q-tabs">${[['d','每日任務',boxReadyN()],['s','七日簽到',signReady()?1:0],['o','委託成就',nReady]].map(([k,n,c])=>`<button class="ui-tab ${qt===k?'on':''}" data-act="qtab" data-k="${k}">${n}${qd(c)}</button>`).join('')}</div>`;
-  if(qt==='d')return head+viewDaily();if(qt==='s')return head+viewSign();
+   <div class="subtabs ach-tabs q-tabs">${[['d','每日任務',boxReadyN()],['o','委託成就',nReady]].map(([k,n,c])=>`<button class="ui-tab ${qt===k?'on':''}" data-act="qtab" data-k="${k}">${n}${qd(c)}</button>`).join('')}</div>`;
+  if(qt==='d')return head+viewDaily();
   const pick=devMode()?`<div class="ach-vpick"><span class="small muted">版型預覽</span>${['O','A','B','C','D'].map(k=>`<button class="ui-btn ui-btn--chip chipbtn ${v===k?'on':''}" data-act="achv" data-k="${k}">${k==='O'?'原版':k}</button>`).join('')}</div>`:'';
   const sum=`<div class="ach-sum"><div><b>${nDone}</b><span class="small muted">／${ACH.length} 已領取</span></div><div class="grow small muted">免費鑽石</div>${btn(nReady?`一鍵領取（${nReady}）`:'沒有可領取','achAll',{cls:(nReady?'btn-primary':'btn-sec')+' sm',dis:!nReady})}</div>`;
   const bar=(a,cls='')=>{const p=achP(a);return `<div class="ach-bar ${cls}"><div class="prog sm ui-prog"><i style="width:${p.f*100}%"></i></div><span class="small">${fmt(p.c)}／${fmt(p.m)}</span></div>`};
@@ -4472,6 +4479,18 @@ function sheetAch(){const v=ui.achV||'A',nDone=ACH.filter(a=>S.ach[a.id]).length
 }
 
 /* ---------- 商城 ---------- */
+// v4.59 商城（Mochi：只留免費月卡＋七日簽到＋材料，其餘正式上線再補）：材料可用金幣或鑽石買，單價 [金幣, 鑽石]，鑽石總價無條件進位
+const MAT_COST={miron:[10,.5],pine:[10,.5],troll:[100,5],bifrost:[150,8],frost:[40,2],gwood:[40,2],ubone:[400,20],thor:[600,30]},MS_MAX=9999;
+const matCost=(k,n)=>{const c=MAT_COST[k]||[0,0];return[c[0]*n,Math.ceil(c[1]*n)]};
+// 點材料跳出購買小卡：數量用 −／＋ 和快捷鍵調整
+function shopMatCard(k){const n=Math.max(1,Math.min(MS_MAX,ui.shopN|0||1)),[g,m]=matCost(k,n),qb=(v,t)=>`<button class="ui-btn ui-btn--chip chipbtn" data-act="shopN" data-k="${k}" data-v="${v}">${t}</button>`;
+  ui.result={t:'info',k:'shopmat',ok:'關閉',ico:img(MATART[k]),title:MATS[k],html:`<div class="small muted center">持有 ${fmt(S.mats[k]|0)}・單價 ${fmt(MAT_COST[k][0])} 金幣或 ${MAT_COST[k][1]} 鑽石</div>
+   <div class="ms-step">${qb(-10,'−10')}${qb(-1,'−')}<b class="ms-n">${fmt(n)}</b>${qb(1,'＋')}${qb(10,'+10')}</div>
+   <div class="ms-quick">${[1,10,50,100].map(v=>`<button class="ui-btn ui-btn--chip chipbtn ${n===v?'on':''}" data-act="shopN" data-k="${k}" data-v="=${v}">×${v}</button>`).join('')}</div>
+   <div class="ms-btns"><button class="ui-btn ui-btn--primary btn btn-primary ms-buy" data-act="buyMat" data-k="${k}" data-v="gold" ${S.gold<g?'disabled':''}>${img('it_gold')}${fmt(g)} 金幣</button><button class="ui-btn ui-btn--primary btn btn-primary ms-buy" data-act="buyMat" data-k="${k}" data-v="gems" ${S.gems<m?'disabled':''}>${img('it_gems')}${fmt(m)} 鑽石</button></div>`};render()}
+function shopBuyMat(k,cur,n){if(!MATS[k])return;n=Math.max(1,Math.min(MS_MAX,n|0||1));const [g,m]=matCost(k,n);
+  if(cur==='gems'){if(!spendGems(m))return}else{if(S.gold<g)return toast('金幣不夠','bad');S.gold-=g}
+  S.mats[k]=(S.mats[k]|0)+n;snd('coin');toast(`購買 ${MATS[k]} ×${n}`,'ok');save();if(ui.result&&ui.result.k==='shopmat')shopMatCard(k);else render()}
 // v4.44 屬性說明：三個等級（倍率、機率）、相剋、哪些關卡的弱點是這個屬性
 function affInfo(k){const x=ELEM[k];if(!x)return{title:'附魔',html:''};const pr=ELEM_PAIR.find(p=>p.includes(k)),opp=ELEM_OPP[k],vs=VILLAGES.map((v,i)=>i).filter(i=>vWeak(i)===k);
   return{ico:elBox(k,'el-big'),title:x.n,html:`${[1,2,3].map(t=>`<div class="kv"><span>${['','一','二','三'][t]}級・${x.tn[t-1]}</span><b>打中弱點 ×${ELEM_MULT[t]}・<span class="muted">${r1(elemP(t))}%</span></b></div>`).join('')}
@@ -4483,7 +4502,7 @@ function effRows(w,mine){const e=elemOf(w);   // v4.44 武器詳情的附魔欄�
    ${e?`<button class="eff-row" data-act="affinfo" data-k="${e.k}">${elBox(e.k)}<span class="grow"><b>${e.tn} <i>${e.n}${['','一','二','三'][e.t]}級</i></b><span class="small muted">打中弱點傷害 ×${e.m}</span></span><em>ⓘ</em></button>`
      :`<div class="small muted">${mine?'無屬性。按「附魔」隨機獲得烈焰、霜寒、雷霆、劇毒、神聖、暗影其中一種。':'無屬性'}</div>`}`}
 const INFO={
-  horn:()=>({icon:'it_horn',title:'狩獵號角',html:'所有有駐守武器的村莊，立即完成 30 分鐘份量的狩獵，獎勵直接放進各村莊的累積獎勵，不會超過離線上限。'}),
+  sign:()=>({icon:'ic_check',title:'七日簽到',html:'每天可以簽到一次，漏簽不會歸零；第 7 天領完後從第 1 天重新開始。<br><br>每天第一次進遊戲會自動打開商城的簽到。'}),
   monthly:()=>({icon:'it_monthly',title:'北境月卡（免費）',html:'領取後立即獲得 300 鑽石，30 天內每天可以領 50 鑽石。<br><br>封測期間免費。'}),
 };
 function viewShop(){
@@ -4494,9 +4513,9 @@ function viewShop(){
   ${BETA?'':`<div class="ui-panel panel">\${ptitle('鑽石（試玩版不扣款）')}<div class="gems3">\${[[60,'NT$30'],[330,'NT$150'],[1280,'NT$590']].map(([g,p])=>\`<button class="ui-card gemcard" data-act="topup" data-n="\${g}">\${img('it_gems')}<b>\${g} 鑽</b><span class="price">\${p}</span></button>\`).join('')}</div></div>`}
   <div class="ui-panel panel month ${on?'on':''}">${info('monthly')}<div class="item">${img('it_monthly')}<div class="grow"><b>北境月卡<span class="nobr">（免費）</span></b><div class="small muted">${on?`剩餘 ${days} 天`:'<span class="nobr">立得 300 鑽</span><span class="nobr">＋每天 50 鑽</span>'}</div></div>
    ${on?btn(S.monthly.last===today()?'今日已領':'領 50 鑽<i class="dot give-dot"></i>','claim',{cls:'btn-primary sm',dis:S.monthly.last===today()}):btn(BETA?'免費領取<i class="dot give-dot"></i>':'NT$150','monthly',{cls:'btn-primary sm'})}</div></div>
-  <div class="ui-panel panel">${ptitle('特殊道具')}<div class="pgrid">
-   ${card('it_horn','狩獵號角','村莊立即狩獵<br>30 分鐘','50 鑽','speedHunt','','horn')}
-</div></div>
+  <div class="ui-panel panel sg-panel">${info('sign')}${ptitle('七日簽到')}${viewSign()}</div>
+  <div class="ui-panel panel">${ptitle('材料')}<div class="matgrid">${MAT_DEF.map(([k])=>`<button class="matbox mb-tap ms-box" data-act="shopmat" data-k="${k}">${img(MATART[k])}<span class="mb-n">${MATS[k]}</span><span class="ms-p">${img('it_gold')}${fmtS(MAT_COST[k][0])}</span></button>`).join('')}</div>
+   <div class="small muted center ms-tip">點材料選數量，用金幣或鑽石購買</div></div>
 `;
 }
 const DEV_TABS=[['res','資源'],['chat','聊天'],['prog','進度'],['enh','強化動畫'],['test','自動測試'],['save','存檔'],['mk','交易所'],['ui','UI 元件']];
@@ -4522,7 +4541,7 @@ function sheetDev(){
    <div class="label">v3.79 村莊換武器／掉落說明</div><div class="devgrid">${B('uiswap','村莊：送一把更強的（不亮紅點）')}${B('uidropinfo','村莊詳情：點掉落看說明')}</div>
    <div class="label">v3.64 紅點提醒</div><div class="devgrid">${B('uigive','送一把可交付的武器')}${B('uidot_w','道具欄：最新一把標 NEW')}${B('uidot_bp','鐵匠鋪：最新圖紙標 NEW')}${B('uidot_full','村莊倉庫滿（醒目紅點）')}${B('uidot_mk','交易所：模擬有成交')}${B('uidot_mon','商城：月卡今天可領')}${B('uidot_st','目前哪些紅點會亮')}</div>
    <div class="label">v4.03 公告與玩法說明（右上角齒輪）</div><div class="devgrid">${B('nw_open','打開齒輪設定')}${B('nw_new1','模擬新版本：最新一則變 NEW')}${B('nw_all','全部公告和玩法變 NEW')}${B('nw_seen','全部標成已讀')}</div>
-   <div class="label">v3.70 每日任務・簽到・跑馬燈</div><div class="devgrid">${B('dq_all','每日任務全部達成')}${B('dq_reset','每日任務換日重置')}${B('sg_reset','簽到：今天可再領')}${B('sg_d7','簽到：跳到第 7 天')}${B('news_ok','跑馬燈：模擬 +12 成功')}${B('news_brk','跑馬燈：模擬 +11 爆裝')}${B('qopen','打開任務視窗')}</div>
+   <div class="label">v3.70 每日任務・簽到・跑馬燈</div><div class="devgrid">${B('dq_all','每日任務全部達成')}${B('dq_reset','每日任務換日重置')}${B('sg_reset','簽到：今天可再領')}${B('shopsg','v4.59 商城：簽到可再領並打開商城')}${B('shopbroke','v4.59 商城：金幣鑽石歸零（看買不起）')}${B('sg_d7','簽到：跳到第 7 天')}${B('news_ok','跑馬燈：模擬 +12 成功')}${B('news_brk','跑馬燈：模擬 +11 爆裝')}${B('qopen','打開任務視窗')}</div>
      <div class="label">v3.67 分頁美術預熱</div><div class="devgrid">${B('uiwarm','預熱狀態')}${B('uiwarmrun','連切 5 個分頁測出圖')}</div>
      <div class="label">時間流速（正式版 1×）</div><div class="row">${[1,10,30,60].map(n=>`<button class="ui-btn ui-btn--chip chipbtn ${S.speed===n?'on':''}" data-act="speed" data-k="${n}">${n}×</button>`).join('')}</div>
      <div class="label">離線累積上限</div><div class="row">${[1,OFFLINE_H].map(n=>`<button class="ui-btn ui-btn--chip chipbtn ${S.capH===n?'on':''}" data-act="cap" data-k="${n}">${n} 小時</button>`).join('')}</div>
@@ -4771,7 +4790,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
      S=sanitize(migrateV2(o));S.villages.forEach((st,i)=>{const n=st._pending||0;delete st._pending;const w=st.weaponId!=null&&W(st.weaponId);for(let c=0;c<n;c++)rollCycle(i,w,st)});ui.sheet=null;toast('已載入 v2 測試存檔並遷移成 v3（1-1 累積 5 輪）')},
    dq_all:()=>{dailyRoll();const b=S.daily.b;b.harvest=S.stats.harvest-5;b.forged=forgedN()-3;b.enhTry=S.stats.enhTry-5;b.melted=S.stats.melted-1;toast('今天的每日任務已全部達成，活躍度 100')},
    dq_reset:()=>{S.daily=null;dailyRoll();toast('每日任務已重置（像剛換日）')},
-   sg_reset:()=>{S.sign.last='';toast('今天可以再簽到一次')},sg_d7:()=>{S.sign.n=6;S.sign.last='';toast('下一次簽到是第 7 天')},
+   sg_reset:()=>{S.sign.last='';toast('今天可以再簽到一次')},shopsg:()=>{S.sign.last='';ui.sheet=null;ui.tab='shop';render();scrollTo(0,0);toast('商城的簽到應該可以領、商城分頁亮紅點')},shopbroke:()=>{S.gold=0;S.gems=0;ui.sheet=null;ui.tab='shop';render();toast('材料的購買按鈕應該全部變暗')},sg_d7:()=>{S.sign.n=6;S.sign.last='';toast('下一次簽到是第 7 天')},
    nw_open:()=>{ui.sheet={t:'set'};toast('齒輪設定已打開：有 NEW 時齒輪會亮紅點')},
    nw_new1:()=>{nwInit();const n=NW_LOG[0];S.nwSeen=S.nwSeen.filter(v=>v!==n.v);for(const k of n.g)delete S.glSeen[k];ui.sheet=null;toast(`v${n.v} 公告和它改到的玩法變成 NEW：齒輪應該亮紅點`,'ok')},
    nw_all:()=>{S.nwSeen=[];S.glSeen={};ui.sheet=null;toast(`公告 ${NW_LOG.length} 則、玩法 ${GUIDE_ALL.length} 項全部變 NEW`,'ok')},
@@ -4830,7 +4849,7 @@ function renderLayer(){
   if(s){const pop=s.t==='w'&&((s.m==='main'||s.m==='ench')&&!!W(s.id)||s.m==='enh'),full=!pop&&(s.t==='w'||s.t==='fxt');h+=`<div class="scrim ${pop?'wpopc':''} ${same?'still':''}" data-act="scrim"><div class="ui-sheet sheet ${full?'full':''} ${pop?'wpop':''} ${s.t==='chat'?'cx-sheet':''} ${same?'still':''}">${s.t==='w'?sheetWeapon(s.id,s.m):s.t==='v'?sheetVillage(s.i):s.t==='ch'&&ui.ch?sheetCh():s.t==='chr'&&ui.chr?sheetChr():s.t==='a'?sheetAch():s.t==='lb'?sheetLb(s.i):s.t==='lbw'?sheetLbW(s.i,s.k):s.t==='ws'?sheetWorkshop(s.k):s.t==='evt'?sheetEvt():s.t==='chat'?sheetChat():s.t==='gd'?sheetGuild():s.t==='fr'?sheetFriend():s.t==='bw'?sheetBossW(s.r,s.j):s.t==='fxt'?sheetFxTest(s):s.t==='set'?sheetSet(s.k):/^mk/.test(s.t)?sheetMk(s):sheetDev()}</div></div>`}
   const r=ui.result;
   if(r&&r.t==='h')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card">${ptitle(r.title)}${r.ev?`<div class="small t-danger center">其中 ${r.ev} 輪受襲：沒有材料、金幣減半</div>`:''}<div class="hgrid">${harvestIcons(r.got)}</div>${btn('確定','rclose',{cls:'btn-primary big'})}</div></div>`;
-  if(r&&r.t==='info')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card">${r.ico?`<div class="info-ico">${r.ico}</div>`:r.icon?`<div class="info-ico">${img(r.icon)}</div>`:''}${ptitle(r.title)}<div class="info-body">${r.html}</div>${r.acts||''}${btn('知道了','rclose',{cls:'btn-primary big'})}</div></div>`;
+  if(r&&r.t==='info')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card">${r.ico?`<div class="info-ico">${r.ico}</div>`:r.icon?`<div class="info-ico">${img(r.icon)}</div>`:''}${ptitle(r.title)}<div class="info-body">${r.html}</div>${r.acts||''}${btn(r.ok||'知道了','rclose',{cls:r.ok?'btn-sec big':'btn-primary big'})}</div></div>`;
   const fa=document.activeElement,fid=fa&&fa.id&&L.contains(fa)?fa.id:null,cxl=document.getElementById('cxList'),cxs=cxl?cxl.scrollTop:null;   // v3.88 重畫時保留聊天輸入框焦點與訊息捲動位置
   L.innerHTML=h;ui._lastSheet=JSON.stringify(s);{const n=fid&&document.getElementById(fid);if(n)n.focus({preventScroll:true});const c=document.getElementById('cxList');if(c)c.scrollTop=cxs==null?c.scrollHeight:cxs}document.documentElement.classList.toggle('scrimmed',!!s);
   if(same){const n=document.querySelector('.sheet');if(n)n.scrollTop=st};fitNames()
@@ -4871,7 +4890,7 @@ document.addEventListener('click',e=>{
   if(!['enhance','fxskip','devdo','mute','sndtest','sndfix','sfxalt'].includes(a)&&Date.now()-PD_SND>700)snd(uiSndOf(a));
   if((a==='scrim'||a==='rclose')&&e.target!==b&&!e.target.matches('button'))return;
   if(a!=='melt')ui.meltArm=null;
-  ({tab:()=>{if(ui.busy&&ui.fxDone)ui.fxDone();ui.pickV=null;if(ui.tab==='armory'&&d.k!=='armory'&&S.weapons.some(wNew)){S.seenW=S.nextId-1;save()}if(d.k==='market'&&S.mkNew){S.mkNew=0;save()}ui.tab=d.k;if(d.k==='market'&&(AUTH||mkMock())&&Date.now()-MK.t>20000)setTimeout(mkLoad,0);ui.sheet=null;ui.enhLast=null;render();warmTabs();d.k==='village'?scrollToNextVillage():scrollTo(0,0)},close:()=>{if(ui.busy)return;ui.sheet=null;ui.enhLast=null;ui.riskArm=null;ui.riskOk=null;render()},scrim:()=>{if(ui.busy||ui.ch)return;ui.sheet=null;ui.enhLast=null;render()},dev:()=>{ui.sheet={t:'d'};render()},achopen:()=>{ui.qTab=signReady()?'s':boxReadyN()||!achReadyN()?'d':'o';ui.sheet={t:'a'};render()},
+  ({tab:()=>{if(ui.busy&&ui.fxDone)ui.fxDone();ui.pickV=null;if(ui.tab==='armory'&&d.k!=='armory'&&S.weapons.some(wNew)){S.seenW=S.nextId-1;save()}if(d.k==='market'&&S.mkNew){S.mkNew=0;save()}ui.tab=d.k;if(d.k==='market'&&(AUTH||mkMock())&&Date.now()-MK.t>20000)setTimeout(mkLoad,0);ui.sheet=null;ui.enhLast=null;render();warmTabs();d.k==='village'?scrollToNextVillage():scrollTo(0,0)},close:()=>{if(ui.busy)return;ui.sheet=null;ui.enhLast=null;ui.riskArm=null;ui.riskOk=null;render()},scrim:()=>{if(ui.busy||ui.ch)return;ui.sheet=null;ui.enhLast=null;render()},dev:()=>{ui.sheet={t:'d'};render()},achopen:()=>{ui.qTab=boxReadyN()||!achReadyN()?'d':'o';ui.sheet={t:'a'};render()},
    set:()=>{ui.result=null;ui.sheet={t:'set'};render()},setk:()=>{ui.sheet={t:'set',k:d.k||null};ui.glOpen=null;render();const sc=document.querySelector('.sheet');if(sc)sc.scrollTop=0},
    nwtog:()=>{ui.nwOpen=ui.nwOpen===d.k?null:d.k;render()},gltog:()=>{ui.glOpen=ui.glOpen===d.k?null:d.k;if(ui.glOpen)glMark(d.k);render()},
    sheetW:()=>{ui.sheet={t:'ws',k:'w'};render()},sheetM:()=>{ui.sheet={t:'ws',k:'m'};render()},sheetT:()=>{ui.sheet={t:'ws',k:'t'};render()},evtopen:()=>{if(BOSS_OFF)return;ui.sheet={t:'evt'};render()},bossw:()=>{ui.sheet={t:'bw',r:+d.r,j:+d.j};render()},
@@ -4919,7 +4938,7 @@ document.addEventListener('click',e=>{
    rename:()=>{ui.result=null;render();showName(!S.nick)},
    player:()=>{const t=Date.now();ui.tapN=(t-(ui.tapT||0)<1500?(ui.tapN||0):0)+1;ui.tapT=t;if(ui.tapN>=20&&(!CLOUD_ONLY||CLOUD.admin)){ui.tapN=0;clearTimeout(ui.lvT);ui.result=null;setDev(!devMode());toast(devMode()?'已開啟開發者模式：右上角齒輪裡多了「開發者工具」。':'已關閉開發者模式。')}else{clearTimeout(ui.lvT);const n=ui.tapN;ui.lvT=setTimeout(()=>{if(ui.tapN===n)showLevel()},300)}},
    up:()=>upgrade(d.k),topup:()=>{S.gems+=+d.n;toast('測試儲值：鑽石 +'+d.n,'ok');save();render()},
-   monthly,claim:claimMonthly,speedHunt
+   monthly,claim:claimMonthly,buyMat:()=>shopBuyMat(d.k,d.v,ui.shopN),shopmat:()=>{ui.shopN=1;shopMatCard(d.k)},shopN:()=>{const v=String(d.v);ui.shopN=v[0]==='='?+v.slice(1):Math.max(1,Math.min(MS_MAX,(ui.shopN|0||1)+(+v)));shopMatCard(d.k)}
   })[a]?.();
 });
 document.addEventListener('wheel',e=>{const h=e.target.closest('.hscroll,.catbar,.realms,.devtabs');if(h&&Math.abs(e.deltaY)>Math.abs(e.deltaX)&&h.scrollWidth>h.clientWidth){h.scrollLeft+=e.deltaY;e.preventDefault()}},{passive:false});
@@ -5041,18 +5060,19 @@ const TUT=[
  // 五、新圖紙與其他系統
  {t:'收復村莊會<b>解鎖新圖紙</b>：收復 1-2 就能打<b>松林長矛</b>，要用中庭鐵礦和松林硬木。缺材料時鐵匠鋪會告訴你去哪一關刷。',go:()=>{ui.sheet=null;ui.tab='forge';scrollTo(0,0)},ok:'知道了'},
  {t:'封測期間<b>北境月卡免費</b>！按「<b>免費領取</b>」立刻拿 <b>300 鑽石</b>，之後 30 天每天回來還能再領 50 鑽。',go:()=>{ui.sheet=null;ui.result=null;ui.tab='shop';scrollTo(0,0)},sel:()=>ui.result?'.modal-card [data-act=rclose]':ui.tab!=='shop'?'.nav [data-act=tab][data-k=shop]':monthlyOn()?null:'[data-act=monthly]',done:()=>monthlyOn()},
- {t:'村莊頁的<b>任務</b>有每日任務、七日簽到和成就，可以免費領金幣和鑽石。',go:()=>{ui.sheet=null;ui.result=null;ui.tab='village';scrollTo(0,0)},sel:()=>'.vbar',ok:'知道了'},
+ {t:'商城每天可以<b>七日簽到</b>領獎勵，材料不夠也能用<b>金幣或鑽石</b>買。',go:()=>{ui.sheet=null;ui.result=null;ui.tab='shop'},sel:()=>ui.result?'.modal-card [data-act=rclose]':ui.tab!=='shop'?'.nav [data-act=tab][data-k=shop]':'.sg-panel',ok:'知道了'},   // v4.59 簽到搬到商城
+ {t:'村莊頁的<b>任務</b>有每日任務和成就，可以免費領金幣和鑽石。',go:()=>{ui.sheet=null;ui.result=null;ui.tab='village';scrollTo(0,0)},sel:()=>'.vbar',ok:'知道了'},
  {go:()=>{ui.sheet=null;ui.tab='forge';scrollTo(0,0)},t:'基本就是這樣：<b>鍛造 → 挑戰 → 掛機收成 → 強化 → 附魔</b>，一路收復九界、向諸神討回爐火！送你 <b>50 鑽石</b>當開工禮。',sel:()=>null,ok:'開始冒險',end:1}];
 // 各系統第一次打開時的說明（導覽結束後才會出現，每個只出現一次）
 const TIPS={
  mat:['道具欄','同一種道具放在同一格，右下角是數量，沒有上限。點一下看說明。'],
  armory:['道具欄','點武器看詳情、強化、附魔。上方可依類別篩選與排序；點鎖頭「收藏」的武器不會被熔解。'],
- shop:['商城','封測期間月卡免費；鑽石可以買狩獵號角。'],
+ shop:['商城','封測期間月卡免費；每天在這裡簽到；材料可以用金幣或鑽石買。'],
  danger:['危險區','這次強化超過安定值：失敗會有機率爆裝，武器會永久消失。按下強化前會要你再確認一次。'],
  ench:['屬性附魔','按附魔會隨機得到一種屬性和等級（機率列在下方）。可以重抽，但舊的屬性會被覆蓋。打中怪物弱點才有加成。'],
  vdetail:['駐守中的武器','收成和每輪掉落直接看村莊卡片。這張小卡可以看武器詳情、換更強的武器，或把武器收回。'],   // v4.38 狩獵策略拿掉
  lb:['排行榜','比的是你交給這座村莊「最強的那把武器」。第一次衝進前 10、前 3、第 1 名各有一次獎勵。'],
- ach:['任務','每日任務每天 0 點重置，集滿活躍度開寶箱；七日簽到每天領一次；委託成就達成就能領鑽石。'],
+ ach:['任務','每日任務每天 0 點重置，集滿活躍度開寶箱；委託成就達成就能領鑽石。'],
  ws_w:['工坊升級','熔爐：解鎖更高階材質的圖紙。鐵砧：提高打出高品質的機率，並開放更多附魔欄。'],
  ws_t:['鐵匠天賦','收成、鍛造、強化成功、收復村莊、熔解都會累積聲望。每升 1 級得到 1 天賦點和聲望寶箱，可以點在 6 種天賦上；聲望等級沒有上限。'],
  evt:['首領討伐','全服一起打同一隻首領。首領整週開打，每週日 0 點結算換下一隻。最多派 3 把武器駐守，每小時造成攻擊力的傷害（打中弱點依屬性等級 ×1.2～1.6），離線也會繼續打，結算後武器留著繼續打；駐守首領的武器不能同時打村莊。全服血量打到 25／50／75／100% 時，本週有駐守的人都能領獎；結算後再依上週個人傷害排名領獎。'],
@@ -5061,9 +5081,9 @@ const TIPS={
 function tipKey(){const s=ui.sheet;if(s){if(s.t==='w'&&s.m==='enh'){const w=W(s.id);return w&&w.lv+1>stable(w)&&w.lv<MAX_LV?'danger':null}if(s.t==='w'&&s.m==='ench')return'ench';if(s.t==='v'){return S.villages[s.i].weaponId!=null?'vdetail':null}
   if(s.t==='lb')return'lb';if(s.t==='a')return'ach';if(s.t==='ws')return'ws_'+s.k;if(s.t==='evt')return'evt';return null}
   return ui.tab==='armory'&&ui.atab==='m'?'mat':ui.tab==='armory'&&S.weapons.length?'armory':ui.tab==='shop'?'shop':null}
-// v3.70 每天第一次進遊戲（導覽結束後）自動打開簽到
+// v3.70 每天第一次進遊戲（導覽結束後）自動打開簽到（v4.59 起在商城）
 function signAuto(){if(ui.signAuto||!S||!signReady()||!(S.tut>=TUT.length)||ui.sheet||ui.result||ui.busy||document.body.classList.contains('gating')||(CLOUD_ONLY&&!CLOUD.ready))return;
-  ui.signAuto=true;ui.qTab='s';ui.sheet={t:'a'};render()}
+  ui.signAuto=true;ui.tab='shop';render();scrollTo(0,0)}   // v4.59 簽到搬到商城：每天第一次進遊戲切到商城
 function tipDraw(){let o=document.getElementById('tip');const k=!document.body.classList.contains('gating')&&!ui.busy&&!ui.result&&S.tut>=TUT.length?tipKey():null;
   if(!k||(S.tips||{})[k]){if(o&&(!k||o.dataset.k!==k))o.remove();return}
   if(o&&o.dataset.k===k)return;if(o)o.remove();
