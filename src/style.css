@@ -1564,4 +1564,9 @@ html.scrimmed .cbar{display:none}
 .awk-lv{min-width:32px;color:#aaa}.awk-r.on .awk-lv{color:#f3c76b}
 .awk-e{display:block}
 .awk-next{margin:6px 0;padding:6px 10px;border-radius:8px;border:1px solid rgba(232,190,110,.45);background:rgba(60,44,20,.45);color:#f3dfae;text-align:center}
+.gate-maint .gt-logo{width:min(72vw,340px)}
+.mt-box{max-height:calc(100% - 150px - env(safe-area-inset-bottom,0px));overflow:auto;gap:10px}
+.mt-body{font-size:14px;line-height:1.7;color:var(--bone)}.mt-body p{margin:0 0 8px}
+.mt-warn{color:#ff9474}.mt-sign{text-align:right;color:var(--ash);font-size:13px;margin:0!important}
+.mt-box .gt-ttl{text-align:center}
 </style>
