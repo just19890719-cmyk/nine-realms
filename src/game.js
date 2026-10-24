@@ -296,7 +296,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.26';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.27';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1116,6 +1116,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.27',d:'10/24',t:'神明用「祂」',b:['稱呼神明一律用「祂」，怪物用「牠」','村莊詳情的怪物大圖，打神的關卡會寫「本村要打的神明」'],g:['hp']},
  {v:'4.26',d:'10/24',t:'第一、二界的故事串起來了',b:['20 關的說明和怪物傳說改寫成一條主線：諸神打開九界的門讓怪物湧進人間，打敗海姆達爾後去約頓海姆拉攏巨人','2-10 換成<b>雷神索爾</b>（維莫爾河渡口），要<b>戰錘＋神聖</b>；神明武器斯卡蒂之弓改成<b>索爾之錘</b>（天生雷霆），遺物改成雷神錘柄','1-8 和 2-9 對調：1-8 泥巨人莫庫卡爾菲、2-9 赫朗格尼爾（改名<b>石籬原</b>，要斧，掉巨人骨）','已經打好的斯卡蒂之弓和弓臂會自動變成索爾之錘和雷神錘柄，強化等級不變'],g:['god','hp']},
  {v:'4.25',d:'10/24',t:'1-2～1-4 怪物全身圖重新繪製',b:['1-2 賽赫利姆尼爾：身上多了英靈殿每晚被宰殺留下的傷疤','1-3 哈提：披著符文鎖鏈馬具的巨狼','1-4 斯庫爾：背上的冰刺更完整，撲擊動作更有力'],g:['hit']},
  {v:'4.23',d:'10/24',t:'第一界 10 隻怪物都有全身圖了',b:['1-5 瓦爾拉文（戰場鴉魔）：半鴉半狼，爪子抓著撕破的戰旗','1-6 克拉肯（深海巨怪）、1-7 山怪特羅爾（披著龍鱗的石皮巨魔）','1-8 石心巨人赫朗格尼爾（扛著磨刀石巨棒）、1-9 穆斯貝爾騎兵（騎著火鬃戰馬）、1-10 守望之神海姆達爾','點怪物小圖展開戰鬥畫面，就能看到待機和攻擊的動作'],g:['hit']},
@@ -1971,7 +1972,7 @@ const hpBar=i=>`<div class="ui-prog prog hpbar"><i class="hp-g"></i><i data-vhp=
 // v4.12 村莊詳情的怪物大圖（Mochi 選 C，取代 v4.09 卡片循環翻頁）：‹ › 或下方小圖翻看同一界 10 隻，還沒解鎖的只顯示黑影
 function monDex(i){const r0=Math.floor(i/10)*10,sm=ui.sheet&&ui.sheet.m,m=sm!=null&&sm>=r0&&sm<r0+10?sm:i,lk=S.villages[m].status==='locked',v=VILLAGES[m],go=k=>r0+(k-r0+10)%10;
   return `<div class="mon-dex"><div class="md-stage"><button class="md-arr" data-act="mondex" data-k="${go(m-1)}" aria-label="上一隻">${ic('arrow-left')}</button>${img('mon_'+(m+1),'md-big'+(lk?' lk':''),lk?'':MONS[m])}<button class="md-arr" data-act="mondex" data-k="${go(m+1)}" aria-label="下一隻">${ic('arrow-right')}</button></div>
-   <div class="md-nm">${lk?'？？？':MON_T[m]+'・'+MONS[m]}</div><div class="md-sub">${vNo(m)} ${lk?'未解鎖的村莊':v.name}${m===i?'・本村要打的怪物':''}</div>
+   <div class="md-nm">${lk?'？？？':MON_T[m]+'・'+MONS[m]}</div><div class="md-sub">${vNo(m)} ${lk?'未解鎖的村莊':v.name}${m===i?(/神/.test(MON_T[m])?'・本村要打的神明':'・本村要打的怪物'):''}</div>
    ${lk?`<div class="md-req">完成 ${vNo(m-1)} ${VILLAGES[m-1].name} 後解鎖</div>`:`<div class="md-req">要打${/神/.test(MON_T[m])?"祂":"牠"}：<b>${CATS[v.cat]}</b>・攻擊力 ${v.req}${v.need?`＋<b class="t-danger">${AFFIX[v.need].n}</b>`:''}</div><div class="md-lore">${MON_LORE[m]}</div>`}
    <div class="md-strip">${Array.from({length:10},(_,k)=>{const j=r0+k,l=S.villages[j].status==='locked';return `<button class="${j===m?'on':''} ${l?'lk':''}" data-act="mondex" data-k="${j}" aria-label="${vNo(j)}">${img('mon_'+(j+1))}</button>`}).join('')}</div></div>`}
 function vMon(i,k,bs){const art=MON_ART.includes(i);return `<div class="vmon ${k} ${art?'has-art':''} ${bs?'bs-tap':''}" data-mon="${i}" ${bs?`data-act="bsopen" data-i="${i}" role="button" aria-label="展開戰鬥畫面"`:''}>${art?img('mon_'+(i+1),'vthumb vmon-m',MONS[i]):img('v'+(i+1),'vthumb vmon-bg')}</div>`}

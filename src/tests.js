@@ -480,6 +480,9 @@ function storyTests(){const pr=[...MON_LORE,...VILLAGES.map(v=>v.txt)].map((t,i)
   const ok=MONS[7]==='莫庫卡爾菲'&&MONS[18]==='赫朗格尼爾'&&MONS[19]==='索爾'&&MON_T[19]==='雷神'&&VILLAGES[18].name==='石籬原'&&!VILLAGES[18].drops.some(d=>d[0]==='fireheart')&&KN_FULL.includes(18)&&!KN_FULL.includes(7)&&BP.g_skadi.n==='索爾之錘'&&BP.g_skadi.cat==='hammer'&&BP.g_skadi.inn[0]==='thunder'&&GOD.g_skadi.god==='索爾'&&MATS.srelic==='雷神錘柄';
   return[T('H 故事主線：1-8 泥巨人、2-9 石籬原赫朗格尼爾（全身圖跟著搬）、2-10 雷神索爾＋索爾之錘',!!ok,`1-8 ${MONS[7]}、2-9 ${VILLAGES[18].name} ${MONS[18]}、2-10 ${MONS[19]}`),
     T('H 代名詞：怪物傳說和關卡說明不用他／她／它（指武器的「它」除外）',!pr.length,pr.length?'還有：'+pr.map(x=>x[0]).join('、'):'都改好了')]}
+// v4.27 神明用「祂」：神的傳說、村莊文字不能用他／她／牠
+function godWordTests(){const bad=VILLAGES.map((v,i)=>i).filter(i=>/神/.test(MON_T[i]||'')&&/[他她牠]/.test(MON_LORE[i]+VILLAGES[i].txt));
+  return[T('H 神明用「祂」：神的傳說、村莊文字都不用他／她／牠',!bad.length,bad.length?'傳說：'+bad.map(vNo).join('、'):'都用祂')]}
 // v4.14 村莊需求：每座村莊的需求面板都列得出同類圖紙
 function vNeedTests(){const bad=VILLAGES.map((v,i)=>i).filter(i=>{const h=vNeedPanel(i);return !/data-act="vforge"/.test(h)||/data-act="bp"/.test(h)});
   return[T('H 村莊需求：每座村莊都列出可點的同類圖紙（點了跳到鍛造頁）',!bad.length,bad.length?'沒有圖紙：'+bad.map(vNo).join('、'):VILLAGES.length+' 座都有')]}
@@ -522,7 +525,7 @@ function gwTests(){const ck=godCheck(),bad=ck.filter(x=>!x.ok);
     T('GW4 覺醒：+6 沒有、+7 狩獵 −3%、+11 攻擊力 ×1.1、+13 四段、+15 稱號',n6===0&&Math.abs(tr-.03)<1e-9&&p10===b10&&p11===b11&&n13===4&&!t0&&t1,`+6 段數 ${n6}；+7 縮短 ${tr}；+10 ${p10}/${b10}；+11 ${p11}/${b11}；+13 段數 ${n13}；稱號 ${t0}→${t1}`)]}
 function runTests(mode){
   if(mode==='econ')return econHtml(12)+econHtml(8);
-  const r=runAll({N:100000});r.res.push(...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...storyTests(),...curveTests(),...vNeedTests(),...hitTests(),...enchTests(),...wsTests(),...gwTests());const pass=r.res.filter(x=>x.pass).length;
+  const r=runAll({N:100000});r.res.push(...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...storyTests(),...curveTests(),...vNeedTests(),...godWordTests(),...hitTests(),...enchTests(),...wsTests(),...gwTests());const pass=r.res.filter(x=>x.pass).length;
   return `<div><b>${pass}/${r.res.length} 通過</b>（${r.ms} 毫秒）</div>`+resHtml(r.res);
 }
 if(typeof module!=='undefined')module.exports={runAll,econReport,simulate,levelCheck};
