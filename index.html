@@ -1753,8 +1753,9 @@ html.scrimmed .cbar{display:none}
 .ib-h span{font-size:12px;color:var(--ash)}
 .matbox.ib{gap:2px}
 .ib-ico{position:relative;display:block;margin-bottom:6px}
-.ib-ico img{width:40px;height:40px;border-radius:4px}
-.ib-x{position:absolute;right:-10px;bottom:-4px;background:#1a120a;border:1px solid #7a5a2a;color:#f1d79a;font-size:11px;font-weight:700;font-style:normal;line-height:1;padding:2px 4px;border-radius:8px;font-variant-numeric:tabular-nums}
+.ib-ico img{width:48px;height:48px;border-radius:4px;margin:0 6px}
+.info-ico img[src*=it_relic]{width:110px;height:110px}
+.ib-x{position:absolute;right:0;bottom:-4px;background:#1a120a;border:1px solid #7a5a2a;color:#f1d79a;font-size:11px;font-weight:700;font-style:normal;line-height:1;padding:2px 4px;border-radius:8px;font-variant-numeric:tabular-nums}
 .ph-ico{width:40px;height:40px;border:1px dashed #8a6a3a;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#b99a66;line-height:1.1;text-align:center}
 .ph-ico[style]{border-color:var(--gl);box-shadow:0 0 10px var(--gl),inset 0 0 8px var(--gl)}
 .ib-gl{font-size:11px;font-weight:700;line-height:1.2}
@@ -2080,9 +2081,9 @@ const FURNACE_COST=[0,3000,6000,15000,40000,150000],ANVIL_COST=[0,2000,8000,2500
 const WS_GATE={furnace:[0,0,3,5,6,7,10],anvil:[0,0,2,4,7,10]};
 VILLAGES.forEach(v=>v.drops=[]);   // v4.43 舊材料刪除：村莊暫時只掉金幣（新的掉落等 Mochi 重新設計）
 // v4.43 舊道具（防爆卷、祝福石、傳說圖紙、殘渣）全部刪除。新道具：英靈・遺物（打開內容等 Mochi 設定，圖待生成）
-// [名稱, 圖示（null＝還沒有圖）, 說明, 光芒, 光芒顏色]；v4.43 英靈・遺物分綠／藍／紅／金四種光芒，之後各放不同等級的內容（Mochi）
+// [名稱, 圖示（null＝還沒有圖）, 說明, 光芒, 光芒顏色]；v4.43 英靈・遺物分綠／藍／紅／金四種光芒（圖 art/it_relic_g/b/r/y，Mochi AI 生圖），之後各放不同等級的內容（Mochi）
 const RELIC_DESC='英靈留在戰場上的遺物，光芒越亮，裡面的東西越好。打開會得到東西（內容設計中）。';
-const ITEMS={relic_g:['英靈・遺物',null,RELIC_DESC,'綠光','#5fd36a'],relic_b:['英靈・遺物',null,RELIC_DESC,'藍光','#4fa3ff'],relic_r:['英靈・遺物',null,RELIC_DESC,'紅光','#ff5a4a'],relic_y:['英靈・遺物',null,RELIC_DESC,'金光','#ffc940']};
+const ITEMS={relic_g:['英靈・遺物','it_relic_g',RELIC_DESC,'綠光','#5fd36a'],relic_b:['英靈・遺物','it_relic_b',RELIC_DESC,'藍光','#4fa3ff'],relic_r:['英靈・遺物','it_relic_r',RELIC_DESC,'紅光','#ff5a4a'],relic_y:['英靈・遺物','it_relic_y',RELIC_DESC,'金光','#ffc940']};
 const RELICS=Object.keys(ITEMS).filter(k=>k.startsWith('relic_'));
 const RATE=[0,.95,.9,.85,.8,.75,.7,.45,.35,.25,.18,.12,.08,.05,.03,.02];   // v4.00 Mochi 選難度 B（天堂W 風格）：+7～+15 原本 60/50/40/30/22/15/10/7/5%
 const ACH=[
