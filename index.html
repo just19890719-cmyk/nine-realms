@@ -1580,6 +1580,11 @@ html.scrimmed .cbar{display:none}
 .awk-lv{min-width:32px;color:#aaa}.awk-r.on .awk-lv{color:#f3c76b}
 .awk-e{display:block}
 .awk-next{margin:6px 0;padding:6px 10px;border-radius:8px;border:1px solid rgba(232,190,110,.45);background:rgba(60,44,20,.45);color:#f3dfae;text-align:center}
+.gate-maint .gt-logo{width:min(72vw,340px)}
+.mt-box{max-height:calc(100% - 150px - env(safe-area-inset-bottom,0px));overflow:auto;gap:10px}
+.mt-body{font-size:14px;line-height:1.7;color:var(--bone)}.mt-body p{margin:0 0 8px}
+.mt-warn{color:#ff9474}.mt-sign{text-align:right;color:var(--ash);font-size:13px;margin:0!important}
+.mt-box .gt-ttl{text-align:center}
 </style>
 <div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div><div class="news" id="news" aria-live="polite" data-act="chatsys"></div></div>
 <main class="wrap" id="view"></main>
@@ -2051,7 +2056,8 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.15';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.18';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -2424,7 +2430,8 @@ function showName(first,preview){document.body.classList.add('gating');const g=g
     if(g.dataset.busy)return;g.dataset.busy='1';b.disabled=true;say('確認中…');
     cloudSetNick(n).then(()=>{if(AUTH)sbRest('rpc/lb_rename',{method:'POST',body:JSON.stringify({p_nick:n})}).then(()=>lbFetch(true)).catch(()=>{});toast(first?`歡迎，${n}！`:`暱稱已改為「${n}」`,'ok');render();if(first&&!S.introSeen)showStory();else gateClose()})
       .catch(e=>say(SB_ERR(e.message),1)).finally(()=>{delete g.dataset.busy;b.disabled=false})}}
-function afterAuthEnter(){setTimeout(()=>mkSettle(true),1500);setTimeout(()=>{lbSync().finally(()=>lbFetch(true))},2000);if(AUTH&&!S.nick)return showName(true);if(!S.introSeen)return showStory();gateClose()}   // v3.51 直接從登入畫面切到故事，不先露出遊戲畫面
+function afterAuthEnter(){if(MAINT&&!CLOUD.admin){adminCheck().then(a=>{if(a)return afterAuthEnter();CLOUD.ready=false;showMaint('這個帳號不是管理員，改版期間無法進入。')});return}   // v4.18 維護中只有管理員能進
+  setTimeout(()=>mkSettle(true),1500);setTimeout(()=>{lbSync().finally(()=>lbFetch(true))},2000);if(AUTH&&!S.nick)return showName(true);if(!S.introSeen)return showStory();gateClose()}   // v3.51 直接從登入畫面切到故事，不先露出遊戲畫面
 async function cloudPull(){const r=await sbRest('saves?select=data,updated_at&user_id=eq.'+AUTH.user.id);if(!r||!r[0])throw new Error('雲端還沒有存檔');S=sanitize(r[0].data);S.uid=AUTH.user.id;if(!CLOUD_ONLY)try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}CLOUD.last=Date.now();render()}
 if(typeof window!=='undefined'){setInterval(()=>{if(AUTH&&CLOUD.dirty)cloudPush()},10000);setInterval(()=>{if(AUTH&&!document.hidden)syncClock()},600000);
   // 雲端存檔連續失敗超過 30 秒：畫面上方顯示紅色提示（避免玩家玩了很久卻沒存到）
@@ -2869,6 +2876,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.18',d:'10/24',t:'封測暫停・全面改版中',b:['感謝各位鐵匠這幾天參與封測！','遊戲還缺少許多機制，我們決定<b>全面改版</b>玩法，改版期間暫停開放遊玩','重新開放時，<b>所有進度都會清除</b>，大家從頭開始','改版很快就會完成，敬請期待，再次感謝大家的測試與回饋！']},
  {v:'4.15',d:'10/24',t:'神明武器與神格覺醒',b:['打倒神的關卡會掉<b>神的遺物</b>：1-10 掉霍夫德劍柄、2-10 掉斯卡蒂弓臂（每輪 20%）','收集 6 個遺物就能鍛造<b>霍夫德之劍</b>、<b>斯卡蒂之弓</b>，是那一界最強的武器','神明武器強化到 +7／+9／+11／+13／+15 會逐段<b>神格覺醒</b>，+15 有專屬稱號、全服公告和金色光環','強化成功率和爆裝規則都不變'],g:['god']},
  {v:'4.14',d:'10/24',t:'每一關都跟故事對得上',b:['關卡改名：1-1 魅影林場、1-5 鴉巢堡、1-6 巨怪灣、1-7 巨魔山口、2-2 鐵森林、2-3 巨鷹之崖、2-6 蠕龍礦坑、2-8 烏特加德城','條件跟著故事走：打神一定要<b>神聖</b>（2-10 斯卡蒂改成<b>弓＋神聖</b>）、2-6 蠕龍要<b>剋龍</b>、1-9 火焰騎兵要<b>霜寒</b>','掉落也對得上：1-10 掉新材料<b>虹橋碎晶</b>，2-6 蠕龍掉龍鱗；1-3 是對月長嚎的哈提、1-4 是咬住太陽的斯庫爾','村莊詳情多了「需要的武器」：列出這類所有圖紙，點一下直接跳到那把的鍛造頁','已經駐守的武器不會被收回，換武器時才看新條件'],g:['vil','hp','ench']},
  {v:'4.12',d:'10/24',t:'怪物大圖改到村莊詳情',b:['村莊卡片的縮圖不再翻頁，換回村莊圖','點開村莊，上方有這裡要打的<b>怪物大圖</b>、稱號、需要的武器和傳說','按 ‹ › 或下方小圖可以翻看這一界 10 隻，還沒解鎖的只顯示黑影'],g:['hp']},
@@ -4037,7 +4045,8 @@ function sheetDev(){
    mk:`<div class="label">交易所（v3.41）</div><div class="small muted" style="margin-bottom:6px">${AUTH?'目前連線真實伺服器（'+esc(S.nick||AUTH.user.email)+'）':'未登入：交易所使用「離線模擬」，只存在這支手機，用來測試畫面與流程'}</div>
      <div class="devgrid">${B('mkopen','開啟交易所')}${B('mksettle','立即結算我的成交／過期')}${B('mkclaimt','待領取測試（2 賣出＋1 退回）')}</div>
      <div class="label">離線模擬專用（未登入時）</div><div class="devgrid">${B('mksold','模擬：我最新的上架被買走')}${B('mkexp','模擬：我的上架全部過期')}${B('mkreset','重設模擬市場')}</div>`,
-   save:`<div class="label">取暱稱預覽（v3.38，不用登入、不連伺服器）</div><div class="devgrid">${B('cnameprev','預覽「註冊後取名」流程')}</div><div class="small muted" style="margin:4px 0 8px">輸入「冰脊」或「測試重複」可看重複暱稱的提示；確定後會接著播開場故事。</div>
+   save:`<div class="label">v4.18 封測暫停（目前 MAINT=${MAINT}）</div><div class="devgrid">${B('maintprev','預覽維護公告畫面')}</div>
+     <div class="label">取暱稱預覽（v3.38，不用登入、不連伺服器）</div><div class="devgrid">${B('cnameprev','預覽「註冊後取名」流程')}</div><div class="small muted" style="margin:4px 0 8px">輸入「冰脊」或「測試重複」可看重複暱稱的提示；確定後會接著播開場故事。</div>
      <div class="label">雲端存檔（v3.34）</div><div class="small" style="margin-bottom:6px">${AUTH?`帳號：${AUTH.user.email}<br>狀態：${CLOUD.busy?'同步中…':CLOUD.err?'⚠ '+CLOUD.err:CLOUD.last?'已同步 '+new Date(CLOUD.last).toLocaleTimeString():'尚未同步'}${CLOUD.dirty?'（有未上傳的變更）':''}`:'目前是訪客（只存在這支手機）'}</div>
      <div class="devgrid">${AUTH?B('cpush','立即上傳到雲端')+B('cpull','從雲端下載（覆蓋本機）')+B('clogout','登出')+B('cname','開啟取名畫面'):B('gtlogin','開啟登入畫面')}</div>
      <div class="devgrid">${B('v2','載入 v2 測試存檔（遷移）')}${B('reset',ui.confirmReset?'再按一次確認重置':'重置存檔','btn-danger')}</div>
@@ -4102,6 +4111,7 @@ if(k.startsWith('evt')){const v=evtSt();
 if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?'上傳失敗：'+CLOUD.err:'已上傳到雲端',CLOUD.err?'bad':'ok');render()});return}
   if(k==='cpull'){cloudPull().then(()=>toast('已從雲端下載','ok')).catch(e=>toast('下載失敗：'+SB_ERR(e.message),'bad'));return}
   if(k==='clogout'){ui.sheet=null;return cloudLogout()}
+  if(k==='maintprev'){ui.sheet=null;render();return showMaint(null,true)}
   if(k==='mkopen'){ui.sheet=null;ui.tab='market';mkLoad();return render()}
   if(k==='mksettle'){mkSettle(false).then(()=>mkLoad());return}
   if(k==='mkclaimt'){const bps=BPS.filter(b=>b.t<=1),mk=(n,st,cur,price,q,lv)=>{const b=bps[n%bps.length];return {id:-(Date.now()%1e6)-n,fake:!mkMock(),seller:'me',bp:b.id,weapon:{b:b.id,q,lv,traits:[],ench:[null,null,null,null]},lv,q,cur,price,status:st,settled:false,buyer_ack:true,created_at:new Date().toISOString(),expires_at:new Date().toISOString()}};   // v4.08 待領取測試：離線模擬市場走真流程，登入中只是預覽（領取不入帳）
@@ -4410,6 +4420,14 @@ function showUpdate(v){document.body.classList.add('gating');const g=gateEl();g.
   g.innerHTML=`<div class="gt-scene"><img class="gt-ly gt-bg" src="${LG('key_bg')}" alt=""><div class="gt-vig"></div></div><img class="gt-logo" src="${LG('logo')}" alt="九界鐵匠"><div class="gt-box gt-load"><div class="gt-ttl">有新版本 v${esc(v)}</div><div class="small muted center">目前是 v${BUILD_ID}，需要更新才能繼續玩。你的進度已存到雲端，不會遺失。</div><button type="button" class="ui-btn ui-btn--primary btn btn-primary big" data-gu="1">立即更新</button></div>`}
 if(typeof window!=='undefined'){setInterval(()=>{if(!document.hidden)verCheck()},60000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')verCheck()});
   window.addEventListener('pagehide',()=>{if(AUTH&&CLOUD.ready){save();cloudPush(true,true)}CLOUD.leaving=true});window.addEventListener('pageshow',e=>{if(e.persisted)CLOUD.leaving=false})}
+// v4.18 封測暫停公告（全畫面擋住）；preview=開發者工具預覽，可關閉
+const MAINT_TXT=['感謝各位鐵匠這幾天參與封測！','目前遊戲還缺少許多機制，我們決定進行<b>全面改版</b>，重新打造玩法。改版期間暫停開放遊玩。','<b class="mt-warn">重新開放時，所有進度都會清除，大家將從頭開始。</b>','改版很快就會完成，敬請期待。再次感謝大家的測試與回饋！'];
+function showMaint(msg,preview){document.body.classList.add('gating');const g=gateEl();g.className='gate-login gate-maint';
+  g.innerHTML=`<div class="gt-scene"><img class="gt-ly gt-bg" src="${LG('key_bg')}" alt=""><img class="gt-ly gt-glow" src="${LG('key_glow')}" alt=""><div class="gt-fog"></div><div class="gt-embers">${gEmb(10)}</div><div class="gt-vig"></div></div><img class="gt-logo" src="${LG('logo')}" alt="九界鐵匠">
+   <div class="gt-box mt-box"><div class="gt-ttl">封測暫停・全面改版中</div><div class="mt-body">${MAINT_TXT.map(t=>`<p>${t}</p>`).join('')}<p class="mt-sign">— 九界鐵匠 開發團隊</p></div>
+    ${msg?`<div class="gt-msg small bad">${esc(msg)}</div>`:''}${preview?'<button type="button" class="ui-btn ui-btn--secondary btn btn-sec" data-mt="close">關閉預覽</button>':''}
+    <div class="gt-ver small"><button type="button" class="gt-replay" data-mt="admin">管理員登入</button>・${BUILD}</div></div>`;
+  g.onclick=e=>{const b=e.target.closest('[data-mt]');if(!b)return;snd('ui_click');if(b.dataset.mt==='close')return gateClose();if(b.dataset.mt==='admin')showLogin()}}
 function showLoading(t){document.body.classList.add('gating');const g=gateEl();g.className='gate-login gate-loading';g.onclick=null;
   g.innerHTML=`<div class="gt-scene"><img class="gt-ly gt-bg" src="${LG('key_bg')}" alt=""><img class="gt-ly gt-glow" src="${LG('key_glow')}" alt=""><div class="gt-fog"></div><div class="gt-embers">${gEmb(10)}</div><div class="gt-vig"></div></div><img class="gt-logo" src="${LG('logo')}" alt="九界鐵匠"><div class="gt-box gt-load"><div class="gt-ttl">${t}</div></div>`}
 function showLogin(msg){document.body.classList.add('gating');const g=gateEl();g.className='gate-login';
@@ -4423,10 +4441,11 @@ function showLogin(msg){document.body.classList.add('gating');const g=gateEl();g
     <input id="gtPw" type="password" autocomplete="current-password" placeholder="密碼">
     <div class="gt-row"><button type="button" class="ui-btn ui-btn--primary btn btn-primary big" data-gt="login">登入</button><button type="button" class="ui-btn ui-btn--secondary btn btn-sec big" data-gt="signup">註冊</button></div>
     <div class="gt-msg small ${msg?'bad':''}">${msg?esc(msg):''}</div>${CLOUD_ONLY?'':'<button type="button" class="gt-guest" data-gt="guest">訪客進入（測試版，存檔只在這支手機）</button>'}
-    <div class="gt-ver small"><button type="button" class="gt-replay" data-gt="story">重看開場故事</button>・${typeof BUILD!=='undefined'?BUILD:'v3.20'}</div></form>`;
+    <div class="gt-ver small">${MAINT?'<button type="button" class="gt-replay" data-gt="maint">‹ 返回公告</button>':'<button type="button" class="gt-replay" data-gt="story">重看開場故事</button>'}・${typeof BUILD!=='undefined'?BUILD:'v3.20'}</div></form>`;
   g.onclick=e=>{const b=e.target.closest('[data-gt]');if(!b)return;const k=b.dataset.gt;snd('ui_click');
     if(k==='guest'){if(!S.introSeen)return showStory();gateClose();return}
     if(k==='story'){return showStory()}
+    if(k==='maint'){return showMaint()}
     if(k==='login'||k==='signup'){const em=(g.querySelector('#gtMail').value||'').trim(),pw=g.querySelector('#gtPw').value||'',msg=g.querySelector('.gt-msg');
       const say=(t,bad)=>{if(msg){msg.textContent=t;msg.className='gt-msg'+(bad?' bad':'')}};
       if(!/^\S+@\S+\.\S+$/.test(em))return say('請輸入正確的 Email',1);if(pw.length<6)return say('密碼至少要 6 碼',1);
@@ -4529,6 +4548,7 @@ function start(){try{if(localStorage.getItem('nrs-dpv')!=='0')document.body.clas
   tutInit();
   try{if(/gate/.test(location.hash)||!(navigator.webdriver||/nogate/.test(location.hash))){   // 自動測試（webdriver）預設跳過登入，網址加 #gate 才顯示
     showLoading('檢查版本…');verCheck().then(old=>{if(old)return;
+    if(MAINT){if(!(AUTH&&AUTH.user))return showMaint();showLoading('檢查帳號…');return adminCheck().then(a=>{if(!a)return showMaint();showLoading('讀取雲端存檔…');cloudAfterLogin().then(()=>afterAuthEnter()).catch(e=>showLogin('讀取雲端存檔失敗：'+SB_ERR(e.message)+'，請重新登入'))})}   // v4.18 維護中：不讀一般玩家的存檔，直接顯示公告
     if(AUTH&&AUTH.user&&!/forcelogin/.test(location.hash)){showLoading('讀取雲端存檔…');cloudAfterLogin().then(()=>afterAuthEnter()).catch(e=>showLogin('讀取雲端存檔失敗：'+SB_ERR(e.message)+'，請重新登入'))}
     else showLogin()})}}catch(e){}
   if(migrated)toast('已把 v2 存檔升級成 v3。');
