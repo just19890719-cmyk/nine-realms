@@ -151,7 +151,7 @@ function enhanceTests(N=100000){
     S.villages[0].bank={cycles:3,gold:10,mats:{[STONE]:4},events:0};const k0=stones();collectCore(0);const got=stones()-k0;
     const v=mk('t1_woodaxe');S.villages[0].weaponId=v.id;S.items[STONE]=5;const r2=enhanceCore(v.id,{});
     res.push(T('C3 強化石：每次 1 顆不花金幣、沒有就擋下、收成掉落（越後面越多）收進道具、熔解退 1 顆、駐守不能強化',
-      st0===10&&r1.k==='ok'&&s1===9&&g1===g0&&r0.err==='強化石不夠'&&m&&m[STONE]===1&&stoneE(19)>stoneE(0)&&late>100&&early>100&&got===4&&!S.mats[STONE]&&r2.err,
+      st0===10&&r1.k==='ok'&&s1===9&&g1===g0&&r0.err==='強化石不夠'&&m&&m[STONE]===1&&stoneE(19)>stoneE(0)&&late>50&&early>50&&got===4&&!S.mats[STONE]&&r2.err,
       `新存檔 ${st0} 顆；強化後剩 ${s1} 顆、金幣${g1===g0?'沒變':'有變(錯誤)'}；沒石頭「${r0.err}」；熔解退 ${m&&m[STONE]} 顆；每 4 萬隻 1-1 ${early} 顆、2-10 ${late} 顆；收成進道具 ${got} 顆；駐守「${r2.err}」`));
   });
   // 完整過程模擬：用幾顆強化石、燒幾把 +6
@@ -607,12 +607,12 @@ function chTests0(){const mk=(id,lv)=>({id:-1,b:id,q:0,lv,ench:[null,null,null,n
   const S0=S;S=fresh();S.villages[0].status='open';const g0=S.gold,r1=chWinCore(0),g1=S.gold,r2=chWinCore(0),g2=S.gold,once=r1.first&&!r2.first&&g1-g0===(FIRST_GOLD[0]||0)&&g2===g1&&S.villages[0].status==='cleared'&&S.villages[1].status==='open';
   S.villages[1].status='open';ui.tab='village';ui.realm=0;const h=viewVillage();S=S0;
   const cardOk=!/vweak|限時挑戰/.test(h)&&/data-act="vopen"/.test(h);
-  const se=stoneE(0)===.004&&Math.abs(stoneE(89)-.004*1.89)<1e-12;
+  const se=stoneE(0)===.002&&Math.abs(stoneE(89)-.002*1.89)<1e-12;
   return[T('CH1 怪物血量＝需求 × 60 秒 × 0.8（第 9、10 關 ×1.0）',hpOk,`1-1 ${VHP(0)}、1-10 ${VHP(9)}、2-9 ${VHP(18)}`),
    T('CH2 攻擊力剛好等於需求約 48 秒打倒，掛機一輪＝打倒一隻',durOk,`1-1 開局劍 ${sec.toFixed(1)} 秒`),
    T('CH3 60 秒內打倒才收復：需求剛好幾乎都贏，差太多一定輸，傷害照時間排',win>=90&&lose===0&&tOk,`1-1 贏 ${win}/100、1-10 贏 ${lose}/100`),
    T('CH4 收復獎勵只發一次、開下一關',!!once,`首次 ${r1&&r1.fg} 金幣、第二次 ${r2&&r2.first?'又發(錯誤)':'不再發'}`),
-   T('CH5 村莊卡片不顯示弱點和「限時挑戰」，只有挑戰按鈕；強化石每隻 0.4% 往後遞增',cardOk&&se,cardOk?'正常':'卡片還有弱點或限時挑戰')]}
+   T('CH5 村莊卡片不顯示弱點和「限時挑戰」，只有挑戰按鈕；強化石每隻 0.2% 往後遞增（v4.65 減半）',cardOk&&se,cardOk?'正常':'卡片還有弱點或限時挑戰')]}
 function newWpnTests(real){const mk=(id,lv)=>({id:-1,b:id,q:0,lv,ench:[null,null,null,null],traits:[]}),P=(id,lv)=>power(mk(id,lv));
   const st=real.filter(b=>b.unlock===0),cats=Object.keys(CSPD),ul=real.filter(b=>b.unlock).map(b=>b.unlock).join(',');
   const pw=[P('w0_sword',0),P('w1_sword',0),P('w2_axe',0),P('w1_troll',0),P('g_hofund',0)].join('/');
