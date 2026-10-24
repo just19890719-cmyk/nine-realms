@@ -1377,7 +1377,7 @@ function enhance(id){
   const r=enhanceCore(id,{bless:useBl,scroll:useSc,force});if(r.err){toast(r.err,'bad');return renderLayer()}
   if(force)DEV.force=null;ui.busy=true;ui.enhLast=null;
   const res=r.k==='ok'?{k:'ok',t:`強化成功 +${r.next}`,d:`攻擊力提升到 ${fmt(power(r.w))}`}:r.k==='saved'?{k:'saved',t:'防爆卷生效',d:'武器完整保留，等級維持 +'+r.before.from+(r.test?'（測試）':'')}
-   :r.k==='broke'?{k:'broke',t:'武器已損毀',d:`${r.before.name} 在符文石碑上碎裂${r.test?'（測試武器）':''}`}:{k:'fail',t:'強化失敗',d:'等級維持 +'+r.before.from+'，武器沒有受損'};
+   :r.k==='broke'?{k:'broke',t:'武器已損毀',d:`${r.before.name} 化成一團黑煙消失了${r.test?'（測試武器）':''}`}:{k:'fail',t:'強化失敗',d:'等級維持 +'+r.before.from+'，武器沒有受損'};
   res.id=id;res.guarded=!!r.usedScroll;
   if(!r.danger){ui.busy=false;ui.lockUntil=Date.now()+150;ui.enhLast={id,k:res.k,t:res.t,d:res.d,test:false};snd(ENH_SND[res.k],1,.7);renderLayer();return greenFlash()}   // v4.58 +1～+6 不播動畫，直接出結果（Mochi）
   playFx(r.danger,r.before,r.next,res)}
@@ -1519,9 +1519,6 @@ function runRune(k,danger){
     // 每道符文：一亮（帶一下過曝）就保持；結果揭曉後依結果處理
     SP.forEach((el,i)=>{if(i<lit){const t=S0+i*DT,end=k==='ok'?[[T,{opacity:1,filter:'brightness(1)'}]]:[[REV,{opacity:1,filter:k==='saved'?'brightness(1)':'brightness(1.3)'}],[REV+280,{opacity:k==='saved'?.5:0,filter:'brightness(1)'}]];
         tl(el,T,[[0,{opacity:0,filter:'brightness(1)'}],[t,{opacity:0,filter:'brightness(2.2)'}],[t+50,{opacity:1,filter:'brightness(2.2)'}],[t+160,{opacity:1,filter:'brightness(1)'}],...end])}
-      else if(i===lit&&k!=='ok'){ // 下一道：亮不起來
-        const red=k==='fail'?'grayscale(1) brightness(.8)':`sepia(1) hue-rotate(${-50-(fxState&&fxState.res?(fxState.res.guarded?185:0)+(fxState.res.hue||0):0)}deg) saturate(5) brightness(1.2)`;   // 防爆中外層有藍色色相旋轉，這裡先反向轉回，仍顯示紅色警告
-        tl(el,T,[[0,{opacity:0,filter:red}],[ts,{opacity:0,filter:red}],[ts+50,{opacity:.85,filter:red}],[ts+100,{opacity:.15,filter:red}],[ts+150,{opacity:.9,filter:red}],[ts+210,{opacity:.1,filter:red}],[ts+260,{opacity:k==='fail'?0:.95,filter:red}],[REV+120,{opacity:0,filter:red}]])}
       else tl(el,T,[[0,{opacity:0}]])});
     // 每亮一道，舞台輕震一下
     const shk=[[0,{transform:'none'}]];for(let i=0;i<lit;i++){const t=S0+i*DT;shk.push([t,{transform:'none'}],[t+30,{transform:'translate(-1.5px,1px)'}],[t+70,{transform:'none'}])}
@@ -1544,13 +1541,12 @@ function runRune(k,danger){
         tl(W,T,[[0,{transform:'rotate(22.5deg)'}],[ts,{transform:'rotate(22.5deg)'}],[ts+60,{transform:'rotate(22.5deg) translate(-3px,2px)'}],[ts+120,{transform:'rotate(22.5deg) translate(3px,-2px)'}],[ts+180,{transform:'rotate(22.5deg) translate(-3px,1px)'}],[ts+240,{transform:'rotate(22.5deg) translate(2px,-1px)'}],[C,{transform:'rotate(22.5deg)'}]]);
         const redw='sepia(1) hue-rotate(-45deg) saturate(4) brightness(1.8)';
         if(k==='broke'){
-          tl(wi,T,[...wpre,[C-10,{filter:redw,opacity:1}],[C+10,{opacity:0}]]);
-          {const shd=document.getElementById('rnShadow');if(shd)tl(shd,T,[[0,{opacity:.6}],[C,{opacity:.6}],[C+80,{opacity:0}],[T,{opacity:0}]])}  // 爆裝：武器碎掉時地上的影子一起消失
-          const dir=[[-90,-70,-50],[80,-90,60],[-100,50,-80],[95,60,70],[0,110,30]];
-          [...W.querySelectorAll('.sh')].forEach((s,i)=>{const[dx,dy,r]=dir[i];tl(s,T,[[0,{opacity:0,transform:'none'}],[C,{opacity:0,transform:'none'}],[C+20,{opacity:1,transform:'none',filter:'brightness(.35)'}],[C+400,{opacity:.85,transform:`translate(${dx*.7}px,${dy*.7}px) rotate(${r*.7}deg)`,filter:'brightness(.25)'},'cubic-bezier(.2,.7,.4,1)'],[T-100,{opacity:0,transform:`translate(${dx*1.2}px,${dy*1.2}px) rotate(${r}deg)`,filter:'brightness(.15)'}]])});
-          playSeq('broke',T,C-20,T-150,{X:100});
-          tl(fl,T,[[0,{opacity:0,transform:'scale(.5)'}],[C-40,{opacity:0,transform:'scale(.5)'}],[C,{opacity:.9,transform:'scale(1.2)'}],[C+240,{opacity:0,transform:'scale(1.7)'}]]);
-          tl(sq,T,[[0,{filter:'none'}],[C+400,{filter:'none'}],[T-200,{filter:'brightness(.5)'}],[T,{filter:'brightness(.6)'}]]);shk.push(...shake(C,8));
+          // v4.58 爆裝改成武器化成一團黑煙消失（Mochi）：不再碎片、紅光、白閃
+          tl(wi,T,[...wpre,[C-60,{filter:'brightness(.15)',opacity:1}],[C+220,{filter:'brightness(0)',opacity:0}]]);
+          {const shd=document.getElementById('rnShadow');if(shd)tl(shd,T,[[0,{opacity:.6}],[C,{opacity:.6}],[C+200,{opacity:0}],[T,{opacity:0}]])}
+          [0,1,2].forEach(i=>{const m=document.createElement('img');m.className='ly ex-smoke';m.src=ENH+'smoke.webp';m.alt='';sq.appendChild(m);const r=[0,120,240][i],t=C-80+i*90;
+            tl(m,T,[[0,{opacity:0,transform:`rotate(${r}deg) scale(.35)`}],[t,{opacity:0,transform:`rotate(${r}deg) scale(.35)`}],[t+160,{opacity:.95,transform:`rotate(${r+12}deg) scale(.9)`},'ease-out'],[T-260,{opacity:.6,transform:`rotate(${r+30}deg) scale(1.35)`}],[T,{opacity:0,transform:`rotate(${r+36}deg) scale(1.5)`}]])});
+          tl(sq,T,[[0,{filter:'none'}],[C+400,{filter:'none'}],[T-200,{filter:'brightness(.5)'}],[T,{filter:'brightness(.6)'}]]);shk.push(...shake(C,5));
         }else{
           tl(wi,T,[...wpre,[C-10,{filter:redw,opacity:1}],[C+200,{filter:`brightness(1.3) drop-shadow(0 0 16px rgba(${GC2},1))`,opacity:1}],[T,{filter:`brightness(1.05) drop-shadow(0 0 8px rgba(${GC2},.6))`,opacity:1}]]);
           fl.style.background=`radial-gradient(closest-side,rgba(${GC2},.85),rgba(${GC2},0))`;tl(fl,T,[[0,{opacity:0,transform:'scale(.5)'}],[C-30,{opacity:0,transform:'scale(.5)'}],[C+20,{opacity:.85,transform:'scale(1.15)'}],[C+320,{opacity:0,transform:'scale(1.6)'}]]);shk.push(...shake(C,5));
@@ -2050,7 +2046,7 @@ function wpGrid(w){const c=bpOf(w).cat,pr=PROC[c],sp=CSPD[c],rc=raceOf(w),e=wEle
 function sheetWeapon(id,mode){
   const w=W(id);if(!w){const last=ui.enhLast&&ui.enhLast.id===id&&ui.enhLast.k==='broke'?ui.enhLast:null;
     if(last)return `<div class="sheet-head"><span style="width:44px"></span><h2>強化</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>`
-      +stageHtml({art:null,danger:true,from:'?',to:'?',zone:'武器已碎裂',ribbon:`<b>${last.t}</b><span>${last.d}</span>`,rk:'broke'})
+      +stageHtml({art:null,danger:true,from:'?',to:'?',zone:'武器已消失',ribbon:`<b>${last.t}</b><span>${last.d}</span>`,rk:'broke'})
       +`<div class="acts3">${btn('回道具欄','backArmory',{cls:'btn-primary big'})}${btn('去鐵匠鋪','tab',{cls:'btn-sec big',attrs:'data-k="forge"'})}</div>`;
     return`<div class="sheet-head"><h2>武器詳情</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img'})}</div><div class="empty">這把武器已經不在了。</div>`}
   const b=bpOf(w),i=where(w),bs=bossSlotOf(w),busy=i>=0||bs>=0,highValue=w.lock||w.q>=2||w.lv>=3||b.t>=2;
@@ -2096,7 +2092,7 @@ function sheetWeapon(id,mode){
       const canAuto=!danger&&w.lv<stable(w),stage=stageHtml({art:A(b.id),danger,from:w.lv,to:next,zone:danger?`危險區`:`安定區`,ribbon:rib,rk:last&&last.k});
       const st=[['成功率',`<b class="t-ok">${pct(r)}</b>`,bl?'含祝福 +10%':''],['爆裝率',`<b class="${danger&&!sc?'t-danger':'t-ok'}">${danger?(sc?'0%':pct(total)):'0%'}</b>`,danger?(sc?'防爆保護':'失敗 '+pct(bc)):'安定區'],
         ['攻擊力',`<b>${fmt(power(w))}<small>→</small><span class="t-gold">${fmt(power(w,next))}</span></b>`,''],['強化石',`<b class="${lackGold?'t-danger':''}">${free?'免費':fmt(cost)+' 顆'}</b>`,`剩 ${fmt(stones())} 顆`]]   // v4.58 小卡顯示強化石剩幾顆（Mochi）;
-      const stats=cls=>`<div class="ev-stats ${cls}">${st.map(([k,v,s])=>`<div class="ev-st ${k==='爆裝率'&&danger?(sc?'guard':'risk'):''}"><span>${k}</span>${v}${s?`<i>${s}</i>`:''}</div>`).join('')}</div>`;
+      const stats=cls=>`<div class="ev-stats ${cls}">${st.map(([k,v,s])=>`<div class="ev-st ${k==='爆裝率'&&danger?(sc?'guard':'risk'):''} ${k==='強化石'?'stone':''}"><span>${k}</span>${v}${s?`<i>${s}</i>`:''}</div>`).join('')}</div>`;
       const tg='';
       const warn=danger?(sc?`<div class="ev-warn guard guardline">${img('it_scroll')}防爆卷保護中：爆裝時武器保留</div>`:`<div class="ev-warn risk warn"><span class="grow"><b>危險區</b>：失敗時可能爆裝，武器會永久消失（${pct(total)}）</span></div>`):'';
       const lack=lackGold?`<div class="lack-line">強化石用完了：村莊收成（越後面的關卡掉越多）、熔解武器可以拿到。</div>`:lackScroll||lackBless?`<div class="lack-line">${lackScroll?'防爆卷用完了。':'祝福石用完了。'}${btn(lackScroll?'取消防爆卷':'取消祝福石','noItem',{cls:'btn-sec sm',attrs:`data-k="${lackScroll?'useScroll':'useBless'}"`})}${btn('去商城','tab',{cls:'btn-sec sm',attrs:'data-k="shop"'})}</div>`:'';
