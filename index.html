@@ -2120,9 +2120,10 @@ VILLAGES.forEach(v=>v.drops=[]);   // v4.43 舊材料刪除：村莊暫時只掉
 // v4.43 舊道具（防爆卷、祝福石、傳說圖紙、殘渣）全部刪除。新道具：英靈・遺物（打開內容等 Mochi 設定，圖待生成）
 // [名稱, 圖示（null＝還沒有圖）, 說明, 光芒, 光芒顏色]；v4.43 英靈・遺物分綠／藍／紅／金四種光芒（圖 art/it_relic_g/b/r/y，Mochi AI 生圖），之後各放不同等級的內容（Mochi）
 const RELIC_DESC='英靈留在戰場上的遺物，光芒越亮，裡面的東西越好。打開會得到東西（內容設計中）。';
-const ITEMS={relic_g:['英靈・遺物','it_relic_g',RELIC_DESC,'綠光','#5fd36a'],relic_b:['英靈・遺物','it_relic_b',RELIC_DESC,'藍光','#4fa3ff'],relic_r:['英靈・遺物','it_relic_r',RELIC_DESC,'紅光','#ff5a4a'],relic_y:['英靈・遺物','it_relic_y',RELIC_DESC,'金光','#ffc940']};
+const ITEMS={relic_g:['英靈・遺物','it_relic_g',RELIC_DESC,'綠光','#5fd36a'],relic_b:['英靈・遺物','it_relic_b',RELIC_DESC,'藍光','#4fa3ff'],relic_r:['英靈・遺物','it_relic_r',RELIC_DESC,'紅光','#ff5a4a'],relic_y:['英靈・遺物','it_relic_y',RELIC_DESC,'金光','#ffc940'],estone:['強化石',null,'強化武器用，每次強化消耗 1 顆（成功或失敗都會用掉）。打怪收成、熔解武器可以拿到，越後面的關卡掉越多。','','']};   // v4.50 強化石（圖待 Mochi 生成）
 const RELICS=Object.keys(ITEMS).filter(k=>k.startsWith('relic_'));
-const RATE=[0,.95,.9,.85,.8,.75,.7,.45,.35,.25,.18,.12,.08,.05,.03,.02];   // v4.00 Mochi 選難度 B（天堂W 風格）：+7～+15 原本 60/50/40/30/22/15/10/7/5%
+const RATE=[0,1,1,1,1,1,1,.35,.325,.3,.01,.01,.01];   // v4.50 武器系統定案第 3 節（Mochi 05:10 修訂）：+1～+6 必成功，+7～+9 35／32.5／30%，+10～+12 各 1%；上限 +12
+const MAX_LV=12,STONE='estone',stones=()=>S.items[STONE]|0;
 const ACH=[
   {id:'c3',n:'收復 1-3 狼嚎谷',g:'v',ic:'v3',p:()=>[cleared(),3],test:()=>cleared()>=3,r:{gems:50}},
   {id:'c6',n:'收復 1-6 巨怪灣',g:'v',ic:'v6',p:()=>[cleared(),6],test:()=>cleared()>=6,r:{gems:50}},
@@ -2222,7 +2223,7 @@ function freshVillage(i){return{status:i===0?'open':'locked',weaponId:null,cycle
 const GAME_SPEED=1;    // v3.69 原本的封測 10 倍速已直接寫進狩獵／鍛造時間，畫面上的時間都是真實時間
 const OFFLINE_H=12;    // v3.69 離線累積上限（真實時間 12 小時）
 function fresh(){return{v:VERSION,gold:500,fcRw:true,gems:100,speed:GAME_SPEED,capH:OFFLINE_H,pity:0,
-  mats:{},items:{relic_g:0,relic_b:0,relic_r:0,relic_y:0},furnace:1,anvil:1,slots:1,weapons:[],nextId:1,jobs:[],
+  mats:{},items:{relic_g:0,relic_b:0,relic_r:0,relic_y:0,estone:10},furnace:1,anvil:1,slots:1,weapons:[],nextId:1,jobs:[],
   villages:VILLAGES.map((v,i)=>freshVillage(i)),monthly:{until:0,last:''},daily:null,sign:{n:0,last:''},stats:freshStats(),ach:{},best:{},lbRw:{},rep:{lv:1,xp:0,t:{}},lastSeen:NOW(),clockWarn:false}}
 function migrateV2(o){
   const s=fresh();s.gold=o.gold||0;s.gems=o.gems||0;Object.assign(s.mats,o.mats||{});Object.assign(s.items,o.items||{});
@@ -2269,7 +2270,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.49';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.50';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -2835,7 +2836,8 @@ function lbReward(i){if(LB_OFF||!AUTH||!LBR.t)return[];const rk=lbRank(i);if(!rk
 const W=id=>S.weapons.find(w=>w.id===id);
 const cleared=()=>S.villages.filter(v=>v.status==='cleared').length;
 const bpOf=w=>BP[w.b];
-function enhMult(lv){return lv<=6?1+.1*lv:1.6+.18*(lv-6)} // 加法累積
+const ENH_MULT=[1,1.1,1.2,1.3,1.4,1.5,1.6,1.9,2.25,2.65,3.3,4,4.8];   // v4.50 規格表：+6 ×1.6、+7 ×1.9 … +12 ×4.8
+function enhMult(lv){return ENH_MULT[Math.max(0,Math.min(MAX_LV,lv|0))]}
 // v4.44 舊附魔刪除：狩獵時間、掉落、金幣類詞條一律 0（保留函式名，呼叫的地方不用全改）；屬性附魔不加攻擊力
 const affixVal=()=>0,powAff=()=>0;
 // 打中弱點的倍率：i＝村莊索引，怪物屬性的對手屬性＝弱點
@@ -2900,10 +2902,9 @@ const rwIcon=k=>k==='gold'?'it_gold':k==='gems'?'it_gems':MATS[k]?MATART[k]:(ITE
 const rwText=r=>Object.entries(r).map(([k,n])=>rwName(k)+' ×'+fmt(n)).join('、');
 function claimBox(i){if(!boxReady(i))return null;const r=DAILY_BOX[i][1]();S.daily.box.push(i);giveRw(r);save();return r}
 function claimSign(){if(!signReady())return null;const r=SIGN[S.sign.n%SIGN.length];S.sign.n=S.sign.n%SIGN.length+1;S.sign.last=today();giveRw(r);save();return r}
-function breakChance(w,next){const s=stable(w);return next<=s?0:Math.min(.9,.5+.05*(next-s-1))}   // v4.00 難度 B：50% 起、每級 +5%（原本 35% 起、最高 80%）
+function breakChance(w,next){const s=stable(w);return next<=s?0:next<=9?1:2/3}   // v4.50 失敗後爆裝：+7～+9 失敗就爆；+10～+12 失敗 1/3 維持、2/3 爆（整體 33%／66%）
 // v3.50 平衡：安全區（+1～+6）便宜好衝，危險區有代價，高等級是長期目標；再乘材質倍率
-const ENH_COST=[5,10,18,30,45,65,160,240,340,480,650,900,1250,1700,2300];
-function enhCost(w){return Math.round(ENH_COST[Math.min(14,w.lv)]*TIERS[bpOf(w).t].mult)}
+function enhCost(w){return 1}   // v4.50 每次強化 1 顆強化石，不花金幣
 function enchCost(w,directed){return 40*TIERS[bpOf(w).t].mult*(directed?3:1)}
 function qualWeights(useBp,t){if(useBp)return[0,0,0,0,1000];const s=0;   // v4.36 鐵砧拿掉：品質機率固定 Lv1
   const q=QW.map((x,i)=>x+QSHIFT[i]*s);
@@ -2917,7 +2918,7 @@ const hasMats=c=>Object.entries(c).every(([k,n])=>S.mats[k]>=n);
 function diffRow(i){const v=VILLAGES[i],fz=WS_GATE.furnace.reduce((m,g,L)=>L&&i>=g?L:m,1);
   const b=BPS.filter(x=>x.unlock<=i&&TIERS[x.t].furnace<=fz).sort((x,y)=>y.base*TIERS[y.t].mult-x.base*TIERS[x.t].mult)[0];
   const p=b?b.base*TIERS[b.t].mult:0,r=i%10,f=(i<10?DIFF_R1:DIFF_CURVE)[r],curve=i?Math.round(p*f):v.req;
-  const need=QUAL.map(q=>{for(let lv=0;lv<=15;lv++)if(Math.round(p*q.m*enhMult(lv))>=v.req)return lv;return null});
+  const need=QUAL.map(q=>{for(let lv=0;lv<=MAX_LV;lv++)if(Math.round(p*q.m*enhMult(lv))>=v.req)return lv;return null});
   return{v,b,p,f,curve,need}}
 let DEV_LACK=0;   // 開發者工具「缺料提示測試」：暫時當作材料全部不夠（不動存檔）
 const lackList=(need,g)=>{const hv=k=>DEV_LACK>Date.now()?0:S.mats[k]||0;const l=Object.entries(need).filter(([k,n])=>!(hv(k)>=n)).map(([k,n])=>[k,n-hv(k)]);if(S.gold<g)l.push(['gold',g-S.gold]);return l};
@@ -2940,7 +2941,9 @@ function rollCycle(i,w,st,t){
   const v=VILLAGES[i],s=STRATS[st.strat],b=st.bank;b.cycles++;const x2=1;   // v3.87 取消雙倍收成（首領改整週）
   const gs=goldMul(i,w);b.gold+=Math.round(v.gold*s.gold*gs*(1+(tal('gold')+gdGold())/100))*x2;   // v3.98 加上公會加成
   for(const d of v.drops){if(Math.random()<dropChance(i,w,d,st.strat)){let n=rnd(d[2],d[3]);if(d[1]>=RARE_P&&s.bonus&&Math.random()<s.bonus)n++;if(d[1]>=RARE_P&&w&&Math.random()<Math.min(CAP.harvest,affixVal(w,'harvest'))/100)n++;if(d[1]>=RARE_P)n*=x2;b.mats[d[0]]=(b.mats[d[0]]||0)+n}}
+  const se=stoneE(i),sn=Math.floor(se)+(Math.random()<se%1?1:0);if(sn)b.mats[STONE]=(b.mats[STONE]||0)+sn;
 }
+const stoneE=i=>.4+.08*i;   // v4.50 每輪收成平均掉幾顆強化石：1-1 0.4 顆，每往後一關 +0.08（2-10 約 1.9 顆）
 function tick(){
   const t=NOW();let changed=false;
   if(t<S.lastSeen-5000){if(!S.clockWarn){S.clockWarn=true;toast('偵測到裝置時間倒退，狩獵與鍛造會暫停，直到時間恢復。')}}
@@ -2978,7 +2981,7 @@ function cancelJob(ix){const j=S.jobs[ix];if(!j)return false;S.jobs.splice(ix,1)
   if(j.cost){for(const k in j.cost.mats)S.mats[k]+=j.cost.mats[k];S.gold+=j.cost.gold}save();return true}
 function collectCore(i){const st=S.villages[i],b=st.bank;if(!b.cycles)return null;
   const got={gold:b.gold,...b.mats},n=b.cycles,ev=b.events;
-  S.gold+=b.gold;for(const k in b.mats)S.mats[k]+=b.mats[k];S.stats.harvest+=n;S.stats.goldIn+=b.gold;S.stats.events+=ev;repGain(n*REP_XP.harvest);
+  S.gold+=b.gold;for(const k in b.mats){if(ITEMS[k])S.items[k]=(S.items[k]||0)+b.mats[k];else S.mats[k]=(S.mats[k]||0)+b.mats[k]}S.stats.harvest+=n;S.stats.goldIn+=b.gold;S.stats.events+=ev;repGain(n*REP_XP.harvest);
   st.bank={cycles:0,gold:0,mats:{},events:0};
   if(st.weaponId!=null&&st.cycleStart!=null){const w=W(st.weaponId);if(w&&n>=capCycles(i,w))st.cycleStart=NOW()}
   save();return{got,n,ev}}
@@ -3041,16 +3044,15 @@ function bossRankTier(){const g=BOSS_G.prev;if(!g||!g.mine||S.evtRk===g.week||g.
   const b=EVT_BOSS[((g.week%EVT_BOSS.length)+EVT_BOSS.length)%EVT_BOSS.length];return{t,b,g,gift:stageGift(t[2],b)}}
 function bossClaimRank(){const r=bossRankTier();if(!r)return null;S.evtRk=r.g.week;giveGift(r.gift);save();return r}
 function recallCore(i){const st=S.villages[i];if(st.weaponId==null)return false;tick();st.weaponId=null;st.cycleStart=null;save();return true}
-function meltCore(id){const w=W(id);if(!w||busyW(w)||w.lock)return null;if(w.test){S.weapons.splice(S.weapons.indexOf(w),1);save();return{}}const b=bpOf(w),c=recipe(b),got={gold:Math.round(goldOf(b)*.5)};
-  
-  S.gold+=got.gold;S.weapons.splice(S.weapons.indexOf(w),1);S.stats.melted++;repGain(REP_XP.melt);save();return got}
+function meltCore(id){const w=W(id);if(!w||busyW(w)||w.lock)return null;if(w.test){S.weapons.splice(S.weapons.indexOf(w),1);save();return{}}const b=bpOf(w),c=recipe(b),got={gold:Math.round(goldOf(b)*.5),[STONE]:1};   // v4.50 熔解退 1 顆強化石
+  S.gold+=got.gold;S.items[STONE]=stones()+1;S.weapons.splice(S.weapons.indexOf(w),1);S.stats.melted++;repGain(REP_XP.melt);save();return got}
 // 強化判定（唯一入口）。所有費用都用 enhCost；道具不足時直接拒絕，不會默默改成無保護強化。
 // 測試武器（w.test）：不扣任何資源、不計入統計，可接受開發工具指定的結果，避免動到正式資料。
 function enhanceCore(id,opt={}){
-  const w=W(id);if(!w)return{err:'找不到武器'};if(busyW(w))return{err:'駐守中的武器要先收回'};if(w.lv>=15)return{err:'已經是最高等級 +15'};
+  const w=W(id);if(!w)return{err:'找不到武器'};if(busyW(w))return{err:'駐守中的武器要先收回'};if(w.lv>=MAX_LV)return{err:'已經是最高等級 +'+MAX_LV};
   const next=w.lv+1,cost=enhCost(w),danger=next>stable(w),test=!!w.test;
-  if(!test&&S.gold<cost)return{err:'金幣不夠',need:'gold'};
-  if(!test){S.gold-=cost;S.stats.enhTry++}
+  if(!test&&stones()<cost)return{err:'強化石不夠',need:STONE};
+  if(!test){S.items[STONE]-=cost;S.stats.enhTry++}
   // v3.14：危險區勾選防爆卷，每次強化都消耗 1 張（不論成功、失敗或爆裝）
   const usedScroll=!!(opt.scroll&&danger&&test);   // v4.43 防爆卷刪除，只剩測試武器的開發選項
   let r=RATE[next];const bc=breakChance(w,next);
@@ -3096,6 +3098,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.50',d:'10/24',t:'強化石・最高 +12',b:['強化改用<b>強化石</b>：每次 1 顆，不花金幣（成功或失敗都會用掉）','強化石來源：村莊收成會掉（越後面的關卡掉越多），熔解武器退 1 顆','最高等級改成 <b>+12</b>','成功率：+1～+6 一定成功；+7 35%、+8 32.5%、+9 30%（失敗就爆裝）；+10～+12 各 1%（失敗時 1/3 維持、2/3 爆裝）','攻擊倍率：+6 ×1.6、+7 ×1.9、+8 ×2.25、+9 ×2.65、+10 ×3.3、+11 ×4、+12 ×4.8'],g:['enh']},
  {v:'4.49',d:'10/24',t:'修正鐵匠動作重疊',b:['修正鐵匠做動作時會出現兩個頭、兩隻手的問題，現在每一瞬間只會顯示一個姿勢']},
  {v:'4.48',d:'10/24',t:'鐵匠的動作變自然了',b:['鐵匠鋪的鐵匠大部分時間站著不動，每隔一段時間才<b>慢慢</b>呼吸、調整握鎚、轉頭看爐火，動作之間會淡入淡出']},
  {v:'4.47',d:'10/24',t:'鐵匠換上新樣貌・鐵匠鋪更有電影感',b:['鐵匠鋪和導覽頭像的鐵匠，換成跟開場故事、封面<b>同一個人</b>，而且會動了：呼吸、調整握鎚、轉頭看爐火','鐵匠身上會被爐火照亮、跟著火光閃動，畫面加上電影色調和景深，傾斜手機時前後景立體感更明顯']},
@@ -3154,7 +3157,7 @@ const GUIDE=[
  ['基礎',[
   {k:'forge',ic:'t1_ironhammer_disp',n:'鍛造',s:'選圖紙、付金幣，5 秒打好一批',v:'4.44',h:'在鐵匠鋪「圖紙」選一張圖紙，金幣夠就能按「開始鍛造」（v4.43 起舊材料刪除，鍛造暫時只花金幣）。<br>一次一批（最多 10 把），不管幾把都是 <b>5 秒</b>完成，進度條就在「開始鍛造」下方，可以取消（金幣全退）。<br>熔爐等級決定能打哪種材質：鐵製 Lv1、霜銀 Lv2、龍鱗 Lv4、神器 Lv5、巨人 Lv6。<br>收復村莊會解鎖新圖紙。<br><b>v4.44</b>：舊武器和圖紙已全部收起，全新武器開發中。'},
   {k:'wpn',ic:'cat_sword',n:'武器數值與相剋',s:'攻速、附加效果、相剋，點武器看小卡',v:'4.46',h:'點武器會跳出小卡。<b>攻擊力＝每秒傷害</b>，已經算進附加效果的平均。<br>七類武器攻速：雙刀 0.6 秒、劍 1.0、弓 1.1、長柄 1.2、斧 1.3、弩 1.6、錘 1.8 秒；每秒傷害都差不多，攻速慢的單擊比較重。<br><b>附加效果</b>：劍會心、斧流血、錘震碎、雙刀中毒、長柄貫穿、弓穿心、弩破甲；+1～+6 每級觸發率 2%，+7 起 16／20／25／30／35／40%。<br><b>相剋</b>：怪物分人形、野獸、巨型、飛行。劍、雙刀剋人形，長柄、斧剋野獸，錘、弩剋巨型，弓剋飛行；打被剋的怪物傷害多「強化等級 %」，+12 為 +12%，跟屬性弱點一起算。<br>武器名稱是「+7 寒霜 鐵劍」：強化等級、附魔、武器名。'},
-  {k:'enh',ic:'it_bless',n:'強化',s:'+1～+6 安定，+7 起有機率爆裝',v:'4.43',h:'所有材質的安定值都是 <b>+6</b>：+1～+6 失敗只扣金幣，不會爆裝。<br>+7 起是危險區，成功率依序 45／35／25／18／12／8／5／3／2%（+7～+15）。失敗時爆裝機率 50% 起，每級 +5%，最高 90%。<br>v4.43 起防爆卷、祝福石、殘渣都已刪除，爆裝就是失去武器。<br>武器的<b>品階</b>和框色看強化等級：+0 凡鐵（灰）、+1～+6 精鍛（綠）、+7～+8 寒鋒（藍）、+9 血刃（紅）、+10 神鑄（金）、+11 星魂（紫）、+12 永恆（鑽石），+9 以上的框有電流繞著跑。'},
+  {k:'enh',ic:'it_bless',n:'強化',s:'每次 1 顆強化石，最高 +12',v:'4.50',h:'每次強化用 <b>1 顆強化石</b>，不花金幣，成功或失敗都會用掉。強化石從村莊收成拿（越後面的關卡掉越多），熔解武器也會退 1 顆。<br>+1～+6 一定成功。+7 起是危險區：+7 35%、+8 32.5%、+9 30%，失敗就爆裝；+10～+12 每級 1%，失敗時 1/3 維持原樣、2/3 爆裝。最高 <b>+12</b>。<br>攻擊倍率：+6 ×1.6、+7 ×1.9、+8 ×2.25、+9 ×2.65、+10 ×3.3、+11 ×4、+12 ×4.8。<br>武器的框色看強化等級：+0 灰、+1～+6 綠、+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石，+9 以上的框有電流繞著跑。'},
   {k:'ench',ic:'mat_shard',n:'屬性附魔',s:'6 種屬性 × 3 個等級，打中怪物弱點加傷害',v:'4.45',h:'鍛造出來的武器一律<b>無屬性</b>。花金幣隨機附魔，得到 1 種屬性（每把武器只有 1 欄，重抽會蓋掉舊的）。<br>屬性 6 種：<b>烈焰、霜寒、雷霆、劇毒、神聖、暗影</b>，機率一樣。等級越高越難抽：一級 70%、二級 25%、三級 5%。<br>名稱：烈焰 餘燼／烈焰／滅世之焰；霜寒 寒霜／冰封／永凍之霜；雷霆 雷光／雷鳴／雷神之怒；劇毒 蝕毒／蛇毒／巨蟒之毒；神聖 微光／聖光／光神聖輝；暗影 幽影／暗夜／盲神之影。<br><b>相剋（三對宿敵）</b>：烈焰⇄霜寒、雷霆⇄劇毒、神聖⇄暗影。每隻怪物都有屬性，弱點就是對手屬性。<br>打中弱點：一級 ×1.2、二級 ×1.4、三級 ×1.6，狩獵更快、收成更多。沒打中或無屬性都是正常傷害，不會扣。屬性不加攻擊力。'},
   {k:'bag',ic:'nav_forge',n:'道具欄',s:'同一種道具疊一格，沒有上限',v:'4.43',h:'下方導覽的「<b>道具欄</b>」（原本的武器庫）分「武器／材料」兩頁，道具在「材料」頁。同一種道具放在同一格，右下角顯示數量，沒有上限。<br>目前只有<b>英靈・遺物</b>：英靈留在戰場上的遺物，分<b>綠光、藍光、紅光、金光</b>四種，光芒越亮內容越好，打開會得到東西（內容設計中）。<br>舊的防爆卷、祝福石、傳說圖紙、殘渣和所有舊材料都已刪除，新的道具和材料重新設計中。'},
   {k:'melt',ic:'mat_iron',n:'熔解',s:'不要的武器換回金幣',v:'4.43',h:'在武器詳情按「熔解」：退回一半鍛造金幣。<br>收藏（上鎖）的武器不能熔解。'}]],
@@ -3222,14 +3225,14 @@ const cheapList=()=>S.weapons.filter(w=>w.q<=1&&w.lv===0&&!busyW(w)&&!w.lock);
 function meltCheap(){snd('melt');const list=cheapList();if(!list.length)return toast('沒有可一鍵熔解的武器。');
   let tot={};list.forEach(w=>tot=add(tot,meltCore(w.id)));toast(`熔解 ${list.length} 把：`+gotText(tot),'ok');ui.sheet=null;render()}
 // 一鍵強化到安定值：安定區失敗不降級、不爆裝，連續強化到安定值為止（不使用祝福石、防爆卷；金幣不夠就停）
-function autoEnhCost(w){let g=0;const m=TIERS[bpOf(w).t].mult;for(let lv=w.lv;lv<stable(w);lv++)g+=Math.round(15*Math.pow(lv+1,1.8)*m)/RATE[lv+1];return Math.round(g/10)*10}
+function autoEnhCost(w){let g=0;for(let lv=w.lv;lv<stable(w);lv++)g+=enhCost(w)/RATE[lv+1];return Math.ceil(g)}   // v4.50 算強化石顆數（+1～+6 必成功＝差幾級就幾顆）
 function autoEnhance(id){if(ui.busy)return;const w=W(id);if(!w)return;const s=stable(w);
   if(busyW(w))return toast('駐守中的武器要先收回。','bad');if(w.lv>=s)return toast(`已經達到安定值 +${s}。`);
-  const from=w.lv,g0=S.gold;let tries=0,fails=0,err='';
+  const from=w.lv,g0=stones();let tries=0,fails=0,err='';
   while(w.lv<s&&tries<500){const r=enhanceCore(id,{});if(r.err){err=r.err;break}tries++;if(r.k!=='ok')fails++}
   if(!tries){toast(err||'無法強化。','bad');return render()}
   ui.enhLast=null;snd(w.lv>from?'upgrade':'ui_error');
-  toast(`一鍵強化 +${from} → <b>+${w.lv}</b>：強化 ${tries} 次、失敗 ${fails} 次${w.test?'（測試武器免費）':'，花費 '+fmt(g0-S.gold)+' 金幣'}${err?`。${err}，已停止`:''}`,w.lv>=s?'ok':'bad');render()}
+  toast(`一鍵強化 +${from} → <b>+${w.lv}</b>：強化 ${tries} 次、失敗 ${fails} 次${w.test?'（測試武器免費）':'，用掉 '+fmt(g0-stones())+' 顆強化石'}${err?`。${err}，已停止`:''}`,w.lv>=s?'ok':'bad');render()}
 const DEV={force:null};
 function enhance(id){
   if(ui.busy)return;                          // 動畫播放中鎖定，只能點舞台略過
@@ -3844,39 +3847,39 @@ function sheetWeapon(id,mode){
       ${e?`<div class="el"><span>屬性</span><b class="wn-el e-${e.k} t${e.t}">${e.n} ${['','一','二','三'][e.t]}級</b><em>弱點 ×${e.m}</em></div>`:cell('屬性','<span class="muted">無</span>','附魔可獲得')}</div>
      <div class="wp-lv"><div class="wp-bar">${Array.from({length:13},(_,k)=>`<i class="${k<=w.lv?'on':''} ${k===w.lv?'cur':''}" style="--c:var(--l${FLV(k)})"></i>`).join('')}</div>
       <div class="rw"><span>+0</span><span>${max?'已達 +12':`下一級 +${nx}：${pr?pr[0]+' <b>'+pct(procP(nx))+'</b>・':''}${rc?'相剋 <b>+'+raceBonus(w,nx)+'%</b>・':''}攻擊力 <b>${fmt(power(w,nx))}</b>`}</span><span>+12</span></div></div>
-     <div class="wp-a">${btn('強化','wmode',{cls:'btn-primary',attrs:`data-m="enh" data-id="${id}"`,dis:busy})}${btn(w.lv>=stable(w)?`已 +${stable(w)}`:`一鍵 +${stable(w)}`,'autoEnh',{cls:'btn-primary',attrs:`data-id="${id}"`,dis:busy||w.lv>=stable(w)||(!w.test&&S.gold<enhCost(w))})}${btn('附魔','wmode',{cls:'btn-primary',attrs:`data-m="ench" data-id="${id}"`,dis:busy})}
+     <div class="wp-a">${btn('強化','wmode',{cls:'btn-primary',attrs:`data-m="enh" data-id="${id}"`,dis:busy})}${btn(w.lv>=stable(w)?`已 +${stable(w)}`:`一鍵 +${stable(w)}`,'autoEnh',{cls:'btn-primary',attrs:`data-id="${id}"`,dis:busy||w.lv>=stable(w)||(!w.test&&stones()<enhCost(w))})}${btn('附魔','wmode',{cls:'btn-primary',attrs:`data-m="ench" data-id="${id}"`,dis:busy})}
       ${i>=0?btn('收回','recall',{attrs:`data-i="${i}"`}):bs>=0?btn('收回','bossout',{attrs:`data-s="${bs}"`}):btn('駐守'+(canGive(w)?'<i class="dot give-dot"></i>':''),'wmode',{attrs:`data-m="give" data-id="${id}"`})}
       ${btn('上架','mksellw',{attrs:`data-id="${id}"`,dis:w.test||!mkSellable(w)})}${btn(ui.meltArm===id?'確認':'熔解','melt',{cls:'btn-danger',attrs:`data-id="${id}"`,dis:busy||w.lock})}</div>
-     ${ui.meltArm===id?'<div class="small t-danger center wp-note">再按一次確認熔解，熔解後無法復原。</div>':busy?'<div class="small muted center wp-note">駐守中的武器要先收回，才能強化、附魔或熔解。</div>':w.lv<stable(w)?`<div class="small muted center wp-note">一鍵 +${stable(w)}：${w.test?'測試武器免費':'約 '+fmt(autoEnhCost(w))+' 金幣・持有 '+fmt(S.gold)}，不會爆裝</div>`:''}</div>`;
+     ${ui.meltArm===id?'<div class="small t-danger center wp-note">再按一次確認熔解，熔解後無法復原。</div>':busy?'<div class="small muted center wp-note">駐守中的武器要先收回，才能強化、附魔或熔解。</div>':w.lv<stable(w)?`<div class="small muted center wp-note">一鍵 +${stable(w)}：${w.test?'測試武器免費':'要 '+fmt(autoEnhCost(w))+' 顆強化石・持有 '+fmt(stones())}，不會爆裝</div>`:''}</div>`;
   }
   if(bs>=0)return head+showcase()+`<div class="goal">這把武器正在討伐首領，要先收回。</div>${btn('從首領收回','bossout',{cls:'btn-primary big',attrs:`data-s="${bs}"`})}`;
   if(i>=0&&mode!=='give')return head+showcase()+`<div class="goal">這把武器正在 ${VILLAGES[i].name} 駐守，要先收回。</div>${btn('從村莊收回','recall',{cls:'btn-primary big',attrs:`data-i="${i}"`})}`;
   if(mode==='enh'){
     const last=ui.enhLast&&ui.enhLast.id===id?ui.enhLast:null,rib=last?`<b>${last.t}</b><span>${last.d}</span>`:'';
     const nameRow=`<div class="enh-name"><b class="${lc(w)}">${b.n}</b>${w.test?'<span class="testtag">測試</span>':''}</div>`;
-    if(w.lv>=15)return head+nameRow+stageHtml({art:A(b.id),from:15,to:15,zone:'已達最高等級',ribbon:rib,rk:last&&last.k})+'<div class="goal">已達最高等級 +15。</div>';
+    if(w.lv>=MAX_LV)return head+nameRow+stageHtml({art:A(b.id),from:MAX_LV,to:MAX_LV,zone:'已達最高等級',ribbon:rib,rk:last&&last.k})+'<div class="goal">已達最高等級 +'+MAX_LV+'。</div>';
     const hasBl=false,hasSc=false;   // v4.43 防爆卷、祝福石刪除
     const next=w.lv+1,danger=next>stable(w),bl=ui.useBless&&hasBl,sc=ui.useScroll&&danger&&hasSc;
     const r=Math.min(1,RATE[next]+(bl?.1:0)),bc=breakChance(w,next),total=(1-r)*bc,cost=enhCost(w),free=!!w.test;
-    const lackGold=!free&&S.gold<cost,lackBless=false,lackScroll=false;
+    const lackGold=!free&&stones()<cost,lackBless=false,lackScroll=false;   // v4.50 lackGold＝強化石不夠（沿用變數名）
     const unguarded=danger&&!sc,armed=unguarded&&!w.test&&ui.riskArm===id&&ui.riskOk!==id;
-    const label=ui.busy?'強化中…':lackGold?'金幣不足':lackBless?'祝福石不足':lackScroll?'防爆卷不足':armed?`確認強化（可能爆裝 ${pct(total)}）`:`${last?'再次強化':'強化'} +${w.lv} → +${next}`;
+    const label=ui.busy?'強化中…':lackGold?'強化石不足':lackBless?'祝福石不足':lackScroll?'防爆卷不足':armed?`確認強化（可能爆裝 ${pct(total)}）`:`${last?'再次強化':'強化'} +${w.lv} → +${next}`;
     const el=powAff(w);
     const ev=ui.enhV||'2';   // v3.19 強化頁版型預覽：O 原版／1 壓縮／2 資訊疊在石碑上／3 左右分欄
     if(ev!=='O'){
       const canAuto=!danger&&w.lv<stable(w),stage=stageHtml({art:A(b.id),danger,from:w.lv,to:next,zone:danger?`危險區`:`安定區`,ribbon:rib,rk:last&&last.k});
       const st=[['成功率',`<b class="t-ok">${pct(r)}</b>`,bl?'含祝福 +10%':''],['爆裝率',`<b class="${danger&&!sc?'t-danger':'t-ok'}">${danger?(sc?'0%':pct(total)):'0%'}</b>`,danger?(sc?'防爆保護':'失敗 '+pct(bc)):'安定區'],
-        ['攻擊力',`<b>${fmt(power(w))}<small>→</small><span class="t-gold">${fmt(power(w,next))}</span></b>`,''],['費用',`<b class="${lackGold?'t-danger':''}">${free?'免費':fmt(cost)}</b>`,'持有 '+fmt(S.gold)]];
+        ['攻擊力',`<b>${fmt(power(w))}<small>→</small><span class="t-gold">${fmt(power(w,next))}</span></b>`,''],[free?'強化石':'強化石・剩 '+fmt(stones()),`<b class="${lackGold?'t-danger':''}">${free?'免費':fmt(cost)+' 顆'}</b>`,'']];
       const stats=cls=>`<div class="ev-stats ${cls}">${st.map(([k,v,s])=>`<div class="ev-st ${k==='爆裝率'&&danger?(sc?'guard':'risk'):''}"><span>${k}</span>${v}${s?`<i>${s}</i>`:''}</div>`).join('')}</div>`;
       const tg='';
       const warn=danger?(sc?`<div class="ev-warn guard guardline">${img('it_scroll')}防爆卷保護中：爆裝時武器保留</div>`:`<div class="ev-warn risk warn"><span class="grow"><b>危險區</b>：失敗時可能爆裝，武器會永久消失（${pct(total)}）</span></div>`):'';
-      const lack=lackScroll||lackBless?`<div class="lack-line">${lackScroll?'防爆卷用完了。':'祝福石用完了。'}${btn(lackScroll?'取消防爆卷':'取消祝福石','noItem',{cls:'btn-sec sm',attrs:`data-k="${lackScroll?'useScroll':'useBless'}"`})}${btn('去商城','tab',{cls:'btn-sec sm',attrs:'data-k="shop"'})}</div>`:'';
-      const lab=ui.busy?'強化中…':lackGold?'金幣不足':lackBless?'祝福石不足':lackScroll?'防爆卷不足':armed?`確認強化（${pct(total)} 爆裝）`:`${last?'再次強化':'強化'} +${w.lv}→+${next}`;
+      const lack=lackGold?`<div class="lack-line">強化石用完了：村莊收成（越後面的關卡掉越多）、熔解武器可以拿到。</div>`:lackScroll||lackBless?`<div class="lack-line">${lackScroll?'防爆卷用完了。':'祝福石用完了。'}${btn(lackScroll?'取消防爆卷':'取消祝福石','noItem',{cls:'btn-sec sm',attrs:`data-k="${lackScroll?'useScroll':'useBless'}"`})}${btn('去商城','tab',{cls:'btn-sec sm',attrs:'data-k="shop"'})}</div>`:'';
+      const lab=ui.busy?'強化中…':lackGold?'強化石不足':lackBless?'祝福石不足':lackScroll?'防爆卷不足':armed?`確認強化（${pct(total)} 爆裝）`:`${last?'再次強化':'強化'} +${w.lv}→+${next}`;
       const bar=`<div class="ev-bar ${canAuto?'two':''}"><button class="ui-btn ${unguarded?'ui-btn--danger':'ui-btn--primary'} btn ${unguarded?'btn-risk':'btn-primary'} big" data-act="enhance" data-id="${id}" ${ui.busy||lackGold||lackBless||lackScroll?'disabled':''}>${lab}</button>
-        ${canAuto?`<button class="ui-btn ui-btn--accent btn wd-auto ev-auto" data-act="autoEnh" data-id="${id}" ${ui.busy||lackGold?'disabled':''}><span>${lackGold?'金幣不足':'一鍵到 <b>+'+stable(w)+'</b>'}</span><span class="small">約 ${fmt(autoEnhCost(w))} 金幣</span></button>`:''}</div>
+        ${canAuto?`<button class="ui-btn ui-btn--accent btn wd-auto ev-auto" data-act="autoEnh" data-id="${id}" ${ui.busy||lackGold?'disabled':''}><span>${lackGold?'強化石不足':'一鍵到 <b>+'+stable(w)+'</b>'}</span><span class="small">${free?'測試免費':'要 '+fmt(autoEnhCost(w))+' 顆強化石'}</span></button>`:''}</div>
         ${armed?'<div class="small t-danger center">危險區強化，再按一次確認。</div>':''}`;
       const info=`<details class="enh-more ev-more"><summary>ⓘ 規則與攻擊力明細</summary><div class="kvgrid">${kv('安定值','+'+stable(w)+'（'+TIERS[b.t].n+'）')}${kv('失敗後爆裝率',danger?pct(bc):'0%')}${kv('基礎成功率',pct(RATE[next]))}${kv('失敗率',pct(1-r))}</div>
-        <div class="small"><b>規則</b>：失敗不會降級。超過安定值時失敗才會判定爆裝，機率 50% + 5% ×（目標等級 − 安定值 − 1），最高 90%。</div></details>`;
+        <div class="small"><b>規則</b>：每次強化用 1 顆強化石，成功或失敗都會用掉。失敗不會降級。+1～+6 一定成功；+7～+9 失敗就爆裝；+10～+12 成功 1%，失敗時 1/3 維持原樣、2/3 爆裝。最高 +${MAX_LV}。</div></details>`;
       if(ev==='1')return head+`<div class="ev ev1">`+nameRow+stage+stats('row4')+tg+warn+lack+info+bar+`</div>`;
       if(ev==='2')return head+`<div class="ev ev2">`+nameRow+`<div class="ev2-wrap">${stage}${stats('over')}</div>`+tg+warn+lack+info+bar+`</div>`;
       if(ev==='3')return head+`<div class="ev ev3">`+nameRow+`<div class="ev3-grid">${stage}${stats('col')}</div>`+tg+warn+lack+info+bar+`</div>`;
@@ -3885,18 +3888,18 @@ function sheetWeapon(id,mode){
      +`<div class="enh-core"><div><span>成功率</span><b class="t-ok">${pct(r)}</b>${bl?'<i>含祝福石 +10%</i>':''}</div>
        <div class="${danger?(sc?'guard':'risk'):''}"><span>本次爆裝機率</span><b class="${danger&&!sc?'t-danger':'t-ok'}">${danger?(sc?'0%':pct(total)):'0%'}</b><i>${danger?(sc?'防爆卷保護中':'失敗時 '+pct(bc)+' 爆裝'):'安定區不會爆裝'}</i></div>
        <div><span>成功後攻擊力</span><b>${fmt(power(w))} → <span class="t-gold">${fmt(power(w,next))}</span></b></div>
-       <div><span>強化費用</span><b class="${lackGold?'t-danger':''}">${free?'測試免費':fmt(cost)+' 金幣'}</b><i>持有 ${fmt(S.gold)}</i></div></div>
+       <div><span>強化石</span><b class="${lackGold?'t-danger':''}">${free?'測試免費':fmt(cost)+' 顆'}</b><i>持有 ${fmt(stones())}</i></div></div>
      ${danger?(sc?`<div class="guardline">${img('it_scroll')}本次已受防爆卷保護：強化會消耗 1 張防爆卷，若判定爆裝，武器保留。</div>`
        :`<div class="warn"><b>武器可能永久消失</b>：本次爆裝機率 ${pct(total)}。</div>`):''}
      <button class="ui-btn ${unguarded?'ui-btn--danger':'ui-btn--primary'} btn ${unguarded?'btn-risk':'btn-primary'} big" data-act="enhance" data-id="${id}" ${ui.busy||lackGold||lackBless||lackScroll?'disabled':''}>${label}</button>
-     ${!danger&&w.lv<stable(w)?`<button class="ui-btn ui-btn--accent btn wd-auto" data-act="autoEnh" data-id="${id}" ${ui.busy||lackGold?'disabled':''}><span>${lackGold?'金幣不足，無法一鍵強化':'一鍵強化到安定值 <b>+'+stable(w)+'</b>'}</span><span class="small">${free?'測試武器免費':'約 '+fmt(autoEnhCost(w))+' 金幣・持有 '+fmt(S.gold)}${lackGold?'':'・不會爆裝'}</span></button>`:''}
+     ${!danger&&w.lv<stable(w)?`<button class="ui-btn ui-btn--accent btn wd-auto" data-act="autoEnh" data-id="${id}" ${ui.busy||lackGold?'disabled':''}><span>${lackGold?'強化石不足，無法一鍵強化':'一鍵強化到安定值 <b>+'+stable(w)+'</b>'}</span><span class="small">${free?'測試武器免費':'要 '+fmt(autoEnhCost(w))+' 顆強化石・持有 '+fmt(stones())}${lackGold?'':'・不會爆裝'}</span></button>`:''}
      ${lackScroll||lackBless?`<div class="lack-line">${lackScroll?'勾選了防爆卷，但已經用完。':'勾選了祝福石，但已經用完。'}${btn(lackScroll?'取消防爆卷':'取消祝福石','noItem',{cls:'btn-sec sm',attrs:`data-k="${lackScroll?'useScroll':'useBless'}"`})}${btn('去商城補充','tab',{cls:'btn-sec sm',attrs:'data-k="shop"'})}</div>`:''}
      ${armed?'<div class="small t-danger center">危險區強化。再按一次確認，本次進入強化頁之後不會再問。</div>':''}
      <details class="enh-more"><summary>詳細說明</summary>
       <div class="kvgrid">${kv('安定值','+'+stable(w)+'（'+TIERS[b.t].n+'）')}${kv('失敗後爆裝率',danger?pct(bc):'0%')}${kv('基礎成功率',pct(RATE[next]))}${kv('失敗率',pct(1-r))}</div>
       <div class="small"><b>攻擊力組成</b>：基礎 ${b.base} × 材質 ${TIERS[b.t].mult} × 品質 ${QUAL[w.q].m} × 強化 ${enhMult(w.lv).toFixed(2)}${el?` × 元素 ${(1+el/100).toFixed(3)}`:''} ＝ ${fmt(power(w))}</div>
-      <div class="small"><b>強化倍率</b>：+0～+6 為 1 + 0.1 × 等級；+7～+15 為 1.6 + 0.18 ×（等級 − 6）。+${next} 倍率 ${enhMult(next).toFixed(2)}。</div>
-      <div class="small"><b>規則</b>：失敗不會降級。目標等級超過安定值時，失敗才會判定爆裝，機率為 50% + 5% ×（目標等級 − 安定值 − 1），最高 90%。祝福石與防爆卷：只要勾選，每次強化都會消耗 1 張（防爆卷只在危險區使用）。</div></details>`;
+      <div class="small"><b>強化倍率</b>：+0～+6 每級 +10%（+6 ×1.6）；+7 ×1.9、+8 ×2.25、+9 ×2.65、+10 ×3.3、+11 ×4、+12 ×4.8。+${next} 倍率 ${enhMult(next).toFixed(2)}。</div>
+      <div class="small"><b>規則</b>：每次強化用 1 顆強化石，成功或失敗都會用掉。失敗不會降級。+1～+6 一定成功；+7～+9 失敗就爆裝；+10～+12 成功 1%，失敗時 1/3 維持原樣、2/3 爆裝。最高 +${MAX_LV}。</div></details>`;
   }
   if(mode==='ench'){   // v4.44 屬性附魔小卡：目前屬性 → 屬性池（6 種、等級機率）→ 按鈕；只有 1 欄
     const c1=enchCost(w),e=elemOf(w);
@@ -4183,9 +4186,10 @@ function sheetDev(){
      <div class="label">v3.95 另一界可收成紅點（地圖列圖示）</div><div class="devgrid">${B('rdot1','米德加德 1-1 可收成，切到約頓海姆看（全部收成應該不能按）')}${B('rdot2','約頓海姆 2-1 可收成，切到米德加德看（全部收成應該不能按）')}</div>
      <div class="label">全部武器顯示測試（測試武器：不扣資源、不能交付村莊）</div>
      <div class="small muted">品質</div><div class="row">${[[-1,'輪替'],[0,'普通'],[1,'精良'],[2,'稀有'],[3,'史詩'],[4,'傳說']].map(([v,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devAllQ??-1)===v?'on':''}" data-act="devset" data-k="devAllQ" data-v="${v}">${n}</button>`).join('')}</div>
-     <div class="small muted">強化等級</div><div class="row">${[[-1,'輪替'],[0,'+0'],[6,'+6'],[7,'+7'],[10,'+10'],[15,'+15']].map(([v,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devAllLv??-1)===v?'on':''}" data-act="devset" data-k="devAllLv" data-v="${v}">${n}</button>`).join('')}</div>
+     <div class="small muted">強化等級</div><div class="row">${[[-1,'輪替'],[0,'+0'],[6,'+6'],[7,'+7'],[10,'+10'],[12,'+12']].map(([v,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devAllLv??-1)===v?'on':''}" data-act="devset" data-k="devAllLv" data-v="${v}">${n}</button>`).join('')}</div>
      <div class="devgrid">${B('allw','產生全部 '+BPS.length+' 把測試圖紙武器','btn-primary')}${B('bpdel','v4.44 檢查：舊武器圖紙已刪（開鍛造頁）')}${B('cleartest','清除所有測試武器')}</div>
      <div class="devgrid">${B('flvtest','v4.34 武器框顏色：產生 +0～+12 九把')}${B('wpntest','v4.46 新武器系統：七類各一把 +6，看攻速／單擊／附加效果／相剋')}</div>
+     <div class="label">v4.50 強化石・最高 +12</div><div class="devgrid">${B('stone50','強化石 +50')}${B('stone0','強化石歸零')}${B('stonereal','給一把真的 +6 劍，開強化頁（會用掉強化石、真的會爆）')}${B('stonedrop','模擬 1-1／1-10／2-10 各收成 100 輪，看掉幾顆強化石')}</div>
      <div class="label">測試武器</div><div class="devgrid">${B('rmold','v4.37 舊特性／重鍊／盾武器（檢查都不顯示）')}${B('wt','3 把傳說測試武器')}${B('w6','+6 測試劍（剛好到安定值 +6）')}${B('wm','+0 史詩測試長柄（安定值 +6）')}${B('wg6','v4.00 +6 測試劍（安定值 +6，下一次進危險區）')}${B('w8','+8 測試長柄')}${B('wench','v3.84 新附魔測試武器（雷霆・貪婪・豐收・剋巨人＋堅固）')}${B('wench2','v3.84 新附魔測試武器 2（神聖・劇毒・尋珍・剋龍）')}${B('fill','道具欄塞到 195 把')}</div>`,
    prog:`<div class="label">v3.61 介面測試</div><div class="devgrid">${B('uiv','村莊：跳到待交付關卡')}${B('uiarm','道具欄：往下捲看分類置頂')}${B('uiforge','鐵匠鋪：圖紙區上下滑')}${B('uimat','材料倉庫：點材料看用途')}${B('uishop','旅行商人：輸入數量買賣')}</div>
    <div class="label">v3.79 村莊換武器／掉落說明</div><div class="devgrid">${B('uiswap','村莊：送一把更強的（不亮紅點）')}${B('uidropinfo','村莊詳情：點掉落看說明')}</div>
@@ -4319,12 +4323,12 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
     ui.result={t:'info',title:'切分頁出圖測試',html:out.map(([t,n,m,ms])=>`<div class="kv"><span>${N[t]}（${n} 張圖）</span><b class="${m?'t-danger':'t-ok'}">${m?`${m} 張晚 ${ms}ms`:'全部立刻顯示'}</b></div>`).join('')};render()})();return}
   if(k==='uiswap'||k==='uidropinfo'){const i=S.villages.findIndex(st=>st.weaponId!=null&&W(st.weaponId));if(i<0)return toast('目前沒有村莊有駐守武器，先交付一把','bad');   // v3.79 村莊換武器測試
     if(k==='uidropinfo'){ui.tab='village';ui.result=null;ui.sheet={t:'v',i};render();return toast('點「每輪掉落」的材料，應該會跳出材料說明（含本村機率）')}
-    const v=VILLAGES[i],cur=W(S.villages[i].weaponId),w=makeWeapon(cur.b,cur.q,0,[],cur.ench.map(e=>e&&{...e}));w.lv=cur.lv;while(power(w)<=power(cur)&&w.lv<15)w.lv++;
+    const v=VILLAGES[i],cur=W(S.villages[i].weaponId),w=makeWeapon(cur.b,cur.q,0,[],cur.ench.map(e=>e&&{...e}));w.lv=cur.lv;while(power(w)<=power(cur)&&w.lv<MAX_LV)w.lv++;
     ui.sheet=null;ui.result=null;ui.tab='village';save();render();const el=document.querySelector(`#view .vcard [data-act=vswap][data-i="${i}"]`);if(el)el.scrollIntoView({block:'center'});
     return toast(`已送出 ${bpOf(w).n} +${w.lv}，${vNo(i)} ${v.name} 應顯示「道具欄有更強的可以換」但不亮紅點；點標籤會跳到道具欄選武器`,'ok')}
   if(k==='uigive'){const gm=giveMin(),nv=gm.map((m,i)=>m===-1?i:-1).filter(i=>i>=0);if(!nv.length)return toast('目前沒有村莊在等武器（全部都有駐守）','bad');   // v3.64 可交付紅點測試
     const i=nv[0],v=VILLAGES[i],b=Object.values(BP).filter(x=>x.cat===v.cat).sort((a,c)=>c.t-a.t)[0],w=makeWeapon(b.id,4,0,[],[{k:vWeak(i),v:3},null,null,null]);
-    while(!eligible(i,w)&&w.lv<15)w.lv++;ui.sheet=null;ui.result=null;ui.tab='armory';ui.acat='all';ui.aq=ui.ast='all';save();render();scrollTo(0,0);
+    while(!eligible(i,w)&&w.lv<MAX_LV)w.lv++;ui.sheet=null;ui.result=null;ui.tab='armory';ui.acat='all';ui.aq=ui.ast='all';save();render();scrollTo(0,0);
     return toast(`已送出 ${b.n} +${w.lv}（可交付 ${vNo(i)} ${v.name}），武器卡、道具欄和村莊分頁應該都有紅點`,'ok')}
   if(/^ui(v|arm|forge|mat|shop)$/.test(k)){ui.sheet=null;ui.result=null;   // v3.61 介面修正的測試按鈕
     if(k==='uiv'){ui.tab='village';render();return scrollToNextVillage()}
@@ -4435,6 +4439,9 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
    qopen:()=>{ui.qTab='d';ui.sheet={t:'a'};ui.tab='village'},
    achall:()=>{S.stats.harvest=Math.max(S.stats.harvest,300);S.stats.enhOk=Math.max(S.stats.enhOk,50);S.stats.melted=Math.max(S.stats.melted,30);S.stats.forged[0]+=50},
    testw:()=>{const bp=['dev_sword','dev_sword','dev_sword','dev_sword'][ui.devTier??0];const w=makeWeapon(bp,ui.devTier===3?3:2,ui.devLv??0,[]);w.test=true;ui.enhLast=null;ui.riskArm=ui.riskOk=null;ui.sheet={t:'w',id:w.id,m:'enh'};toast('已送出測試武器')},
+   stone50:()=>S.items[STONE]=stones()+50,stone0:()=>S.items[STONE]=0,
+   stonereal:()=>{const bp=BPS.find(x=>x.cat==='sword');if(!bp)return toast('沒有劍的圖紙（開發者模式才有測試圖紙）','bad');const w=makeWeapon(bp.id,0,6,[]);S.items[STONE]=Math.max(stones(),20);ui.sheet={t:'w',id:w.id,m:'enh'};toast('真的 +6 劍：強化會用掉強化石，+7 起失敗就爆裝','ok')},
+   stonedrop:()=>{const out=[0,9,19].map(i=>{const st={strat:'normal',bank:{cycles:0,gold:0,mats:{},events:0}};for(let c=0;c<100;c++)rollCycle(i,null,st,NOW());return vNo(i)+' '+(st.bank.mats[STONE]|0)+' 顆'});ui.testOut='<div><b>收成 100 輪掉的強化石</b>（每輪平均 '+[0,9,19].map(i=>stoneE(i).toFixed(2)).join('／')+'）</div><div>'+out.join('、')+'</div>'},
    allw:()=>devAllWeapons(BPS.map(b=>b.id)),wpntest:()=>{S.weapons=S.weapons.filter(w=>!w.test||where(w)>=0);let f=null;for(const c of Object.keys(CSPD)){const b=BPS.find(x=>x.cat===c);if(!b)continue;const w=makeWeapon(b.id,0,6,[]);w.test=true;f=f||w}
     if(!f)return toast('目前沒有可用的圖紙');ui.tab='armory';ui.acat='all';ui.ast='test';ui.sheet={t:'w',id:f.id,m:'main'};render();toast('已產生七類 +6 測試武器，詳情頁看攻速、單擊、附加效果、相剋')},flvtest:()=>{S.weapons=S.weapons.filter(w=>!w.test||where(w)>=0);[12,11,10,9,8,7,6,1,0].forEach(lv=>{const w=makeWeapon('dev_sword',0,lv,[]);w.test=true});ui.sheet=null;ui.tab='armory';ui.acat='all';ui.aq='all';ui.ast='test';ui.asort='lv';render();scrollTo(0,0);toast('已產生 +0～+12 測試武器：灰、綠、藍、紅、金、紫、鑽石框')},
    cleartest:()=>{const n=S.weapons.filter(w=>w.test&&where(w)<0).length;S.weapons=S.weapons.filter(w=>!w.test||where(w)>=0);toast('已清除 '+n+' 把測試武器')},
@@ -4695,7 +4702,7 @@ const TIPS={
  evt:['首領討伐','全服一起打同一隻首領。首領整週開打，每週日 0 點結算換下一隻。最多派 3 把武器駐守，每小時造成攻擊力的傷害（打中弱點依屬性等級 ×1.2～1.6），離線也會繼續打，結算後武器留著繼續打；駐守首領的武器不能同時打村莊。全服血量打到 25／50／75／100% 時，本週有駐守的人都能領獎；結算後再依上週個人傷害排名領獎。'],
  ws_m:['熔解回收','不要的武器可以熔解，退回部分材料和一半鍛造金幣。一鍵熔解只會熔掉普通、精良、+0、沒有收藏的閒置武器。'],
 };
-function tipKey(){const s=ui.sheet;if(s){if(s.t==='w'&&s.m==='enh'){const w=W(s.id);return w&&w.lv+1>stable(w)&&w.lv<15?'danger':null}if(s.t==='w'&&s.m==='ench')return'ench';if(s.t==='v'){return S.villages[s.i].weaponId!=null?'vdetail':null}
+function tipKey(){const s=ui.sheet;if(s){if(s.t==='w'&&s.m==='enh'){const w=W(s.id);return w&&w.lv+1>stable(w)&&w.lv<MAX_LV?'danger':null}if(s.t==='w'&&s.m==='ench')return'ench';if(s.t==='v'){return S.villages[s.i].weaponId!=null?'vdetail':null}
   if(s.t==='lb')return'lb';if(s.t==='a')return'ach';if(s.t==='ws')return'ws_'+s.k;if(s.t==='evt')return'evt';return null}
   return ui.tab==='armory'&&ui.atab==='m'?'mat':ui.tab==='armory'&&S.weapons.length?'armory':ui.tab==='shop'?'shop':null}
 // v3.70 每天第一次進遊戲（導覽結束後）自動打開簽到

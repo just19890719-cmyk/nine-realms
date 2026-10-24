@@ -55,7 +55,7 @@ const near=(a,b,tol)=>Math.abs(a-b)<=tol;
 function minUpgrade(b,req,needAffix){
   // 回傳每個品質達標所需的最低強化等級（不靠烈焰/霜寒）
   const out=[];for(let q=0;q<5;q++){if(b.t===3&&q<2){out.push(null);continue}let need=null;
-    for(let lv=0;lv<=15;lv++){const p=Math.round(b.base*TIERS[b.t].mult*QUAL[q].m*enhMult(lv));if(p>=req){need=lv;break}}out.push(need)}return out}
+    for(let lv=0;lv<=MAX_LV;lv++){const p=Math.round(b.base*TIERS[b.t].mult*QUAL[q].m*enhMult(lv));if(p>=req){need=lv;break}}out.push(need)}return out}
 function levelCheck(){
   const res=[],rows=[];const sources=new Set(['iron','oak','leather']);
   for(let i=0;i<10;i++){   // 第一界：不靠重鍊；1-10 才算神器；第二界另外在 A12 檢查
@@ -126,30 +126,37 @@ function enhanceTests(N=100000){
   const res=[];
   // 純判定：各目標等級
   const rows=[];let ok=true;
-  for(let next=1;next<=15;next++){const r=RATE[next],bc=next<=6?0:Math.min(.9,.5+.05*(next-7));let s=0,b=0;
+  for(let next=1;next<=MAX_LV;next++){const r=RATE[next],bc=next<=6?0:next<=9?1:2/3;let s=0,b=0;
     for(let n=0;n<N;n++){const o=rollEnhance(r,bc);if(o==='ok')s++;else if(o==='break')b++}
-    const eb=(1-r)*bc;const tol=Math.max(.003,4.5*Math.sqrt(.25/N));const good=near(s/N,r,tol)&&near(b/N,eb,tol);if(!good)ok=false;rows.push(`+${next} 成功 ${(s/N*100).toFixed(1)}%/${Math.round(r*100)}%、爆 ${(b/N*100).toFixed(1)}%/${(eb*100).toFixed(1)}%`)}
-  res.push(T(`C1 強化判定（每級 ${N.toLocaleString()} 次，鐵製安定 +6）`,ok,rows.join('；')));
-  // 安定值與公式
+    const eb=(1-r)*bc;const tol=Math.max(.003,4.5*Math.sqrt(.25/N));const good=near(s/N,r,tol)&&near(b/N,eb,tol);if(!good)ok=false;rows.push(`+${next} 成功 ${(s/N*100).toFixed(1)}%/${(r*100).toFixed(1)}%、爆 ${(b/N*100).toFixed(1)}%/${(eb*100).toFixed(1)}%`)}
+  res.push(T(`C1 強化判定（v4.50 新表，每級 ${N.toLocaleString()} 次）`,ok,rows.join('；')));
+  // v4.50 安定值 +6、新成功率／爆裝／倍率表、上限 +12
   withSandbox(()=>{S=fresh();const mk=b=>makeWeapon(b,0,0,[]);
-    const t1=mk('t1_woodaxe'),t2=mk('t2_wolfaxe'),t3=mk('t3_greataxe'),t4=mk('m_fenrir'),t5=mk('t4_sword');
-    const st=[t1,t2,t3,t4,t5].map(stable).join('/');const b4=breakChance(t4,6)+breakChance(t5,6)+(breakChance(t4,7)===.5&&breakChance(t5,7)===.5?0:1),b1=breakChance(t1,6),b1b=breakChance(t1,7);
-    const mul=[0,6,7,15].map(enhMult);
-    res.push(T('C2 安定值全部 +6（v4.00）、神器／巨人 +6 不爆、+7 才判定爆裝、倍率加法',st==='6/6/6/6/6'&&b4===0&&b1===0&&b1b===.5&&near(breakChance(t1,15),.9,1e-9)&&near(RATE[7],.45,1e-9)&&near(RATE[15],.02,1e-9)&&near(mul[1],1.6,1e-9)&&near(mul[2],1.78,1e-9)&&near(mul[3],3.22,1e-9),
-      `安定值 ${st}；神器／巨人 +6 爆裝 ${b4*100}%；鐵製 +6 ${b1*100}%、+7 ${b1b*100}%；倍率 +0 ${mul[0]}、+6 ${mul[1]}、+7 ${mul[2]}、+15 ${mul[3].toFixed(2)}`));
-    // v4.43 防爆卷、殘渣刪除：勾了防爆卷也不會保住、爆裝不回收殘渣；駐守保護
-    S.gold=1e9;let saved=0,broke=0;for(let n=0;n<300;n++){const w=mk('t1_ironsword');w.lv=14;const r=enhanceCore(w.id,{scroll:true});if(r.k==='saved')saved++;if(r.k==='broke')broke++;S.weapons=S.weapons.filter(x=>x!==w)}
-    const v=mk('t1_woodaxe');S.villages[0].weaponId=v.id;const g=S.gold;const r1=enhanceCore(v.id,{}),r2=meltCore(v.id),r3=enchantCore(v.id,0);
-    res.push(T('C3 防爆卷已刪除（勾了也不保住）、爆裝不回收殘渣、駐守武器不能強化/熔解/附魔',!saved&&broke>0&&!('slag' in S)&&r1.err&&r2===null&&r3.err&&S.gold===g,
-      `+14→+15 帶防爆卷參數 300 次：保住 ${saved}、爆裝 ${broke}；殘渣欄位${'slag' in S?'還在(錯誤)':'已拿掉'}；駐守武器：強化「${r1.err}」、熔解${r2===null?'被擋下':'成功(錯誤)'}、附魔「${r3.err}」`));
+    const t1=mk('t1_woodaxe');const bc=[6,7,9,10,12].map(n=>breakChance(t1,n));
+    const mul=ENH_MULT.map((_,i)=>enhMult(i)),spec=[1,1.1,1.2,1.3,1.4,1.5,1.6,1.9,2.25,2.65,3.3,4,4.8];
+    const rt=[1,2,3,4,5,6].every(n=>RATE[n]===1)&&near(RATE[7],.35,1e-9)&&near(RATE[8],.325,1e-9)&&near(RATE[9],.3,1e-9)&&[10,11,12].every(n=>near(RATE[n],.01,1e-9))&&RATE.length===MAX_LV+1;
+    t1.lv=MAX_LV;const top=enhanceCore(t1.id,{});
+    res.push(T('C2 成功率 +1～+6 100%、+7/8/9 35/32.5/30%、+10～+12 1%；失敗後爆裝 +7～+9 100%、+10～+12 2/3；倍率表；最高 +12',
+      MAX_LV===12&&stable(t1)===6&&rt&&bc[0]===0&&bc[1]===1&&bc[2]===1&&near(bc[3],2/3,1e-9)&&near(bc[4],2/3,1e-9)&&mul.every((x,i)=>near(x,spec[i],1e-9))&&enhMult(15)===4.8&&!!top.err,
+      `爆裝(失敗後) +6 ${bc[0]}、+7 ${bc[1]}、+9 ${bc[2]}、+10 ${bc[3].toFixed(3)}、+12 ${bc[4].toFixed(3)}；倍率 ${mul.map(x=>x.toFixed(2)).join('/')}；+12 再強化「${top.err}」`));
+    // 強化石：每次 1 顆、不花金幣、不夠就擋；收成掉落、熔解退 1 顆；駐守武器不能強化
+    S=fresh();const g0=S.gold,st0=stones();const w=mk('t1_ironsword');const r1=enhanceCore(w.id,{}),g1=S.gold,s1=stones();
+    S.items[STONE]=0;const r0=enhanceCore(w.id,{});
+    S.items[STONE]=0;const m=meltCore(w.id);
+    const vs={strat:'normal',bank:{cycles:0,gold:0,mats:{},events:0}};for(let c=0;c<400;c++)rollCycle(19,null,vs,NOW());const late=vs.bank.mats[STONE]|0;
+    const v0={strat:'normal',bank:{cycles:0,gold:0,mats:{},events:0}};for(let c=0;c<400;c++)rollCycle(0,null,v0,NOW());const early=v0.bank.mats[STONE]|0;
+    S.villages[0].bank={cycles:3,gold:10,mats:{[STONE]:4},events:0};const k0=stones();collectCore(0);const got=stones()-k0;
+    const v=mk('t1_woodaxe');S.villages[0].weaponId=v.id;S.items[STONE]=5;const r2=enhanceCore(v.id,{});
+    res.push(T('C3 強化石：每次 1 顆不花金幣、沒有就擋下、收成掉落（越後面越多）收進道具、熔解退 1 顆、駐守不能強化',
+      st0===10&&r1.k==='ok'&&s1===9&&g1===g0&&r0.err==='強化石不夠'&&m&&m[STONE]===1&&late>early*3&&early>100&&got===4&&!S.mats[STONE]&&r2.err,
+      `新存檔 ${st0} 顆；強化後剩 ${s1} 顆、金幣${g1===g0?'沒變':'有變(錯誤)'}；沒石頭「${r0.err}」；熔解退 ${m&&m[STONE]} 顆；400 輪 1-1 ${early} 顆、2-10 ${late} 顆；收成進道具 ${got} 顆；駐守「${r2.err}」`));
   });
-  // 完整過程模擬
-  const journey=(tier,target,runs=4000)=>{let tries=0,gold=0,reach=0,broke=0;const st=TIERS[tier].stable,mult=TIERS[tier].mult;
-    for(let r=0;r<runs;r++){let lv=0;while(lv<target){tries++;gold+=Math.round(15*Math.pow(lv+1,1.8)*mult);const next=lv+1,bc=next<=st?0:Math.min(.9,.5+.05*(next-st-1));const o=rollEnhance(RATE[next],bc);
-      if(o==='ok')lv++;else if(o==='break'){broke++;break}}if(lv>=target)reach++}
-    return`${TIERS[tier].n} +0→+${target}：成功率 ${(reach/runs*100).toFixed(1)}%、平均嘗試 ${(tries/runs).toFixed(1)} 次、平均金幣 ${fmt(gold/runs)}`};
-  const lines=[];for(const t of [0,3])for(const g of [6,9,12,15])lines.push(journey(t,g));
-  res.push(T('C4 從 +0 衝到 +6/+9/+12/+15（不用防爆卷，每項 4,000 人）',true,lines.join('；')));
+  // 完整過程模擬：用幾顆強化石、燒幾把 +6
+  const journey=(target,runs=20000)=>{let tries=0,reach=0;
+    for(let r=0;r<runs;r++){let lv=0;while(lv<target){tries++;const next=lv+1,bc=next<=6?0:next<=9?1:2/3;const o=rollEnhance(RATE[next],bc);
+      if(o==='ok')lv++;else if(o==='break')break}if(lv>=target)reach++}
+    return`+0→+${target}：成功 ${(reach/runs*100).toFixed(2)}%、平均 ${(tries/runs).toFixed(1)} 顆強化石／把`};
+  res.push(T('C4 從 +0 衝到 +6/+7/+8/+9（每項 20,000 把）',true,[6,7,8,9].map(t=>journey(t)).join('；')));
   return res;
 }
 
@@ -158,7 +165,7 @@ function saveTests(){
   const res=[];
   withSandbox(()=>{
     // 新存檔
-    S=fresh();res.push(T('E1 新存檔結構完整',S.v===3&&S.villages.length===VILLAGES.length&&S.weapons.length===0&&S.stats&&!Object.keys(S.mats).length&&Object.keys(S.items).join()==='relic_g,relic_b,relic_r,relic_y'&&Object.values(S.items).every(x=>x===0),'v'+S.v));
+    S=fresh();res.push(T('E1 新存檔結構完整',S.v===3&&S.villages.length===VILLAGES.length&&S.weapons.length===0&&S.stats&&!Object.keys(S.mats).length&&Object.keys(S.items).join()==='relic_g,relic_b,relic_r,relic_y,estone'&&RELICS.every(k=>S.items[k]===0)&&S.items.estone===10,'v'+S.v));
     // v2 遷移
     const o={gold:999,gems:50,mats:{iron:5,oak:5,leather:5,silver:2,fang:1,scale:0,rune:0,shard:3},items:{scroll:2,bless:0,blueprint:0},furnace:2,anvil:1,slots:1,nextId:3,
       weapons:[{id:1,b:'t1_woodaxe',q:1,lv:3,ench:[{k:'swift',v:8}]},{id:1,b:'t1_farmspear',q:0,lv:2,ench:[]},{id:5,b:'xx_missing',q:0,lv:0}],jobs:[],
@@ -214,7 +221,7 @@ function saveTests(){
     res.push(T('E14 收藏武器不能熔解、武器庫滿 200 把不能再鍛造',m1===null&&!!W(lk.id)&&typeof f1==='string',`收藏熔解${m1===null?'被擋下':'成功(錯誤)'}；滿倉鍛造：${typeof f1==='string'?f1:'成功(錯誤)'}`));
     // v4.43 舊材料、道具刪除：材料表空、道具只剩英靈・遺物、村莊不掉材料、鍛造只花金幣、獎勵只有金幣鑽石
     const rw=[...ACH.map(a=>a.r),...SIGN,...DAILY_BOX.map(x=>x[1]()),repBox(10)].every(r=>Object.keys(r).every(k=>k==='gold'||k==='gems'));
-    res.push(T('E13 舊材料與道具已刪除，獎勵只剩金幣和鑽石',!Object.keys(MATS).length&&Object.keys(ITEMS).join()==='relic_g,relic_b,relic_r,relic_y'&&RELICS.length===4&&VILLAGES.every(v=>!v.drops.length)&&BPS.every(b=>!Object.keys(recipe(b)).length)&&rw&&!GD_SHOP.length&&GD_DON.every(x=>x.k!=='iron'),
+    res.push(T('E13 舊材料與道具已刪除，獎勵只剩金幣和鑽石',!Object.keys(MATS).length&&Object.keys(ITEMS).join()==='relic_g,relic_b,relic_r,relic_y,estone'&&RELICS.length===4&&VILLAGES.every(v=>!v.drops.length)&&BPS.every(b=>!Object.keys(recipe(b)).length)&&rw&&!GD_SHOP.length&&GD_DON.every(x=>x.k!=='iron'),
       `材料 ${Object.keys(MATS).length} 種；道具 ${Object.keys(ITEMS).map(itemName).join('、')}；獎勵${rw?'只有金幣鑽石':'還有舊道具(錯誤)'}`));
   });
   return res;
@@ -258,8 +265,8 @@ function aiSession(P,M){
       const pot=ws.find(x=>power(x,Math.max(x.lv,stable(x)))>=v.req*(v.need?1:1));if(pot)w=pot;
       if(w&&power(w)<v.req){
         while(w&&W(w.id)&&power(w)<v.req){
-          const next=w.lv+1,danger=next>stable(w),cost=enhCost(w);if(S.gold<cost)break;
-          if(danger){const canReach=power(w,Math.min(15,stable(w)+2))>=v.req;if(!canReach)break;
+          const next=w.lv+1,danger=next>stable(w),cost=enhCost(w);if(stones()<cost)break;
+          if(danger){const canReach=power(w,Math.min(MAX_LV,stable(w)+2))>=v.req;if(!canReach)break;
             const useScroll=S.items.scroll>0;if(!useScroll&&Math.random()>P.risk)break;
             const r=enhanceCore(w.id,{scroll:useScroll,bless:P.whale&&S.items.bless>0});if(r.k==='broke'){M.breaks++;break}if(r.k!=='ok')break}
           else{const r=enhanceCore(w.id,{});if(r.err)break}
@@ -277,7 +284,7 @@ function aiSession(P,M){
   S.villages.forEach((st,k)=>{if(st.status!=='cleared')return;const cur=st.weaponId!=null&&W(st.weaponId);const better=S.weapons.filter(x=>where(x)<0&&eligible(k,x)&&(!cur||power(x)>power(cur)*1.15)).sort((a,b)=>power(b)-power(a))[0];if(better)deliverCore(k,better.id)});
   // 有餘裕時衝高已收復村莊的武器（收入、爆裝數據）
   if(S.gold>20000){const cand=S.weapons.filter(w=>where(w)<0&&w.lv<12).sort((a,b)=>power(b)-power(a))[0];
-    if(cand){for(let n=0;n<6&&W(cand.id);n++){const next=cand.lv+1,danger=next>stable(cand);if(S.gold<enhCost(cand)+10000)break;
+    if(cand){for(let n=0;n<6&&W(cand.id);n++){const next=cand.lv+1,danger=next>stable(cand);if(stones()<enhCost(cand))break;
       if(danger&&!(S.items.scroll>0)&&Math.random()>P.risk)break;const r=enhanceCore(cand.id,{scroll:danger&&S.items.scroll>0});if(r.k==='broke'){M.breaks++;break}}}}
   // 賣掉多餘的一階材料
   // 工坊投資（留下強化預算）
@@ -323,16 +330,16 @@ function specTests(seed=20261020,N=200000){
       res.push(T(`F 機率 ${tn} +${lv}→+${next}${bless?' 祝福石':''}`,pass,rows[rows.length-1]));
     }
     // 安定區爆裝率必須為 0
-    const safe=[['t1_ironsword',6],['t2_longsword',6],['t3_greatsword',6],['m_firegiant',6],['t4_sword',6]].every(([b,st])=>{for(let n=1;n<=st;n++)if(breakChance({b},n)!==0)return false;return breakChance({b},st+1)===.5});
-    res.push(T('F 安定值內爆裝率 0%，超過安定值第一階為 50%（v4.00 難度 B）',safe,'鐵製、霜銀、龍鱗、神器、巨人 安定值都是 +6，全部符合'));
+    const safe=[['t1_ironsword',6],['t2_longsword',6],['t3_greatsword',6],['m_firegiant',6],['t4_sword',6]].every(([b,st])=>{for(let n=1;n<=st;n++)if(breakChance({b},n)!==0)return false;return breakChance({b},st+1)===1});
+    res.push(T('F 安定值內爆裝率 0%，超過安定值失敗就爆（v4.50）',safe,'鐵製、霜銀、龍鱗、神器、巨人 安定值都是 +6，全部符合'));
     // 倍率表
-    const tbl=[1,1.1,1.2,1.3,1.4,1.5,1.6,1.78,1.96,2.14,2.32,2.5,2.68,2.86,3.04,3.22];
-    res.push(T('F 強化倍率加法累積（+0～+15 對照規格表）',tbl.every((x,i)=>near(enhMult(i),x,1e-9)),tbl.map((x,i)=>'+'+i+' '+enhMult(i).toFixed(2)).join('、')));
+    const tbl=[1,1.1,1.2,1.3,1.4,1.5,1.6,1.9,2.25,2.65,3.3,4,4.8];
+    res.push(T('F 強化倍率（+0～+12 對照規格表）',tbl.every((x,i)=>near(enhMult(i),x,1e-9)),tbl.map((x,i)=>'+'+i+' '+enhMult(i).toFixed(2)).join('、')));
     // 費用一致；v4.43 祝福石、防爆卷刪除：勾了也不扣、不加成功率
     S=fresh();S.gold=1e7;const w=makeWeapon('t1_ironsword',0,9,[]);
-    const c=enhCost(w),g0=S.gold;const r1=enhanceCore(w.id,{bless:true,scroll:true});
-    const costOk=g0-S.gold===c&&c===Math.round(ENH_COST[9]*1)&&!r1.err&&!r1.usedBless&&!r1.usedScroll&&r1.k!=='saved';
-    res.push(T('F 費用一致、祝福石／防爆卷已刪除（不扣、不生效）',costOk,`+9 費用 ${c}（表定 ${ENH_COST[9]}）；結果 ${r1.k}；祝福 ${!!r1.usedBless}、防爆 ${!!r1.usedScroll}`));
+    const c=enhCost(w),g0=S.gold,s0=stones();const r1=enhanceCore(w.id,{bless:true,scroll:true});
+    const costOk=s0-stones()===c&&c===1&&S.gold===g0&&!r1.err&&!r1.usedBless&&!r1.usedScroll&&r1.k!=='saved';
+    res.push(T('F 每次 1 顆強化石、不扣金幣、祝福石／防爆卷已刪除',costOk,`+9 用掉 ${s0-stones()} 顆；金幣${S.gold===g0?'沒變':'有變(錯誤)'}；結果 ${r1.k}；祝福 ${!!r1.usedBless}、防爆 ${!!r1.usedScroll}`));
     // 攻擊力同步
     S=fresh();S.gold=1e9;const y=makeWeapon('t2_longsword',3,5,[]);y.ench[0]={k:'fire',v:2};const pre=power(y,6);let o;do{o=enhanceCore(y.id,{scroll:true})}while(o.k!=='ok'&&W(y.id));
     res.push(T('F 強化介面預估攻擊力＝成功後實際攻擊力',!W(y.id)||power(y)===pre||y.lv!==6,`預估 ${pre}，實際 ${W(y.id)?power(y):'—'}`));
@@ -340,7 +347,7 @@ function specTests(seed=20261020,N=200000){
     S=fresh();S.gold=500;const tw=makeWeapon('t3_greatsword',2,5,[]);tw.test=true;const snap=JSON.stringify([S.gold,S.items,S.stats]);
     const f1=enhanceCore(tw.id,{force:'saved'}),f2=enhanceCore(tw.id,{force:'fail'}),f3=enhanceCore(tw.id,{force:'ok',bless:true}),f4=enhanceCore(tw.id,{force:'break',scroll:true});
     res.push(T('F 開發工具指定結果只作用於測試武器，不扣正式資源',f1.k==='saved'&&f2.k==='fail'&&f3.k==='ok'&&f4.k==='broke'&&!W(tw.id)&&snap===JSON.stringify([S.gold,S.items,S.stats]),`指定 防爆→${f1.k}、失敗→${f2.k}、成功→${f3.k}、爆裝→${f4.k}；資源與統計${snap===JSON.stringify([S.gold,S.items,S.stats])?'完全沒變':'有變動(錯誤)'}`));
-    S.gold=1e9;let nb=0;for(let n=0;n<300;n++){const nw=makeWeapon('t1_ironsword',0,0,[]);if(enhanceCore(nw.id,{force:'break'}).k==='broke')nb++;S.weapons=[]}
+    S.gold=1e9;S.items[STONE]=1e6;let nb=0;for(let n=0;n<300;n++){const nw=makeWeapon('t1_ironsword',0,0,[]);if(enhanceCore(nw.id,{force:'break'}).k==='broke')nb++;S.weapons=[]}
     res.push(T('F 正式武器忽略指定結果',nb===0,'正式 +0 武器指定「爆裝」300 次，實際爆裝 '+nb+' 次（安定區照規則不會爆）'));
   }));
   return{res,rows};
