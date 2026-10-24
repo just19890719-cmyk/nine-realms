@@ -1703,9 +1703,11 @@ html.scrimmed .cbar{display:none}
 .l0{color:var(--l0)}.l1{color:var(--l1)}.l2{color:var(--l2)}.l3{color:var(--l3)}.l4{color:var(--l4)}.l5{color:var(--l5);text-shadow:0 0 6px rgba(150,210,255,.55)}.l6{color:var(--l6)}
 .l0b{--qc:var(--l0)}.l1b{--qc:var(--l1)}.l2b{--qc:var(--l2)}.l3b{--qc:var(--l3)}.l4b{--qc:var(--l4)}.l5b{--qc:var(--l5)}.l6b{--qc:var(--l6)}
 .fpv .wt.l0b:not(#_){--f:url(art/ui/fp_gray_plain.webp)}.fpv .wt.l1b:not(#_){--f:var(--fN)}.fpv .wt.l2b:not(#_){--f:var(--fU)}.fpv .wt.l3b:not(#_){--f:var(--fR)}.fpv .wt.l4b:not(#_){--f:url(art/ui/fp_purple_plain.webp)}.fpv .wt.l5b:not(#_){--f:var(--fI)}.fpv .wt.l6b:not(#_){--f:var(--fG)}
-/* +9 以上的框微微閃亮：同一張框疊一層 screen，只動 opacity */
-.wart .wart-shine{mix-blend-mode:screen;opacity:0;animation:fshine 2.6s ease-in-out infinite}
-@keyframes fshine{0%,100%{opacity:0}50%{opacity:.85}}
+/* +9 以上：電流往外竄（同一張框疊兩層、一層左右翻，閃一下後往外擴散淡出；只動 transform／opacity） */
+.wart .wart-shine{mix-blend-mode:screen;opacity:0;animation:fzap 1.8s ease-out infinite;will-change:transform,opacity}
+.wart .wart-shine.e2{animation-name:fzap2;animation-delay:-.9s}
+@keyframes fzap{0%{opacity:.95;transform:scale(1)}6%{opacity:.35}12%{opacity:1}65%,100%{opacity:0;transform:scale(1.1)}}
+@keyframes fzap2{0%{opacity:.95;transform:scale(-1,1)}6%{opacity:.35}12%{opacity:1}65%,100%{opacity:0;transform:scale(-1.1,1.1)}}
 @media (prefers-reduced-motion:reduce){.wart .wart-shine{animation:none}}
 /* v4.35 背景畫了怪物的關卡：戰鬥畫面只取沒有怪物的那一段 */
 .bs-bg.bgp-top{object-position:center 0%;transform:scale(1.3);transform-origin:50% 0}
