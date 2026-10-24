@@ -138,7 +138,7 @@ const VILLAGES=[
  {name:'狂風高原',who:'遠征軍・長槍陣',cat:'polearm',req:600,sec:6600,gold:2000,danger:.19,tag:'giant',drops:[['thunderiron',.45,1,1],['giantbone',.45,1,1]],txt:'風之巨人卡瑞一吐氣就是暴風雪，擋住通往烏特加德城的路，長槍陣要能刺穿巨人的長柄武器。'},
  {name:'烏特加德城',who:'遠征軍・王家騎士',cat:'sword',req:720,sec:7200,gold:2300,danger:.2,tag:'giant',drops:[['elderroot',.25,1,1],['icecore',.25,1,1]],txt:'幻術巨人王烏特加德洛基坐在王座大廳，說只要贏得過牠的幻術，就肯聽凡人說話。騎士們要最鋒利的劍。'},
  {name:'石籬原',who:'遠征軍・攻城隊',cat:'axe',req:900,sec:7200,gold:2600,danger:.2,tag:'giant',drops:[['elderroot',.3,1,1],['giantbone',.3,1,1],['thunderiron',.45,1,1]],txt:'巨人王認輸後說：最強的巨人赫朗格尼爾住在石籬原，只要牠點頭，全約頓海姆都會跟你走。攻城隊的斧要劈得開牠的石盾。'},
- {name:'維莫爾河渡口',who:'遠征軍・總指揮',cat:'hammer',req:1000,sec:7200,gold:3000,danger:.2,tag:'god',need:'holy',drops:[['elderroot',.35,1,1],['giantbone',.5,1,2],['rune',.4,1,1],['srelic',.2,1,1]],txt:'巨人們終於願意和凡人結盟，雷神索爾卻駕著山羊戰車渡過維莫爾河，要親手拆散這個聯盟。凡鐵傷不了神，戰錘必須帶有「神聖」。'}
+ {name:'維莫爾河渡口',who:'遠征軍・總指揮',cat:'hammer',req:1040,sec:7200,gold:3000,danger:.2,tag:'god',need:'holy',drops:[['elderroot',.35,1,1],['giantbone',.5,1,2],['rune',.4,1,1],['srelic',.2,1,1]],txt:'巨人們終於願意和凡人結盟，雷神索爾卻駕著山羊戰車渡過維莫爾河，要親手拆散這個聯盟。凡鐵傷不了神，戰錘必須帶有「神聖」。'}
 ];
 const REALM_N=[['米德加德','人類之境','v4'],['約頓海姆','巨人之境','v20']];   // [名稱, 副標, 背景圖]
 const vRealm=i=>i<10?0:1,vNo=i=>(vRealm(i)+1)+'-'+(i%10+1);   // 關卡編號：0→1-1，10→2-1
@@ -2124,7 +2124,7 @@ function sheetVillage(i){
      <div class="acts3">${btn('收回武器','recall',{attrs:`data-i="${i}"`})}</div>`;
   }
   const ok=S.weapons.filter(x=>eligible(i,x)&&where(x)<0).sort((a,b)=>power(b)-power(a));
-  return head+`<div class="ui-panel panel"><div class="kvgrid">${kv('需要',CATS[v.cat]+'類'+(v.need?'＋'+AFFIX[v.need].n:''))}${kv('需求攻擊力',v.req)}${kv('每輪金幣',v.gold)}${kv('基礎時間',fmtT(v.sec*1000))}${FIRST_GOLD[i]?kv('首次收復獎勵',st.status==='cleared'?'<span class="muted">已領取</span>':'<span class="t-gold">'+fmt(FIRST_GOLD[i])+' 金幣</span>'):''}</div></div>
+  return head+`<div class="ui-panel panel"><div class="kvgrid">${kv('需要',CATS[v.cat]+'類'+(v.need?'＋'+AFFIX[v.need].n:''))}${kv('需求攻擊力',v.req)}${kv('每輪金幣',v.gold)}${kv('基礎時間',fmtT(v.sec*1000))}${FIRST_GOLD[i]?kv('首次收復獎勵',st.status==='cleared'?'<span class="muted">已領取</span>':'<span class="t-gold">'+fmt(FIRST_GOLD[i])+' 金幣</span>').replace('class="kv"','class="kv kv-wide"'):''}</div></div>
    ${vNeedPanel(i)}<div class="ui-panel panel">${ptitle('可取得材料')}${drops('normal')}</div>${bank}
    <div class="ui-panel panel">${ptitle(st.status==='open'?'交付委託':'指派駐守武器')}${ok.length?`<div class="wgrid">${ok.map(x=>wTile(x,`data-act="deliver" data-i="${i}" data-id="${x.id}"`)).join('')}</div><div class="small muted">點武器即可交付。</div>`:`<div class="empty">沒有符合的${CATS[v.cat]}類武器。到鐵匠鋪鍛造，或到武器庫強化、附魔。</div>`}</div>`;
 }

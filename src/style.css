@@ -1696,4 +1696,6 @@ html.scrimmed .cbar{display:none}
 .bs.c-cb{--K:1600ms}
 .vmon.bs-tap{cursor:pointer}.vmon.bs-tap:before{content:'';position:absolute;right:-3px;bottom:-3px;width:18px;height:18px;border-radius:50%;background:#2a1d14 url(art/cat_sword.webp) center/13px no-repeat;border:1px solid #c9a35a;z-index:4;box-shadow:0 1px 3px rgba(0,0,0,.7)}
 .bs{cursor:pointer}
+/* v4.27 村莊詳情「首次收復獎勵」佔滿一整列，375／393 寬不再換行 */
+.kvgrid .kv-wide{grid-column:1/-1}
 </style>
