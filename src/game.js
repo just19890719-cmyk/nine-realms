@@ -272,7 +272,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.52';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.53';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -734,7 +734,7 @@ async function mkClaim(){if(ui.mkBusy||!MK.claim.length)return;ui.mkBusy=true;re
   catch(e){toast('領取：'+MK_ERR(e.message),'bad')}finally{ui.mkBusy=false;render()}}
 function mkClaimBox(){if(!MK.claim.length)return '';const rs=MK.claim,g=rs.filter(r=>r.status==='sold'&&r.cur!=='gems').reduce((a,r)=>a+mkNet(r),0),m=rs.filter(r=>r.status==='sold'&&r.cur==='gems').reduce((a,r)=>a+mkNet(r),0);
   const row=r=>{const w=r.weapon||{},b=BP[bpId(r.bp)];if(!b)return '';const sold=r.status==='sold';
-    return `<div class="ui-card ui-card--row mk-row mk-cl-row"><div class="mk-art">${wArt(b.id,{frame:fq(w)})}</div><div class="grow mk-mid"><b class="${lc(w)}">${b.n} <span class="lvt">+${w.lv}</span></b><span class="small muted">${sold?`售價 ${fmt(r.price)}`:`${MK_DAYS} 天未售出`}</span></div>${sold?mkPrice(r.cur,mkNet(r)):'<span class="small muted mk-cl-back">退回道具欄</span>'}</div>`};
+    return `<div class="ui-card ui-card--row mk-row mk-cl-row"><div class="mk-art">${wArt(b.id,{frame:fq(w)})}</div><div class="grow mk-mid"><b class="mk-nm">${wName({...w,b:b.id})}</b><span class="small muted">${sold?`售價 ${fmt(r.price)}`:`${MK_DAYS} 天未售出`}</span></div>${sold?mkPrice(r.cur,mkNet(r)):'<span class="small muted mk-cl-back">退回道具欄</span>'}</div>`};
   return `<div class="mk-claim"><div class="mk-cl-head"><b class="t-gold grow">待領取 ${rs.length} 件</b>${btn(ui.mkBusy?'領取中…':'全部領取','mkclaim',{cls:'btn-primary sm',dis:ui.mkBusy})}</div>
    <div class="mk-list">${rs.map(row).join('')}</div>${g||m?`<div class="mk-cl-sum"><span class="small muted grow">實收（扣 ${MK_FEE*100}%）</span>${g?mkPrice('gold',g):''}${m?mkPrice('gems',m):''}</div>`:''}</div>`}
 async function mkList(id,cur,price){const w=S.weapons.find(x=>x.id===id);if(!w)return toast('找不到這把武器','bad');if(!mkSellable(w))return toast('上鎖或駐守村莊中的武器不能上架','bad');
@@ -759,7 +759,7 @@ if(typeof window!=='undefined')setInterval(()=>{if(AUTH&&CLOUD.ready&&!document.
 const mkPrice=(cur,p,cls='')=>`<span class="mk-price ${cls}">${img(MK_CUR[cur][0])}<b>${fmt(p)}</b></span>`;
 function mkRow(r,act){const w=r.weapon,b=BP[bpId(r.bp)],me=mkMe(r);
   return `<button class="ui-card ui-card--row mk-row ${me?'me':''}" data-act="${act}" data-id="${r.id}"><div class="mk-art">${wArt(b.id,{frame:fq(w)})}</div>
-   <div class="grow mk-mid"><b class="${lc(w)}">${b.n} <span class="lvt">+${w.lv}</span></b><span class="small muted">${CATS[b.cat]}・攻擊力 ${fmt(power({...w,b:b.id}))}</span>
+   <div class="grow mk-mid"><b class="mk-nm">${wName({...w,b:b.id})}</b><span class="small muted">${CATS[b.cat]}・攻擊力 ${fmt(power({...w,b:b.id}))}</span>
    <span class="small muted">${me?'<span class="t-gold">我的上架</span>':esc(r.seller_nick||'無名鐵匠')}・剩 ${fmtT(mkLeft(r))}</span></div>${mkPrice(r.cur,r.price)}</button>`}
 function viewMarketPage(){if(!MK.t&&!MK.loading&&(AUTH||mkMock()))setTimeout(mkLoad,0);return `<div class="pagehead"><h2>交易所</h2></div>`+viewMarket()}
 function viewMarket(){
@@ -778,15 +778,12 @@ function viewMarket(){
       <div class="small muted mk-note">成交後收入會出現在上方「待領取」，按「全部領取」入帳（扣 ${MK_FEE*100}% 手續費）；上架 ${MK_DAYS} 天沒賣出也會放在待領取，領取後回到道具欄。</div>`}
   else{const ws=S.weapons.filter(w=>!w.test).sort((a,b)=>power(b)-power(a));
     body=`<div class="small muted mk-note">點選要上架的武器。上鎖、駐守村莊中的武器不能上架。</div><div class="mk-list">${ws.length?ws.map(w=>{const b=BP[w.b],ok=mkSellable(w);
-      return `<button class="ui-card ui-card--row mk-row ${ok?'':'off'}" data-act="mksellw" data-id="${w.id}" ${ok?'':'disabled'}><div class="mk-art">${wArt(b.id,{frame:fq(w)})}</div><div class="grow mk-mid"><b class="${lc(w)}">${b.n} <span class="lvt">+${w.lv}</span></b><span class="small muted">${CATS[b.cat]}・攻擊力 ${fmt(power(w))}</span>${ok?'':`<span class="small t-danger">${w.lock?'已上鎖':'駐守村莊中'}</span>`}</div></button>`}).join(''):'<div class="small muted center mk-empty">道具欄是空的</div>'}</div>`}
+      return `<button class="ui-card ui-card--row mk-row ${ok?'':'off'}" data-act="mksellw" data-id="${w.id}" ${ok?'':'disabled'}><div class="mk-art">${wArt(b.id,{frame:fq(w)})}</div><div class="grow mk-mid"><b class="mk-nm">${wName(w)}</b><span class="small muted">${CATS[b.cat]}・攻擊力 ${fmt(power(w))}</span>${ok?'':`<span class="small t-danger">${w.lock?'已上鎖':'駐守村莊中'}</span>`}</div></button>`}).join(''):'<div class="small muted center mk-empty">道具欄是空的</div>'}</div>`}
   return `<div class="ui-panel panel mk">${ptitle(mkMock()?'離線模擬市場':'玩家交易')}${mkClaimBox()}<div class="mk-tabs">${tabs}<button class="ui-iconbtn mk-ref" data-act="mkref" aria-label="重新整理">${MK.loading?'…':'⟳'}</button></div>
    ${MK.err?`<div class="small t-danger center mk-err">${MK.err}</div>`:''}${body}</div>`}
-function mkWeaponBox(w){const b=BP[bpId(w.b)];
-  return `<div class="ui-card ui-card--feature wd-head ${lc(w)}b"><div class="wd-art">${wArt(b.id,{frame:fq(w)})}</div>
-    <div class="wd-info"><h2 class="${lc(w)}">${b.n} <span class="lvt">+${w.lv}</span></h2><div class="wd-tags"></div>
-     <div class="small muted">${kindN(b)}・${CATS[b.cat]}・<span class="nw">安定值 <b class="${TIERS[b.t].stable?'t-ok':'t-danger'}">+${TIERS[b.t].stable}</b></span></div>
-     <div class="wd-pow"><span class="small muted">攻擊力</span><b>${fmt(power({...w,b:b.id}))}</b></div></div></div>
-   <div class="ui-panel panel wd-sub">${effRows(w)}</div>`}
+function mkWeaponBox(w){w={...w,b:bpId(w.b)};const b=BP[w.b];   // v4.53 跟武器小卡同一套：名稱含屬性、攻擊力、四格數值
+  return `<div class="ui-panel panel mk-wp"><div class="wp-top">${wArt(b.id,{frame:fq(w)})}<div class="grow"><div class="wp-nm">${wName(w)}</div>
+    <div class="wp-sub"><span>${CATS[b.cat]}・${kindN(b)}</span></div><div class="wp-pow"><b>${fmt(power(w))}</b><span>攻擊力（每秒傷害）</span></div></div></div>${wpGrid(w)}</div>`}
 function sheetMk(s){const head=t=>`<div class="sheet-head"><span></span><h2>${t}</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>`;
   if(s.t==='mkw'){const r=MK.rows.find(x=>x.id===s.id)||MK.mine.find(x=>x.id===s.id);if(!r)return head('交易所')+'<div class="small muted center">這件商品已經不在架上了</div>';
     const me=mkMe(r),have=S[r.cur],lack=have<r.price;
@@ -1113,6 +1110,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.53',d:'10/24',t:'交易所武器資訊',b:['交易所列表、上架清單、待領取的武器名稱會顯示<b>屬性</b>（例如「+7 冰封 霜溪鋼劍」）','點商品看到的詳情改成跟武器小卡一樣：攻擊力、攻速、附加效果、相剋、屬性弱點倍率都看得到'],g:['mk']},
  {v:'4.52',d:'10/24',t:'60 秒限時挑戰',b:['還沒收復的村莊改成<b>限時挑戰</b>：選一把武器，60 秒內打倒怪物就收復','整場戰鬥都看得到：血條、倒數計時、每一下的傷害，沒有快轉，打倒或時間到才出結果','輸了可以馬上再挑戰或換武器，沒有任何懲罰；選武器時會先顯示<b>預估秒數</b>','攻擊力剛好等於需求約 48 秒打倒，每一界最後兩關（神明關）剛好 60 秒，要再強一點才穩','收復後可以<b>留下來掛機</b>：每打倒一隻收成一次，卡片顯示每小時約打倒幾隻、多少金幣','強化石改成每打倒一隻有機率掉（1-1 約 0.4%，越後面越高）','弱點、時間限制、血量都在點開村莊的詳情裡看，卡片上不再顯示弱點標籤'],g:['vil','hp']},
  {v:'4.51',d:'10/24',t:'新武器 17 把',b:['鐵匠鋪有新圖紙了：開局就能打 <b>7 種</b>武器（鐵爐村鐵劍、伐木斧、鍛錘、雙刀、長矛、獵弓、手弩）','第一界收復 1-2、1-4、1-6 解鎖松林長矛、霜溪鋼劍、巨怪灣重弩，1-7 解鎖怪物武器<b>巨魔石皮錘</b>，1-10 解鎖 Boss 武器<b>霍夫德之劍</b>','第二界收復 2-1、2-3、2-5 解鎖約頓巨木斧、巨鷹崖風弓、永凍雙刀，2-8 解鎖<b>幻術巨人王骨戟</b>，2-10 解鎖<b>索爾之錘</b>','數值兩界一階：開局武器攻擊力 12，第一、二界新武器 15，怪物武器多 10%，Boss 武器還有專屬特效（20% 觸發、該下 +30%）','村莊需求改成新數值：第一界最後要強化到約 +7，第二界約 +8','新材料還在設計，配方暫時只花金幣']},
  {v:'4.50',d:'10/24',t:'強化石・最高 +12',b:['強化改用<b>強化石</b>：每次 1 顆，不花金幣（成功或失敗都會用掉）','強化石來源：村莊收成會掉（越後面的關卡掉越多），熔解武器退 1 顆','最高等級改成 <b>+12</b>','成功率：+1～+6 一定成功；+7 35%、+8 32.5%、+9 30%（失敗就爆裝）；+10～+12 各 1%（失敗時 1/3 維持、2/3 爆裝）','攻擊倍率：+6 ×1.6、+7 ×1.9、+8 ×2.25、+9 ×2.65、+10 ×3.3、+11 ×4、+12 ×4.8'],g:['enh']},
@@ -1187,7 +1185,7 @@ const GUIDE=[
   {k:'quest',ic:'ic_check',n:'每日任務・簽到・成就',s:'每天領活躍度寶箱',v:'4.43',h:'<b>每日任務</b>：完成登入、收成、鍛造、強化、熔解累積活躍度，40／70／100 點各開一個寶箱。<br><b>七日簽到</b>：漏簽不會歸零，第 7 天領完從第 1 天重新開始。<br><b>委託成就</b>：免費拿鑽石。<br>v4.43 起所有獎勵都是金幣或鑽石。'},
   {k:'shop',ic:'nav_shop',n:'商城',s:'月卡、狩獵號角',v:'4.43',h:'封測期間<b>月卡免費</b>：立得鑽石，之後每天再領。<br>可以用鑽石買狩獵號角。<br>v4.43 起防爆卷、祝福石、符文祈願、旅行商人、殘渣兌換都已拿掉。'}]],
  ['玩家互動',[
-  {k:'mk',ic:'nav_market',n:'交易所',s:'金幣或鑽石買賣武器',v:'4.08',h:'用金幣或鑽石上架武器，最低 10，成交收 5% 手續費。<br>賣出或上架 3 天沒賣出時，交易所會亮紅點，最上面「待領取」列出賣了什麼、收多少，按「全部領取」才入帳、退回的武器才放回道具欄。<br>最多同時上架 10 件。<br>收藏（上鎖）或駐守中的武器不能上架。'},
+  {k:'mk',ic:'nav_market',n:'交易所',s:'金幣或鑽石買賣武器',v:'4.53',h:'用金幣或鑽石上架武器，最低 10，成交收 5% 手續費。<br>任何武器都能買賣，不限關卡進度。點商品可以看攻擊力、攻速、附加效果、相剋和屬性，跟自己的武器小卡一樣。<br>賣出或上架 3 天沒賣出時，交易所會亮紅點，最上面「待領取」列出賣了什麼、收多少，按「全部領取」才入帳、退回的武器才放回道具欄。<br>最多同時上架 10 件。<br>收藏（上鎖）或駐守中的武器不能上架。'},
   {k:'chat',ic:'it_horn',n:'聊天與跑馬燈',s:'世界頻道、系統公告、武器卡',v:'3.93',h:'世界頻道可以和全服玩家聊天（鐵匠 Lv3 以上可以發言），系統頻道會顯示全服 +10 以上的強化公告。<br>點名字可以看玩家名片；聊天可以貼出自己的武器卡、戴稱號。<br>跑馬燈出現強化公告時可以按「恭喜」。'},
   {k:'gd',ic:'ui_player_emblem',n:'好友與公會',s:'捐獻升級、公會加成、貢獻商店',v:'4.43',h:'好友最多 30 人。<br>鐵匠 Lv5 可以建立公會（50,000 金幣），Lv3 可以加入。<br>捐獻金幣或鑽石增加公會經驗和個人貢獻；公會升級會加狩獵金幣、首領傷害和成員上限。<br>貢獻商店的舊道具已拿掉，新道具設計中。離開公會後 12 小時內不能再加入。'},
   {k:'set',ic:'ic_gear',n:'設定與公告',s:'右上角齒輪',v:'4.03',h:'右上角齒輪裡有更新公告、玩法說明和音效設定。<br>有新的公告或玩法時，齒輪會亮紅點；沒看過的項目標 <b>NEW</b>，看過就消失。'}]]
@@ -1836,6 +1834,12 @@ function viewPick(i){const v=VILLAGES[i],st=S.villages[i],cur=st&&st.weaponId!=n
   <div class="pick-cur small"><span class="muted">目前駐守</span><span class="wchip ${lc(cur)}b">${wArt(cur.b,{cls:'wmini'})}<span class="${lc(cur)}">${bpOf(cur).n} +${cur.lv}</span></span><span class="grow right">攻擊力 <b>${fmt(power(cur))}</b></span></div>
   <div class="small muted">只顯示可以駐守這裡的閒置武器（攻擊力夠就行）。點一把就換上，原本的武器會回到道具欄。</div></div>
   <div class="wlist">${ws.length?`<div class="wgrid">${ws.map(w=>wTile(w,`data-act="vpick" data-i="${i}" data-id="${w.id}"`)).join('')}</div>`:`<div class="empty-state">${img('nav_armory')}<b>沒有可以換的閒置武器</b>${btn('返回村莊','vpickx',{cls:'btn-primary'})}</div>`}</div>`}
+// v4.53 武器小卡的四格數值（攻速／附加效果／相剋／屬性），交易所商品詳情也用同一套
+function wpGrid(w){const c=bpOf(w).cat,pr=PROC[c],sp=CSPD[c],rc=raceOf(w),e=wElem(w),cell=(k,v,sub)=>`<div><span>${k}</span><b>${v}</b>${sub?`<em>${sub}</em>`:''}</div>`;
+  return `<div class="wp-g">${cell('攻速',sp?sp.toFixed(1)+' 秒':'—',sp?'單擊 '+fmt(hitDmg(w)):'')}
+      ${cell('附加效果',pr?`${pr[0]} <i>${pct(procP(w.lv))}</i>`:'—',pr?pr[1]:'')}
+      ${cell('相剋',rc?`${RACE_N[rc]} <i>+${raceBonus(w)}%</i>`:'—')}
+      ${e?`<div class="el"><span>屬性</span><b class="wn-el e-${e.k} t${e.t}">${e.n} ${['','一','二','三'][e.t]}級</b><em>弱點 ×${e.m}</em></div>`:cell('屬性','<span class="muted">無</span>','附魔可獲得')}</div>`}
 function sheetWeapon(id,mode){
   const w=W(id);if(!w){const last=ui.enhLast&&ui.enhLast.id===id&&ui.enhLast.k==='broke'?ui.enhLast:null;
     if(last)return `<div class="sheet-head"><span style="width:44px"></span><h2>強化</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>`
@@ -1859,10 +1863,7 @@ function sheetWeapon(id,mode){
       <div class="wp-sub"><span>${CATS[c]}・${kindN(b)}</span>${i>=0?`<span class="t-ok">駐守 ${vNo(i)}</span>`:bs>=0?'<span class="t-ok">討伐首領中</span>':''}${w.test?'<span class="testtag">測試</span>':''}</div>
        <button class="ui-iconbtn icon-btn img wp-lk" data-act="lock" data-id="${id}" aria-label="${w.lock?'取消收藏':'收藏'}">${img(w.lock?'ic_lock':'ic_unlock')}</button>
       <div class="wp-pow"><b>${fmt(power(w))}</b><span>攻擊力（每秒傷害）</span></div></div></div>
-     <div class="wp-g">${cell('攻速',sp?sp.toFixed(1)+' 秒':'—',sp?'單擊 '+fmt(hitDmg(w)):'')}
-      ${cell('附加效果',pr?`${pr[0]} <i>${pct(procP(w.lv))}</i>`:'—',pr?pr[1]:'')}
-      ${cell('相剋',rc?`${RACE_N[rc]} <i>+${raceBonus(w)}%</i>`:'—')}
-      ${e?`<div class="el"><span>屬性</span><b class="wn-el e-${e.k} t${e.t}">${e.n} ${['','一','二','三'][e.t]}級</b><em>弱點 ×${e.m}</em></div>`:cell('屬性','<span class="muted">無</span>','附魔可獲得')}</div>
+     ${wpGrid(w)}
      <div class="wp-lv"><div class="wp-bar">${Array.from({length:13},(_,k)=>`<i class="${k<=w.lv?'on':''} ${k===w.lv?'cur':''}" style="--c:var(--l${FLV(k)})"></i>`).join('')}</div>
       <div class="rw"><span>+0</span><span>${max?'已達 +12':`下一級 +${nx}：${pr?pr[0]+' <b>'+pct(procP(nx))+'</b>・':''}${rc?'相剋 <b>+'+raceBonus(w,nx)+'%</b>・':''}攻擊力 <b>${fmt(power(w,nx))}</b>`}</span><span>+12</span></div></div>
      <div class="wp-a">${btn('強化','wmode',{cls:'btn-primary',attrs:`data-m="enh" data-id="${id}"`,dis:busy})}${btn(w.lv>=stable(w)?`已 +${stable(w)}`:`一鍵 +${stable(w)}`,'autoEnh',{cls:'btn-primary',attrs:`data-id="${id}"`,dis:busy||w.lv>=stable(w)||(!w.test&&stones()<enhCost(w))})}${btn('附魔','wmode',{cls:'btn-primary',attrs:`data-m="ench" data-id="${id}"`,dis:busy})}
@@ -2285,7 +2286,7 @@ function sheetDev(){
      <div class="label">v3.98 好友＋公會</div><div class="small muted" style="margin-bottom:6px">${chatOn()?'已登入：打開的是真的公會／好友；模擬按鈕只在本機未登入時可用':'未登入：公會、好友用離線模擬'}</div><div class="devgrid">${B('gdopen','打開公會','btn-primary')}${B('gdnone','模擬：還沒加入公會')}${B('gdlead','模擬：我是會長（有入會申請）')}${B('gdmem','模擬：我是一般成員')}${B('gdlv5','模擬：公會升到 Lv.5')}${B('gdchat','打開公會聊天')}${B('fropen','打開好友（有 2 個申請）')}${B('gdbonus','檢查公會加成（金幣、首領）')}</div>
      <div class="label">檢查</div><div class="devgrid">${B('chfilter','測試輸入檢查（網址、電話、字數）')}${B('tsec','安全設定檢查（含聊天 SQL）')}</div>`,
    mk:`<div class="label">交易所（v3.41）</div><div class="small muted" style="margin-bottom:6px">${AUTH?'目前連線真實伺服器（'+esc(S.nick||AUTH.user.email)+'）':'未登入：交易所使用「離線模擬」，只存在這支手機，用來測試畫面與流程'}</div>
-     <div class="devgrid">${B('mkopen','開啟交易所')}${B('mksettle','立即結算我的成交／過期')}${B('mkclaimt','待領取測試（2 賣出＋1 退回）')}</div>
+     <div class="devgrid">${B('mkopen','開啟交易所')}${B('mksettle','立即結算我的成交／過期')}${B('mkclaimt','待領取測試（2 賣出＋1 退回）')}${B('mkcard','v4.53 商品詳情新版（+7 冰封武器）')}</div>
      <div class="label">離線模擬專用（未登入時）</div><div class="devgrid">${B('mksold','模擬：我最新的上架被買走')}${B('mkexp','模擬：我的上架全部過期')}${B('mkreset','重設模擬市場')}</div>`,
    save:`<div class="label">v4.18 封測暫停（目前 MAINT=${MAINT}）</div><div class="devgrid">${B('maintprev','預覽維護公告畫面')}</div>
      <div class="label">取暱稱預覽（v3.38，不用登入、不連伺服器）</div><div class="devgrid">${B('cnameprev','預覽「註冊後取名」流程')}</div><div class="small muted" style="margin:4px 0 8px">輸入「冰脊」或「測試重複」可看重複暱稱的提示；確定後會接著播開場故事。</div>
@@ -2354,6 +2355,9 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='maintprev'){ui.sheet=null;render();return showMaint(null,true)}
   if(k==='mkopen'){ui.sheet=null;ui.tab='market';mkLoad();return render()}
   if(k==='mksettle'){mkSettle(false).then(()=>mkLoad());return}
+  if(k==='mkcard'){const b=BPS.find(x=>x.cat==='sword')||BPS[0],w={b:b.id,q:0,lv:7,traits:[],ench:[{k:'ice',v:2},null,null,null]},id=-777;   // v4.53 假商品，只用來看詳情排版
+    MK.rows=MK.rows.filter(r=>r.id!==id);MK.rows.unshift({id,seller:'npc',seller_nick:'測試賣家',weapon:w,bp:b.id,lv:7,q:0,cur:'gold',price:12345,expires_at:new Date(Date.now()+2*864e5).toISOString(),created_at:new Date().toISOString()});
+    if(!MK.t)MK.t=Date.now();ui.tab='market';MK.tab='buy';ui.sheet={t:'mkw',id};render();return toast('列表最上面也有這件（名稱應該有「冰封」）；這是假商品，不能真的買')}
   if(k==='mkclaimt'){const bps=BPS.filter(b=>b.t<=1),mk=(n,st,cur,price,q,lv)=>{const b=bps[n%bps.length];return {id:-(Date.now()%1e6)-n,fake:!mkMock(),seller:'me',bp:b.id,weapon:{b:b.id,q,lv,traits:[],ench:[null,null,null,null]},lv,q,cur,price,status:st,settled:false,buyer_ack:true,created_at:new Date().toISOString(),expires_at:new Date().toISOString()}};   // v4.08 待領取測試：離線模擬市場走真流程，登入中只是預覽（領取不入帳）
     const rs=[mk(3,'sold','gold',3200,2,7),mk(5,'sold','gems',120,4,10),mk(6,'expired','gold',500,1,4)];ui.sheet=null;ui.tab='market';MK.tab='mine';
     if(mkMock()){const d=mkMockDB();rs.forEach(r=>{r.id=d.seq++;delete r.fake;d.rows.unshift(r)});mkMockSave(d);rs.forEach(r=>mkMark('listed',r.id));mkReconcile(true).then(()=>{render();scrollTo(0,0)})}
