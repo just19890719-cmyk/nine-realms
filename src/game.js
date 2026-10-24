@@ -302,7 +302,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.38';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.39';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1117,6 +1117,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.39',d:'10/24',t:'村莊卡片可以展開戰鬥畫面',b:['駐守中的村莊卡片下方多了<b>往下的箭頭</b>，點一下展開騎士打怪物的戰鬥畫面，再點一次收起','展開後還看得到這隻怪物<b>每輪會掉什麼</b>（附機率，點材料看用途）和<b>已經打到、還沒收成</b>的東西'],g:['hit']},
  {v:'4.38',d:'10/24',t:'畫面精簡：拿掉用不到的功能',b:['駐守中的村莊不再開詳情頁：掉落直接看卡片，<b>點卡片上的武器</b>跳出小卡，可以看武器、換武器、收回武器','村莊詳情的「需要的武器」拿掉（已經不限武器）','<b>狩獵策略</b>拿掉，一律一般狩獵','<b>排行榜</b>先全部關掉','鐵匠鋪的「<b>鍛造中</b>」分頁拿掉，進度條直接顯示在「開始鍛造」下方','<b>全服首領討伐</b>先拿掉，駐守首領的武器放回武器庫'],g:['vil','forge']},
  {v:'4.37',d:'10/24',t:'村莊不限武器・拿掉特性、重鍊和盾',b:['村莊委託<b>不限武器</b>：不指定類別、不看攻擊力、不用特定附魔，任何武器都能交（武器越強狩獵越快）','鍛造不再帶<b>先天特性</b>（鋒利、堅固、輕巧、尋寶、巨人獵手、符文親和）','<b>巨人體重鍊</b>拿掉了，第二界材料用來鍛造巨人武器','<b>盾</b>拿掉了：4 張盾圖紙不再出現；1-5 鴉巢堡、2-5 永凍湖的故事跟著改寫'],g:['vil','qual','realm']},
  {v:'4.36',d:'10/24',t:'武器品階與框的電流',b:['+9 以上的武器框改成<b>一道電流繞著框打轉</b>（原本是整框一明一暗）','武器上原本的品質名稱改成看強化等級的<b>品階</b>，顏色跟框一樣：+0 凡鐵、+1～+6 精鍛、+7～+8 寒鋒、+9 血刃、+10 神鑄、+11 星魂、+12 永恆','武器庫的「品質」篩選改成「品階」','武器格只留武器圖和名稱','鐵匠鋪的<b>工坊升級、熔解回收、鐵匠天賦</b>拿掉了（遊戲大改版中），效果也一起拿掉：圖紙只看收復的關卡就解鎖，附魔固定 2 格；單把武器還是可以在武器詳情裡熔解'],g:['enh','melt','ench']},
@@ -1174,7 +1175,7 @@ const GUIDE=[
  ['村莊與戰鬥',[
   {k:'vil',ic:'nav_village',n:'村莊委託與收成',s:'交武器收復村莊、自動狩獵收成',v:'4.38',h:'任何武器都能交給村莊收復（不限類別、攻擊力和附魔），解鎖下一座村莊和新圖紙，第一次收復有金幣獎勵。<br>交付後武器會駐守狩獵，自動帶回金幣和材料，<b>離線最多累積 12 小時</b>。換上更強的武器狩獵更快。<br>每輪會掉什麼直接看村莊卡片右邊。<b>點卡片上的武器</b>會跳出小卡，可以看武器詳情、換武器或收回武器。<br>「全部收成」只收目前在看的這一界；另一界可以收成時，地圖圖示會亮紅點。'},
   {k:'hp',ic:'mon_1',n:'怪物血條',s:'打中才扣血，扣多少＝傷害',v:'4.26',h:'村莊卡上的怪物有血條，武器打中才會扣血，扣多少就是造成的傷害。<br>還沒交付或沒有駐守武器的村莊，點開詳情上方有怪物大圖，按 ‹ › 翻看這一界 10 隻（還沒解鎖的只顯示黑影）。<br>怪物被打倒就完成一輪狩獵，換下一隻。<br>點村莊看詳情，血條同步顯示，下方還有這隻北歐神話怪物的稱號和傳說。每一界的最後一關都是神，每一關的名稱、條件、掉落都跟那隻怪物或神的故事有關：打神要神聖、打龍要剋龍、火要霜寒。'},
-  {k:'hit',ic:'cat_sword',n:'武器打法',s:'攻速不同、強化越高越常觸發附加效果',v:'4.37',h:'點村莊卡片上的怪物小圖，會展開戰鬥畫面（一次一個，再點一下收起）：騎士拿著駐守的武器打怪物，打中時怪物閃一下、停頓後被打退，跳出的數字就是傷害。戰鬥畫面收起時，卡片上的小怪物也是同樣的攻速和附加效果。<br>攻速：<b>劍</b> 1.0 秒、<b>斧</b> 1.3 秒（兩連斬）、<b>錘</b> 1.8 秒、<b>短刃</b> 0.6 秒、<b>長柄</b> 1.2 秒、<b>弓</b> 1.1 秒、<b>弩</b> 1.6 秒。<br>強化越高越常觸發附加效果（+1～+6 每級 2%，+7 起 16%～40%）：劍<b>會心</b>、斧<b>流血</b>、錘<b>震碎</b>、短刃<b>中毒</b>、長柄<b>貫穿</b>、弓<b>穿心</b>、弩<b>破甲</b>。狩獵時間和收成不受影響。'},
+  {k:'hit',ic:'cat_sword',n:'武器打法',s:'攻速不同、強化越高越常觸發附加效果',v:'4.39',h:'點村莊卡片下方的<b>往下箭頭</b>（或怪物小圖），會展開戰鬥畫面（一次一個，再點一下收起），下面還列出每輪掉落和已經打到、還沒收成的東西：騎士拿著駐守的武器打怪物，打中時怪物閃一下、停頓後被打退，跳出的數字就是傷害。戰鬥畫面收起時，卡片上的小怪物也是同樣的攻速和附加效果。<br>攻速：<b>劍</b> 1.0 秒、<b>斧</b> 1.3 秒（兩連斬）、<b>錘</b> 1.8 秒、<b>短刃</b> 0.6 秒、<b>長柄</b> 1.2 秒、<b>弓</b> 1.1 秒、<b>弩</b> 1.6 秒。<br>強化越高越常觸發附加效果（+1～+6 每級 2%，+7 起 16%～40%）：劍<b>會心</b>、斧<b>流血</b>、錘<b>震碎</b>、短刃<b>中毒</b>、長柄<b>貫穿</b>、弓<b>穿心</b>、弩<b>破甲</b>。狩獵時間和收成不受影響。'},
   {k:'realm',ic:'realm_2',n:'第二界 約頓海姆',s:'收復 1-10 後開放',v:'4.37',h:'收復 1-10 彩虹橋頭、打倒海姆達爾後開放第二界，用上方地圖列切換。<br>10 座新村莊、4 種新材料（巨人骨、永凍霜晶、雷鳴鐵、世界樹古根），第五階巨人武器要熔爐 Lv6。<br>v4.37 起巨人體重鍊已經拿掉，第二界材料用來鍛造巨人武器。'}]],
  ['成長與獎勵',[
   {k:'quest',ic:'ic_check',n:'每日任務・簽到・成就',s:'每天領活躍度寶箱',v:'3.74',h:'<b>每日任務</b>：完成登入、收成、鍛造、強化、熔解累積活躍度，40／70／100 點各開一個寶箱。<br><b>七日簽到</b>：漏簽不會歸零，第 7 天領完從第 1 天重新開始。<br><b>委託成就</b>：免費拿防爆卷和祝福石。'},
@@ -2014,6 +2015,10 @@ function knHit(w){const c=bpOf(w).cat,kn=KN[c];if(!kn)return null;const p=knProc
   return KHIT[key]={iv:kn.K,E:1+1.5*p,ph:kn.ph,hv:kn.hv,plan,kn:1}}
 const knOn=w=>!!(w&&KN[bpOf(w).cat]);
 const knNext=(hs,t)=>{let n=t-t%hs.iv+hs.ph;if(n<t)n+=hs.iv;return n};
+// v4.39 戰鬥畫面展開時的下半部：這隻怪物每輪會掉什麼、已經打到還沒收成的東西
+function bsMore(i,w){const v=VILLAGES[i],bk=S.villages[i].bank;
+  return `<div class="bs-more"><div class="bs-k">每輪掉落</div><div class="bs-drops">${v.drops.map(d=>`<button class="bs-d ${d[1]<RARE_P?'rare':''}" data-act="matinfo" data-k="${d[0]}" data-v="${pct(dropChance(i,w,d,'normal'))}">${img(MATART[d[0]])}<span>${MATS[d[0]]}</span><b>${pct(dropChance(i,w,d,'normal'))}</b></button>`).join('')}</div>
+   <div class="bs-k">已經打到${bk.cycles?`（${bk.cycles} 輪，還沒收成）`:''}</div>${bk.cycles?`<div class="bs-got">${harvestIcons({gold:bk.gold,...bk.mats})}</div>`:'<div class="small muted">這輪打完就會有收穫。</div>'}</div>`}
 function vStrip(i,w){const kn=KN[bpOf(w).cat],t=performance.now(),full=KN_FULL.includes(i),m='mon_'+(i+1);
   return `<div class="bs c-${kn.k}" data-act="bsclose" role="button" aria-label="收起戰鬥畫面" style="--n:${kn.n};--d:-${Math.round(t%kn.K)}ms;--dp:-${Math.round(t%(kn.K*kn.n))}ms">${img('v'+(i+1),'bs-bg'+(BS_BGP[i]?' bgp-'+BS_BGP[i]:''))}<i class="bs-gd"></i>
    <div class="bs-mon ${full?'':'pt'}" data-mon="${i}"><div class="bs-br"><div class="bs-hb">${full?img(m+'_idle','idle',MONS[i])+img(m+'_atk','atk'):img(m,'idle',MONS[i])}${full?['tn','fl'].map(c=>`<i class="${c}">${img(m+'_idle','idle')}${img(m+'_atk','atk')}</i>`).join(''):img(m,'tn')+img(m,'fl')}</div></div></div>
@@ -2064,11 +2069,12 @@ function viewVillage(){
       <div class="small ${has?'t-ok':'muted'}">${has?`可交付 ${S.weapons.filter(x=>eligible(i,x)&&where(x)<0).length} 把，最強：${bpOf(has).n}（${power(has)}）`:'武器庫還沒有符合的武器'}</div></div>
       <div class="vside">${has?btn('交付','deliver',{cls:'btn-primary sm',attrs:`data-i="${i}" data-id="${has.id}"`}):btn('去鍛造','forgeCat',{cls:'btn-sec sm',attrs:'data-k="all"'})}</div></div>`}
    const bs=knOn(w)&&ui.bsOpen===i;   // v4.21 點怪物小圖才展開戰鬥畫面，一次只開一個
-   return `<div class="ui-card vcard ${k} ${bs?'bt':''}" ${w?'':`data-act="vopen" data-i="${i}" role="button" tabindex="0"`}>${vGiveDot(i)||st.bank.cycles?'<i class="dot give-dot"></i>':''}${bs?vStrip(i,w):w?vMon(i,k,knOn(w)):img('v'+(i+1),'vthumb')}<div class="grow"><div class="row nowrap"><b class="grow">${vNo(i)} ${v.name}</b><span class="vst ${k}">${lab}</span></div>
+   // v4.39 卡片下方的箭頭也能展開／收起戰鬥畫面；展開時下方多列每輪掉落和已經打到還沒收成的東西（Mochi）
+   return `<div class="ui-card vcard ${k} ${bs?'bt':''} ${knOn(w)?'tgl':''}" ${w?'':`data-act="vopen" data-i="${i}" role="button" tabindex="0"`}>${vGiveDot(i)||st.bank.cycles?'<i class="dot give-dot"></i>':''}${bs?vStrip(i,w):w?vMon(i,k,knOn(w)):img('v'+(i+1),'vthumb')}<div class="grow"><div class="row nowrap"><b class="grow">${vNo(i)} ${v.name}</b><span class="vst ${k}">${lab}</span></div>
     ${w?`<div class="row nowrap small"><span class="wchip ${lc(w)}b" data-act="vopen" data-i="${i}" role="button" aria-label="武器：收回或更換">${wArt(w.b,{cls:'wmini'})}<span class="${lc(w)}">${bpOf(w).n} +${w.lv}</span></span><span class="num grow right" data-vclock="${i}"></span></div>${hpBar(i)}
-     ${k==='full'?`<div class="small t-danger">已達離線上限 ${S.capH} 小時，暫停累積，請收成</div>`:st.bank.cycles?`<div class="vbank">${harvestMini({gold:st.bank.gold,...st.bank.mats})}</div>`:`<div class="small muted">預估 ${fmt(gph(i,w))} 金幣／小時</div>`}${betterIdle(i)?`<button class="tag-up" data-act="vswap" data-i="${i}">武器庫有更強的可以換 ›</button>`:''}`
+     ${k==='full'?`<div class="small t-danger">已達離線上限 ${S.capH} 小時，暫停累積，請收成</div>`:st.bank.cycles&&!bs?`<div class="vbank">${harvestMini({gold:st.bank.gold,...st.bank.mats})}</div>`:bs?'':`<div class="small muted">預估 ${fmt(gph(i,w))} 金幣／小時</div>`}${betterIdle(i)?`<button class="tag-up" data-act="vswap" data-i="${i}">武器庫有更強的可以換 ›</button>`:''}`
      :`<div class="small muted">沒有駐守武器，狩獵暫停。點開指派武器。</div>`}</div>
-    <div class="vside">${st.bank.cycles?`<button class="ui-btn ui-btn--accent harvest-btn" data-act="collect" data-i="${i}"><span>收成</span><b>×<span data-vpend="${i}">${st.bank.cycles}</span></b></button>`:`<div class="drops">${drops}</div>`}</div></div>`}).join('')}</div>`;
+    <div class="vside">${st.bank.cycles?`<button class="ui-btn ui-btn--accent harvest-btn" data-act="collect" data-i="${i}"><span>收成</span><b>×<span data-vpend="${i}">${st.bank.cycles}</span></b></button>`:`<div class="drops">${drops}</div>`}</div>${bs?bsMore(i,w):''}${knOn(w)?`<button class="bs-tgl ${bs?'up':''}" data-act="${bs?'bsclose':'bsopen'}" data-i="${i}" aria-label="${bs?'收起':'展開'}戰鬥畫面"><i></i></button>`:''}</div>`}).join('')}</div>`;
 }
 // v3.61 從別頁點進村莊：自動捲到目前待交付的關卡（已經看得到就不動，保留上方地圖）
 function scrollToNextVillage(){const el=document.querySelector('#view .vcard.next');scrollTo(0,0);if(!el)return;const r=el.getBoundingClientRect(),nav=document.querySelector('.nav'),bar=document.querySelector('.bar');
@@ -2245,7 +2251,7 @@ function sheetDev(){
      <div class="label">v3.67 分頁美術預熱</div><div class="devgrid">${B('uiwarm','預熱狀態')}${B('uiwarmrun','連切 5 個分頁測出圖')}</div>
      <div class="label">時間流速（正式版 1×）</div><div class="row">${[1,10,30,60].map(n=>`<button class="ui-btn ui-btn--chip chipbtn ${S.speed===n?'on':''}" data-act="speed" data-k="${n}">${n}×</button>`).join('')}</div>
      <div class="label">離線累積上限</div><div class="row">${[1,OFFLINE_H].map(n=>`<button class="ui-btn ui-btn--chip chipbtn ${S.capH===n?'on':''}" data-act="cap" data-k="${n}">${n} 小時</button>`).join('')}</div>
-     <div class="label">村莊與鍛造</div><div class="devgrid">${B('hunt','所有村莊立即 +10 輪')}${B('monhp','怪物血條：本輪剩 10 秒')}${B('gwvpick','v4.38 駐守村莊點武器的小卡（收回／換武器）')}${B('monall','怪物打法：8 種武器各駐守一村')}${B('bsall','v4.20 戰鬥條：7 種武器各駐守 1-1～1-7')}${B('bs11','v4.20 戰鬥條：1-1 換下一種武器')}${B('bsthumb','v4.32 卡片小怪物新打法：7 種武器各駐守 1-1～1-7、收起戰鬥畫面、附加效果必定觸發')}${B('bsmon','v4.32 戰鬥畫面：依序展開每隻全身怪物（看有沒有被切到）')}${B('bsbg','v4.35 戰鬥背景取景：依序打開背景有怪物的關卡')}${B('bsproc',`v4.20 附加效果必定觸發：${ui.bsProc?'開':'關'}`)}${B('offline',`模擬離線 ${OFFLINE_H} 小時`)}${B('forge','鍛造立即完成')}${B('unlock','解鎖全部村莊與圖紙')}${B('maxup','工坊滿級')}${B('wsgate','工坊改回 Lv1＋20 萬金幣（看解鎖條件）')}${B('f5','鍛造 5 秒測試（最高階可打的圖紙）')}${B('tlack','缺料鍛造提示（獵弓）')}${B('tbprev','點圖紙自動捲到詳情')}${B('tharvest','2 秒後完成一輪（看收成按鈕）')}${B('tmon','怪物血條：3 秒後擊倒一隻')}${B('monlore','v4.04 神話怪物：依序打開村莊詳情看傳說')}${B('affopen','v4.28 附魔／祈願開放：模擬 1000 次看抽得到哪些')}${B('mondex','v4.12 怪物大圖：打開下一個挑戰的村莊詳情')}${B('godreq','v4.06 彩虹橋頭要神聖：給神聖／剋龍長戟各 1 把')}${B('storyreq','v4.14 故事條件：給霜寒劍／剋龍短刃／神聖弓')}${B('achall','達成全部成就條件')}${B('daily','重置月卡今日領取')}</div>
+     <div class="label">村莊與鍛造</div><div class="devgrid">${B('hunt','所有村莊立即 +10 輪')}${B('monhp','怪物血條：本輪剩 10 秒')}${B('gwvpick','v4.38 駐守村莊點武器的小卡（收回／換武器）')}${B('gwbstgl','v4.39 村莊卡片箭頭展開戰鬥畫面＋掉落＋已打到')}${B('monall','怪物打法：8 種武器各駐守一村')}${B('bsall','v4.20 戰鬥條：7 種武器各駐守 1-1～1-7')}${B('bs11','v4.20 戰鬥條：1-1 換下一種武器')}${B('bsthumb','v4.32 卡片小怪物新打法：7 種武器各駐守 1-1～1-7、收起戰鬥畫面、附加效果必定觸發')}${B('bsmon','v4.32 戰鬥畫面：依序展開每隻全身怪物（看有沒有被切到）')}${B('bsbg','v4.35 戰鬥背景取景：依序打開背景有怪物的關卡')}${B('bsproc',`v4.20 附加效果必定觸發：${ui.bsProc?'開':'關'}`)}${B('offline',`模擬離線 ${OFFLINE_H} 小時`)}${B('forge','鍛造立即完成')}${B('unlock','解鎖全部村莊與圖紙')}${B('maxup','工坊滿級')}${B('wsgate','工坊改回 Lv1＋20 萬金幣（看解鎖條件）')}${B('f5','鍛造 5 秒測試（最高階可打的圖紙）')}${B('tlack','缺料鍛造提示（獵弓）')}${B('tbprev','點圖紙自動捲到詳情')}${B('tharvest','2 秒後完成一輪（看收成按鈕）')}${B('tmon','怪物血條：3 秒後擊倒一隻')}${B('monlore','v4.04 神話怪物：依序打開村莊詳情看傳說')}${B('affopen','v4.28 附魔／祈願開放：模擬 1000 次看抽得到哪些')}${B('mondex','v4.12 怪物大圖：打開下一個挑戰的村莊詳情')}${B('godreq','v4.06 彩虹橋頭要神聖：給神聖／剋龍長戟各 1 把')}${B('storyreq','v4.14 故事條件：給霜寒劍／剋龍短刃／神聖弓')}${B('achall','達成全部成就條件')}${B('daily','重置月卡今日領取')}</div>
      <div class="label">時間防作弊</div><div class="devgrid">${B('back','裝置時間倒退 1 小時')}${B('fwd','裝置時間恢復')}</div>`,
    enh:`<div class="label">1. 送出測試武器（標示「測試」，強化不扣資源、不能交付村莊）</div>
      <div class="row">${['鐵製','霜銀','龍鱗','神器'].map((n,t)=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devTier??0)===t?'on':''}" data-act="devset" data-k="devTier" data-v="${t}">${n}</button>`).join('')}</div>
@@ -2417,6 +2423,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
     const gift=(b,q,lv,m)=>{const w=makeWeapon(b,q,lv,[]);ui.sheet={t:'w',id:w.id,m};save();render();return w};
     if(k==='gwmats'){S.villages.forEach(st=>{st.status='cleared'});S.furnace=Math.max(S.furnace,6);giveRw({hrelic:6,srelic:6,scale:5,rune:5,permafrost:6,icecore:3,gold:100000});ui.sheet=null;ui.tab='forge';ui.ftab='bp';ui.cat='all';ui.bp='g_hofund';save();render();return toast('已給遺物和材料、收復全部村莊、熔爐 Lv6：鍛造頁可以打霍夫德之劍和索爾之錘','ok')}
     if(k==='gwhof'){gift('g_hofund',3,6,'enh');return toast('強化頁下方會提示「強化到 +7 覺醒守望之眼」','ok')}
+    if(k==='gwbstgl'){devdo('bsall');const st=S.villages[1];st.bank={cycles:12,gold:340,mats:Object.fromEntries(VILLAGES[1].drops.map(d=>[d[0],5])),events:0};ui.sheet=null;ui.bsOpen=1;save();render();setTimeout(()=>document.querySelectorAll('#view .vcard')[1]?.scrollIntoView({block:'start'}),50);return toast('1-2 已展開：上面戰鬥畫面、下面每輪掉落和已經打到的東西；點卡片下方的箭頭收起','ok')}
     if(k==='gwvpick'){const st=S.villages[0];if(st.weaponId==null||!W(st.weaponId)){const w=makeWeapon('t1_woodaxe',0,0,[]);st.status='cleared';st.weaponId=w.id;st.cycleStart=NOW()}ui.tab='village';ui.realm=0;ui.sheet={t:'v',i:0};save();render();return toast('1-1 駐守中：點卡片上的武器就是這張小卡','ok')}
     if(k==='gwstory'){S.villages.forEach((v,i)=>{if(i<20&&v.status==='locked')v.status='open'});ui.tab='village';ui.sheet={t:'v',i:19};save();render();return toast('2-10 索爾詳情：用 ‹ › 翻到 2-9 赫朗格尼爾；1-8 莫庫卡爾菲在第一界','ok')}
     if(k==='gwskadi'){gift('g_skadi',3,12,'main');return toast('武器詳情：神格覺醒亮 3 段','ok')}
