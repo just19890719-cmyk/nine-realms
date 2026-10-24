@@ -1062,7 +1062,7 @@ body.dpv .hero .dp-fog{display:none}   /* v3.20：鐵匠鋪主畫面不要霧氣
 #tut{position:fixed;inset:0;z-index:150;pointer-events:none}
 .tut-ring{position:fixed;border-radius:12px;border:2px solid #ffcf4a;box-shadow:0 0 0 9999px rgba(0,0,0,.62),0 0 0 3px rgba(0,0,0,.6),0 0 22px 6px rgba(255,190,60,.95),inset 0 0 16px rgba(255,210,90,.55);transition:left .25s,top .25s,width .25s,height .25s;animation:tutPulse 1s ease-in-out infinite}
 .tut-ring::after{content:"";position:absolute;inset:-2px;border-radius:13px;border:2px solid #ffe08a;animation:tutRipple 1.2s ease-out infinite}
-#tut.nohole{background:rgba(0,0,0,.45)}
+#tut.nohole{background:rgba(0,0,0,.45)}#tut.nohole.clear{background:none}
 .tut-box{position:fixed;left:50%;translate:-50% 0;width:min(92vw,400px);display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:12px;background:linear-gradient(#211811,#130e0a);border:1px solid var(--gold);box-shadow:0 8px 24px rgba(0,0,0,.7);pointer-events:auto;transition:top .25s,bottom .25s}
 .tut-face{flex:0 0 54px;width:54px;height:54px;border-radius:50%;object-fit:cover;object-position:52% 6%;border:2px solid var(--gold);background:#2a1d12}
 .tut-body{flex:1;min-width:0}
