@@ -465,6 +465,10 @@ function mythTests(){const n=VILLAGES.length,bad=MONS.filter(x=>x.length>6),j=EV
   const nd=EVT_BOSS.find(b=>b.id==='nidhogg'),god=[9,19].every(i=>/神/.test(MON_T[i]));
   const ok=MONS.length===n&&MON_T.length===n&&MON_LORE.length===n&&!bad.length&&new Set(MONS).size===n&&j&&j.art==='boss_jorm'&&nd&&nd.art==='boss_nidhogg'&&god;
   return[T('H 神話怪物：20 隻都有名字（6 字內、不重複）、稱號、傳說，塵世巨蟒、尼德霍格首領用自己的圖，1-10、2-10 是神',ok,`名字 ${MONS.length}／稱號 ${MON_T.length}／傳說 ${MON_LORE.length}；太長：${bad.join('、')||'無'}；巨蟒圖 ${j&&j.art}、尼德霍格圖 ${nd&&nd.art}、最後一關是神 ${god}`)]}
+// v4.06 神的關卡：名稱、條件跟劇情一致（1-10 彩虹橋頭要神聖、2-10 索列姆海姆要剋巨人），沒有村莊再要剋龍
+function godReqTests(){const v=VILLAGES[9],u=VILLAGES[19],mk=e=>({id:-1,b:'t3_halberd',q:3,lv:15,traits:[],ench:[e,null,null,null]});
+  const ok=v.name==='彩虹橋頭'&&v.need==='holy'&&u.name==='索列姆海姆'&&u.need==='giant'&&!VILLAGES.some(x=>x.need==='dragon'||/世界樹根穴|烏特加德城/.test(x.name))&&eligible(9,mk({k:'holy',v:15}))&&!eligible(9,mk({k:'dragon',v:40}))&&TAGN[v.tag];
+  return[T('H 神的關卡：1-10 彩虹橋頭只收神聖、2-10 索列姆海姆要剋巨人，剋龍不再是委託條件',!!ok,`1-10 ${v.name}/${v.need}、2-10 ${u.name}/${u.need}`)]}
 // v4.02 武器打法：每種還在的武器類別都有打法與說明，連擊間隔加起來比攻擊間隔短
 function hitTests(){const cats=[...new Set(BPS.map(b=>b.cat))],miss=cats.filter(c=>!HIT[c]||!HIT_N[c]);
   const bad=Object.entries(HIT).filter(([k,h])=>{const z={};let sum=0;for(let n=0;n<400;n++){const p=h.plan(z);if(p.some(x=>x[0]>=h.iv*.85))return true;sum+=p.reduce((a,x)=>a+x[1],0)}return k!=='shield'&&Math.abs(sum/400/h.E-1)>.15});
@@ -488,7 +492,7 @@ function wsTests(){const S0=S;S=fresh();S.gold=1e6;const at=n=>S.villages.forEac
   return[T('J 工坊升級依關卡解鎖（鐵砧 1-2/1-4/1-7/1-10、熔爐 1-3/1-5/1-6/1-7）',a0&&a1&&a2&&a3&&keep,`沒收復不能升 ${a0}；1-2→鐵砧 2 ${a1}；1-4→鐵砧 3 ${a2}；1-7→鐵砧 4、熔爐 5、鐵砧 5 還鎖 ${a3}；舊等級保留 ${keep}（${gates}）`)]}
 function runTests(mode){
   if(mode==='econ')return econHtml(12)+econHtml(8);
-  const r=runAll({N:100000});r.res.push(...layoutTests(),...monTests(),...mythTests(),...hitTests(),...enchTests(),...wsTests());const pass=r.res.filter(x=>x.pass).length;
+  const r=runAll({N:100000});r.res.push(...layoutTests(),...monTests(),...mythTests(),...godReqTests(),...hitTests(),...enchTests(),...wsTests());const pass=r.res.filter(x=>x.pass).length;
   return `<div><b>${pass}/${r.res.length} 通過</b>（${r.ms} 毫秒）</div>`+resHtml(r.res);
 }
 if(typeof module!=='undefined')module.exports={runAll,econReport,simulate,levelCheck};
