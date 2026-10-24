@@ -1596,7 +1596,7 @@ html.scrimmed .cbar{display:none}
 .bs{position:relative;height:132px;border-radius:6px;overflow:hidden;border:1px solid #3a2e22;contain:layout paint}
 .bs-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 62%;filter:brightness(.45) saturate(.85)}
 .bs-gd{position:absolute;left:0;right:0;bottom:0;height:30%;background:linear-gradient(180deg,transparent,rgba(0,0,0,.6))}
-.bs-mon{position:absolute;left:-4%;bottom:-5%;height:110%;aspect-ratio:1;z-index:2;animation:bsLunge calc(var(--K)*var(--n)) infinite;animation-delay:var(--dp)}
+.bs-mon{position:absolute;left:6%;bottom:0;height:96%;aspect-ratio:1;z-index:2;animation:bsLunge calc(var(--K)*var(--n)) infinite;animation-delay:var(--dp)}
 .bs-br{position:absolute;inset:0;transform-origin:50% 95%;animation:bsBreath 1.6s ease-in-out infinite}
 .bs-hb{position:absolute;inset:0;transform-origin:50% 95%}
 .bs-hb img{position:absolute;inset:0;width:100%;height:100%}
@@ -2197,7 +2197,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.30';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.32';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -3017,6 +3017,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.32',d:'10/24',t:'戰鬥畫面怪物不再被切到',b:['展開戰鬥畫面時，怪物整隻都在框內（之前野豬、霜狼、海怪等體型寬的怪物左邊會被切掉）','怪物被重擊打退時也不會超出框'],g:['hit']},
  {v:'4.30',d:'10/24',t:'雷神索爾登場',b:['2-10 換上<b>雷神索爾</b>的頭像、全身圖和維莫爾河渡口新背景（之前暫時用斯卡蒂的圖）','1-8 泥巨人莫庫卡爾菲有全身圖了，2-9 石籬原換上新背景（巨石牆和赫朗格尼爾）','<b>索爾之錘</b>和<b>雷神錘柄</b>換上自己的圖'],g:['hp','god']},
  {v:'4.29',d:'10/24',t:'村莊詳情小修正',b:['「首次收復獎勵」改成佔一整列，小螢幕不會再折成兩行','2-10 維莫爾河渡口改成要戰錘後，攻擊力需求照難度曲線調成 1040'],g:[]},
  {v:'4.28',d:'10/24',t:'符文一關一關學會',b:['附魔不再一開始就抽得到全部 12 種：開局會<b>烈焰、霜寒、迅捷、掠奪、豐收</b>，之後 1-3 學會尋珍、1-6 貪婪、1-7 雷霆、1-8 剋巨人、1-10 神聖、2-6 劇毒和剋龍','還沒學會的詞條在附魔頁會鎖住並寫出哪一關開放，剩下的詞條機率變高，卡關時比較好抽到剋巨人、神聖','已經附在武器上的詞條全部保留','符文祈願只會給你去過的土地上的寶物：還沒開放的關卡素材抽不到，那份機率平分給霜銀和狼牙'],g:['ench','shop']},
@@ -4192,7 +4193,7 @@ function sheetDev(){
      <div class="label">v3.67 分頁美術預熱</div><div class="devgrid">${B('uiwarm','預熱狀態')}${B('uiwarmrun','連切 5 個分頁測出圖')}</div>
      <div class="label">時間流速（正式版 1×）</div><div class="row">${[1,10,30,60].map(n=>`<button class="ui-btn ui-btn--chip chipbtn ${S.speed===n?'on':''}" data-act="speed" data-k="${n}">${n}×</button>`).join('')}</div>
      <div class="label">離線累積上限</div><div class="row">${[1,OFFLINE_H].map(n=>`<button class="ui-btn ui-btn--chip chipbtn ${S.capH===n?'on':''}" data-act="cap" data-k="${n}">${n} 小時</button>`).join('')}</div>
-     <div class="label">村莊與鍛造</div><div class="devgrid">${B('hunt','所有村莊立即 +10 輪')}${B('monhp','怪物血條：本輪剩 10 秒')}${B('monall','怪物打法：8 種武器各駐守一村')}${B('bsall','v4.20 戰鬥條：7 種武器各駐守 1-1～1-7')}${B('bs11','v4.20 戰鬥條：1-1 換下一種武器')}${B('bsproc',`v4.20 附加效果必定觸發：${ui.bsProc?'開':'關'}`)}${B('offline',`模擬離線 ${OFFLINE_H} 小時`)}${B('forge','鍛造立即完成')}${B('unlock','解鎖全部村莊與圖紙')}${B('maxup','工坊滿級')}${B('wsgate','工坊改回 Lv1＋20 萬金幣（看解鎖條件）')}${B('f5','鍛造 5 秒測試（最高階可打的圖紙）')}${B('tlack','缺料鍛造提示（獵弓）')}${B('tbprev','點圖紙自動捲到詳情')}${B('tharvest','2 秒後完成一輪（看收成按鈕）')}${B('tmon','怪物血條：3 秒後擊倒一隻')}${B('monlore','v4.04 神話怪物：依序打開村莊詳情看傳說')}${B('affopen','v4.28 附魔／祈願開放：模擬 1000 次看抽得到哪些')}${B('mondex','v4.12 怪物大圖：打開下一個挑戰的村莊詳情')}${B('godreq','v4.06 彩虹橋頭要神聖：給神聖／剋龍長戟各 1 把')}${B('vneed','v4.14 村莊需求：依序打開村莊看可點的圖紙')}${B('storyreq','v4.14 故事條件：給霜寒劍／剋龍短刃／神聖弓')}${B('achall','達成全部成就條件')}${B('daily','重置月卡今日領取')}</div>
+     <div class="label">村莊與鍛造</div><div class="devgrid">${B('hunt','所有村莊立即 +10 輪')}${B('monhp','怪物血條：本輪剩 10 秒')}${B('monall','怪物打法：8 種武器各駐守一村')}${B('bsall','v4.20 戰鬥條：7 種武器各駐守 1-1～1-7')}${B('bs11','v4.20 戰鬥條：1-1 換下一種武器')}${B('bsmon','v4.32 戰鬥畫面：依序展開每隻全身怪物（看有沒有被切到）')}${B('bsproc',`v4.20 附加效果必定觸發：${ui.bsProc?'開':'關'}`)}${B('offline',`模擬離線 ${OFFLINE_H} 小時`)}${B('forge','鍛造立即完成')}${B('unlock','解鎖全部村莊與圖紙')}${B('maxup','工坊滿級')}${B('wsgate','工坊改回 Lv1＋20 萬金幣（看解鎖條件）')}${B('f5','鍛造 5 秒測試（最高階可打的圖紙）')}${B('tlack','缺料鍛造提示（獵弓）')}${B('tbprev','點圖紙自動捲到詳情')}${B('tharvest','2 秒後完成一輪（看收成按鈕）')}${B('tmon','怪物血條：3 秒後擊倒一隻')}${B('monlore','v4.04 神話怪物：依序打開村莊詳情看傳說')}${B('affopen','v4.28 附魔／祈願開放：模擬 1000 次看抽得到哪些')}${B('mondex','v4.12 怪物大圖：打開下一個挑戰的村莊詳情')}${B('godreq','v4.06 彩虹橋頭要神聖：給神聖／剋龍長戟各 1 把')}${B('vneed','v4.14 村莊需求：依序打開村莊看可點的圖紙')}${B('storyreq','v4.14 故事條件：給霜寒劍／剋龍短刃／神聖弓')}${B('achall','達成全部成就條件')}${B('daily','重置月卡今日領取')}</div>
      <div class="label">時間防作弊</div><div class="devgrid">${B('back','裝置時間倒退 1 小時')}${B('fwd','裝置時間恢復')}</div>`,
    enh:`<div class="label">1. 送出測試武器（標示「測試」，強化不扣資源、不能交付村莊）</div>
      <div class="row">${['鐵製','霜銀','龍鱗','神器'].map((n,t)=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devTier??0)===t?'on':''}" data-act="devset" data-k="devTier" data-v="${t}">${n}</button>`).join('')}</div>
@@ -4401,6 +4402,9 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
    bsall:()=>{Object.keys(KN).forEach((c,i)=>{const b=BPS.filter(x=>x.cat===c).sort((x,y)=>x.t-y.t)[0];if(!b)return;const st=S.villages[i];
        const w=makeWeapon(b.id,2,6);if(st.status!=='cleared')st.status='cleared';st.weaponId=w.id;st.cycleStart=NOW()-dur(i,w)*.3;delete MONFX.hp[i]});
      ui.sheet=null;ui.tab='village';ui.realm=0;ui.bsOpen=0;toast('1-1～1-7 各駐守一種武器（+6）：劍、斧、錘、雙刀、長柄、弓、弩。點怪物小圖展開戰鬥畫面（1-1 是全身怪物，其他先用頭像）','ok')},
+   bsmon:()=>{const n=KN_FULL.length,k=ui.bsMonK=((ui.bsMonK??-1)+1)%n,i=KN_FULL[k],st=S.villages[i],b=BPS.filter(x=>x.cat==='hammer').sort((x,y)=>x.t-y.t)[0];   // v4.32 用錘（打退最大）看最壞情況
+     S.villages.forEach((v,j)=>{if(j<=i&&v.status!=='cleared')v.status='cleared'});const w=makeWeapon(b.id,2,6);st.weaponId=w.id;st.cycleStart=NOW()-dur(i,w)*.3;delete MONFX.hp[i];
+     ui.sheet=null;ui.tab='village';ui.realm=i>=10?1:0;ui.bsOpen=i;toast(`${k+1}/${n}：${Math.floor(i/10)+1}-${i%10+1} ${MONS[i]}（錘 +6）`,'ok');render();setTimeout(()=>document.querySelector('.bs')?.scrollIntoView({block:'center'}),50)},
    bs11:()=>{const ks=Object.keys(KN),st=S.villages[0],cur=st.weaponId!=null&&W(st.weaponId),c=ks[(ks.indexOf(cur?bpOf(cur).cat:'')+1)%ks.length],b=BPS.filter(x=>x.cat===c).sort((x,y)=>x.t-y.t)[0];
      const w=makeWeapon(b.id,2,6);if(st.status!=='cleared')st.status='cleared';st.weaponId=w.id;st.cycleStart=NOW()-dur(0,w)*.3;delete MONFX.hp[0];
      ui.sheet=null;ui.tab='village';ui.realm=0;ui.bsOpen=0;toast('1-1 換成 '+CATS[c]+'（+6）','ok')},
