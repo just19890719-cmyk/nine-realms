@@ -1777,15 +1777,37 @@ html.scrimmed .cbar{display:none}
 .el-box{flex:none;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:8px;border:1px solid var(--ec);background:rgba(0,0,0,.4);box-shadow:inset 0 0 8px color-mix(in srgb,var(--ec) 35%,transparent);font-size:14px;font-weight:700;letter-spacing:1px;line-height:1}
 .el-box.el-big{width:84px;height:84px;font-size:28px;border-radius:14px;margin:0 auto}
 .ec-t .el-box{width:34px;height:34px;font-size:12px}
-/* v4.44 附魔小卡（跟武器詳情小卡同一種彈窗） */
-.scrim.wpopc{align-items:center;padding:16px}
-.sheet.wpop{max-width:400px;max-height:88%;border-radius:16px;border-bottom:1px solid var(--line2);padding:14px 14px 12px;box-shadow:0 12px 40px rgba(0,0,0,.7)}
 .ec-pop{padding-bottom:0}
 .ec-pop .ec-ph{display:flex;justify-content:space-between;align-items:baseline;margin:12px 2px 6px}
 .ec-g3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .ec-c{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:52px;padding:4px;border-radius:10px;border:1px solid var(--ec);background:rgba(0,0,0,.35);color:var(--ec)}
 .ec-c b{font-size:16px;letter-spacing:1px}.ec-c span{font-size:11px;color:#a89a84}
 .ec-pop .ev-bar{position:static;margin:12px 0 0;padding:0;background:none;border:0}
+/* v4.40 武器小卡（點武器跳出，不蓋滿畫面） */
+.scrim.wpopc{align-items:center;padding:16px}
+.sheet.wpop{max-width:400px;max-height:88%;border-radius:16px;border-bottom:1px solid var(--line2);padding:14px 14px 12px;box-shadow:0 12px 40px rgba(0,0,0,.7)}
+.wp-in{position:relative}
+.wp-x{position:absolute;right:-6px;top:-6px;width:44px;height:44px;background:none;border:0;padding:0}.wp-x img{width:40px;height:40px}
+.wp-top{display:flex;gap:12px;align-items:center;padding-right:40px}
+.wp-top>.wart{width:88px;height:88px;flex:none}
+.wp-nm{font-family:var(--serif,serif);font-size:20px;font-weight:700;line-height:1.25;word-break:keep-all}
+.wp-nm .lvt{color:var(--gold,#f0d48a)}/* 附魔名稱發光：六屬性各一色，一級淡、二級亮、三級最亮 */
+.wn-el{--ec:120,200,255;color:#fff;text-shadow:0 0 6px rgba(var(--ec),.55)}
+.wn-el.t2{text-shadow:0 0 6px rgba(var(--ec),.85),0 0 12px rgba(var(--ec),.5)}
+.wn-el.t3{text-shadow:0 0 4px rgba(var(--ec),1),0 0 10px rgba(var(--ec),.9),0 0 20px rgba(var(--ec),.6)}
+.wn-el.e-fire{--ec:255,120,40;color:#ffe2c8}.wn-el.e-ice{--ec:120,200,255;color:#e2f4ff}.wn-el.e-bolt{--ec:199,155,255;color:#f1e6ff}
+.wn-el.e-toxic{--ec:110,230,90;color:#e2ffd8}.wn-el.e-light{--ec:255,214,107;color:#fff4d6}.wn-el.e-dark{--ec:169,155,201;color:#ebe6f5}
+.wp-sub{font-size:12.5px;color:var(--muted,#a89a84);margin-top:4px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.wp-lk{position:absolute;right:-4px;top:44px;width:44px;height:44px;background:none;border:0;padding:0}.wp-lk img{width:34px;height:34px}
+.wp-pow{display:flex;align-items:baseline;gap:6px;margin-top:2px}.wp-pow b{font-size:26px;color:#ffd77a;font-family:var(--serif,serif)}.wp-pow span{font-size:12px;color:var(--muted,#a89a84)}
+.wp-g{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:12px 0 8px}
+.wp-g>div{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:6px 9px;min-width:0}
+.wp-g span{display:block;font-size:11.5px;color:#9a8c76}.wp-g b{font-size:15px;color:#f3e2bd}.wp-g b i{font-style:normal;color:#ffd77a}
+.wp-g em{display:block;font-style:normal;font-size:11px;color:#8d806c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wp-lv .wp-bar{display:grid;grid-template-columns:repeat(13,1fr);gap:2px}.wp-lv .wp-bar i{height:6px;border-radius:2px;background:rgba(255,255,255,.1)}.wp-lv .wp-bar i.on{background:var(--c)}.wp-lv .wp-bar i.cur{box-shadow:0 0 6px var(--c)}
+.wp-lv .rw{display:flex;justify-content:space-between;gap:6px;font-size:11.5px;color:#a89a84;margin-top:5px}.wp-lv .rw>span:nth-child(2){text-align:center}.wp-lv b{color:#7fd39a}
+.wp-a{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px}.wp-a .btn{min-height:44px;padding:0 4px;font-size:14px;position:relative}
+.wp-note{margin-top:8px}
 </style>
 <div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div><div class="news" id="news" aria-live="polite" data-act="chatsys"></div></div>
 <main class="wrap" id="view"></main>
@@ -1969,7 +1991,7 @@ const ART_NEW=/^(mat_srelic)$/;   // v4.30 斯卡蒂之弓的舊圖換成索爾�
 const A=n=>(n=ART_WAIT[n]||n,(typeof UI_ART!=='undefined'&&UI_ART[n])||'art/'+n+'.webp'+(n.endsWith('_disp')?ART_V:/^(mon|boss|bg)_|^v\d+$/.test(n)?'?m=4.30':'')+(ART_NEW.test(n)?(n.endsWith('_disp')?'&':'?')+'g=4.30':''));  // UI_ART（skin.js）可把既有圖示換成新素材路徑；預設空白＝不變
 const MATS={};   // v4.43 舊材料全部刪除（Mochi 會重新設計新的材料）
 const MATART={};
-const CATS={axe:'斧',sword:'劍',dagger:'短刃',polearm:'長柄',hammer:'錘',bow:'弓',crossbow:'弩',shield:'盾',throw:'投擲',tool:'工具'};
+const CATS={axe:'斧',sword:'劍',dagger:'雙刀',polearm:'長柄',hammer:'錘',bow:'弓',crossbow:'弩',shield:'盾',throw:'投擲',tool:'工具'};
 // sec = 正式版 1× 秒數；試玩可在測試工具調整時間流速
 const TIERS=[
   {n:'鐵製',mult:1,stable:6,sec:6,gold:10,furnace:1,unlock:0,slag:1},   // v4.00 安定值全部改成 +6（原本 6/5/3/0/0）
@@ -2210,7 +2232,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.45';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.46';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -2339,7 +2361,7 @@ async function chatSend(wid){const el=document.getElementById('cxIn');let t=(el?
   CHAT.cd=Date.now()+CHAT_CD;CHAT.draft='';CHAT.pick=false;if(el)el.value='';snd('ui_click');if(sw)render();if(!chatMock())await chatFetch();chatPaint(true)}
 function chatRowHtml(x){const u=esc(x.uid||''),nm=esc(x.nick||'無名鐵匠');
   const T=TITLES.find(t=>t.k===x.title),w=x.w&&BP[bpId(x.w.b)]?x.w:null,b=w&&BP[bpId(w.b)];
-  return `<div class="cx-m">${T?`<span class="tt">${T.n}</span>`:''}<span class="lv">Lv${x.lv|0}</span><button class="who ${x.mine?'me':''}" data-act="pcard" data-u="${u}" data-n="${nm}" data-m="${x.mine?'':+x.id||''}">${x.mine?'我':nm}</button>${esc(x.body)}<span class="tm">${chatAgo(x.at)}</span>${w?`<button class="cx-card" data-act="chatw" data-m="${+x.id||0}"><span class="ca">${wArt(b.id,{frame:fq(w)})}</span><span class="grow"><b class="${lc(w)}">${esc(b.n)} <span class="lvt">+${w.lv|0}</span></b><span class="small muted"><span class="${lc(w)}">${tn(w)}</span>・攻擊力 ${fmt(w.p||power({...w,b:b.id}))}</span></span><span class="go">查看</span></button>`:''}</div>`}
+  return `<div class="cx-m">${T?`<span class="tt">${T.n}</span>`:''}<span class="lv">Lv${x.lv|0}</span><button class="who ${x.mine?'me':''}" data-act="pcard" data-u="${u}" data-n="${nm}" data-m="${x.mine?'':+x.id||''}">${x.mine?'我':nm}</button>${esc(x.body)}<span class="tm">${chatAgo(x.at)}</span>${w?`<button class="cx-card" data-act="chatw" data-m="${+x.id||0}"><span class="ca">${wArt(b.id,{frame:fq(w)})}</span><span class="grow"><b class="${lc(w)}">${esc(b.n)} <span class="lvt">+${w.lv|0}</span></b><span class="small muted">攻擊力 ${fmt(w.p||power({...w,b:b.id}))}</span></span><span class="go">查看</span></button>`:''}</div>`}
 function chatSysHtml(x){const b=BP[bpId(x.bp)];if(!b)return'';const nm=esc(x.nick||'無名鐵匠'),who=`<button class="who" data-act="pcard" data-u="${esc(x.uid||'')}" data-n="${nm}">${nm}</button>`,mine=x.mine||!!(AUTH&&x.uid===AUTH.user.id),n=x.cheers|0;
   const ch=!x.ok?'':mine?(n?`<span class="cx-chn">${n} 位鐵匠恭喜你</span>`:''):`<button class="cx-ch ${x.cheered?'on':''}" data-act="cheer" data-id="${+x.id||0}" ${x.cheered?'disabled':''}>${x.cheered?'已恭喜':'恭喜'}${n?' '+n:''}</button>`;
   return `<div class="cx-sys ${x.ok?'':'brk'}"><div class="cx-st">${x.ok?`恭喜 ${who} 把 <b>${esc(b.n)}</b> 強化到 <b>+${x.lv}</b>！`:`${who} 的 <b>${esc(b.n)}</b> 衝 <b>+${x.lv}</b> 失敗，武器化為殘渣……`}<span class="tm">${chatAgo(x.at)}</span></div>${ch}</div>`}
@@ -2352,7 +2374,7 @@ async function cheerInbox(){if(!chatOn()||Date.now()-(CHAT.ci||0)<30000)return;C
 function cheerShow(r){const g={};for(const x of r){S.cheerLast=Math.max(S.cheerLast||0,+x.id||0);(g[x.news_id]=g[x.news_id]||{bp:x.bp,lv:x.lv,n:[]}).n.push(x.from_nick||'無名鐵匠')}save();
   Object.values(g).forEach((v,i)=>{const b=BP[bpId(v.bp)],who=v.n.slice(0,2).map(esc).join('、')+(v.n.length>2?` 等 ${v.n.length} 位鐵匠`:'');setTimeout(()=>{snd('deliver');toast(`🎉 ${who} 恭喜你${b?`把 <b>${esc(b.n)}</b> 強化到 +${v.lv|0}`:''}！`,'ok')},i*2800)})}
 function chatPickHtml(){const ws=S.weapons.filter(w=>!w.test).sort((a,b)=>power(b)-power(a)).slice(0,40);
-  return `<div class="small muted cx-pk-h">選一把武器貼到${CHAT.tab==='g'?'公會':'世界'}頻道（輸入框的文字會一起送出）</div>`+(ws.length?ws.map(w=>{const b=BP[w.b];return `<button class="cx-card cx-pk" data-act="chatsendw" data-id="${w.id}"><span class="ca">${wArt(b.id,{frame:fq(w)})}</span><span class="grow"><b class="${lc(w)}">${esc(b.n)} <span class="lvt">+${w.lv}</span></b><span class="small muted"><span class="${lc(w)}">${tn(w)}</span>・攻擊力 ${fmt(power(w))}</span></span><span class="go">貼上</span></button>`}).join(''):'<div class="small muted center cx-empty">道具欄是空的</div>')}
+  return `<div class="small muted cx-pk-h">選一把武器貼到${CHAT.tab==='g'?'公會':'世界'}頻道（輸入框的文字會一起送出）</div>`+(ws.length?ws.map(w=>{const b=BP[w.b];return `<button class="cx-card cx-pk" data-act="chatsendw" data-id="${w.id}"><span class="ca">${wArt(b.id,{frame:fq(w)})}</span><span class="grow"><b class="${lc(w)}">${esc(b.n)} <span class="lvt">+${w.lv}</span></b><span class="small muted">攻擊力 ${fmt(power(w))}</span></span><span class="go">貼上</span></button>`}).join(''):'<div class="small muted center cx-empty">道具欄是空的</div>')}
 function chatListHtml(){if(CHAT.pick&&(CHAT.tab==='w'||CHAT.tab==='g'&&gdIn()))return chatPickHtml();
   if(CHAT.tab==='g'){if(!gdIn())return `<div class="cx-empty cx-gd0"><div class="small muted center">加入公會後，這裡就是公會成員專用的聊天室</div>${btn('找公會／建立公會','gdopen',{cls:'btn-primary'})}</div>`;const r=CHAT.g.filter(x=>!chatBlocked(x.uid));return `<button class="cx-gdh" data-act="gdopen">${gdEmb(S.gd.emb,'sm')}<b>${esc(S.gd.name)}</b><span class="small muted">公會 Lv.${S.gd.lv|0}</span><span class="go">公會主頁</span></button>`+(r.length?r.map(chatRowHtml).join(''):`<div class="small muted center cx-empty">${CHAT.err||'公會頻道還沒有人說話'}</div>`)}if(CHAT.tab==='s'){const r=CHAT.sys.filter(x=>!chatBlocked(x.uid));return r.length?r.map(chatSysHtml).join(''):`<div class="small muted center cx-empty">${CHAT.err||'最近一天還沒有 +10 以上的強化公告'}</div>`}
   const r=CHAT.rows.filter(x=>!chatBlocked(x.uid));return r.length?r.map(chatRowHtml).join(''):`<div class="small muted center cx-empty">${CHAT.err||(chatOn()&&!CHAT.t?'讀取中…':'還沒有人說話，來打聲招呼吧！')}</div>`}
@@ -2396,7 +2418,7 @@ function pcShow(){if(!ui.result||ui.result.k!=='pc'){ui.result={t:'info',k:'pc',
   const T=TITLES.find(t=>t.k===d.title),has=d.me?(Array.isArray(d.titles)?d.titles:[]):[];
   ui.result.html=`<div class="pc-top">${T?`<span class="tt">${T.n}</span>`:''}<span class="small muted">鐵匠 Lv.${d.lv|0}</span>${d.me?'<span class="small t-gold">這是你</span>':''}${d.guild?`<span class="small muted">公會：${esc(d.guild)}</span>`:''}</div>
    <div class="pc-st"><div><b>${d.cleared|0}</b>收復村莊</div><div><b>+${d.maxlv|0}</b>最高強化</div><div><b>${fmt(d.likes|0)}</b>獲得的讚</div></div>
-   <div class="small muted pc-lb">最強武器</div>${w?`<div class="pc-w">${wArt(b.id,{frame:fq(w)})}<div class="grow"><b class="${lc(w)}">${esc(b.n)} <span class="lvt">+${w.lv|0}</span></b><div class="small muted"><span class="${lc(w)}">${tn(w)}</span>・攻擊力 ${fmt(w.p||power({...w,b:b.id}))}</div></div></div>`:'<div class="small muted">還沒有武器</div>'}
+   <div class="small muted pc-lb">最強武器</div>${w?`<div class="pc-w">${wArt(b.id,{frame:fq(w)})}<div class="grow"><b class="${lc(w)}">${esc(b.n)} <span class="lvt">+${w.lv|0}</span></b><div class="small muted">攻擊力 ${fmt(w.p||power({...w,b:b.id}))}</div></div></div>`:'<div class="small muted">還沒有武器</div>'}
    ${d.me?`<div class="small muted pc-lb">稱號（點一下戴上，會顯示在聊天名字前面）</div><div class="pc-tts">${TITLES.map(t=>{const ok=has.includes(t.k)||titleLocal(t.k),on=S.title===t.k&&ok;return `<button class="pc-tt ${on?'on':''} ${ok?'':'lk'}" data-act="pctitle" data-k="${t.k}" ${ok?'':'disabled'}><b>${t.n}</b><span>${ok?(on?'戴著':'已解鎖'):t.d}</span></button>`}).join('')}</div>`:''}
    ${d.me?'':`<div class="pc-bt">${btn(d.liked?'今天已讚':`讚（今天剩 ${d.left|0} 次）`,'pclike',{cls:'btn-primary',dis:d.liked||!(d.left>0)})}${pcFrBtn(d)}${btn(blk?'解除封鎖':'封鎖','pcblock')}${PC.m?btn('檢舉這則訊息','pcreport',{cls:'btn-danger'}):''}</div>
    ${blk?'<div class="small muted center">已封鎖：聊天裡看不到他的訊息</div>':''}${pcSocialHtml(d)}`}
@@ -2697,7 +2719,7 @@ if(typeof window!=='undefined')setInterval(()=>{if(AUTH&&CLOUD.ready&&!document.
 const mkPrice=(cur,p,cls='')=>`<span class="mk-price ${cls}">${img(MK_CUR[cur][0])}<b>${fmt(p)}</b></span>`;
 function mkRow(r,act){const w=r.weapon,b=BP[bpId(r.bp)],me=mkMe(r);
   return `<button class="ui-card ui-card--row mk-row ${me?'me':''}" data-act="${act}" data-id="${r.id}"><div class="mk-art">${wArt(b.id,{frame:fq(w)})}</div>
-   <div class="grow mk-mid"><b class="${lc(w)}">${b.n} <span class="lvt">+${w.lv}</span></b><span class="small muted"><span class="${lc(w)}">${tn(w)}</span>・${CATS[b.cat]}・攻擊力 ${fmt(power({...w,b:b.id}))}</span>
+   <div class="grow mk-mid"><b class="${lc(w)}">${b.n} <span class="lvt">+${w.lv}</span></b><span class="small muted">${CATS[b.cat]}・攻擊力 ${fmt(power({...w,b:b.id}))}</span>
    <span class="small muted">${me?'<span class="t-gold">我的上架</span>':esc(r.seller_nick||'無名鐵匠')}・剩 ${fmtT(mkLeft(r))}</span></div>${mkPrice(r.cur,r.price)}</button>`}
 function viewMarketPage(){if(!MK.t&&!MK.loading&&(AUTH||mkMock()))setTimeout(mkLoad,0);return `<div class="pagehead"><h2>交易所</h2></div>`+viewMarket()}
 function viewMarket(){
@@ -2716,12 +2738,12 @@ function viewMarket(){
       <div class="small muted mk-note">成交後收入會出現在上方「待領取」，按「全部領取」入帳（扣 ${MK_FEE*100}% 手續費）；上架 ${MK_DAYS} 天沒賣出也會放在待領取，領取後回到道具欄。</div>`}
   else{const ws=S.weapons.filter(w=>!w.test).sort((a,b)=>power(b)-power(a));
     body=`<div class="small muted mk-note">點選要上架的武器。上鎖、駐守村莊中的武器不能上架。</div><div class="mk-list">${ws.length?ws.map(w=>{const b=BP[w.b],ok=mkSellable(w);
-      return `<button class="ui-card ui-card--row mk-row ${ok?'':'off'}" data-act="mksellw" data-id="${w.id}" ${ok?'':'disabled'}><div class="mk-art">${wArt(b.id,{frame:fq(w)})}</div><div class="grow mk-mid"><b class="${lc(w)}">${b.n} <span class="lvt">+${w.lv}</span></b><span class="small muted"><span class="${lc(w)}">${tn(w)}</span>・${CATS[b.cat]}・攻擊力 ${fmt(power(w))}</span>${ok?'':`<span class="small t-danger">${w.lock?'已上鎖':'駐守村莊中'}</span>`}</div></button>`}).join(''):'<div class="small muted center mk-empty">道具欄是空的</div>'}</div>`}
+      return `<button class="ui-card ui-card--row mk-row ${ok?'':'off'}" data-act="mksellw" data-id="${w.id}" ${ok?'':'disabled'}><div class="mk-art">${wArt(b.id,{frame:fq(w)})}</div><div class="grow mk-mid"><b class="${lc(w)}">${b.n} <span class="lvt">+${w.lv}</span></b><span class="small muted">${CATS[b.cat]}・攻擊力 ${fmt(power(w))}</span>${ok?'':`<span class="small t-danger">${w.lock?'已上鎖':'駐守村莊中'}</span>`}</div></button>`}).join(''):'<div class="small muted center mk-empty">道具欄是空的</div>'}</div>`}
   return `<div class="ui-panel panel mk">${ptitle(mkMock()?'離線模擬市場':'玩家交易')}${mkClaimBox()}<div class="mk-tabs">${tabs}<button class="ui-iconbtn mk-ref" data-act="mkref" aria-label="重新整理">${MK.loading?'…':'⟳'}</button></div>
    ${MK.err?`<div class="small t-danger center mk-err">${MK.err}</div>`:''}${body}</div>`}
 function mkWeaponBox(w){const b=BP[bpId(w.b)];
   return `<div class="ui-card ui-card--feature wd-head ${lc(w)}b"><div class="wd-art">${wArt(b.id,{frame:fq(w)})}</div>
-    <div class="wd-info"><h2 class="${lc(w)}">${b.n} <span class="lvt">+${w.lv}</span></h2><div class="wd-tags"><span class="qpill ${lc(w)}b">${tn(w)}</span></div>
+    <div class="wd-info"><h2 class="${lc(w)}">${b.n} <span class="lvt">+${w.lv}</span></h2><div class="wd-tags"></div>
      <div class="small muted">${TIERS[b.t].n}・${CATS[b.cat]}・<span class="nw">安定值 <b class="${TIERS[b.t].stable?'t-ok':'t-danger'}">+${TIERS[b.t].stable}</b></span></div>
      <div class="wd-pow"><span class="small muted">攻擊力</span><b>${fmt(power({...w,b:b.id}))}</b></div></div></div>
    <div class="ui-panel panel wd-sub">${effRows(w)}</div>`}
@@ -2782,9 +2804,25 @@ const affixVal=()=>0,powAff=()=>0;
 // 打中弱點的倍率：i＝村莊索引，怪物屬性的對手屬性＝弱點
 const vWeak=i=>ELEM_OPP[MON_EL[i]];
 const weakMul=(i,w)=>{const e=elemOf(w);return e&&e.k===vWeak(i)?e.m:1};
-const vPow=(i,w)=>power(w)*weakMul(i,w);   // 在這座村莊的實際傷害（攻擊力 × 弱點倍率）
+const vPow=(i,w)=>power(w)*weakMul(i,w)*raceMult(w,i);   // 在這座村莊的實際傷害（攻擊力 × 弱點倍率 × v4.46 相剋）
 const weakChip=(i,w)=>{const k=vWeak(i),hit=w&&weakMul(i,w)>1;return k?`<span class="vweak ${hit?'hit':''}" title="弱點${hit?'（已打中）':''}"><i>弱點</i><span class="elc-${k}">${ELEM[k].n}</span></span>`:''};   // v4.44 村莊卡片的弱點提示
-function power(w,lv){const b=bpOf(w);return Math.round(b.base*TIERS[b.t].mult*QUAL[w.q].m*enhMult(lv??w.lv)*(1+powAff(w)/100))}
+// v4.40 新武器系統（武器系統定案 §1、§5、§8）：攻擊力＝每秒傷害，已含附加效果平均（每次觸發多打 1.5 擊）；拿掉品質倍率（暫時沒有稀有度）
+const CSPD={sword:1,axe:1.3,hammer:1.8,dagger:.6,polearm:1.2,bow:1.1,crossbow:1.6};   // 每幾秒攻擊 1 次
+const PROC={sword:['會心','這一下 ×2.5'],axe:['流血','之後再掉 3 次血'],hammer:['震碎','之後 3 下各 +50%'],dagger:['中毒','之後再掉 5 次血'],
+  polearm:['貫穿','追加一次 ×1.5'],bow:['穿心','這一下 ×2.5'],crossbow:['破甲','之後 6 下各 +25%']};
+const procP=lv=>lv<=0?0:lv<=6?lv*.02:[.16,.2,.25,.3,.35,.4][Math.min(5,lv-7)];   // 附加效果觸發機率：+1～+6 每級 2%，+7 起 16/20/25/30/35/40%
+const procE=lv=>1+1.5*procP(lv);
+function power(w,lv){const b=bpOf(w);lv=lv??w.lv;return Math.round(b.base*TIERS[b.t].mult*enhMult(lv)*procE(lv)*(1+powAff(w)/100))}
+const hitDmg=(w,lv)=>Math.round(power(w,lv)*(CSPD[bpOf(w).cat]||1)/procE(lv??w.lv));   // 單擊傷害（沒觸發附加效果時）
+// 相剋（Mochi 選）：怪物分人形／野獸／巨型／飛行，武器剋對應形態時傷害 +強化等級 %（+12 為 +12%），跟屬性弱點相乘
+const RACE_N={man:'人形',beast:'野獸',giant:'巨型',fly:'飛行'};
+const CAT_RACE={sword:'man',dagger:'man',polearm:'beast',axe:'beast',hammer:'giant',crossbow:'giant',bow:'fly'};
+const raceOf=w=>CAT_RACE[bpOf(w).cat]||null;
+const raceBonus=(w,lv)=>raceOf(w)?Math.min(12,Math.max(0,lv??w.lv)):0;   // %
+const raceMult=(w,i)=>raceOf(w)&&MON_RACE[i]===raceOf(w)?1+raceBonus(w)/100:1;
+// 武器名稱「+7 寒霜 鐵劍」（Mochi：強化階段／附魔名稱／武器名稱）；屬性附魔由屬性那一版提供 elemOf(w)，還沒有時當作無屬性
+const wElem=w=>typeof elemOf==='function'?elemOf(w):null;
+const wName=w=>{const e=wElem(w);return `<span class="lvt">+${w.lv|0}</span> ${e?`<span class="wn-el e-${e.k} t${e.t}">${e.tn}</span> `:''}<span class="${lc(w)}">${esc(bpOf(w).n)}</span>`};
 const stable=w=>TIERS[bpOf(w).t].stable;
 const where=w=>S.villages.findIndex(v=>v.weaponId===w.id);
 function timeReduction(i,w){const v=VILLAGES[i];let r=affixVal(w,'swift');return Math.min(CAP.time,r)/100}
@@ -3021,6 +3059,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.46',d:'10/24',t:'新武器系統：攻速、附加效果、相剋',b:['<b>點武器跳出武器小卡</b>，不再蓋滿整個畫面：攻速、單擊、附加效果、相剋、屬性集中在四格，下面的進度條看得到強化到下一級會變多少','武器名稱改成「<b>+7 寒霜 鐵劍</b>」（強化／附魔／武器名），附魔名稱會依屬性發光，等級越高越亮','<b>攻擊力＝每秒傷害</b>，已經算進附加效果的平均；七類武器攻速不同，強化越高越常觸發附加效果','新增<b>相剋</b>：怪物分人形、野獸、巨型、飛行；劍、雙刀剋人形，長柄、斧剋野獸，錘、弩剋巨型，弓剋飛行，強化每一級多 1%（+12 為 +12%）','拿掉<b>品質倍率</b>和<b>品階名稱</b>，強化等級和框色就是武器的階段；「短刃」改名「雙刀」'],g:['wpn']},
  {v:'4.45',d:'10/24',t:'屬性附魔與怪物弱點',b:['屬性一律用<b>文字和顏色</b>標示，附魔改成跟武器詳情一樣的<b>小卡</b>','舊的 12 種附魔（迅捷、掠奪、剋巨人…）和圖紙天生詞條<b>全部拿掉</b>，武器身上的舊附魔已清空','新的<b>屬性附魔</b>：每把武器 1 欄，隨機出烈焰、霜寒、雷霆、劇毒、神聖、暗影其中一種，分三級（一級 70%、二級 25%、三級 5%），三級叫滅世之焰、雷神之怒這類名字','每隻怪物都有屬性，<b>三對宿敵互剋</b>：烈焰⇄霜寒、雷霆⇄劇毒、神聖⇄暗影','村莊卡片多了「<b>弱點</b>」標籤；武器打中弱點傷害 ×1.2／1.4／1.6，標籤變綠，狩獵更快','鍛造出來的武器一律無屬性；屬性不加攻擊力，沒打中也不扣傷害'],g:['ench','hp']},
  {v:'4.44',d:'10/24',t:'舊武器全部收起，準備全新武器',b:['為了從第一界重新設計全新武器，<b>舊武器、舊圖紙、神明武器和神格覺醒</b>全部拿掉','鐵匠鋪「圖紙」暫時是空的，新武器做好會陸續加入','新手導覽等新武器上線後再開放'],g:['forge']},
  {v:'4.43',d:'10/24',t:'舊道具和材料全部刪除・新道具欄',b:['舊的<b>防爆卷、祝福石、傳說圖紙、殘渣</b>和<b>所有材料</b>全部刪除，新的道具和材料重新設計中','鍛造、附魔暫時<b>只花金幣</b>；村莊暫時只掉金幣','商城拿掉旅行商人、符文祈願、殘渣兌換；任務、簽到、成就的獎勵改成金幣和鑽石','下方的「武器庫」改名「<b>道具欄</b>」，分「武器／材料」兩頁；材料頁的道具同一種疊一格，右下角是數量，沒有上限（鐵匠鋪的材料分頁拿掉）','新道具<b>英靈・遺物</b>：分綠光、藍光、紅光、金光四種，光芒越亮內容越好，打開會得到什麼還在設計中'],g:['bag','forge','shop','quest']},
@@ -3074,7 +3113,7 @@ const NW_LOG=[
 const GUIDE=[
  ['基礎',[
   {k:'forge',ic:'t1_ironhammer_disp',n:'鍛造',s:'選圖紙、付金幣，5 秒打好一批',v:'4.44',h:'在鐵匠鋪「圖紙」選一張圖紙，金幣夠就能按「開始鍛造」（v4.43 起舊材料刪除，鍛造暫時只花金幣）。<br>一次一批（最多 10 把），不管幾把都是 <b>5 秒</b>完成，進度條就在「開始鍛造」下方，可以取消（金幣全退）。<br>熔爐等級決定能打哪種材質：鐵製 Lv1、霜銀 Lv2、龍鱗 Lv4、神器 Lv5、巨人 Lv6。<br>收復村莊會解鎖新圖紙。<br><b>v4.44</b>：舊武器和圖紙已全部收起，全新武器開發中。'},
-  {k:'qual',ic:'it_blueprint',n:'品質',s:'普通到傳說，攻擊力最多 2.3 倍',v:'4.37',h:'品質：普通 ×1、精良 ×1.2、稀有 ×1.45、史詩 ×1.8、傳說 ×2.3。鐵砧等級越高，好品質機率越高。<br>霜銀以上有保底：連續 9 把低於稀有，第 10 把必定稀有。<br>v4.37 起鍛造不再帶先天特性，武器強度只看材質、品質、強化和附魔。'},
+  {k:'wpn',ic:'cat_sword',n:'武器數值與相剋',s:'攻速、附加效果、相剋，點武器看小卡',v:'4.46',h:'點武器會跳出小卡。<b>攻擊力＝每秒傷害</b>，已經算進附加效果的平均。<br>七類武器攻速：雙刀 0.6 秒、劍 1.0、弓 1.1、長柄 1.2、斧 1.3、弩 1.6、錘 1.8 秒；每秒傷害都差不多，攻速慢的單擊比較重。<br><b>附加效果</b>：劍會心、斧流血、錘震碎、雙刀中毒、長柄貫穿、弓穿心、弩破甲；+1～+6 每級觸發率 2%，+7 起 16／20／25／30／35／40%。<br><b>相剋</b>：怪物分人形、野獸、巨型、飛行。劍、雙刀剋人形，長柄、斧剋野獸，錘、弩剋巨型，弓剋飛行；打被剋的怪物傷害多「強化等級 %」，+12 為 +12%，跟屬性弱點一起算。<br>武器名稱是「+7 寒霜 鐵劍」：強化等級、附魔、武器名。'},
   {k:'enh',ic:'it_bless',n:'強化',s:'+1～+6 安定，+7 起有機率爆裝',v:'4.43',h:'所有材質的安定值都是 <b>+6</b>：+1～+6 失敗只扣金幣，不會爆裝。<br>+7 起是危險區，成功率依序 45／35／25／18／12／8／5／3／2%（+7～+15）。失敗時爆裝機率 50% 起，每級 +5%，最高 90%。<br>v4.43 起防爆卷、祝福石、殘渣都已刪除，爆裝就是失去武器。<br>武器的<b>品階</b>和框色看強化等級：+0 凡鐵（灰）、+1～+6 精鍛（綠）、+7～+8 寒鋒（藍）、+9 血刃（紅）、+10 神鑄（金）、+11 星魂（紫）、+12 永恆（鑽石），+9 以上的框有電流繞著跑。'},
   {k:'ench',ic:'mat_shard',n:'屬性附魔',s:'6 種屬性 × 3 個等級，打中怪物弱點加傷害',v:'4.45',h:'鍛造出來的武器一律<b>無屬性</b>。花金幣隨機附魔，得到 1 種屬性（每把武器只有 1 欄，重抽會蓋掉舊的）。<br>屬性 6 種：<b>烈焰、霜寒、雷霆、劇毒、神聖、暗影</b>，機率一樣。等級越高越難抽：一級 70%、二級 25%、三級 5%。<br>名稱：烈焰 餘燼／烈焰／滅世之焰；霜寒 寒霜／冰封／永凍之霜；雷霆 雷光／雷鳴／雷神之怒；劇毒 蝕毒／蛇毒／巨蟒之毒；神聖 微光／聖光／光神聖輝；暗影 幽影／暗夜／盲神之影。<br><b>相剋（三對宿敵）</b>：烈焰⇄霜寒、雷霆⇄劇毒、神聖⇄暗影。每隻怪物都有屬性，弱點就是對手屬性。<br>打中弱點：一級 ×1.2、二級 ×1.4、三級 ×1.6，狩獵更快、收成更多。沒打中或無屬性都是正常傷害，不會扣。屬性不加攻擊力。'},
   {k:'bag',ic:'nav_forge',n:'道具欄',s:'同一種道具疊一格，沒有上限',v:'4.43',h:'下方導覽的「<b>道具欄</b>」（原本的武器庫）分「武器／材料」兩頁，道具在「材料」頁。同一種道具放在同一格，右下角顯示數量，沒有上限。<br>目前只有<b>英靈・遺物</b>：英靈留在戰場上的遺物，分<b>綠光、藍光、紅光、金光</b>四種，光芒越亮內容越好，打開會得到東西（內容設計中）。<br>舊的防爆卷、祝福石、傳說圖紙、殘渣和所有舊材料都已刪除，新的道具和材料重新設計中。'},
@@ -3544,7 +3583,7 @@ const kv=(k,v)=>`<div class="kv"><span>${k}</span><b>${v}</b></div>`;
 function wTile(w,act,dot){const b=bpOf(w),i=where(w);
   return `<button class="wt ${lc(w)}b ${i>=0?'posted':''} ${w.lock?'locked-fav':''}" ${act}>${dot?'<i class="dot give-dot" title="可以交付村莊"></i>':''}<span class="wt-art">${wArt(b.id,{frame:fq(w)})}
    ${i>=0?`<span class="wt-post">駐守 ${vNo(i)}</span>`:bossSlotOf(w)>=0?'<span class="wt-post boss">討伐首領</span>':''}${wNew(w)?'<span class="new-tag">NEW</span>':''}</span>
-   <span class="wt-name ${lc(w)}"><span class="wt-lv">+${w.lv}</span>${b.n}${w.lock?img('ic_lock','wt-lk','已收藏'):''}</span></button>`}
+   <span class="wt-name ${lc(w)}"><span class="wt-lv">+${w.lv}</span>${(e=>e?`<span class="wn-el e-${e.k} t${e.t}">${e.tn}</span>`:'')(wElem(w))}${b.n}${w.lock?img('ic_lock','wt-lk','已收藏'):''}</span></button>`}
 function bpTile(b,on){const l=bpLock(b);return `<button class="wt bp ${on?'on':''} ${l?'locked':''}" data-act="bp" data-k="${b.id}"><span class="wt-art">${wArt(b.id,{frame:'bp'})}${l?`<span class="wt-lock">${img('ic_lock')}</span>`:''}${bpNew(b)?'<span class="new-tag">NEW</span>':''}</span><span class="wt-name">${b.n}</span>${l?`<span class="wt-pow wt-lockline">${l}</span>`:`<span class="wt-pow">${TIERS[b.t].n}・${CATS[b.cat]}</span>`}</button>`}
 const matBox=(k,need)=>need==null?`<button class="matbox mb-tap" data-act="matinfo" data-k="${k}">${img(MATART[k])}<span class="mb-n">${MATS[k]}</span><span class="mb-c">${fmt(S.mats[k])}</span></button>`
   :`<div class="matbox need ${S.mats[k]<need?'lack':'ok'}">${img(MATART[k])}<span class="mb-n">${MATS[k]}</span><span class="mb-have">持有 ${fmt(S.mats[k])}</span><span class="mb-need">需要 ${fmt(need)}</span></div>`;
@@ -3720,7 +3759,7 @@ function viewArmory(){
   return `<div class="arm-head"><div class="pagehead"><h2>道具欄</h2><span class="num ${S.weapons.length>=CAP_WEAPONS?'t-danger':''}">${S.weapons.length}/${CAP_WEAPONS}</span></div>${atabs()}
   <div class="catbar">${['all',...Object.keys(CATS).filter(k=>BPS.some(b=>b.cat===k)||S.weapons.some(w=>bpOf(w).cat===k))].map(k=>`<button class="ui-btn ui-btn--toggle cat ${ui.acat===k?'on':''}" data-act="acat" data-k="${k}">${img(k==='all'?'nav_armory':CAT_ICON[k])}<span>${k==='all'?'全部':CATS[k]}</span></button>`).join('')}</div>
   <div class="filters3"><label class="sel"><span>排序</span><select id="asort">${Object.entries(SORTS).map(([k,[n]])=>`<option value="${k}" ${ui.asort===k?'selected':''}>${n}</option>`).join('')}</select></label>
-   <label class="sel"><span>品階</span><select id="aq" class="${aq==='all'?'':'l'+aq}"><option value="all">全部</option>${FLV_ORD.map(i=>`<option class="l${i}" value="${i}" ${aq===String(i)?'selected':''}>${FLV_T[i]}</option>`).join('')}</select></label>
+   
    <label class="sel"><span>狀態</span><select id="ast">${[['all','全部'],['idle','閒置'],['post','駐守'],['lock','收藏'],['test','測試']].map(([k,n])=>`<option value="${k}" ${ast===k?'selected':''}>${n}</option>`).join('')}</select></label></div>
   ${filtered?`<div class="filterbar"><span>顯示 ${ws.length}／${S.weapons.length} 把</span><button class="ui-btn ui-btn--chip chipbtn on" data-act="aclear">${ic('clear')} 清除篩選，顯示全部</button></div>`:''}</div>
   <div class="wlist">${ws.length?`<div class="wgrid">${(gm=>ws.map(w=>wTile(w,`data-act="wopen" data-id="${w.id}"`,canGive(w,gm))).join(''))(giveMin())}</div>`
@@ -3744,37 +3783,35 @@ function sheetWeapon(id,mode){
   const title={main:'武器詳情',enh:'強化',ench:'附魔',give:'交給村莊'}[mode];
   const head=`<div class="sheet-head">${mode==='main'?'<span style="width:44px"></span>':btn(img('ic_back'),'wmode',{cls:'icon-btn img',attrs:`data-m="main" data-id="${id}" aria-label="返回"`})}<h2>${title}</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>`;
   const showcase=(extra='')=>`<div class="ui-card ui-card--feature showcase ${lc(w)}b ${extra}">
-   <div class="sc-top"><div><h2 class="${lc(w)}">${b.n} <span class="lvt">+${w.lv}</span></h2><span class="qpill ${lc(w)}b">${tn(w)}</span></div>
+   <div class="sc-top"><div><h2 class="${lc(w)}">${b.n} <span class="lvt">+${w.lv}</span></h2></div>
     <button class="ui-iconbtn icon-btn img" data-act="lock" data-id="${id}" aria-label="${w.lock?'取消收藏':'收藏'}">${img(w.lock?'ic_lock':'ic_unlock')}</button></div>
    <div class="sc-art">${wArt(b.id,{cls:'sc-w'})}</div>
    <div class="sc-bot"><span class="small">${TIERS[b.t].n}・${CATS[b.cat]}・安定值 <b class="${stable(w)?'t-ok':'t-danger'}">+${stable(w)}</b>${i>=0?`・<span class="t-ok">駐守 ${vNo(i)}</span>`:''}</span><div class="powbox"><span class="small muted">攻擊力</span><b>${fmt(power(w))}</b></div></div></div>`;
   if(mode==='main'){
-    // v3.15 精簡版：上方橫式武器卡＋附魔一張面板＋按鈕；數值明細收進「詳細資訊」
-    const el=powAff(w),s=stable(w),nE=w.ench.filter(Boolean).length;
-    const canAuto=!busy&&s>0&&w.lv<s;
-    return head+`<div class="ui-card ui-card--feature wd-head ${lc(w)}b">
-      <div class="wd-art">${wArt(b.id,{frame:fq(w)})}</div>
-      <div class="wd-info"><h2 class="${lc(w)}">${b.n} <span class="lvt">+${w.lv}</span></h2>
-       <div class="wd-tags"><span class="qpill ${lc(w)}b">${tn(w)}</span>${i>=0?`<span class="t-ok small">駐守 ${vNo(i)}</span>`:bs>=0?'<span class="t-ok small">討伐首領中</span>':''}</div>
-       <div class="small muted">${TIERS[b.t].n}・${CATS[b.cat]}・<span class="nw">安定值 <b class="${s?'t-ok':'t-danger'}">+${s}</b></span></div>
-       <div class="wd-pow"><span class="small muted">攻擊力</span><b>${fmt(power(w))}</b></div></div>
-      <button class="ui-iconbtn icon-btn img wd-lock" data-act="lock" data-id="${id}" aria-label="${w.lock?'取消收藏':'收藏'}">${img(w.lock?'ic_lock':'ic_unlock')}</button></div>
-     <div class="ui-panel panel wd-sub">
-      ${HIT_N[b.cat]?`<div class="wd-hit small"><span class="muted">狩獵打法</span><span>${HIT_N[b.cat]}</span></div>`:''}${effRows(w,true)}
-      <details class="wd-more"><summary>詳細資訊</summary>
-       <div class="kvgrid">${kv('基礎攻擊力',b.base)}${kv('品質倍率','×'+QUAL[w.q].m)}${kv('材質階級',TIERS[b.t].n+' ×'+TIERS[b.t].mult)}${kv('強化倍率','×'+enhMult(w.lv).toFixed(2))}${kv('屬性附魔',elemOf(w)?elemOf(w).tn+'・打中弱點 ×'+elemOf(w).m:'無屬性')}${kv('最終攻擊力','<span class="t-gold">'+fmt(power(w))+'</span>')}</div>
-       </details></div>
-     ${canAuto?(()=>{const lack=!w.test&&S.gold<enhCost(w);return `<button class="ui-btn ui-btn--accent btn wd-auto" data-act="autoEnh" data-id="${id}" ${lack?'disabled':''}><span>${lack?'金幣不足，無法一鍵強化':'一鍵強化到安定值 <b>+'+s+'</b>'}</span><span class="small">${w.test?'測試武器免費':'約 '+fmt(autoEnhCost(w))+' 金幣・持有 '+fmt(S.gold)}${lack?'':'・不會爆裝'}</span></button>`})():''}
-     <div class="acts2">${btn('強化','wmode',{cls:'btn-primary big',attrs:`data-m="enh" data-id="${id}"`,dis:busy})}${btn('附魔','wmode',{cls:'btn-primary big',attrs:`data-m="ench" data-id="${id}"`,dis:busy})}</div>
-     <div class="acts3">${i>=0?btn('收回','recall',{attrs:`data-i="${i}"`}):bs>=0?btn('從首領收回','bossout',{attrs:`data-s="${bs}"`}):btn('交給村莊'+(canGive(w)?'<i class="dot give-dot"></i>':''),'wmode',{attrs:`data-m="give" data-id="${id}"`})}
-      ${btn(ui.meltArm===id?'再按一次確認':'熔解','melt',{cls:'btn-danger',attrs:`data-id="${id}"`,dis:busy||w.lock})}</div>
-     <div class="small muted center">${busy?'駐守中的武器要先收回，才能強化、附魔或熔解。':w.lock?'已收藏的武器不能熔解，先點右上角鎖頭解除收藏。':highValue?'高價值武器，熔解後無法復原。':'熔解回收 30% 材料與一半鍛造金幣。'}</div>`;
+    // v4.40 武器小卡（Mochi 選 B 數值表＋點武器跳小卡，不蓋滿畫面）：名稱「+7 寒霜 鐵劍」、四格數值、強化進度條、四個按鈕
+    const c=b.cat,pr=PROC[c],sp=CSPD[c],rc=raceOf(w),e=wElem(w),nx=Math.min(12,w.lv+1),max=w.lv>=12;
+    const cell=(k,v,sub)=>`<div><span>${k}</span><b>${v}</b>${sub?`<em>${sub}</em>`:''}</div>`;
+    return `<div class="wp-in"><button class="ui-iconbtn wp-x" data-act="close" aria-label="關閉">${img('ic_close')}</button>
+     <div class="wp-top">${wArt(b.id,{frame:fq(w)})}<div class="grow"><div class="wp-nm">${wName(w)}</div>
+      <div class="wp-sub"><span>${CATS[c]}・${TIERS[b.t].n}</span>${i>=0?`<span class="t-ok">駐守 ${vNo(i)}</span>`:bs>=0?'<span class="t-ok">討伐首領中</span>':''}${w.test?'<span class="testtag">測試</span>':''}</div>
+       <button class="ui-iconbtn icon-btn img wp-lk" data-act="lock" data-id="${id}" aria-label="${w.lock?'取消收藏':'收藏'}">${img(w.lock?'ic_lock':'ic_unlock')}</button>
+      <div class="wp-pow"><b>${fmt(power(w))}</b><span>攻擊力（每秒傷害）</span></div></div></div>
+     <div class="wp-g">${cell('攻速',sp?sp.toFixed(1)+' 秒':'—',sp?'單擊 '+fmt(hitDmg(w)):'')}
+      ${cell('附加效果',pr?`${pr[0]} <i>${pct(procP(w.lv))}</i>`:'—',pr?pr[1]:'')}
+      ${cell('相剋',rc?`${RACE_N[rc]} <i>+${raceBonus(w)}%</i>`:'—')}
+      ${e?`<div class="el"><span>屬性</span><b class="wn-el e-${e.k} t${e.t}">${e.n} ${['','一','二','三'][e.t]}級</b><em>弱點 ×${e.m}</em></div>`:cell('屬性','<span class="muted">無</span>','附魔可獲得')}</div>
+     <div class="wp-lv"><div class="wp-bar">${Array.from({length:13},(_,k)=>`<i class="${k<=w.lv?'on':''} ${k===w.lv?'cur':''}" style="--c:var(--l${FLV(k)})"></i>`).join('')}</div>
+      <div class="rw"><span>+0</span><span>${max?'已達 +12':`下一級 +${nx}：${pr?pr[0]+' <b>'+pct(procP(nx))+'</b>・':''}${rc?'相剋 <b>+'+raceBonus(w,nx)+'%</b>・':''}攻擊力 <b>${fmt(power(w,nx))}</b>`}</span><span>+12</span></div></div>
+     <div class="wp-a">${btn('強化','wmode',{cls:'btn-primary',attrs:`data-m="enh" data-id="${id}"`,dis:busy})}${btn(w.lv>=stable(w)?`已 +${stable(w)}`:`一鍵 +${stable(w)}`,'autoEnh',{cls:'btn-primary',attrs:`data-id="${id}"`,dis:busy||w.lv>=stable(w)||(!w.test&&S.gold<enhCost(w))})}${btn('附魔','wmode',{cls:'btn-primary',attrs:`data-m="ench" data-id="${id}"`,dis:busy})}
+      ${i>=0?btn('收回','recall',{attrs:`data-i="${i}"`}):bs>=0?btn('收回','bossout',{attrs:`data-s="${bs}"`}):btn('駐守'+(canGive(w)?'<i class="dot give-dot"></i>':''),'wmode',{attrs:`data-m="give" data-id="${id}"`})}
+      ${btn('上架','mksellw',{attrs:`data-id="${id}"`,dis:w.test||!mkSellable(w)})}${btn(ui.meltArm===id?'確認':'熔解','melt',{cls:'btn-danger',attrs:`data-id="${id}"`,dis:busy||w.lock})}</div>
+     ${ui.meltArm===id?'<div class="small t-danger center wp-note">再按一次確認熔解，熔解後無法復原。</div>':busy?'<div class="small muted center wp-note">駐守中的武器要先收回，才能強化、附魔或熔解。</div>':w.lv<stable(w)?`<div class="small muted center wp-note">一鍵 +${stable(w)}：${w.test?'測試武器免費':'約 '+fmt(autoEnhCost(w))+' 金幣・持有 '+fmt(S.gold)}，不會爆裝</div>`:''}</div>`;
   }
   if(bs>=0)return head+showcase()+`<div class="goal">這把武器正在討伐首領，要先收回。</div>${btn('從首領收回','bossout',{cls:'btn-primary big',attrs:`data-s="${bs}"`})}`;
   if(i>=0&&mode!=='give')return head+showcase()+`<div class="goal">這把武器正在 ${VILLAGES[i].name} 駐守，要先收回。</div>${btn('從村莊收回','recall',{cls:'btn-primary big',attrs:`data-i="${i}"`})}`;
   if(mode==='enh'){
     const last=ui.enhLast&&ui.enhLast.id===id?ui.enhLast:null,rib=last?`<b>${last.t}</b><span>${last.d}</span>`:'';
-    const nameRow=`<div class="enh-name"><b class="${lc(w)}">${b.n}</b><span class="qpill ${lc(w)}b">${tn(w)}</span>${w.test?'<span class="testtag">測試</span>':''}</div>`;
+    const nameRow=`<div class="enh-name"><b class="${lc(w)}">${b.n}</b>${w.test?'<span class="testtag">測試</span>':''}</div>`;
     if(w.lv>=15)return head+nameRow+stageHtml({art:A(b.id),from:15,to:15,zone:'已達最高等級',ribbon:rib,rk:last&&last.k})+'<div class="goal">已達最高等級 +15。</div>';
     const hasBl=false,hasSc=false;   // v4.43 防爆卷、祝福石刪除
     const next=w.lv+1,danger=next>stable(w),bl=ui.useBless&&hasBl,sc=ui.useScroll&&danger&&hasSc;
@@ -3849,6 +3886,8 @@ const MONS=['斯寇格拉','賽赫利姆尼爾','哈提','斯庫爾','瓦爾拉�
 const MON_T=['林中魅妖','不死野豬','追月之狼','追日之狼','戰場鴉魔','深海巨怪','石皮巨魔','泥巨人','火焰騎兵','守望之神','九頭巨人','狼群首領','吞屍巨鷹','巨人屍鬼','冰湖水妖','洞穴蠕龍','風之巨人','幻術巨人王','石心巨人','雷神'];
 // v4.44 怪物屬性（Mochi 選三組互剋）：弱點＝對手屬性（ELEM_OPP）；以後新的怪物都要帶一種，跟牠（祂）的故事對得上
 const MON_EL=['ice','ice','dark','ice','dark','toxic','dark','toxic','fire','light','toxic','ice','bolt','dark','ice','toxic','ice','dark','toxic','bolt'];
+// v4.40 怪物形態（武器系統定案 §8）：1-1 魅妖、1-9 騎兵、1-10 海姆達爾、2-4 屍鬼、2-10 索爾＝人形；諾克傳說化成馬＝野獸
+const MON_RACE=['man','beast','beast','beast','fly','giant','giant','giant','man','man','giant','beast','fly','man','beast','giant','giant','giant','giant','man'];
 const MON_LORE=['前面是美女，背後卻是空心的樹幹，專騙伐木工走進深林。','英靈殿每晚殺來吃、隔天又復活的野豬，這次逃到了人間。','斯庫爾的兄弟，永遠追趕月亮；月圓的夜裡在狼嚎谷對月長嚎，獵人不敢出門。','永遠追趕太陽的巨狼，一口咬住太陽，霜溪鎮整天不見日光，溪水全結成冰。','吃了戰死者心臟的渡鴉，半鳥半狼，成群俯衝城牆。','大到水手誤以為是島，觸手一捲就拖沉整艘長船。','皮硬得像岩石，還把尼德霍格蛻下的龍鱗披在身上；只怕陽光，照到就會變成石頭。','約頓海姆的巨人為赫朗格尼爾捏出的黏土戰士，高得頭碰得到雲，胸口卻只裝著一顆母馬的心，膽子很小；打輸了會哭著逃回約頓海姆。','火之國的前鋒，戰馬披著龍鱗馬鎧；身上的火要等諸神黃昏才會燃盡，只有霜寒壓得住。','看得見九界一切的守望之神，守在通往神界的彩虹橋頭；祂第一個發現你鍛出了能傷神的武器，要親自試試它。落敗前，祂吹響加拉爾號角，封住了彩虹橋。',
  '九顆頭輪流睡覺，所以哨站永遠有人醒著；九顆頭最恨的都是索爾。','鐵森林的巨人女巫養大的狼群首領，芬里爾的遠親。','坐在世界盡頭的巨人化身成鷹，拍一下翅膀，九界就起風；牠在崖頂看著，想知道凡人有多少本事。','守著陪葬寶物不肯死去的屍鬼，越打越大。','用琴聲把人引到冰面上，再從冰洞裡伸手把人拖下去。','沒有翅膀的毒龍，盤在礦脈裡守著霜晶，蛻下的龍鱗散落在礦道裡，只有短刃鑽得進去。','北風的化身，牠一吐氣，高原上就颳三天暴風雪。','曾讓索爾喝不乾的牛角杯，其實杯底連著大海；牠捉弄過雷神，現在要捉弄你。','心臟、頭顱都是石頭，手拿磨刀石、背著石盾，是約頓海姆最強的巨人；牠一直想跟雷神索爾單挑。','奧丁之子、九界最強的神。祂的雷神之錘是矮人兄弟鍛的，錘柄卻因為洛基搗蛋短了一截；祂想看看凡人鐵匠鍛出的錘，接不接得住雷霆。'];
 const monLore=i=>MON_LORE[i]?`<div class="mon-lore"><b>${MON_T[i]}・${MONS[i]}</b><span>${MON_LORE[i]}</span></div>`:'';
@@ -3886,7 +3925,7 @@ const KN={sword:{k:'sw',K:1000,ph:450,n:3},axe:{k:'ax',K:1300,ph:100,n:2},hammer
   polearm:{k:'sp',K:1200,ph:680,n:2},bow:{k:'bw',K:1100,ph:600,n:3},crossbow:{k:'cb',K:1600,ph:800,n:2}};
 const BS_BGP={1:'top',8:'top',9:'bot',10:'bot',11:'bot2',12:'bot',13:'bl',14:'top',15:'bl',16:'bot',17:'bot2',18:'bot',19:'bot2'};   // v4.35 背景本身畫了怪物的關卡（1-2、1-9、1-10、整個第二界）：戰鬥畫面只取沒有怪物的那一段（Mochi 選）
 const KN_FULL=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19];   // 已有全身怪物圖（art/mon_N_idle／mon_N_atk）的關卡；其他關卡先用怪物頭像。v4.30 補上 1-8、2-10；v4.35 補上第二界 2-1～2-8，20 關全部都有
-const knProc=lv=>ui.bsProc?1:lv<=0?0:lv<=6?lv*.02:[.16,.2,.25,.3,.35,.4][Math.min(5,lv-7)];
+const knProc=lv=>ui.bsProc?1:procP(lv);
 const KHIT={};
 function knHit(w){const c=bpOf(w).cat,kn=KN[c];if(!kn)return null;const p=knProc(w.lv),key=c+p;if(KHIT[key])return KHIT[key];
   const one=lab=>h=>Math.random()<p?[[0,2.5,'crit',lab]]:[[0,1]];
@@ -3989,7 +4028,7 @@ function sheetLbW(i,k){const x=lbRows(i)[k];if(!x)return sheetLb(i);const w=x.w,
   const head=`<div class="sheet-head">${btn(img('ic_back'),'lbopen',{cls:'icon-btn img',attrs:`data-i="${i}" aria-label="返回排行榜"`})}<h2>${x.me?'你的紀錄':'對手武器'}</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>`;
   return head+`<div class="lbw-owner"><span class="lb-no r${Math.min(k+1,4)}">${k+1}</span><div class="grow"><b>${x.n}</b><div class="small muted">${vNo(i)} ${v.name}排行榜・第 ${k+1} 名</div></div>${!x.me&&x.u?btn('名片','pcard',{cls:'btn-sec sm',attrs:`data-u="${esc(x.u)}" data-n="${esc(x.n)}"`}):''}</div>
    <div class="ui-card ui-card--feature wd-head ${lc(w)}b"><div class="wd-art">${wArt(b.id,{frame:fq(w)})}</div>
-    <div class="wd-info"><h2 class="${lc(w)}">${b.n} <span class="lvt">+${w.lv}</span></h2><div class="wd-tags"><span class="qpill ${lc(w)}b">${tn(w)}</span></div>
+    <div class="wd-info"><h2 class="${lc(w)}">${b.n} <span class="lvt">+${w.lv}</span></h2><div class="wd-tags"></div>
      <div class="small muted">${TIERS[b.t].n}・${CATS[b.cat]}・<span class="nw">安定值 <b class="${TIERS[b.t].stable?'t-ok':'t-danger'}">+${TIERS[b.t].stable}</b></span></div>
      <div class="wd-pow"><span class="small muted">攻擊力</span><b>${fmt(x.p)}</b></div></div></div>
    <div class="ui-panel panel wd-sub">${effRows(w)}
@@ -4104,7 +4143,7 @@ function sheetDev(){
      <div class="small muted">品質</div><div class="row">${[[-1,'輪替'],[0,'普通'],[1,'精良'],[2,'稀有'],[3,'史詩'],[4,'傳說']].map(([v,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devAllQ??-1)===v?'on':''}" data-act="devset" data-k="devAllQ" data-v="${v}">${n}</button>`).join('')}</div>
      <div class="small muted">強化等級</div><div class="row">${[[-1,'輪替'],[0,'+0'],[6,'+6'],[7,'+7'],[10,'+10'],[15,'+15']].map(([v,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devAllLv??-1)===v?'on':''}" data-act="devset" data-k="devAllLv" data-v="${v}">${n}</button>`).join('')}</div>
      <div class="devgrid">${B('allw','產生全部 '+BPS.length+' 把測試圖紙武器','btn-primary')}${B('bpdel','v4.44 檢查：舊武器圖紙已刪（開鍛造頁）')}${B('cleartest','清除所有測試武器')}</div>
-     <div class="devgrid">${B('flvtest','v4.34 武器框顏色：產生 +0～+12 九把')}</div>
+     <div class="devgrid">${B('flvtest','v4.34 武器框顏色：產生 +0～+12 九把')}${B('wpntest','v4.46 新武器系統：七類各一把 +6，看攻速／單擊／附加效果／相剋')}</div>
      <div class="label">測試武器</div><div class="devgrid">${B('rmold','v4.37 舊特性／重鍊／盾武器（檢查都不顯示）')}${B('wt','3 把傳說測試武器')}${B('w6','+6 測試劍（剛好到安定值 +6）')}${B('wm','+0 史詩測試長柄（安定值 +6）')}${B('wg6','v4.00 +6 測試劍（安定值 +6，下一次進危險區）')}${B('w8','+8 測試長柄')}${B('wench','v3.84 新附魔測試武器（雷霆・貪婪・豐收・剋巨人＋堅固）')}${B('wench2','v3.84 新附魔測試武器 2（神聖・劇毒・尋珍・剋龍）')}${B('fill','道具欄塞到 195 把')}</div>`,
    prog:`<div class="label">v3.61 介面測試</div><div class="devgrid">${B('uiv','村莊：跳到待交付關卡')}${B('uiarm','道具欄：往下捲看分類置頂')}${B('uiforge','鐵匠鋪：圖紙區上下滑')}${B('uimat','材料倉庫：點材料看用途')}${B('uishop','旅行商人：輸入數量買賣')}</div>
    <div class="label">v3.79 村莊換武器／掉落說明</div><div class="devgrid">${B('uiswap','村莊：送一把更強的（不亮紅點）')}${B('uidropinfo','村莊詳情：點掉落看說明')}</div>
@@ -4354,7 +4393,8 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
    qopen:()=>{ui.qTab='d';ui.sheet={t:'a'};ui.tab='village'},
    achall:()=>{S.stats.harvest=Math.max(S.stats.harvest,300);S.stats.enhOk=Math.max(S.stats.enhOk,50);S.stats.melted=Math.max(S.stats.melted,30);S.stats.forged[0]+=50},
    testw:()=>{const bp=['dev_sword','dev_sword','dev_sword','dev_sword'][ui.devTier??0];const w=makeWeapon(bp,ui.devTier===3?3:2,ui.devLv??0,[]);w.test=true;ui.enhLast=null;ui.riskArm=ui.riskOk=null;ui.sheet={t:'w',id:w.id,m:'enh'};toast('已送出測試武器')},
-   allw:()=>devAllWeapons(BPS.map(b=>b.id)),flvtest:()=>{S.weapons=S.weapons.filter(w=>!w.test||where(w)>=0);[12,11,10,9,8,7,6,1,0].forEach(lv=>{const w=makeWeapon('dev_sword',0,lv,[]);w.test=true});ui.sheet=null;ui.tab='armory';ui.acat='all';ui.aq='all';ui.ast='test';ui.asort='lv';render();scrollTo(0,0);toast('已產生 +0～+12 測試武器：灰、綠、藍、紅、金、紫、鑽石框')},
+   allw:()=>devAllWeapons(BPS.map(b=>b.id)),wpntest:()=>{S.weapons=S.weapons.filter(w=>!w.test||where(w)>=0);let f=null;for(const c of Object.keys(CSPD)){const b=BPS.find(x=>x.cat===c);if(!b)continue;const w=makeWeapon(b.id,0,6,[]);w.test=true;f=f||w}
+    if(!f)return toast('目前沒有可用的圖紙');ui.tab='armory';ui.acat='all';ui.ast='test';ui.sheet={t:'w',id:f.id,m:'main'};render();toast('已產生七類 +6 測試武器，詳情頁看攻速、單擊、附加效果、相剋')},flvtest:()=>{S.weapons=S.weapons.filter(w=>!w.test||where(w)>=0);[12,11,10,9,8,7,6,1,0].forEach(lv=>{const w=makeWeapon('dev_sword',0,lv,[]);w.test=true});ui.sheet=null;ui.tab='armory';ui.acat='all';ui.aq='all';ui.ast='test';ui.asort='lv';render();scrollTo(0,0);toast('已產生 +0～+12 測試武器：灰、綠、藍、紅、金、紫、鑽石框')},
    cleartest:()=>{const n=S.weapons.filter(w=>w.test&&where(w)<0).length;S.weapons=S.weapons.filter(w=>!w.test||where(w)>=0);toast('已清除 '+n+' 把測試武器')},
    daily:()=>S.monthly.last='',fill:()=>{while(S.weapons.length<195)makeWeapon('dev_axe',0,0,[]);toast('道具欄已塞到 195 把，試試容量上限')},
    reset:()=>{if(!ui.confirmReset){ui.confirmReset=true;return}S=fresh();ui.confirmReset=false;ui.sheet=null;toast('存檔已重置。')}})[k]();
@@ -4396,7 +4436,7 @@ if(typeof window!=='undefined')window.addEventListener('resize',()=>fitNames());
 function renderLayer(){
   const L=document.getElementById('layer');const s=ui.sheet;let h='';
   const sc=document.querySelector('.sheet'),st=sc?sc.scrollTop:0,same=sc&&ui._lastSheet===JSON.stringify(s);
-  if(s){const pop=s.t==='w'&&s.m==='ench'&&!!W(s.id),full=!pop&&(s.t==='w'||s.t==='fxt');h+=`<div class="scrim ${pop?'wpopc':''} ${same?'still':''}" data-act="scrim"><div class="ui-sheet sheet ${full?'full':''} ${pop?'wpop':''} ${s.t==='chat'?'cx-sheet':''} ${same?'still':''}">${s.t==='w'?sheetWeapon(s.id,s.m):s.t==='v'?sheetVillage(s.i):s.t==='a'?sheetAch():s.t==='lb'?sheetLb(s.i):s.t==='lbw'?sheetLbW(s.i,s.k):s.t==='ws'?sheetWorkshop(s.k):s.t==='evt'?sheetEvt():s.t==='chat'?sheetChat():s.t==='gd'?sheetGuild():s.t==='fr'?sheetFriend():s.t==='bw'?sheetBossW(s.r,s.j):s.t==='fxt'?sheetFxTest(s):s.t==='set'?sheetSet(s.k):/^mk/.test(s.t)?sheetMk(s):sheetDev()}</div></div>`}
+  if(s){const pop=s.t==='w'&&(s.m==='main'||s.m==='ench')&&!!W(s.id),full=!pop&&(s.t==='w'||s.t==='fxt');h+=`<div class="scrim ${pop?'wpopc':''} ${same?'still':''}" data-act="scrim"><div class="ui-sheet sheet ${full?'full':''} ${pop?'wpop':''} ${s.t==='chat'?'cx-sheet':''} ${same?'still':''}">${s.t==='w'?sheetWeapon(s.id,s.m):s.t==='v'?sheetVillage(s.i):s.t==='a'?sheetAch():s.t==='lb'?sheetLb(s.i):s.t==='lbw'?sheetLbW(s.i,s.k):s.t==='ws'?sheetWorkshop(s.k):s.t==='evt'?sheetEvt():s.t==='chat'?sheetChat():s.t==='gd'?sheetGuild():s.t==='fr'?sheetFriend():s.t==='bw'?sheetBossW(s.r,s.j):s.t==='fxt'?sheetFxTest(s):s.t==='set'?sheetSet(s.k):/^mk/.test(s.t)?sheetMk(s):sheetDev()}</div></div>`}
   const r=ui.result;
   if(r&&r.t==='h')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card">${ptitle(r.title)}${r.ev?`<div class="small t-danger center">其中 ${r.ev} 輪受襲：沒有材料、金幣減半</div>`:''}<div class="hgrid">${harvestIcons(r.got)}</div>${btn('確定','rclose',{cls:'btn-primary big'})}</div></div>`;
   if(r&&r.t==='info')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card">${r.ico?`<div class="info-ico">${r.ico}</div>`:r.icon?`<div class="info-ico">${img(r.icon)}</div>`:''}${ptitle(r.title)}<div class="info-body">${r.html}</div>${r.acts||''}${btn('知道了','rclose',{cls:'btn-primary big'})}</div></div>`;
