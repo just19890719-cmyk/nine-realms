@@ -1792,4 +1792,30 @@ html.scrimmed .cbar{display:none}
 .wp-lv .rw{display:flex;justify-content:space-between;gap:6px;font-size:11.5px;color:#a89a84;margin-top:5px}.wp-lv .rw>span:nth-child(2){text-align:center}.wp-lv b{color:#7fd39a}
 .wp-a{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px}.wp-a .btn{min-height:44px;padding:0 4px;font-size:14px;position:relative}
 .wp-note{margin-top:8px}
+/* v4.47 鐵匠鋪電影感：鐵匠被爐火照亮（左側暖光跟著火光閃）、電影色調＋暗角、遠景景深、鏡頭緩慢推近、視差加大 */
+body.dpv .hero .smith{filter:brightness(.82) contrast(1.1) saturate(.88) drop-shadow(0 0 22px rgba(0,0,0,.85))}
+body.dpv .hero .smith.dp-smlit{z-index:1;filter:brightness(1.35) sepia(.6) saturate(2.4) hue-rotate(-12deg);mix-blend-mode:screen;opacity:.45;
+  -webkit-mask-image:linear-gradient(90deg,#000 15%,rgba(0,0,0,.35) 45%,transparent 70%);mask-image:linear-gradient(90deg,#000 15%,rgba(0,0,0,.35) 45%,transparent 70%);
+  animation:dpBreath 5s ease-in-out infinite,dpLit 2.4s ease-in-out infinite}
+@keyframes dpLit{0%,100%{opacity:.32}40%{opacity:.58}70%{opacity:.38}}
+body.dpv .hero .dp-far{filter:blur(1.3px) brightness(.88) saturate(.85)}
+body.dpv .hero .dp-grade{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(130% 95% at 30% 55%,transparent 45%,rgba(4,6,10,.55) 100%),linear-gradient(180deg,rgba(20,32,48,.28),transparent 40%,transparent 75%,rgba(30,12,4,.25))}
+body.dpv .hero .dp-far,body.dpv .hero .dp-glow{transform:translate(calc(var(--mx) * -9px),calc(var(--my) * -5px))}
+body.dpv .hero .smith{transform:translateX(calc(-72% + var(--mx) * 5px)) translateY(calc(var(--my) * 3px))}
+body.dpv .hero .dp-chains{transform:translate(calc(var(--mx) * 20px),calc(var(--my) * 10px))}
+body.dpv .hero .dp-coal{transform:translate(calc(var(--mx) * 22px),calc(var(--my) * 12px))}
+body.dpv .hero .dp-hammer{transform:translate(calc(var(--mx) * 24px),calc(var(--my) * 12px))}
+body.dpv .hero .dp-barrel{transform:translate(calc(var(--mx) * 3px),0)}
+body.dpv .hero.hv-F{animation:none}
+body.dpv .hero .dp-far{animation:dpSway 14s ease-in-out infinite alternate,dpPush 24s ease-in-out infinite alternate}
+@keyframes dpPush{from{scale:1}to{scale:1.05}}
+@media (prefers-reduced-motion:reduce){body.dpv .hero .smith.dp-smlit{animation:none!important}}
+/* v4.47 鐵匠待機動作：8 格疊在一起，每格 0.6 秒輪流顯示 */
+.hero .smith.smf{aspect-ratio:520/780;width:auto}
+.smf img{position:absolute;inset:0;width:100%;height:100%;max-width:none;opacity:0;animation:smF 4.8s step-end infinite}
+.smf .f1{opacity:1}
+.smf .f2{animation-delay:-4.2s}.smf .f3{animation-delay:-3.6s}.smf .f4{animation-delay:-3s}.smf .f5{animation-delay:-2.4s}.smf .f6{animation-delay:-1.8s}.smf .f7{animation-delay:-1.2s}.smf .f8{animation-delay:-.6s}
+@keyframes smF{0%{opacity:1}12.5%,100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.smf img{animation:none}}
 </style>
