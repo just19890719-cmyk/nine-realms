@@ -286,7 +286,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.66';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.67';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1229,6 +1229,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.67',d:'10/24',t:'附魔小卡更清楚',b:['附魔結果直接顯示在<b>武器名稱</b>裡（例如 +6 雷神之怒 霜溪鋼劍），不再另外放「目前屬性」欄','隨機屬性池直接列出<b>18 種</b>（6 屬性 × 3 級）各自的機率：一級 11.67%、二級 4.17%、三級 0.83%','道具欄的武器名稱，屬性和名稱中間加了空格'],g:['ench']},
  {v:'4.66',d:'10/24',t:'打怪會直接掉武器',b:['村莊每打倒一隻都有機會直接掉武器：第一界開局武器 0.2%、這一界已解鎖的一般武器每種 0.15%','怪物專屬武器（1-7、2-8）0.3%、Boss 武器（1-10、2-10）0.1%，只在牠那一關掉','1-1～1-5 每隻金幣改成範圍隨機（例如 1-1 20～70 金幣）','掉落機率都寫在村莊詳情最下面'],g:['vil']},
  {v:'4.65',d:'10/24',t:'強化石掉落調整',b:['村莊打倒怪物掉強化石的機率減半：1-1 0.2%，越後面的關卡越高（9-10 約 0.38%）','照「慢」的推關速度，第一界約可拿到 75 顆、第二界約 300 顆'],g:['enh']},
  {v:'4.64',d:'10/24',t:'強化特效顏色統一',b:['+7 以上強化時，武器的光暈也改成外框顏色（+7 藍光裡不再混黃光）','成功時不再跳「升階 +N」大字，下方已經有「強化成功 +N」','開發者工具拿掉用不到的「安全區失敗」和「防爆」按鈕'],g:['enh']},
@@ -1304,7 +1305,7 @@ const GUIDE=[
   {k:'forge',ic:'t1_ironhammer_disp',n:'鍛造',s:'選圖紙、付金幣和材料，5 秒打好一批',v:'4.54',h:'在鐵匠鋪「圖紙」選一張圖紙，金幣和材料夠就能按「開始鍛造」。開局 7 把只花金幣；之後的武器要用打怪掉的材料：第一界用<b>中庭鐵礦、松林硬木</b>，第二界用<b>約頓霜鐵、約頓巨木</b>，怪物主題武器另外要怪物部位（1-7 巨魔石皮、2-8 幻術巨人王骨），Boss 武器要 Boss 素材（1-10 彩虹橋碎晶、2-10 索爾雷晶）。<br>開局就有 7 種武器的圖紙；收復第一界 1-2、1-4、1-6、1-7、1-10，第二界 2-1、2-3、2-5、2-8、2-10 會解鎖新圖紙。第 7／8 關是<b>怪物主題武器</b>（攻擊力多 10%），第 10 關是 <b>Boss 武器</b>（帶專屬特效）。兩界為一階，同一階的武器一樣強，想變強就要強化。<br>一次一批（最多 10 把），不管幾把都是 <b>5 秒</b>完成，進度條就在「開始鍛造」下方，可以取消（金幣全退）。'},
   {k:'wpn',ic:'cat_sword',n:'武器數值與相剋',s:'攻速、附加效果、相剋，點武器看小卡',v:'4.46',h:'點武器會跳出小卡。<b>攻擊力＝每秒傷害</b>，已經算進附加效果的平均。<br>七類武器攻速：雙刀 0.6 秒、劍 1.0、弓 1.1、長柄 1.2、斧 1.3、弩 1.6、錘 1.8 秒；每秒傷害都差不多，攻速慢的單擊比較重。<br><b>附加效果</b>：劍會心、斧流血、錘震碎、雙刀中毒、長柄貫穿、弓穿心、弩破甲；+1～+6 每級觸發率 2%，+7 起 16／20／25／30／35／40%。<br><b>相剋</b>：怪物分人形、野獸、巨型、飛行。劍、雙刀剋人形，長柄、斧剋野獸，錘、弩剋巨型，弓剋飛行；打被剋的怪物傷害多「強化等級 %」，+12 為 +12%，跟屬性弱點一起算。<br>武器名稱是「+7 寒霜 鐵劍」：強化等級、附魔、武器名。'},
   {k:'enh',ic:'it_bless',n:'強化',s:'每次 1 顆強化石，最高 +12',v:'4.65',h:'每次強化用 <b>1 顆強化石</b>，不花金幣，成功或失敗都會用掉。強化石從村莊收成拿（越後面的關卡掉越多），熔解武器也會退 1 顆。<br>+1～+6 一定成功。+7 起是危險區：+7 35%、+8 32.5%、+9 30%，失敗就爆裝；+10～+12 每級 1%，失敗時 1/3 維持原樣、2/3 爆裝。最高 <b>+12</b>。<br>攻擊倍率：+6 ×1.6、+7 ×1.9、+8 ×2.25、+9 ×2.65、+10 ×3.3、+11 ×4、+12 ×4.8。<br>武器的框色看強化等級：+0 灰、+1～+6 綠、+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石，+9 以上的框有電流繞著跑。<br>+1～+6 按強化直接出結果；+7 起符文石碑的燈光和武器光暈就是那一級外框的顏色。「一鍵強化」會一級一級連擊播放，點畫面可以略過。'},
-  {k:'ench',ic:'mat_shard',n:'屬性附魔',s:'6 種屬性 × 3 個等級，打中怪物弱點加傷害',v:'4.54',h:'鍛造出來的武器一律<b>無屬性</b>。每次附魔花 <b>1 顆附魔石</b>加金幣，隨機附魔，得到 1 種屬性（每把武器只有 1 欄，重抽會蓋掉舊的）。<br>屬性 6 種：<b>烈焰、霜寒、雷霆、劇毒、神聖、暗影</b>，機率一樣。等級越高越難抽：一級 70%、二級 25%、三級 5%。<br>名稱：烈焰 餘燼／烈焰／滅世之焰；霜寒 寒霜／冰封／永凍之霜；雷霆 雷光／雷鳴／雷神之怒；劇毒 蝕毒／蛇毒／巨蟒之毒；神聖 微光／聖光／光神聖輝；暗影 幽影／暗夜／盲神之影。<br><b>相剋（三對宿敵）</b>：烈焰⇄霜寒、雷霆⇄劇毒、神聖⇄暗影。每隻怪物都有屬性，弱點就是對手屬性。<br>打中弱點：一級 ×1.2、二級 ×1.4、三級 ×1.6，狩獵更快、收成更多。沒打中或無屬性都是正常傷害，不會扣。屬性不加攻擊力。'},
+  {k:'ench',ic:'mat_shard',n:'屬性附魔',s:'6 種屬性 × 3 個等級，打中怪物弱點加傷害',v:'4.67',h:'鍛造出來的武器一律<b>無屬性</b>。每次附魔花 <b>1 顆附魔石</b>加金幣，隨機附魔，得到 1 種屬性（每把武器只有 1 欄，重抽會蓋掉舊的）。<br>屬性 6 種：<b>烈焰、霜寒、雷霆、劇毒、神聖、暗影</b>，機率一樣。等級越高越難抽：一級 70%、二級 25%、三級 5%。<br>名稱：烈焰 餘燼／烈焰／滅世之焰；霜寒 寒霜／冰封／永凍之霜；雷霆 雷光／雷鳴／雷神之怒；劇毒 蝕毒／蛇毒／巨蟒之毒；神聖 微光／聖光／光神聖輝；暗影 幽影／暗夜／盲神之影。<br><b>相剋（三對宿敵）</b>：烈焰⇄霜寒、雷霆⇄劇毒、神聖⇄暗影。每隻怪物都有屬性，弱點就是對手屬性。<br>打中弱點：一級 ×1.2、二級 ×1.4、三級 ×1.6，狩獵更快、收成更多。沒打中或無屬性都是正常傷害，不會扣。屬性不加攻擊力。'},
   {k:'bag',ic:'nav_forge',n:'道具欄',s:'同一種道具疊一格，沒有上限',v:'4.60',h:'下方導覽的「<b>道具欄</b>」（原本的武器庫）分「武器／材料」兩頁，道具在「材料」頁。<br>武器頁：一模一樣的武器（同一把、同強化等級、同屬性）疊在同一格，右下角是數量；點進去的操作只動其中一把；按「一鍵安定值」後小卡會換到下一把同款，可以一直按。上限 200 把照算每一把。同一種道具放在同一格，右下角顯示數量，沒有上限。<br>道具：<b>強化石</b>（強化用）、<b>附魔石</b>（附魔用）、<b>英靈・遺物</b>（綠光、藍光、紅光、金光四種，光芒越亮內容越好）。三種都是打倒怪物有機率掉，越後面的關卡掉越多、好遺物越多。<br>點遺物可以看開出機率，按「打開 1 個」或「全部打開」：可能開到金幣、材料、強化石、附魔石、Boss 素材或武器。<br>材料：每一界 2 種一般材料，加上怪物部位和 Boss 素材，點一下看哪裡掉、哪把武器會用到。'},
   {k:'melt',ic:'mat_iron',n:'熔解',s:'不要的武器換回金幣',v:'4.43',h:'在武器詳情按「熔解」：退回一半鍛造金幣。<br>收藏（上鎖）的武器不能熔解。'}]],
  ['村莊與戰鬥',[
@@ -1859,7 +1860,7 @@ const wSame=w=>wStackable(w)?S.weapons.filter(x=>wStackable(x)&&wKey(x)===wKey(w
 function wTile(w,act,dot,n=1,nw=wNew(w)){const b=bpOf(w),i=where(w);
   return `<button class="wt ${lc(w)}b ${i>=0?'posted':''} ${w.lock?'locked-fav':''}" ${act}>${dot?'<i class="dot give-dot" title="可以交付村莊"></i>':''}<span class="wt-art">${wArt(b.id,{frame:fq(w)})}
    ${i>=0?`<span class="wt-post">駐守 ${vNo(i)}</span>`:bossSlotOf(w)>=0?'<span class="wt-post boss">討伐首領</span>':''}${nw?'<span class="new-tag">NEW</span>':''}${n>1?`<i class="ib-x wt-x">×${fmt(n)}</i>`:''}</span>
-   <span class="wt-name ${lc(w)}"><span class="wt-lv">+${w.lv}</span>${(e=>e?`<span class="wn-el e-${e.k} t${e.t}">${e.tn}</span>`:'')(wElem(w))}${b.n}${w.lock?img('ic_lock','wt-lk','已收藏'):''}</span></button>`}
+   <span class="wt-name ${lc(w)}"><span class="wt-lv">+${w.lv}</span>${(e=>e?`<span class="wn-el e-${e.k} t${e.t}">${e.tn}</span> `:'')(wElem(w))}${b.n}${w.lock?img('ic_lock','wt-lk','已收藏'):''}</span></button>`}
 function bpTile(b,on){const l=bpLock(b);return `<button class="wt bp ${on?'on':''} ${l?'locked':''}" data-act="bp" data-k="${b.id}"><span class="wt-art">${wArt(b.id,{frame:'bp'})}${l?`<span class="wt-lock">${img('ic_lock')}</span>`:''}${bpNew(b)?'<span class="new-tag">NEW</span>':''}</span><span class="wt-name">${b.n}</span>${l?`<span class="wt-pow wt-lockline">${l}</span>`:`<span class="wt-pow">${kindN(b)}・${CATS[b.cat]}</span>`}</button>`}
 const matBox=(k,need)=>need==null?`<button class="matbox mb-tap" data-act="matinfo" data-k="${k}">${img(MATART[k])}<span class="mb-n">${MATS[k]}</span><span class="mb-c">${fmt(S.mats[k])}</span></button>`
   :`<div class="matbox need ${S.mats[k]<need?'lack':'ok'}">${img(MATART[k])}<span class="mb-n">${MATS[k]}</span><span class="mb-have">持有 ${fmt(S.mats[k])}</span><span class="mb-need">需要 ${fmt(need)}</span></div>`;
@@ -2148,15 +2149,13 @@ function sheetWeapon(id,mode){
   }
   if(mode==='ench'){   // v4.44 屬性附魔小卡：目前屬性 → 屬性池（6 種、等級機率）→ 按鈕；只有 1 欄
     const c1=enchCost(w),e=elemOf(w);
-    const mini=`<div class="nv-head">${wArt(b.id,{frame:fq(w),cls:'nv-art'})}<div class="grow"><b class="${lc(w)}">${b.n} +${w.lv}</b><div class="ec-have">${img('it_gold')}<b>${fmt(S.gold)}</b>${img('it_ench')}<b>${fmt(enStones())}</b></div></div></div>`;
-    const cur=e?`<div class="ec-cur">${elBox(e.k)}<div class="grow"><span class="ec-k">目前屬性</span><b>${e.tn} <i>${e.n}${['','一','二','三'][e.t]}級</i><span class="ec-e">打中弱點傷害 ×${e.m}</span></b></div><span class="ec-w">重抽會覆蓋</span></div>`
-      :`<div class="ec-cur none"><span class="ec-q">?</span><div class="grow"><span class="ec-k">無屬性</span><b>隨機獲得 1 種屬性</b></div></div>`;
-    const pool=`<div class="ec-g3">${Object.entries(ELEM).map(([k,x])=>`<button class="ec-c elc-${k}" data-act="affinfo" data-k="${k}"><b>${x.n}</b><span>${r1(100/6)}%</span></button>`).join('')}</div>
-     <div class="ec-tier small">${[1,2,3].map(t=>`<span>${['','一','二','三'][t]}級 <b>×${ELEM_MULT[t]}</b> ${ELEM_TW[t]}%</span>`).join('')}</div>
-     <div class="small muted ec-pair">相剋：${ELEM_PAIR.map(([x,y])=>ELEM[x].n+'⇄'+ELEM[y].n).join('・')}。打中怪物弱點才有加成，沒打中不扣傷害。</div>`;
+    const mini=`<div class="nv-head">${wArt(b.id,{frame:fq(w),cls:'nv-art'})}<div class="grow"><b class="ec-nm">${wName(w)}</b><span class="small muted">${e?`打中弱點傷害 ×${e.m}・重抽會覆蓋`:'無屬性・附魔隨機獲得 1 種'}</span><div class="ec-have">${img('it_gold')}<b>${fmt(S.gold)}</b>${img('it_ench')}<b>${fmt(enStones())}</b></div></div></div>`;   // v4.67 Mochi：附魔結果直接顯示在武器名稱裡，不另外放目前屬性欄
+    const pool=`<div class="ec-18"><span></span>${[1,2,3].map(t=>`<span class="ec-th">${['','一','二','三'][t]}級 <b>×${ELEM_MULT[t]}</b></span>`).join('')}
+      ${Object.entries(ELEM).map(([k,x])=>`<button class="ec-en elc-${k}" data-act="affinfo" data-k="${k}">${x.n}</button>${[1,2,3].map(t=>`<button class="ec-c18 elc-${k} t${t} ${e&&e.k===k&&e.t===t?'on':''}" data-act="affinfo" data-k="${k}"><b>${x.tn[t-1]}</b><span>${elemP(t).toFixed(2)}%</span></button>`).join('')}`).join('')}</div>
+     <div class="small muted ec-pair">18 種合計 100%。相剋：${ELEM_PAIR.map(([x,y])=>ELEM[x].n+'⇄'+ELEM[y].n).join('・')}。打中怪物弱點才有加成，沒打中不扣傷害。</div>`;
     const lack=enStones()<1?'附魔石不夠（打倒怪物、打開英靈・遺物可以拿到）':S.gold<c1?'金幣不足':'';
     const bar=`<div class="ev-bar">${btn(`${e?'重新附魔':'附魔'}<span class="small">附魔石 1・${fmt(c1)} 金幣</span>`,'enchant',{cls:'btn-primary big nv-b',attrs:`data-id="${id}" data-s="0"`,dis:!!lack})}${lack?`<div class="small t-danger center">${lack}</div>`:''}</div>`;
-    return head+`<div class="ev ec ec-pop">${mini}${cur}<div class="ec-ph"><b>✦ 隨機屬性池</b><span class="small muted">點屬性看說明</span></div>${pool}${bar}</div>`;   // v4.44 Mochi：附魔改成跟武器詳情一樣的小卡彈窗
+    return head+`<div class="ev ec ec-pop">${mini}<div class="ec-ph"><b>✦ 隨機屬性池</b><span class="small muted">點屬性看說明</span></div>${pool}${bar}</div>`;   // v4.44 Mochi：附魔改成跟武器詳情一樣的小卡彈窗
   }
   if(mode==='give'){const vs=VILLAGES.map((v,k)=>[v,k]).filter(([v,k])=>S.villages[k].status!=='locked');
     return head+showcase('mini')+`<div class="ui-panel panel">${ptitle('可交付的村莊')}${vs.length?vs.map(([v,k])=>{const ok=eligible(k,w),st=S.villages[k],cur=st.weaponId!=null&&W(st.weaponId);
@@ -2474,6 +2473,7 @@ function viewShop(){
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'4.67',t:'附魔小卡：結果顯示在武器名稱、列出 18 種機率',b:[['ec18','打開附魔小卡（名稱前面是雷神之怒，18 格裡那格有框）'],['affopen','屬性附魔機率：模擬 6000 次']]},
  {v:'4.66',t:'打怪直接掉武器、1-1～1-5 金幣範圍',b:[['wdropsim','模擬 1-1／1-7／1-10／2-10 各打倒 10,000 隻，看掉幾把武器和金幣'],['wdrop1','1-1 駐守中的村莊塞 3 把掉落武器（按收成看）']]},
  {v:'4.65',t:'強化石掉落機率減半（全部村莊都掉）',b:[['stonedrop','模擬 1-1／1-10／2-10 各打倒 1000 隻，看掉幾顆強化石']]},
  {v:'4.64',t:'+7 起武器光暈用外框顏色、拿掉升階大字；拿掉安全區失敗和防爆按鈕',b:[['fxt_7','強化 +7（藍，看有沒有黃光）'],['fxt_10','強化 +10（金）'],['fx_green','+1～+6 綠光']]},
@@ -2691,6 +2691,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='affopen'){const c={},t=[0,0,0,0];for(let i=0;i<6000;i++){const x=Object.keys(ELEM)[rnd(0,5)],v=weighted([1,2,3],y=>ELEM_TW[y]);c[x]=(c[x]||0)+1;t[v]++}   // v4.44 屬性附魔
     return toast(`附魔 6000 次：${Object.entries(c).map(([x,n])=>ELEM[x].n+' '+n).join('、')}<br>等級：一級 ${t[1]}、二級 ${t[2]}、三級 ${t[3]}（應約 4200／1500／300）`,'ok')}
   if(k==='elall'){const ks=Object.keys(ELEM);ks.forEach((x,j)=>makeWeapon('dev_sword',2,6,[],[{k:x,v:1+j%3},null,null,null]));save();ui.sheet=null;ui.tab='armory';render();return toast('已給 6 把 +6 測試劍：烈焰一級、霜寒二級、雷霆三級、劇毒一級、神聖二級、暗影三級。拿去駐守看卡片的弱點提示會不會變綠','ok')}
+  if(k==='ec18'){const w=S.weapons.find(x=>where(x)<0)||S.weapons[0];if(!w)return toast('道具欄沒有武器','bad');w.ench=[{k:'bolt',v:3},null,null,null];ui.sheet={t:'w',id:w.id,m:'ench'};save();render();return toast('名稱前面應該是「雷神之怒」，下面 18 格裡雷神之怒那格有框','ok')}   // v4.67
   if(k==='elforce'){DEV.elForce=[Object.keys(ELEM)[rnd(0,5)],3];return toast(`下一次附魔必定三級：${ELEM[DEV.elForce[0]].tn[2]}`,'ok')}
   if(k.startsWith('gw')){
     if(k==='gwbstgl'){devdo('bsall');const st=S.villages[1];st.bank={cycles:12,gold:340,mats:Object.fromEntries(VILLAGES[1].drops.map(d=>[d[0],5])),events:0};ui.sheet=null;ui.bsOpen=1;save();render();setTimeout(()=>document.querySelectorAll('#view .vcard')[1]?.scrollIntoView({block:'start'}),50);return toast('1-2 已展開：上面戰鬥畫面、下面每輪掉落和已經打到的東西；點卡片下方的箭頭收起','ok')}
