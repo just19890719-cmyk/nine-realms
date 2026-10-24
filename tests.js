@@ -58,9 +58,9 @@ function minUpgrade(b,req,needAffix){
     for(let lv=0;lv<=15;lv++){const p=Math.round(b.base*TIERS[b.t].mult*QUAL[q].m*enhMult(lv));if(p>=req){need=lv;break}}out.push(need)}return out}
 function levelCheck(){
   const res=[],rows=[];const sources=new Set(['iron','oak','leather']);
-  for(let i=0;i<10;i++){   // 第一界：不靠神器和重鍊；第二界另外在 A12 檢查
+  for(let i=0;i<10;i++){   // 第一界：不靠重鍊；1-10 才算神器；第二界另外在 A12 檢查
     const v=VILLAGES[i],c=i; // 交付第 i 關時已收復 i 關
-    const avail=BPS.filter(b=>b.cat===v.cat&&c>=b.unlock&&b.t<3);
+    const avail=BPS.filter(b=>b.cat===v.cat&&c>=b.unlock&&(b.t<3||i>=9));   // v4.07 1-10 需求 310：要用神器長柄
     const affixOk=!v.need||[...sources].includes('shard');
     const anv=i>=6?3:i>=3?2:1,keepA=S.anvil;S.anvil=anv;const opts=[];
     for(const b of avail){const mats=Object.keys(recipe(b));if(!mats.every(m=>sources.has(m)))continue;
@@ -204,8 +204,8 @@ function saveTests(){
     S=fresh();S.gold=1e6;S.mats.shard=100;S.anvil=5;const x=makeWeapon('t2_wolfaxe',2,0,[{k:'runic',v:20},{k:'light',v:5}]);
     for(let n=0;n<50;n++)enchantCore(x.id,rnd(0,3));const slots=x.ench.length,shard0=S.mats.shard,g1=S.gold;enchantCore(x.id,0);
     x.ench=[{k:'loot',v:30},{k:'loot',v:30},{k:'loot',v:30},{k:'swift',v:40}];const tr=timeReduction(0,x),lo=Math.min(CAP.loot,affixVal(x,'loot'));
-    const y=makeWeapon('t3_greataxe',0,2,[]);y.ench[0]={k:'giant',v:20};const yOk=eligible(7,y),y2=makeWeapon('t3_greataxe',0,0,[]);
-    res.push(T('E10 附魔覆蓋不重複、扣費正確、符文親和不重複計算、迅捷/掠奪有上限、剋巨人判定',slots===4&&shard0-S.mats.shard===1&&g1-S.gold===enchCost(x)&&x.ench.length===4&&tr===CAP.time/100&&lo===CAP.loot&&yOk===(power(y)>=95)&&!eligible(7,y2),
+    const y=makeWeapon('t3_greataxe',1,4,[]);y.ench[0]={k:'giant',v:20};const yOk=eligible(7,y),y2=makeWeapon('t3_greataxe',0,0,[]);
+    res.push(T('E10 附魔覆蓋不重複、扣費正確、符文親和不重複計算、迅捷/掠奪有上限、剋巨人判定',slots===4&&shard0-S.mats.shard===1&&g1-S.gold===enchCost(x)&&x.ench.length===4&&tr===CAP.time/100&&lo===CAP.loot&&yOk===(power(y)>=VILLAGES[7].req)&&yOk&&!eligible(7,y2),
       `欄位數 ${slots}；隨機附魔扣碎片 ${shard0-S.mats.shard}、金幣 ${g1-S.gold}；迅捷堆疊後時間縮短 ${tr*100}%（上限 ${CAP.time}%）；掠奪 ${lo}%（上限 ${CAP.loot}%）；有剋巨人可交 1-8：${yOk}，沒有：${eligible(7,y2)}`));
     // 附魔欄位依鐵砧
     S=fresh();S.gold=1e6;S.mats.shard=10;const z=makeWeapon('t1_woodaxe',0,0,[]);const e2=enchantCore(z.id,2);S.anvil=3;const e3=enchantCore(z.id,2),e4=enchantCore(z.id,3);S.anvil=5;const e5=enchantCore(z.id,3);
@@ -490,9 +490,15 @@ function wsTests(){const S0=S;S=fresh();S.gold=1e6;const at=n=>S.villages.forEac
   S.anvil=5;S.villages.forEach(v=>v.status='open');const keep=S.anvil===5&&S.furnace===5;
   const gates=Object.entries(WS_GATE).map(([k,g])=>k+' '+g.slice(2).join('/')).join('；');S=S0;
   return[T('J 工坊升級依關卡解鎖（鐵砧 1-2/1-4/1-7/1-10、熔爐 1-3/1-5/1-6/1-7）',a0&&a1&&a2&&a3&&keep,`沒收復不能升 ${a0}；1-2→鐵砧 2 ${a1}；1-4→鐵砧 3 ${a2}；1-7→鐵砧 4、熔爐 5、鐵砧 5 還鎖 ${a3}；舊等級保留 ${keep}（${gates}）`)]}
+// v4.07 難度曲線：每關需求不低於曲線、1-1 以外剛打好的普通武器不能直接交、需求數字和公告一致
+function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter((d,i)=>i&&d.v.req<d.curve*.97),free=rows.filter((d,i)=>i&&d.need[0]===0),nw=NW_LOG.find(n=>n.v==='4.07'),txt=nw?nw.b.join(''):'';
+  const want={1:14,4:44,5:55,7:155,9:310,10:280,13:545,14:420,15:420,18:900},miss=Object.entries(want).filter(([i,r])=>VILLAGES[i].req!==r||!txt.includes(VILLAGES[i].name+' '+r));
+  return[T('N1 每關需求不低於難度曲線（中度）',!low.length,low.length?low.map(d=>d.v.name+' '+d.v.req+'<'+d.curve).join('、'):'20 關都 ≥ 曲線'),
+    T('N2 1-1 以外普通 +0 不能直接交付',!free.length,free.length?free.map(d=>d.v.name).join('、'):'都要強化'),
+    T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){
   if(mode==='econ')return econHtml(12)+econHtml(8);
-  const r=runAll({N:100000});r.res.push(...layoutTests(),...monTests(),...mythTests(),...godReqTests(),...hitTests(),...enchTests(),...wsTests());const pass=r.res.filter(x=>x.pass).length;
+  const r=runAll({N:100000});r.res.push(...layoutTests(),...monTests(),...mythTests(),...godReqTests(),...curveTests(),...hitTests(),...enchTests(),...wsTests());const pass=r.res.filter(x=>x.pass).length;
   return `<div><b>${pass}/${r.res.length} 通過</b>（${r.ms} 毫秒）</div>`+resHtml(r.res);
 }
 if(typeof module!=='undefined')module.exports={runAll,econReport,simulate,levelCheck};
