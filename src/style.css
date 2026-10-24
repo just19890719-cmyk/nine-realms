@@ -1692,4 +1692,6 @@ html.scrimmed .cbar{display:none}
 @keyframes kn-cb10{0%{opacity:0}78.75%{opacity:1}86.86%{opacity:1}86.88%{opacity:0}100%{opacity:0}}.bs.c-cb .k10{animation-name:kn-cb10}
 @keyframes kn-cb11{0%{opacity:0}86.88%{opacity:1}93.74%{opacity:1}93.75%{opacity:0}100%{opacity:0}}.bs.c-cb .k11{animation-name:kn-cb11}
 .bs.c-cb{--K:1600ms}
+.vmon.bs-tap{cursor:pointer}.vmon.bs-tap:before{content:'';position:absolute;right:-3px;bottom:-3px;width:18px;height:18px;border-radius:50%;background:#2a1d14 url(art/cat_sword.webp) center/13px no-repeat;border:1px solid #c9a35a;z-index:4;box-shadow:0 1px 3px rgba(0,0,0,.7)}
+.bs{cursor:pointer}
 </style>
