@@ -4,7 +4,7 @@ const VERSION=3;
 const ART_V='?v=3';  // 武器顯示圖改過透明度：加版本號，避免瀏覽器沿用舊快取
 // v3.76 第二界的 AI 圖還沒到：先借第一界的圖顯示，圖到了刪掉對應那一項就好
 const ART_WAIT={};
-const A=n=>(n=ART_WAIT[n]||n,(typeof UI_ART!=='undefined'&&UI_ART[n])||'art/'+n+'.webp'+(n.endsWith('_disp')?ART_V:/^(mon|boss)_/.test(n)?'?m=4.04':''));  // UI_ART（skin.js）可把既有圖示換成新素材路徑；預設空白＝不變
+const A=n=>(n=ART_WAIT[n]||n,(typeof UI_ART!=='undefined'&&UI_ART[n])||'art/'+n+'.webp'+(n.endsWith('_disp')?ART_V:/^(mon|boss)_/.test(n)?'?m=4.05':''));  // UI_ART（skin.js）可把既有圖示換成新素材路徑；預設空白＝不變
 const MATS={iron:'鐵礦',oak:'橡木',leather:'皮革',silver:'霜銀',fang:'狼牙',scale:'龍鱗',rune:'符文石',shard:'符文碎片',fur:'魔狼黑毛',icecore:'霜巨人冰核',fireheart:'火巨人焰心',serpent:'海蛇鱗',giantbone:'巨人骨',permafrost:'永凍霜晶',thunderiron:'雷鳴鐵',elderroot:'世界樹古根'};
 const MATART={iron:'mat_iron',oak:'mat_oak',leather:'mat_leather',silver:'mat_silver',fang:'mat_fang',scale:'mat_scale',rune:'mat_rune',shard:'mat_shard',fur:'mat_fur',icecore:'mat_icecore',fireheart:'mat_fireheart',serpent:'mat_serpent',giantbone:'mat_giantbone',permafrost:'mat_permafrost',thunderiron:'mat_thunderiron',elderroot:'mat_elderroot'};
 const CATS={axe:'斧',sword:'劍',dagger:'短刃',polearm:'長柄',hammer:'錘',bow:'弓',crossbow:'弩',shield:'盾',throw:'投擲',tool:'工具'};
@@ -95,7 +95,7 @@ const VILLAGES=[
  {name:'雪峰營地',who:'軍隊・山地軍團',cat:'hammer',req:75,sec:1440,gold:280,danger:.1,tag:'beast',drops:[['silver',.6,1,2],['fang',.6,1,2],['scale',.15,1,1],['rune',.15,1,1],['fur',.1,1,1],['shard',.15,1,1]],txt:'山怪的石皮太硬，軍團要能砸碎它的戰錘。'},
  {name:'巨人足跡',who:'軍隊・王國先鋒',cat:'axe',req:110,sec:2160,gold:450,danger:.12,tag:'giant',need:'giant',drops:[['rune',.3,1,1],['scale',.2,1,1],['shard',.5,1,2],['icecore',.15,1,1]],txt:'石心巨人的族人走下山了。武器必須帶有「剋巨人」。'},
  {name:'灰燼要塞',who:'軍隊・要塞騎士',cat:'sword',req:160,sec:2880,gold:700,danger:.14,tag:'giant',drops:[['scale',.3,1,1],['rune',.3,1,1],['shard',.3,1,1],['fireheart',.15,1,1]],txt:'穆斯貝爾的火焰騎兵燒毀了外牆，騎士要更強的劍。'},
- {name:'世界樹根穴',who:'軍隊・屠龍軍',cat:'polearm',req:200,sec:3600,gold:1000,danger:.16,tag:'dragon',need:'dragon',drops:[['scale',.35,1,2],['rune',.3,1,1],['shard',.5,1,2]],txt:'尼德霍格啃咬著世界樹根。長柄武器必須帶有「剋龍」。'},
+ {name:'世界樹根穴',who:'軍隊・屠龍軍',cat:'polearm',req:200,sec:3600,gold:1000,danger:.16,tag:'dragon',need:'dragon',drops:[['scale',.35,1,2],['rune',.3,1,1],['shard',.5,1,2]],txt:'守望之神海姆達爾在世界樹根下等你，尼德霍格的龍息還沒散。長柄武器必須帶有「剋龍」。'},
  // v3.76 第二界約頓海姆（收復 1-10 後開放）：要龍鱗／神器武器加「巨人體重鍊」
  {name:'霜巨人前哨',who:'遠征軍・斥候隊',cat:'axe',req:240,sec:3600,gold:1100,danger:.16,tag:'giant',drops:[['giantbone',.4,1,1],['silver',.6,1,2],['shard',.5,1,2]],txt:'九頭巨人守著進入約頓海姆的哨站，斥候隊要劈得開巨木柵欄的斧。'},
  {name:'冰川裂谷',who:'遠征軍・獵兵隊',cat:'bow',req:280,sec:4200,gold:1250,danger:.16,tag:'beast',drops:[['permafrost',.4,1,1],['fang',.6,1,2],['icecore',.15,1,1]],txt:'鐵森林的狼群在裂谷邊緣出沒，獵兵要能遠射的長弓。'},
@@ -104,9 +104,9 @@ const VILLAGES=[
  {name:'永凍湖',who:'湖畔漁村・守衛',cat:'shield',req:360,sec:6000,gold:1700,danger:.18,tag:'beast',drops:[['permafrost',.5,1,2],['icecore',.2,1,1],['serpent',.15,1,1]],txt:'冰湖水妖用琴聲引人上冰，漁村守衛需要擋得住冰刺的盾。'},
  {name:'霜晶礦坑',who:'礦工公會・護衛',cat:'dagger',req:360,sec:6000,gold:1800,danger:.18,tag:'beast',drops:[['permafrost',.45,1,1],['thunderiron',.35,1,1]],txt:'洞穴蠕龍盤在礦坑窄道裡，只有短刃施展得開。'},
  {name:'狂風高原',who:'遠征軍・長槍陣',cat:'polearm',req:600,sec:6600,gold:2000,danger:.19,tag:'giant',drops:[['thunderiron',.45,1,1],['giantbone',.45,1,1]],txt:'風之巨人一吐氣就是暴風雪，長槍陣要能刺穿巨人的長柄武器。'},
- {name:'冰巨人王庭',who:'遠征軍・王家騎士',cat:'sword',req:720,sec:7200,gold:2300,danger:.2,tag:'giant',drops:[['elderroot',.25,1,1],['icecore',.25,1,1]],txt:'雪山女獵手斯卡蒂守著王座大廳，騎士們要最鋒利的劍。'},
+ {name:'冰巨人王庭',who:'遠征軍・王家騎士',cat:'sword',req:720,sec:7200,gold:2300,danger:.2,tag:'giant',drops:[['elderroot',.25,1,1],['icecore',.25,1,1]],txt:'幻術巨人王烏特加德洛基坐在王座大廳，騎士們要最鋒利的劍。'},
  {name:'熔岩裂口',who:'遠征軍・攻城隊',cat:'hammer',req:860,sec:7200,gold:2600,danger:.2,tag:'giant',drops:[['elderroot',.3,1,1],['fireheart',.2,1,1],['thunderiron',.45,1,1]],txt:'泥巨人莫庫卡爾菲越過熔岩裂口，攻城隊要砸得碎它的戰錘。'},
- {name:'烏特加德城',who:'遠征軍・總指揮',cat:'axe',req:1000,sec:7200,gold:3000,danger:.2,tag:'giant',need:'giant',drops:[['elderroot',.35,1,1],['giantbone',.5,1,2],['rune',.4,1,1]],txt:'巨人之王烏特加德洛基坐鎮城中。斧頭必須帶有「剋巨人」。'}
+ {name:'烏特加德城',who:'遠征軍・總指揮',cat:'axe',req:1000,sec:7200,gold:3000,danger:.2,tag:'giant',need:'giant',drops:[['elderroot',.35,1,1],['giantbone',.5,1,2],['rune',.4,1,1]],txt:'雪山女神斯卡蒂奉奧丁之命守在城中。斧頭必須帶有「剋巨人」。'}
 ];
 const REALM_N=[['米德加德','人類之境','v4'],['約頓海姆','巨人之境','v20']];   // [名稱, 副標, 背景圖]
 const vRealm=i=>i<10?0:1,vNo=i=>(vRealm(i)+1)+'-'+(i%10+1);   // 關卡編號：0→1-1，10→2-1
@@ -158,7 +158,7 @@ const EVT_BOSS=[
  {id:'thrym',n:'霜巨人王索列姆',art:'mon_8',bg:'v8',weak:{aff:'giant'},wn:'帶「剋巨人」的武器',mat:'icecore'},
  {id:'surtr',n:'火巨人蘇爾特',art:'mon_9',bg:'v9',weak:{aff:'frost'},wn:'帶「霜寒」的武器',mat:'fireheart'},
  {id:'jorm',n:'塵世巨蟒耶夢加得',art:'boss_jorm',bg:'v6',weak:{cat:'crossbow'},wn:'弩',mat:'serpent'},
- {id:'nidhogg',n:'尼德霍格',art:'mon_10',bg:'v10',weak:{aff:'dragon'},wn:'帶「剋龍」的武器',mat:'scale'}
+ {id:'nidhogg',n:'尼德霍格',art:'boss_nidhogg',bg:'v10',weak:{aff:'dragon'},wn:'帶「剋龍」的武器',mat:'scale'}
 ];
 // v3.85 首領改成「派武器駐守」（Mochi 選）：最多 3 把武器駐守首領，每小時傷害＝攻擊力（弱點 ×1.5），離線也會繼續打；
 // 駐守首領的武器不能同時打村莊、強化、附魔、熔解、上架；週日 0 點結算後武器留著，自動繼續打下一隻。登入時傷害由伺服器用時間計算（sql/10）
@@ -271,7 +271,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.04';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.05';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
@@ -1061,6 +1061,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.05',d:'10/24',t:'每一界的最後一關都是神',b:['1-10 換成<b>守望之神海姆達爾</b>，尼德霍格回去當每週首領','2-10 換成<b>雪山女神斯卡蒂</b>，烏特加德洛基移到 2-8 冰巨人王庭','委託條件（剋龍、剋巨人）和獎勵都不變'],g:['hp']},
  {v:'4.04',d:'10/24',t:'北歐神話怪物',b:['20 座村莊的怪物換成北歐神話裡的角色，例如克拉肯、山怪特羅爾、九頭巨人、雪山女獵手斯卡蒂','點村莊看詳情，血條下方有怪物的稱號和傳說','9 隻怪物和每週首領塵世巨蟒換上新圖'],g:['hp']},
  {v:'4.03',d:'10/23',t:'遊戲內公告與玩法說明',b:['右上角喇叭換成<b>齒輪</b>：裡面有更新公告、玩法說明和音效設定','每次更新的新玩法都會寫在這裡，沒看過的會標 <b>NEW</b>，看過就消失'],g:['set']},
  {v:'4.02',d:'10/23',t:'武器打法各有特色・戰力改名攻擊力',b:['8 類武器在村莊有各自的打法：劍連斬、短刃爆擊、錘重擊、斧旋風斬、弓三連射、弩破甲、長柄流血、盾越打越痛','狩獵時間和收成都不變，只是打法不同','「戰力」全部改叫「攻擊力」，數值不變'],g:['hit']},
@@ -1091,9 +1092,9 @@ const GUIDE=[
   {k:'tal',ic:'ic_star',n:'鐵匠天賦',s:'累積聲望、點天賦，沒有等級上限',v:'3.76',h:'收成、鍛造、強化成功、收復村莊、熔解都會累積聲望。<br>每升 1 級得 1 天賦點和聲望寶箱，等級沒有上限。<br>天賦：商隊議價（收成金幣）、拾荒專家（一般材料）、尋寶直覺（稀有素材）、巨匠之手（好品質）、熔解大師（熔解回收）。'}]],
  ['村莊與戰鬥',[
   {k:'vil',ic:'nav_village',n:'村莊委託與收成',s:'交武器收復村莊、自動狩獵收成',v:'3.99',h:'把類別符合、攻擊力達標的武器交給村莊就能收復，解鎖下一座村莊和新圖紙，第一次收復有金幣獎勵。<br>交付後武器會駐守狩獵，自動帶回金幣和材料，<b>離線最多累積 12 小時</b>。換上更強的武器狩獵更快。<br>「全部收成」只收目前在看的這一界；另一界可以收成時，地圖圖示會亮紅點。<br>狩獵策略：一般、素材追獵（材料多、金幣少）、稀有追蹤（稀有素材多、時間長）。'},
-  {k:'hp',ic:'mon_1',n:'怪物血條',s:'打中才扣血，扣多少＝傷害',v:'4.04',h:'村莊卡上的怪物有血條，武器打中才會扣血，扣多少就是造成的傷害。<br>怪物被打倒就完成一輪狩獵，換下一隻。<br>點村莊看詳情，血條同步顯示，下方還有這隻北歐神話怪物的稱號和傳說。'},
+  {k:'hp',ic:'mon_1',n:'怪物血條',s:'打中才扣血，扣多少＝傷害',v:'4.05',h:'村莊卡上的怪物有血條，武器打中才會扣血，扣多少就是造成的傷害。<br>怪物被打倒就完成一輪狩獵，換下一隻。<br>點村莊看詳情，血條同步顯示，下方還有這隻北歐神話怪物的稱號和傳說。每一界的最後一關都是神。'},
   {k:'hit',ic:'cat_sword',n:'武器打法',s:'8 類武器各有打法',v:'4.02',h:'<b>劍</b>：連斬，每第 4 下砍 2 刀。<b>短刃</b>：出手快，25% 爆擊。<br><b>錘</b>：慢但一下很重。<b>斧</b>：30% 旋風斬連砍 3 下。<br><b>弓</b>：每次連射 3 箭，偶爾穿心。<b>弩</b>：每第 3 發破甲。<br><b>長柄</b>：突刺後流血 3 次。<b>盾</b>：越打越痛，打倒後重算。<br>狩獵時間和收成不受影響，只是打法不同。'},
-  {k:'boss',ic:'mon_10',n:'每週首領',s:'派 3 把武器駐守，週日結算',v:'3.87',h:'全服一起打同一隻首領，整週開打，<b>每週日 00:00</b> 結算換下一隻。<br>最多派 3 把武器駐守，每小時傷害＝攻擊力，打中弱點 ×1.5，離線也會繼續打；結算後武器留著繼續打下一隻。<br>全服血量打到 25／50／75／100% 都有獎勵，上週個人傷害排名也有獎勵。<br>駐守首領的武器不能同時打村莊、強化、附魔、熔解、上架。'},
+  {k:'boss',ic:'boss_nidhogg',n:'每週首領',s:'派 3 把武器駐守，週日結算',v:'3.87',h:'全服一起打同一隻首領，整週開打，<b>每週日 00:00</b> 結算換下一隻。<br>最多派 3 把武器駐守，每小時傷害＝攻擊力，打中弱點 ×1.5，離線也會繼續打；結算後武器留著繼續打下一隻。<br>全服血量打到 25／50／75／100% 都有獎勵，上週個人傷害排名也有獎勵。<br>駐守首領的武器不能同時打村莊、強化、附魔、熔解、上架。'},
   {k:'realm',ic:'realm_2',n:'第二界 約頓海姆',s:'收復 1-10 後開放',v:'3.76',h:'收復 1-10 世界樹根穴後開放第二界，用上方地圖列切換。<br>10 座新村莊、4 種新材料（巨人骨、永凍霜晶、雷鳴鐵、世界樹古根），第五階巨人武器要熔爐 Lv6。<br><b>巨人體重鍊</b>：龍鱗以上的武器可以用第二界材料重鍊，提高攻擊力。'},
   {k:'lb',ic:'ui_player_emblem',n:'排行榜',s:'每座村莊比最強交付武器',v:'3.68',h:'每座村莊比誰交付的武器攻擊力最高，攻擊力由伺服器計算。<br>第一次進前 10、前 3、第 1 名各有獎勵。'}]],
  ['成長與獎勵',[
@@ -1885,11 +1886,12 @@ function betterIdle(i){const st=S.villages[i],cur=st.weaponId!=null&&W(st.weapon
 function vState(i){const st=S.villages[i];if(st.status==='locked')return['locked','未解鎖'];if(st.status==='open')return['open','等待交付'];
   if(st.weaponId==null)return st.bank.cycles?['ready','可收成']:['pause','暫停・無武器'];const w=W(st.weaponId);if(w&&st.bank.cycles>=capCycles(i,w))return['full','倉庫滿'];if(st.bank.cycles)return['ready','可收成'];return['hunt','狩獵中']}
 /* v3.73 村莊怪物血條：狩獵一輪＝打倒一隻怪物（純畫面效果，狩獵時間與收成都不變） */
+// v4.05 每一界第 10 關都是神（Mochi 選）：1-10 海姆達爾、2-10 斯卡蒂、烏特加德洛基移到 2-8；尼德霍格只當每週首領
 // v4.04 神話怪物（Mochi 選 B）：MONS＝血條上的短名（6 字內），MON_T＝稱號，MON_LORE＝村莊詳情頁的傳說小字
-const MONS=['斯寇格拉','賽赫利姆尼爾','斯庫爾','哈提','瓦爾拉文','克拉肯','山怪特羅爾','赫朗格尼爾','穆斯貝爾騎兵','尼德霍格','斯里瓦爾迪','鐵森林狼王','赫拉斯瓦爾格','德勞格','諾克','林德蟲','卡瑞','斯卡蒂','莫庫卡爾菲','烏特加德洛基'];
-const MON_T=['林中魅妖','不死野豬','追日之狼','追月之狼','戰場鴉魔','深海巨怪','石皮巨魔','石心巨人','火焰騎兵','啃根怒龍','九頭巨人','狼群首領','吞屍巨鷹','巨人屍鬼','冰湖水妖','洞穴蠕龍','風之巨人','雪山女獵手','泥巨人','幻術巨人王'];
-const MON_LORE=['前面是美女，背後卻是空心的樹幹，專騙伐木工走進深林。','英靈殿每晚殺來吃、隔天又復活的野豬，這次逃到了人間。','永遠追趕太陽的巨狼，追累了就下來拿獵人當點心。','斯庫爾的兄弟，夜裡追月，走過的溪水都結成冰。','吃了戰死者心臟的渡鴉，半鳥半狼，成群俯衝城牆。','大到水手誤以為是島，觸手一捲就拖沉整艘長船。','皮硬得像岩石，只怕陽光，照到就會變成石頭。','心臟、頭顱都是石頭，曾單挑雷神索爾，如今他的族人走下了山。','火之國的前鋒，身上的火要等諸神黃昏那天才會燃盡。','日夜啃咬世界樹根的怒龍，根穴裡到處是它的牙印。',
- '九顆頭輪流睡覺，所以哨站永遠有人醒著。','鐵森林的巨人女巫養大的狼群首領，芬里爾的遠親。','坐在世界盡頭的巨人化身成鷹，拍一下翅膀，九界就起風。','守著陪葬寶物不肯死去的屍鬼，越打越大。','用琴聲把人引到冰面上，再從冰洞裡伸手把人拖下去。','沒有翅膀的毒龍，盤在礦脈裡守著霜晶，只有短刃鑽得進去。','北風的化身，他一吐氣，高原上就颳三天暴風雪。','為父報仇殺上諸神之城的巨人女王，滑雪拉弓從不失手。','巨人們用熔岩黏土捏出來幫赫朗格尼爾的戰士，胸口裝著一顆母馬的心，膽子很小。','曾讓索爾喝不乾的牛角杯，其實杯底連著大海。'];
+const MONS=['斯寇格拉','賽赫利姆尼爾','斯庫爾','哈提','瓦爾拉文','克拉肯','山怪特羅爾','赫朗格尼爾','穆斯貝爾騎兵','海姆達爾','斯里瓦爾迪','鐵森林狼王','赫拉斯瓦爾格','德勞格','諾克','林德蟲','卡瑞','烏特加德洛基','莫庫卡爾菲','斯卡蒂'];
+const MON_T=['林中魅妖','不死野豬','追日之狼','追月之狼','戰場鴉魔','深海巨怪','石皮巨魔','石心巨人','火焰騎兵','守望之神','九頭巨人','狼群首領','吞屍巨鷹','巨人屍鬼','冰湖水妖','洞穴蠕龍','風之巨人','幻術巨人王','泥巨人','雪山女神'];
+const MON_LORE=['前面是美女，背後卻是空心的樹幹，專騙伐木工走進深林。','英靈殿每晚殺來吃、隔天又復活的野豬，這次逃到了人間。','永遠追趕太陽的巨狼，追累了就下來拿獵人當點心。','斯庫爾的兄弟，夜裡追月，走過的溪水都結成冰。','吃了戰死者心臟的渡鴉，半鳥半狼，成群俯衝城牆。','大到水手誤以為是島，觸手一捲就拖沉整艘長船。','皮硬得像岩石，只怕陽光，照到就會變成石頭。','心臟、頭顱都是石頭，曾單挑雷神索爾，如今他的族人走下了山。','火之國的前鋒，身上的火要等諸神黃昏那天才會燃盡。','看得見九界一切的守望之神，號角藏在世界樹根下；他第一個發現你鍛出了神級武器。',
+ '九顆頭輪流睡覺，所以哨站永遠有人醒著。','鐵森林的巨人女巫養大的狼群首領，芬里爾的遠親。','坐在世界盡頭的巨人化身成鷹，拍一下翅膀，九界就起風。','守著陪葬寶物不肯死去的屍鬼，越打越大。','用琴聲把人引到冰面上，再從冰洞裡伸手把人拖下去。','沒有翅膀的毒龍，盤在礦脈裡守著霜晶，只有短刃鑽得進去。','北風的化身，他一吐氣，高原上就颳三天暴風雪。','曾讓索爾喝不乾的牛角杯，其實杯底連著大海；如今坐鎮王座大廳。','巨人們用熔岩黏土捏出來幫赫朗格尼爾的戰士，胸口裝著一顆母馬的心，膽子很小。','巨人出身、嫁進神族的女神，奉奧丁之命來試探你這個凡人鐵匠。'];
 const monLore=i=>MON_LORE[i]?`<div class="mon-lore"><b>${MON_T[i]}・${MONS[i]}</b><span>${MON_LORE[i]}</span></div>`:'';
 const MON_ART=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19];   // 已有 AI 怪物圖的關卡（0 起算，圖在 art/mon_N.webp）；沒圖的先用村莊圖
 const MONFX={kills:{},next:{},hp:{}};
