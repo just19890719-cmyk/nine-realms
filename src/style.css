@@ -1012,6 +1012,9 @@ body.gating{overflow:hidden}
   transform:translate(calc(var(--mx) * -10px),calc(var(--my) * -6px));animation:gtZoom 20s ease-in-out infinite alternate}
 .gt-bg{filter:blur(.8px) brightness(.9)}
 .gt-glow{mix-blend-mode:screen;opacity:.7;animation:gtZoom 20s ease-in-out infinite alternate,dpFire 2.4s ease-in-out infinite}
+/* v4.19 新封面：光暈上半淡出，不要把奧丁的臉洗白；矮螢幕整個場景往上移，鐵匠才不會被登入框蓋住 */
+.gt-glow{-webkit-mask-image:linear-gradient(transparent 10%,rgba(0,0,0,.2) 30%,#000 58%);mask-image:linear-gradient(transparent 10%,rgba(0,0,0,.2) 30%,#000 58%)}
+@media(max-height:700px){.gate-login .gt-ly,.gate-login .gt-fg{top:38%}}
 /* 前景鐵匠：跟背景同一個座標系，移動量較大＝比較近 */
 .gt-fg{position:absolute;left:50%;top:50%;height:108%;min-width:108%;object-fit:cover;translate:-50% -50%;max-width:none;pointer-events:none;
   transform:translate(calc(var(--mx) * 5px),calc(var(--my) * 3px));animation:gtZoomFg 20s ease-in-out infinite alternate;filter:drop-shadow(0 0 12px rgba(0,0,0,.6))}
@@ -1031,13 +1034,13 @@ body.gating{overflow:hidden}
 @media(max-height:640px){.gt-logo{width:min(70vw,320px)}.gt-box{gap:6px;padding:10px}}
 /* 開場故事 */
 .st-bg{position:absolute;left:50%;top:50%;height:110%;min-width:110%;object-fit:cover;translate:-50% -50%;max-width:none;animation:stKen 9s ease-out forwards;transform:translate(calc(var(--mx) * -8px),calc(var(--my) * -5px))}
-.s1 .st-bg{animation-name:stKenOut}.s3 .st-bg{animation-name:stPan}
+.s1 .st-bg,.s3 .st-bg{animation-name:stKenOut}.s5 .st-bg{animation-name:stPan}
+/* v4.19 第 2 張奧丁的臉在最上面：貼齊上緣、從上緣縮放；第 6 張騎士在右邊：畫面往右偏 */
+.s2 .st-bg{top:0;translate:-50% 0;transform-origin:50% 0}.s6 .st-bg{translate:-57% -50%}
 .st-fog{position:absolute;left:0;right:0;bottom:2%;height:24%;z-index:1;-webkit-mask-image:linear-gradient(transparent,#000 30%,#000 70%,transparent);mask-image:linear-gradient(transparent,#000 30%,#000 70%,transparent);background-size:auto 140%!important;background-position:0 50%!important;background:url(art/dp/fog_band.webp) 0 100%/auto 100% repeat-x;opacity:.35;animation:dpFogMove 50s linear infinite}
 .s4 .st-fog{opacity:.3}
 .st-mote{position:absolute;bottom:20%;width:18px;opacity:0;animation:gtEmber 7s linear infinite}
 .st-mote.m0{left:12%}.st-mote.m1{left:30%;width:26px;animation-delay:-1.4s}.st-mote.m2{left:48%;animation-delay:-2.8s}.st-mote.m3{left:64%;width:14px;animation-delay:-4.2s}.st-mote.m4{left:80%;width:22px;animation-delay:-5.6s}.st-mote.m5{left:92%;animation-delay:-3.5s}
-.s2 .st-mote,.s3 .st-mote{filter:hue-rotate(160deg) saturate(.4) brightness(1.6)}
-.s2 .st-bg{animation-name:stKenOut;left:56%}
 .st-txt{position:absolute;left:0;right:0;bottom:0;padding:18px 22px calc(22px + env(safe-area-inset-bottom,0px));text-align:center;z-index:2;animation:stTxt .8s .3s both}
 .st-txt p{margin:0 0 12px;font-family:var(--display);font-size:18px;line-height:1.7;color:#f3e6cf;text-shadow:0 2px 8px #000,0 0 2px #000}
 .st-txt .small{color:var(--ash)}
