@@ -465,6 +465,9 @@ function mythTests(){const n=VILLAGES.length,bad=MONS.filter(x=>x.length>6),j=EV
   const nd=EVT_BOSS.find(b=>b.id==='nidhogg'),god=[9,19].every(i=>/神/.test(MON_T[i]));
   const ok=MONS.length===n&&MON_T.length===n&&MON_LORE.length===n&&!bad.length&&new Set(MONS).size===n&&j&&j.art==='boss_jorm'&&nd&&nd.art==='boss_nidhogg'&&god;
   return[T('H 神話怪物：20 隻都有名字（6 字內、不重複）、稱號、傳說，塵世巨蟒、尼德霍格首領用自己的圖，1-10、2-10 是神',ok,`名字 ${MONS.length}／稱號 ${MON_T.length}／傳說 ${MON_LORE.length}；太長：${bad.join('、')||'無'}；巨蟒圖 ${j&&j.art}、尼德霍格圖 ${nd&&nd.art}、最後一關是神 ${god}`)]}
+// v4.09 還沒駐守的村莊：縮圖循環翻頁，20 座村莊都有村莊圖和怪物圖、怪物名字
+function flipTests(){const bad=VILLAGES.map((v,i)=>i).filter(i=>{const h=vFlip(i);return!h.includes(A('v'+(i+1)))||!h.includes(A('mon_'+(i+1)))||!h.includes(MONS[i])});
+  return[T('H 怪物翻頁：20 座村莊的翻頁縮圖都有村莊圖、怪物圖和名字',!bad.length,bad.length?'缺：'+bad.map(vNo).join('、'):'20 座都正常')]}
 // v4.06 神的關卡：名稱、條件跟劇情一致（1-10 彩虹橋頭要神聖、2-10 索列姆海姆要剋巨人），沒有村莊再要剋龍
 function godReqTests(){const v=VILLAGES[9],u=VILLAGES[19],mk=e=>({id:-1,b:'t3_halberd',q:3,lv:15,traits:[],ench:[e,null,null,null]});
   const ok=v.name==='彩虹橋頭'&&v.need==='holy'&&u.name==='索列姆海姆'&&u.need==='giant'&&!VILLAGES.some(x=>x.need==='dragon'||/世界樹根穴|烏特加德城/.test(x.name))&&eligible(9,mk({k:'holy',v:15}))&&!eligible(9,mk({k:'dragon',v:40}))&&TAGN[v.tag];
@@ -498,7 +501,7 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){
   if(mode==='econ')return econHtml(12)+econHtml(8);
-  const r=runAll({N:100000});r.res.push(...layoutTests(),...monTests(),...mythTests(),...godReqTests(),...curveTests(),...hitTests(),...enchTests(),...wsTests());const pass=r.res.filter(x=>x.pass).length;
+  const r=runAll({N:100000});r.res.push(...layoutTests(),...monTests(),...mythTests(),...flipTests(),...godReqTests(),...curveTests(),...hitTests(),...enchTests(),...wsTests());const pass=r.res.filter(x=>x.pass).length;
   return `<div><b>${pass}/${r.res.length} 通過</b>（${r.ms} 毫秒）</div>`+resHtml(r.res);
 }
 if(typeof module!=='undefined')module.exports={runAll,econReport,simulate,levelCheck};

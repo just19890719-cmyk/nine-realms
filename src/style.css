@@ -1533,4 +1533,18 @@ html.scrimmed .cbar{display:none}
 .mk-cl-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}.mk-cl-head>.btn{flex:none}
 .mk-cl-row{box-sizing:border-box;max-width:100%}.mk-cl-row .mk-art{width:44px;height:44px}.mk-cl-row .mk-mid{min-width:0}.mk-cl-back{flex:none}
 .mk-cl-sum{display:flex;align-items:center;gap:10px;margin-top:8px}
+/* v4.09 還沒駐守的村莊：縮圖在村莊和怪物之間循環翻頁（只動 opacity） */
+.vcard .vflip{position:relative;width:64px;height:73px;flex:none}
+.vflip .vthumb{display:block}
+.vflip .vf-m{position:absolute;left:0;top:0;border:1px solid #4a2a22}
+.vflip .vf-m,.vflip .vf-tm,.vf-dots i+i:after{opacity:0;animation:vfIn 6s var(--fd,0s) infinite}
+.vflip .vf-tv,.vf-dots i:first-child:after{animation:vfOut 6s var(--fd,0s) infinite}
+.vf-tag{position:absolute;left:0;top:49px;width:64px;line-height:15px;font-size:10px;text-align:center;color:#f3d9a8;white-space:nowrap;overflow:hidden;background:linear-gradient(transparent,rgba(0,0,0,.85) 40%);border-radius:0 0 6px 6px;pointer-events:none}
+.vf-dots{position:absolute;left:0;right:0;bottom:0;display:flex;gap:4px;justify-content:center}
+.vf-dots i{position:relative;width:5px;height:5px;border-radius:50%;background:#5a4a3a}
+.vf-dots i:after{content:'';position:absolute;inset:0;border-radius:50%;background:var(--gold)}
+.vcard.pause .vflip .vthumb{filter:grayscale(.3)}
+@keyframes vfIn{0%,45%{opacity:0}50%,95%{opacity:1}100%{opacity:0}}
+@keyframes vfOut{0%,45%{opacity:1}50%,95%{opacity:0}100%{opacity:1}}
+@media(prefers-reduced-motion:reduce){.vflip *,.vflip :after{animation:none!important}.vflip .vf-m,.vflip .vf-tm,.vf-dots i+i:after{opacity:1}.vflip .vf-tv,.vf-dots i:first-child:after{opacity:0}}
 </style>
