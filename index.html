@@ -2093,7 +2093,7 @@ const TALENTS={
   qual:{n:'巨匠之手',ic:'ic_star',per:.5,max:20,l:'精良以上品質機率',sg:'+'},
   melt:{n:'熔解大師',ic:'mat_shard',per:3,max:20,l:'熔解回收材料',sg:'+'}
 };
-const tal=k=>((typeof S!=='undefined'&&S&&S.rep&&S.rep.t[k])||0)*TALENTS[k].per;
+const tal=k=>0;   // v4.36 Mochi：鐵匠天賦拿掉，效果也不保留（大改版，玩家會重新開始）
 const repUsed=()=>Object.values(S.rep.t).reduce((a,b)=>a+b,0);
 const repPts=()=>S.rep?Math.max(0,S.rep.lv-1-repUsed()):0;
 const repBox=l=>({gold:100*l,...(l%5===0?{bless:1}:{}),...(l%10===0?{scroll:1}:{})});   // 升到 Lv.l 的聲望寶箱
@@ -2835,7 +2835,8 @@ function breakChance(w,next){const s=stable(w);return next<=s?0:Math.min(.9,.5+.
 const ENH_COST=[5,10,18,30,45,65,160,240,340,480,650,900,1250,1700,2300];
 function enhCost(w){return Math.round(ENH_COST[Math.min(14,w.lv)]*TIERS[bpOf(w).t].mult)}
 function enchCost(w,directed){return 40*TIERS[bpOf(w).t].mult*(directed?3:1)}
-function qualWeights(useBp,t){if(useBp)return[0,0,0,0,1000];const s=S.anvil-1;const q=QW.map((x,i)=>x+QSHIFT[i]*s);
+function qualWeights(useBp,t){if(useBp)return[0,0,0,0,1000];const s=0;   // v4.36 鐵砧拿掉：品質機率固定 Lv1
+  const q=QW.map((x,i)=>x+QSHIFT[i]*s);
   const x=Math.round(tal('qual')*10);if(x){q[0]-=x;q[1]+=x*.6;q[2]+=x*.3;q[3]+=x*.1}   // 天賦「巨匠之手」：普通的權重移給精良以上，總和不變
   if(t>=3){q[0]=0;q[1]=0}return q}
 const FORGE_SEC=5;   // v3.78 拿掉武器學徒：鍛造一律 5 秒、一次一批（批量也是 5 秒）；舊存檔的 S.slots 只留著算鐵匠等級
@@ -2852,8 +2853,8 @@ let DEV_LACK=0;   // 開發者工具「缺料提示測試」：暫時當作材�
 const lackList=(need,g)=>{const hv=k=>DEV_LACK>Date.now()?0:S.mats[k]||0;const l=Object.entries(need).filter(([k,n])=>!(hv(k)>=n)).map(([k,n])=>[k,n-hv(k)]);if(S.gold<g)l.push(['gold',g-S.gold]);return l};
 const lackStr=l=>l.map(([k,n])=>(k==='gold'?'金幣':MATS[k])+' ×'+fmt(n)).join('、');
 const monthlyOn=()=>S.monthly.until>NOW();
-const slotOpen=s=>S.anvil>=SLOT_ANVIL[s];
-function bpLock(b){if(cleared()<b.unlock)return'收復 '+vNo(b.unlock-1)+' 解鎖';if(S.furnace<TIERS[b.t].furnace)return'熔爐 Lv'+TIERS[b.t].furnace;return''}
+const slotOpen=s=>SLOT_ANVIL[s]<=1;   // v4.36 工坊拿掉：鐵砧固定 Lv1 的效果
+function bpLock(b){if(cleared()<b.unlock)return'收復 '+vNo(b.unlock-1)+' 解鎖';return''}   // v4.36 熔爐拿掉：圖紙只看收復關卡
 const bulkOn=()=>cleared()>=5;
 function dropChance(i,w,d,strat){const st=STRATS[strat];const loot=w?Math.min(CAP.loot,affixVal(w,'loot'))/100:0;const rare=d[1]<RARE_P;
   let p=d[1]*(1+loot)*(rare?st.rare*(1+(w?Math.min(CAP.treasure,traitVal(w,'treasure')+affixVal(w,'seek')+awkVal(w,'rare')):0)/100)*(1+tal('rare')/100):st.common*(1+tal('mats')/100));return Math.min(rare?.6:1,p)}
@@ -3002,7 +3003,7 @@ function enhanceCore(id,opt={}){
   save();return{k:'fail',next,danger,before,usedBless,usedScroll,test};
 }
 function enchantCore(id,slot){   // v3.84 只能隨機附魔
-  const w=W(id);if(!w)return{err:'找不到武器'};if(busyW(w))return{err:'駐守中的武器要先收回'};if(!slotOpen(slot))return{err:'鐵砧 Lv'+SLOT_ANVIL[slot]+' 才能使用這一格'};
+  const w=W(id);if(!w)return{err:'找不到武器'};if(busyW(w))return{err:'駐守中的武器要先收回'};if(!slotOpen(slot))return{err:'這一格暫不開放'};
   const c=enchCost(w),sh=1;
   if(S.mats.shard<sh||S.gold<c)return{err:`需要 ${sh} 個符文碎片和 ${c} 金幣`};
   S.mats.shard-=sh;S.gold-=c;const k=weighted(affPool(),x=>AFFIX[x].w),a=AFFIX[k];
@@ -3037,7 +3038,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
- {v:'4.36',d:'10/24',t:'武器品階與框的電流',b:['+9 以上的武器框改成<b>一道電流繞著框打轉</b>（原本是整框一明一暗）','武器上原本的品質名稱改成看強化等級的<b>品階</b>，顏色跟框一樣：+0 凡鐵、+1～+6 精鍛、+7～+8 寒鋒、+9 血刃、+10 神鑄、+11 星魂、+12 永恆','武器庫的「品質」篩選改成「品階」','武器格只留武器圖和名稱','鐵匠鋪的<b>工坊升級、熔解回收、鐵匠天賦</b>先拿掉（遊戲大改版中）；單把武器還是可以在武器詳情裡熔解'],g:['enh','melt']},
+ {v:'4.36',d:'10/24',t:'武器品階與框的電流',b:['+9 以上的武器框改成<b>一道電流繞著框打轉</b>（原本是整框一明一暗）','武器上原本的品質名稱改成看強化等級的<b>品階</b>，顏色跟框一樣：+0 凡鐵、+1～+6 精鍛、+7～+8 寒鋒、+9 血刃、+10 神鑄、+11 星魂、+12 永恆','武器庫的「品質」篩選改成「品階」','武器格只留武器圖和名稱','鐵匠鋪的<b>工坊升級、熔解回收、鐵匠天賦</b>拿掉了（遊戲大改版中），效果也一起拿掉：圖紙只看收復的關卡就解鎖，附魔固定 2 格；單把武器還是可以在武器詳情裡熔解'],g:['enh','melt','ench']},
  {v:'4.35',d:'10/24',t:'第二界 8 隻怪物有全身圖了',b:['2-1 九頭巨人斯里瓦爾迪、2-2 鐵森林狼王、2-3 吞屍巨鷹赫拉斯瓦爾格、2-4 巨人屍鬼德勞格','2-5 冰湖水妖諾克（拉著琴把你引上冰面）、2-6 洞穴蠕龍林德蟲、2-7 風之巨人卡瑞、2-8 幻術巨人王烏特加德洛基','20 關都有全身圖了：點怪物小圖展開戰鬥畫面，就能看到牠們待機和攻擊的動作','怪物被打中時的閃光跟著當下的動作走，不會再出現跟身體對不上的白影'],g:['hit']},
  {v:'4.35',d:'10/24',t:'戰鬥畫面不再出現兩隻怪物',b:['1-2、1-9、1-10 和第二界的村莊背景本來就畫了怪物，展開戰鬥畫面時會跟前面的怪物重複','現在戰鬥畫面只取背景裡沒有怪物的那一段（例如瞭望塔、燃燒的城堡、巨人營地、極光），卡片和詳情頁的背景不變'],g:['hit']},
  {v:'4.34',d:'10/24',t:'武器框顏色看強化等級',b:['武器框改成新的細雷電框，顏色看<b>強化等級</b>：+0 灰、+1～+6 綠、+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石；+9 以上的框會微微閃亮','武器庫、交易所、排行榜、聊天武器卡都一樣，一眼就看得出哪幾把是賭過的','品質（普通～傳說）改成只看名稱下方的小字'],g:['enh']},
@@ -3086,7 +3087,7 @@ const GUIDE=[
   {k:'forge',ic:'t1_ironhammer_disp',n:'鍛造',s:'選圖紙、放材料，5 秒打好一批',v:'3.86',h:'在鐵匠鋪「圖紙」選一張圖紙，材料和金幣夠就能按「開始鍛造」。<br>一次一批（最多 10 把），不管幾把都是 <b>5 秒</b>完成。<br>熔爐等級決定能打哪種材質：鐵製 Lv1、霜銀 Lv2、龍鱗 Lv4、神器 Lv5、巨人 Lv6。<br>收復村莊會解鎖新圖紙。'},
   {k:'qual',ic:'tr_sharp',n:'品質與先天特性',s:'普通到傳說，攻擊力最多 2.3 倍',v:'3.77',h:'品質：普通 ×1、精良 ×1.2、稀有 ×1.45、史詩 ×1.8、傳說 ×2.3。鐵砧等級越高，好品質機率越高。<br>霜銀以上有保底：連續 9 把低於稀有，第 10 把必定稀有。<br>鍛造時會隨機帶<b>先天特性</b>（鋒利、堅固、輕巧、尋寶、巨人獵手、符文親和），品質越高特性越多、數值越高。'},
   {k:'enh',ic:'it_bless',n:'強化',s:'+1～+6 安定，+7 起有機率爆裝',v:'4.36',h:'所有材質的安定值都是 <b>+6</b>：+1～+6 失敗只扣金幣，不會爆裝。<br>+7 起是危險區，成功率依序 45／35／25／18／12／8／5／3／2%（+7～+15）。失敗時爆裝機率 50% 起，每級 +5%，最高 90%。<br><b>防爆卷</b>：爆裝時保住武器。<b>祝福石</b>：成功率 +10%。<br>爆裝會留下殘渣，可以換材料。<br>武器的<b>品階</b>和框色看強化等級：+0 凡鐵（灰）、+1～+6 精鍛（綠）、+7～+8 寒鋒（藍）、+9 血刃（紅）、+10 神鑄（金）、+11 星魂（紫）、+12 永恆（鑽石），+9 以上的框有電流繞著跑。'},
-  {k:'ench',ic:'mat_shard',n:'附魔',s:'符文碎片隨機出 12 種詞條，一關一關學會',v:'4.28',h:'用 1 個符文碎片＋金幣隨機附魔一種詞條，重新附魔會蓋掉那一格。<br>符文要<b>一關一關學會</b>：開局會烈焰、霜寒、迅捷、掠奪、豐收；1-3 開放學會尋珍、1-6 貪婪、1-7 雷霆、1-8 剋巨人、1-10 神聖、2-6 劇毒和剋龍。已經附在武器上的不受影響。<br><b>攻擊力</b>：烈焰、霜寒、雷霆、劇毒、神聖。凡鐵傷不了神，打神（1-10、2-10）一定要<b>神聖</b>。<br><b>狩獵</b>：迅捷、掠奪、貪婪、尋珍、豐收。<br><b>剋制</b>：剋巨人（1-8 巨人足跡一定要有）、剋龍（2-6 蠕龍礦坑一定要有、打尼德霍格）。1-9 灰燼要塞要<b>霜寒</b>。<br>附魔欄：鐵砧 Lv1 開 2 格、Lv3 第 3 格、Lv5 第 4 格。'},
+  {k:'ench',ic:'mat_shard',n:'附魔',s:'符文碎片隨機出 12 種詞條，一關一關學會',v:'4.36',h:'用 1 個符文碎片＋金幣隨機附魔一種詞條，重新附魔會蓋掉那一格。<br>符文要<b>一關一關學會</b>：開局會烈焰、霜寒、迅捷、掠奪、豐收；1-3 開放學會尋珍、1-6 貪婪、1-7 雷霆、1-8 剋巨人、1-10 神聖、2-6 劇毒和剋龍。已經附在武器上的不受影響。<br><b>攻擊力</b>：烈焰、霜寒、雷霆、劇毒、神聖。凡鐵傷不了神，打神（1-10、2-10）一定要<b>神聖</b>。<br><b>狩獵</b>：迅捷、掠奪、貪婪、尋珍、豐收。<br><b>剋制</b>：剋巨人（1-8 巨人足跡一定要有）、剋龍（2-6 蠕龍礦坑一定要有、打尼德霍格）。1-9 灰燼要塞要<b>霜寒</b>。<br>附魔欄：目前開放 2 格。'},
   {k:'god',ic:'g_hofund_disp',n:'神明武器與神格覺醒',s:'用神的遺物鍛造，強化越高覺醒越多',v:'4.26',h:'每一界最後一關是神。駐守神的關卡狩獵，每輪有 20% 機率掉<b>神的遺物</b>（1-10 霍夫德劍柄、2-10 雷神錘柄）。<br>收集 6 個遺物加材料，就能在鐵匠鋪鍛造<b>霍夫德之劍</b>（熔爐 Lv5）或<b>索爾之錘</b>（熔爐 Lv6）。它們是那一界最強的武器，但比不上下一界的新材質。<br><b>神格覺醒</b>：強化到 +7、+9、+11、+13、+15 會逐段覺醒，效果只算在這把武器身上（狩獵時間、稀有素材或材料、攻擊力 +10%、首領傷害 +15%）。+15 完全覺醒有專屬稱號、全服公告和金色光環。<br>強化規則和一般武器一樣，+7 以上失敗還是可能爆裝，記得用防爆卷。'},
   {k:'melt',ic:'mat_iron',n:'熔解',s:'不要的武器換回金幣和材料',v:'4.36',h:'在武器詳情按「熔解」：退回一半鍛造金幣、三成材料，25% 機率多得符文碎片。<br>收藏（上鎖）的武器不能熔解。'}]],
  ['村莊與戰鬥',[
@@ -3131,7 +3132,7 @@ function showLevel(){const c=cleared(),lv=smithLv();
    <div class="label">下一步可以做</div><ul class="lv-next">${next.map(t=>`<li>${t}</li>`).join('')}</ul>
    <div class="label">聊天</div><div class="kv"><span>底部聊天條</span><b><button class="ui-btn ui-btn--chip chipbtn ${S.chatBar===false?'':'on'}" data-act="cbarset">${S.chatBar===false?'隱藏':'顯示'}</button></b></div>
    ${chatBlk().length?`<div class="small muted">封鎖名單（點名字解除）</div><div class="cbl-row">${chatBlk().map(x=>`<button class="ui-btn ui-btn--chip chipbtn" data-act="cblun" data-u="${esc(x.u)}">${esc(x.n)} ✕</button>`).join('')}</div>`:''}`};render()}
-const smithLv=()=>1+cleared()+(S.furnace-1)+(S.anvil-1)+(S.slots-1);
+const smithLv=()=>1+cleared()+(S.slots-1);   // v4.36 熔爐、鐵砧不再算等級
 const queuedQty=()=>S.jobs.reduce((a,j)=>a+(j.qty||1),0);
 
 /* ---------- 行動（介面包裝） ---------- */
@@ -3863,7 +3864,7 @@ function sheetWeapon(id,mode){
     const s=ui.enchSlot,open=slotOpen(s),c1=enchCost(w),e=w.ench[s],rm=runicMul(w),tw=affPool().reduce((a,k)=>a+AFFIX[k].w,0),P=x=>Math.round(x/tw*100)+'%';
     const mini=`<div class="nv-head">${wArt(b.id,{frame:fq(w),cls:'nv-art'})}<div class="grow"><b class="${lc(w)}">${b.n} +${w.lv}</b><div class="ec-have">${img('mat_shard')}<b>${S.mats.shard}</b>${img('it_gold')}<b>${fmt(S.gold)}</b></div>${traitVal(w,'runic')?`<div class="small t-ok">符文親和：附魔數值 ×${rm.toFixed(2)}</div>`:''}</div></div>`;
     const slots=`<div class="nv-sec"><span class="nv-k">選擇欄位</span><div class="slots nv-slots">${[0,1,2,3].map(k=>slotHtml(w,k,true)).join('')}</div></div>`;
-    const cur=!open?`<div class="ec-cur locked">${img('ic_lock')}<div class="grow"><span class="ec-k">第 ${s+1} 格</span><b>還沒開放<span class="ec-e">鐵砧 Lv${SLOT_ANVIL[s]} 開放</span></b></div></div>`
+    const cur=!open?`<div class="ec-cur locked">${img('ic_lock')}<div class="grow"><span class="ec-k">第 ${s+1} 格</span><b>還沒開放<span class="ec-e">暫不開放</span></b></div></div>`
       :e?`<div class="ec-cur">${img(AFFIX_ICON[e.k])}<div class="grow"><span class="ec-k">第 ${s+1} 格目前詞條</span><b>${AFFIX[e.k].n} <i>+${r1(e.v*rm)}%</i><span class="ec-e">${AFF_EFF[e.k](r1(e.v*rm))}</span></b></div><span class="ec-w">重抽會覆蓋</span></div>`
       :`<div class="ec-cur none"><span class="ec-q">?</span><div class="grow"><span class="ec-k">第 ${s+1} 格・空欄位</span><b>隨機獲得 1 種詞條</b></div></div>`;
     const pool=AFF_G.map(([g,gn])=>{const xs=Object.entries(AFFIX).filter(([k,a])=>a.g===g);
@@ -3879,7 +3880,7 @@ function sheetWeapon(id,mode){
   }
 }
 function slotHtml(w,s,pick){const e=w.ench[s],open=slotOpen(s),rm=runicMul(w);
-  return `<button class="ui-card ui-card--slot eslot ${pick&&ui.enchSlot===s?'on':''} ${open?'':'locked'}" ${pick?`data-act="eslot" data-k="${s}"`:''}>${!open?`${img('ic_lock','lk')}<span class="small">鐵砧 Lv${SLOT_ANVIL[s]}</span>`:e?`${img(AFFIX_ICON[e.k])}<span>${AFFIX[e.k].n}</span><span class="small t-gold">+${Math.round(e.v*rm*10)/10}%</span>`:'<span class="small muted">空欄位</span>'}</button>`}
+  return `<button class="ui-card ui-card--slot eslot ${pick&&ui.enchSlot===s?'on':''} ${open?'':'locked'}" ${pick?`data-act="eslot" data-k="${s}"`:''}>${!open?`${img('ic_lock','lk')}<span class="small">暫不開放</span>`:e?`${img(AFFIX_ICON[e.k])}<span>${AFFIX[e.k].n}</span><span class="small t-gold">+${Math.round(e.v*rm*10)/10}%</span>`:'<span class="small muted">空欄位</span>'}</button>`}
 
 /* ---------- 村莊 ---------- */
 function betterIdle(i){const st=S.villages[i],cur=st.weaponId!=null&&W(st.weaponId);return S.weapons.some(x=>where(x)<0&&eligible(i,x)&&(!cur||power(x)>power(cur)))}

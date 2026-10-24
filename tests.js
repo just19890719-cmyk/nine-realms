@@ -209,7 +209,8 @@ function saveTests(){
       `欄位數 ${slots}；隨機附魔扣碎片 ${shard0-S.mats.shard}、金幣 ${g1-S.gold}；迅捷堆疊後時間縮短 ${tr*100}%（上限 ${CAP.time}%）；掠奪 ${lo}%（上限 ${CAP.loot}%）；有剋巨人可交 1-8：${yOk}，沒有：${eligible(7,y2)}`));
     // 附魔欄位依鐵砧
     S=fresh();S.gold=1e6;S.mats.shard=10;const z=makeWeapon('t1_woodaxe',0,0,[]);const e2=enchantCore(z.id,2);S.anvil=3;const e3=enchantCore(z.id,2),e4=enchantCore(z.id,3);S.anvil=5;const e5=enchantCore(z.id,3);
-    res.push(T('E11 附魔第 3 格鐵砧 Lv3、第 4 格鐵砧 Lv5 開放',e2.err&&!e3.err&&e4.err&&!e5.err,'Lv1 第3格擋下、Lv3 第3格可用第4格擋下、Lv5 第4格可用'));
+    const e1=enchantCore(z.id,1);   // v4.36 工坊拿掉：附魔固定前 2 格，鐵砧等級不再影響
+    res.push(T('E11 附魔固定開 2 格：第 2 格可用、第 3、4 格不管鐵砧幾級都擋下',!e1.err&&e2.err&&e3.err&&e4.err&&e5.err,`第2格 ${e1.err||'可用'}；第3格 ${e3.err||'可用'}；第4格 ${e5.err||'可用'}`));
     // 祈願
     const sum=GACHA.reduce((a,x)=>a+x[2],0);S=fresh();S.gems=1e7;let pityOk=true,nPity=0;for(let n=0;n<3000;n++){const r=pullCore(10);const hit9=r.slice(0,9).some(p=>p[2]<=PITY_MAX_W);if(!hit9){nPity++;if(r[9][2]>PITY_MAX_W)pityOk=false}}
     res.push(T('E12 祈願機率總和 100%、十連保底生效',sum===1000&&pityOk,`權重總和 ${sum}/1000；3,000 次十連中觸發保底 ${nPity} 次（理論約 ${(Math.pow(1-GACHA.filter(x=>x[2]<=PITY_MAX_W).reduce((a,x)=>a+x[2],0)/1000,9)*100).toFixed(2)}%）`));
@@ -370,7 +371,7 @@ function repTests(){const res=[];
     let e1='';for(let n=0;n<4;n++)e1=talentUp('gold')||e1;const e2=talentUp('gold');
     res.push(T('I2 天賦點用完不能再點、上限擋住',!e1&&e2==='天賦點不夠'&&S.rep.t.gold===4&&repPts()===0,`商隊議價 Lv${S.rep.t.gold}，第 5 次：${e2}`));
     S.rep.t.qual=20;const q=qualWeights(false,0),sum=q.reduce((a,b)=>a+b,0);
-    res.push(T('I3 巨匠之手滿級：品質權重總和仍 1000、普通減 10%',Math.round(sum)===1000&&q[0]===QW[0]-100,`權重 ${q.map(x=>Math.round(x)).join('/')}，總和 ${Math.round(sum)}`));
+    res.push(T('I3 天賦拿掉：巨匠之手滿級也不影響品質權重（總和 1000）',Math.round(sum)===1000&&q[0]===QW[0],`權重 ${q.map(x=>Math.round(x)).join('/')}，總和 ${Math.round(sum)}`));
     {const s0=S;S=fresh();S.villages.forEach(v=>v.status='cleared');S.furnace=6;S.gold=1e9;S.slots=4;
       const big=BPS.filter(b=>b.t===4)[0];for(const k of new Set([...Object.keys(S.mats),...Object.keys(recipe(big))]))S.mats[k]=1e6;const j1=forgeStart(big.id,1,false),e1=forgeStart('t1_woodaxe',1,false);const d1=j1.end-j1.start;j1.end=0;tick();const j10=forgeStart('t1_woodaxe',10,false),d10=j10.end-j10.start;
       const o=sanitize(JSON.parse(JSON.stringify({...S,jobs:[{b:'t3_halberd',qty:1,start:1000,end:1000+240000}]})));S=s0;
