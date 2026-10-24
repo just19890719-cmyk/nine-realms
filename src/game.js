@@ -283,7 +283,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.55';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.56';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -664,14 +664,19 @@ if(typeof window!=='undefined'){setInterval(()=>{if(AUTH&&CLOUD.dirty)cloudPush(
     b.textContent='⚠ 雲端存檔失敗：'+CLOUD.err+'（點這裡重試）'},2000);setInterval(()=>{if(!document.hidden)cloudCheckSession()},30000);
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&AUTH){save();cloudPush(true,true)}else if(AUTH)cloudCheckSession()})}
 
-/* ---------- v3.41 交易所（玩家之間買賣武器；伺服器 Supabase：market 表＋market_* 函式） ---------- */
+/* ---------- v3.41 交易所（玩家之間買賣武器；伺服器 Supabase：market 表＋market_* 函式；v4.56 道具也能賣：kind 'i'＋market_fill） ---------- */
 const MK_FEE=.05,MK_MAX=10,MK_DAYS=3,MK_CUR={gold:['it_gold','金幣'],gems:['it_gems','鑽石']};
-const MK={rows:[],mine:[],claim:[],seen:[],loading:false,err:'',t:0,tab:'buy',cat:'all',cur:'all',sort:'new',sellCur:'gold'};
+const MK={rows:[],mine:[],claim:[],iclaim:[],seen:[],loading:false,err:'',t:0,tab:'buy',cat:'all',cur:'all',sort:'new',sellCur:'gold'};
 const mkMock=()=>!AUTH&&devMode();   // 未登入但開了開發者模式 → 用本機「離線模擬」市場，方便測試畫面
-const MK_ERR=m=>{m=String(m||'');return /not owned/i.test(m)?'伺服器上找不到這把武器（請稍等幾秒再試）':/bad price/i.test(m)?`價格不正確（最低 ${MK_MIN}）`:/session/i.test(m)?'這個帳號已經在其他手機登入':/not available/i.test(m)?'這件商品已經賣出或下架了':/listing limit/i.test(m)?`同時最多上架 ${MK_MAX} 件`:/not enough/i.test(m)?'錢不夠（以雲端存檔為準，請稍後再試）':/bad price/i.test(m)?'價格不正確':/self/i.test(m)?'不能買自己上架的武器':/could not find the function|PGRST202|relation .*market/i.test(m)?'交易所尚未啟用（伺服器還沒設定好）｜'+m.slice(0,140):SB_ERR(m)};
+const MK_ERR=m=>{m=String(m||'');return /not enough items/i.test(m)?'道具數量不夠（以雲端存檔為準）':/bad qty/i.test(m)?'數量不正確':/not owned/i.test(m)?'伺服器上找不到這個東西（請稍等幾秒再試）':/bad price/i.test(m)?`價格不正確（最低 ${MK_MIN}）`:/session/i.test(m)?'這個帳號已經在其他手機登入':/not available/i.test(m)?'這件商品已經賣出或下架了':/listing limit/i.test(m)?`同時最多上架 ${MK_MAX} 件`:/not enough/i.test(m)?'錢不夠（以雲端存檔為準，請稍後再試）':/bad price/i.test(m)?'價格不正確':/self/i.test(m)?'不能買自己上架的武器':/could not find the function|PGRST202|relation .*market/i.test(m)?'交易所尚未啟用（伺服器還沒設定好）｜'+m.slice(0,140):SB_ERR(m)};
 const mkLeft=r=>Math.max(0,Date.parse(r.expires_at)-Date.now());
 const mkGarrison=id=>S.villages.some(v=>v.weaponId===id)||(()=>{const w=W(id);return !!w&&bossSlotOf(w)>=0})();
 const mkSellable=w=>!w.lock&&!w.test&&!mkGarrison(w.id)&&!(S.jobs||[]).some(j=>j.wid===w.id);
+// v4.56 道具（強化石、附魔石、遺物、材料）：賣家填單價＋數量，買家可以只買一部分；上架／購買／下架／領取都由伺服器直接改雲端存檔
+const mkIsItem=r=>r&&r.kind==='i',mkItemOk=k=>!!(ITEMS[k]||MATS[k]),mkHave=k=>MATS[k]?S.mats[k]|0:S.items[k]|0;
+const mkCat=r=>mkIsItem(r)?'item':BP[bpId(r.bp)].cat,mkClaimN=()=>MK.claim.length+MK.iclaim.length;
+const mkRowOk=r=>mkIsItem(r)?mkItemOk(r.item):!!BP[bpId(r.bp)];
+const mkItemAdd=(k,n)=>{if(MATS[k])S.mats[k]=Math.max(0,(S.mats[k]|0)+n);else S.items[k]=Math.max(0,(S.items[k]|0)+n)};
 // ---- 帳本（v3.48）：每筆交易只處理一次。伺服器保留「待處理」直到這邊的存檔確定上傳，才回報完成 ----
 const MK_MIN=10,MK_MAXP={gold:99999999,gems:999999};
 const mkLedger=()=>{S.mk=S.mk||{};for(const k of ['done','got','listed'])S.mk[k]=S.mk[k]||[];return S.mk};
@@ -685,6 +690,8 @@ const mkTake=r=>{const w=r.weapon||{};const ix=S.weapons.findIndex(x=>x.id===w.o
 function mkMockDB(){let d=null;try{d=JSON.parse(localStorage.getItem('nrs-mkmock')||'null')}catch(e){}
   if(!d){d={seq:1,rows:[]};const bps=BPS.filter(b=>b.t<=1);for(let k=0;k<12;k++){const b=bps[(k*7)%bps.length],q=Math.min(4,(k*3)%5),lv=(k*5)%10,cur=k%3?'gold':'gems';
     d.rows.push({id:d.seq++,seller:'npc',seller_nick:LB_NAMES[k%LB_NAMES.length].split('・')[0],weapon:{b:b.id,q,lv,traits:[],ench:[null,null,null,null]},bp:b.id,lv,q,cur,price:cur==='gold'?(300+k*137)*(lv+1):20+k*9,status:'open',created_at:new Date(Date.now()-k*36e5).toISOString(),expires_at:new Date(Date.now()+(MK_DAYS*24-k*5)*36e5).toISOString(),settled:false,buyer_ack:false})}}
+  if(!d.fills){d.fills=[];d.fseq=1;const ks=[STONE,'relic_g',ENSTONE,...Object.keys(MATS).slice(0,2)].filter(mkItemOk);ks.forEach((k,j)=>{const q=[30,4,12,200,150][j]||20;   // v4.56 道具商品
+    d.rows.push({id:d.seq++,kind:'i',item:k,qty:q,left_qty:q,seller:'npc',seller_nick:LB_NAMES[(j+3)%LB_NAMES.length].split('・')[0],weapon:{item:k},bp:null,lv:0,q:0,cur:j%2?'gems':'gold',price:j%2?3+j:[400,0,250,30,25][j]||50,status:'open',created_at:new Date(Date.now()-j*25e5).toISOString(),expires_at:new Date(Date.now()+(MK_DAYS*24-j*3)*36e5).toISOString(),settled:false,buyer_ack:true})})}
   return d}
 const mkMockSave=d=>{try{localStorage.setItem('nrs-mkmock',JSON.stringify(d))}catch(e){}};
 async function mkMockApi(fn,a){const d=mkMockDB(),now=Date.now(),me='me';let out=null;
@@ -696,18 +703,32 @@ async function mkMockApi(fn,a){const d=mkMockDB(),now=Date.now(),me='me';let out
   else if(fn==='cancel'){const r=d.rows.find(r=>r.id===a.p_id&&r.seller===me&&r.status==='open');if(!r)throw new Error('not available');r.status='cancelled';out=r}
   else if(fn==='pending'){d.rows.forEach(r=>{if(r.seller===me&&r.status==='open'&&Date.parse(r.expires_at)<=now)r.status='expired'});out=d.rows.filter(r=>(r.seller===me&&!r.settled&&r.status!=='open')||(r.buyer===me&&!r.buyer_ack))}
   else if(fn==='ack'){d.rows.forEach(r=>{if(!a.p_ids.includes(r.id))return;if(r.seller===me)r.settled=true;if(r.buyer===me)r.buyer_ack=true})}
+  // v4.56 道具：模擬伺服器直接改存檔（這裡直接改 S）
+  else if(fn==='list_item'){const k=a.p_item,q=a.p_qty|0;if(!(a.p_price>=MK_MIN))throw new Error('bad price');if(!(q>=1))throw new Error('bad qty');if(mkHave(k)<q)throw new Error('not enough items');
+    if(d.rows.filter(r=>r.seller===me&&r.status==='open'&&Date.parse(r.expires_at)>now).length>=MK_MAX)throw new Error('listing limit');
+    mkItemAdd(k,-q);out=d.seq;d.rows.unshift({id:d.seq++,kind:'i',item:k,qty:q,left_qty:q,seller:me,seller_nick:S.nick||'我',weapon:{item:k},bp:null,lv:0,q:0,cur:a.p_cur,price:a.p_price,status:'open',created_at:new Date().toISOString(),expires_at:new Date(now+MK_DAYS*864e5).toISOString(),settled:false,buyer_ack:true})}
+  else if(fn==='buy_item'){const r=d.rows.find(r=>r.id===a.p_id&&r.kind==='i'&&r.status==='open'&&Date.parse(r.expires_at)>now);if(!r||r.seller===me)throw new Error('not available');const q=a.p_qty|0;if(!(q>=1&&q<=r.left_qty))throw new Error('bad qty');
+    const tot=r.price*q;if(S[r.cur]<tot)throw new Error('not enough');S[r.cur]-=tot;mkItemAdd(r.item,q);r.left_qty-=q;if(r.left_qty<=0)r.status='sold';out={id:d.fseq++,listing:r.id,seller:r.seller,buyer:me,item:r.item,qty:q,cur:r.cur,total:tot,settled:false};d.fills.push(out)}
+  else if(fn==='cancel_item'){const r=d.rows.find(r=>r.id===a.p_id&&r.kind==='i'&&r.seller===me&&r.status==='open');if(!r)throw new Error('not available');mkItemAdd(r.item,r.left_qty);r.left_qty=0;r.status='cancelled';r.settled=true;out=r}
+  else if(fn==='item_pending'||fn==='item_claim'){d.rows.forEach(r=>{if(r.seller===me&&r.status==='open'&&Date.parse(r.expires_at)<=now)r.status='expired'});
+    const fs=d.fills.filter(f=>f.seller===me&&!f.settled),bs=d.rows.filter(r=>r.kind==='i'&&r.seller===me&&r.status==='expired'&&!r.settled&&r.left_qty>0);
+    if(fn==='item_pending')out=[...fs.map(f=>({key:'f'+f.id,status:'sold',item:f.item,qty:f.qty,cur:f.cur,total:f.total,net:Math.floor(f.total*.95)})),...bs.map(r=>({key:'b'+r.id,status:'expired',item:r.item,qty:r.left_qty,cur:r.cur,total:0,net:0}))];
+    else{out={gold:0,gems:0,back:0};fs.forEach(f=>{const n=Math.floor(f.total*.95);S[f.cur]+=n;out[f.cur]+=n;f.settled=true});
+      d.rows.forEach(r=>{if(r.kind==='i'&&r.seller===me&&(r.status==='expired'||r.status==='sold')&&!r.settled){if(r.status==='expired'&&r.left_qty>0){mkItemAdd(r.item,r.left_qty);out.back+=r.left_qty}r.left_qty=0;r.settled=true}})}}
+  else if(fn==='sim_sell'){const r=d.rows.find(r=>r.kind==='i'&&r.seller===me&&r.status==='open');if(!r)throw new Error('先上架一個道具');const q=Math.max(1,Math.ceil(r.left_qty/2));   // 開發者測試：假裝有人買走一半
+    r.left_qty-=q;if(r.left_qty<=0)r.status='sold';d.fills.push({id:d.fseq++,listing:r.id,seller:me,buyer:'npc',item:r.item,qty:q,cur:r.cur,total:r.price*q,settled:false});out=q}
   mkMockSave(d);return JSON.parse(JSON.stringify(out))}
 // ---- 伺服器 ----
 async function mkApi(fn,a={}){if(mkMock())return mkMockApi(fn,a);if(!AUTH)throw new Error('尚未登入');
-  if(fn==='browse')return sbRest('market?select=id,seller,seller_nick,weapon,bp,lv,q,cur,price,expires_at,created_at&status=eq.open&expires_at=gt.'+encodeURIComponent(new Date().toISOString())+'&order=created_at.desc&limit=80');
-  if(fn==='mine')return sbRest('market?select=id,seller,seller_nick,weapon,bp,lv,q,cur,price,expires_at,created_at&seller=eq.'+AUTH.user.id+'&status=eq.open&order=created_at.desc');
+  if(fn==='browse')return sbRest('market?select=id,seller,seller_nick,weapon,bp,lv,q,cur,price,expires_at,created_at,kind,item,qty,left_qty&status=eq.open&expires_at=gt.'+encodeURIComponent(new Date().toISOString())+'&order=created_at.desc&limit=80');
+  if(fn==='mine')return sbRest('market?select=id,seller,seller_nick,weapon,bp,lv,q,cur,price,expires_at,created_at,kind,item,qty,left_qty&seller=eq.'+AUTH.user.id+'&status=eq.open&order=created_at.desc');
   return sbRest('rpc/market_'+fn,{method:'POST',body:JSON.stringify({...a,p_sid:SID})})}
 const mkMe=r=>mkMock()?r.seller==='me':AUTH&&r.seller===AUTH.user.id;
 const mkMeBuyer=r=>mkMock()?r.buyer==='me':AUTH&&r.buyer===AUTH.user.id;
 // 確定存檔已上傳雲端（離線模擬視為成功）
 async function mkSaved(){save();if(!AUTH)return true;for(let k=0;k<20&&CLOUD.busy;k++)await new Promise(r=>setTimeout(r,150));await cloudPush(true);return !CLOUD.dirty&&!CLOUD.err&&!CLOUD.kicked}
 async function mkLoad(){if(MK.loading)return MK.p;MK.loading=true;MK.err='';mkRender();return MK.p=(async()=>{
-  try{const [a,b]=await Promise.all([mkApi('browse'),mkApi('mine')]);MK.rows=(a||[]).filter(r=>BP[bpId(r.bp)]);MK.mine=(b||[]).filter(r=>BP[bpId(r.bp)]);MK.t=Date.now();await mkReconcile(true)}
+  try{const [a,b]=await Promise.all([mkApi('browse'),mkApi('mine')]);MK.rows=(a||[]).filter(mkRowOk);MK.mine=(b||[]).filter(mkRowOk);MK.t=Date.now();await mkReconcile(true)}
   catch(e){MK.err=MK_ERR(e.message);console.warn('market',e.message)}finally{MK.loading=false;mkRender()}})()}
 const mkRender=()=>{if(ui.tab==='market'||ui.sheet&&/^mk/.test(ui.sheet.t))render()};
 function mkGive(w){const o={...JSON.parse(JSON.stringify(w)),id:S.nextId++,lock:false,test:false,created:NOW()};delete o.oid;delete o.ocr;o.b=bpId(o.b);o.traits=o.traits||[];elemCleanW(o);S.weapons.push(o);return o}
@@ -715,8 +736,10 @@ function mkGive(w){const o={...JSON.parse(JSON.stringify(w)),id:S.nextId++,lock:
 let MK_REC=false;
 async function mkReconcile(quiet){if((!AUTH||!CLOUD.ready)&&!mkMock())return;if(MK_REC)return;MK_REC=true;
   try{const L=mkLedger();let changed=false,g=0,m=0,back=0,got=[],ack=[];
-    for(const r of MK.mine||[])if(!L.listed.includes(r.id)){mkTake(r);mkMark('listed',r.id);changed=true}   // 上架成功但當時沒存到檔
-    const rs=await mkApi('pending')||[];
+    for(const r of MK.mine||[])if(!mkIsItem(r)&&!L.listed.includes(r.id)){mkTake(r);mkMark('listed',r.id);changed=true}   // 上架成功但當時沒存到檔
+    const rs=(await mkApi('pending')||[]).filter(r=>!mkIsItem(r));
+    let ip=[];try{ip=await mkApi('item_pending')||[]}catch(e){console.warn('market items',e.message)}   // v4.56 伺服器還沒跑 sql/19 時，武器照常運作
+    const ifresh=ip.filter(r=>!MK.seen.includes(r.key));MK.iclaim=ip;MK.seen.push(...ifresh.map(r=>r.key));
     const claim=[];
     for(const r of rs){
       if(mkMe(r)){if(!L.listed.includes(r.id)){mkTake(r);mkMark('listed',r.id);changed=true}
@@ -724,31 +747,36 @@ async function mkReconcile(quiet){if((!AUTH||!CLOUD.ready)&&!mkMock())return;if(
           mkGive(r.weapon);back++;mkMark('done',r.id);changed=true}}
       else if(mkMeBuyer(r)){if(!L.got.includes(r.id)){if(!mkPaid(r.id))S[r.cur]=Math.max(0,S[r.cur]-r.price);const w=mkGive(r.weapon);got.push(BP[w.b].n+' +'+w.lv);mkMark('got',r.id);changed=true}}
       ack.push(r.id)}
-    const fresh=claim.filter(r=>!MK.seen.includes(r.id));MK.claim=claim.concat(MK.claim.filter(r=>r.fake));MK.seen.push(...fresh.map(r=>r.id));
-    if(fresh.length&&ui.tab!=='market')MK.tab='claim';   // v4.55 有新的賣出／退回：下次進交易所直接看到待領取
-    if(fresh.length)toast(`交易所有 ${fresh.length} 件${fresh.some(r=>r.status==='sold')?'賣出':'退回'}，到交易所領取`,'ok');
+    const fresh=[...claim.filter(r=>!MK.seen.includes(r.id)),...ifresh];MK.claim=claim.concat(MK.claim.filter(r=>r.fake));MK.seen.push(...fresh.filter(r=>r.id).map(r=>r.id));
+    if(fresh.length&&ui.tab!=='market')MK.tab='claim';   // v4.56 有新的賣出／退回：下次進交易所直接看到待領取
+    if(fresh.length)toast(`交易所有 ${fresh.length} 筆${fresh.some(r=>r.status==='sold')?'賣出':'退回'}，到交易所領取`,'ok');
     if(changed&&!(await mkSaved()))return;   // 存檔沒上傳成功：先不回報，下次再對一次（帳本保證不會重複）
     if(ack.length)await mkApi('ack',{p_ids:ack});
     const msg=[g||m?`交易所成交入帳：${g?fmt(g)+' 金幣':''}${g&&m?'、':''}${m?fmt(m)+' 鑽':''}（已扣 5% 手續費）`:'',back?`${back} 件武器已退回道具欄（下架或 ${MK_DAYS} 天未售出）`:'',got.length&&!quiet?'':got.length?'已補發購買的武器：'+got.join('、'):''].filter(Boolean);
     if(g||m||back||got.length){S.mkNew=(S.mkNew||0)+1;save()}   // v3.64 交易所紅點
-    if(msg.length)toast(msg.join('<br>'),'ok');if(changed||fresh.length||ui.tab==='market')render()}
+    if(msg.length)toast(msg.join('<br>'),'ok');if(changed||fresh.length||ui.tab==='market'||ip.length)render()}
   catch(e){if(!quiet)toast('交易所對帳失敗：'+MK_ERR(e.message),'bad')}finally{MK_REC=false}}
 const mkSettle=q=>mkReconcile(q);
 // v4.08 交易所待領取：按「全部領取」才把賣出的錢／過期的武器入帳，存檔上傳成功才回報伺服器（帳本保證只入帳一次）
 const mkNet=r=>Math.floor(r.price*(1-MK_FEE));
-async function mkClaim(){if(ui.mkBusy||!MK.claim.length)return;ui.mkBusy=true;render();
-  try{const L=mkLedger(),rs=MK.claim.slice(),real=rs.filter(r=>!r.fake);let g=0,m=0,back=0;
+// v4.56 道具交易由伺服器直接改雲端存檔：先把存檔推上去、暫停自動存檔、呼叫伺服器，最後把雲端存檔讀回來（成功失敗都讀，雲端為準）
+async function mkItemTx(fn){if(!(await mkSaved()))throw new Error('存檔還沒上傳成功，請稍後再試');if(mkMock())return fn();
+  CLOUD.busy=true;try{return await fn()}finally{try{await cloudPull()}catch(e){console.warn('market pull',e.message)}CLOUD.busy=false}}
+async function mkClaim(){if(ui.mkBusy||!mkClaimN())return;ui.mkBusy=true;render();
+  try{const L=mkLedger(),rs=MK.claim.slice(),real=rs.filter(r=>!r.fake),hadI=MK.iclaim.length>0;let g=0,m=0,back=0,iback=0;
+    if(hadI){const x=await mkItemTx(()=>mkApi('item_claim'))||{};g+=x.gold|0;m+=x.gems|0;iback+=x.back|0;MK.iclaim=[]}
     for(const r of real){if(L.done.includes(r.id))continue;if(r.status==='sold'){const n=mkNet(r);if(r.cur==='gems'){S.gems+=n;m+=n}else{S.gold+=n;g+=n}}else{mkGive(r.weapon);back++}mkMark('done',r.id)}
     MK.claim=[];
     if(real.length){if(!(await mkSaved()))throw new Error('存檔還沒上傳成功，已入帳，稍後會自動回報');await mkApi('ack',{p_ids:real.map(r=>r.id)})}
     const fk=rs.filter(r=>r.fake);fk.forEach(r=>{if(r.status==='sold'){const n=mkNet(r);r.cur==='gems'?m+=n:g+=n}else back++});
-    snd('coin');toast(`${fk.length&&!real.length?'（測試，不會真的入帳）<br>':''}已領取${g?'：'+fmt(g)+' 金幣':''}${m?(g?'、':'：')+fmt(m)+' 鑽石':''}${back?`<br>${back} 件武器已放回道具欄`:''}`,'ok')}
+    snd('coin');toast(`${fk.length&&!real.length&&!hadI?'（測試，不會真的入帳）<br>':''}已領取${g?'：'+fmt(g)+' 金幣':''}${m?(g?'、':'：')+fmt(m)+' 鑽石':''}${back?`<br>${back} 件武器已放回道具欄`:''}${iback?`<br>${fmt(iback)} 個道具已放回道具欄`:''}`,'ok')}
   catch(e){toast('領取：'+MK_ERR(e.message),'bad')}finally{ui.mkBusy=false;render()}}
-function mkClaimBox(){if(!MK.claim.length)return '';const rs=MK.claim,g=rs.filter(r=>r.status==='sold'&&r.cur!=='gems').reduce((a,r)=>a+mkNet(r),0),m=rs.filter(r=>r.status==='sold'&&r.cur==='gems').reduce((a,r)=>a+mkNet(r),0);
+function mkClaimBox(){if(!mkClaimN())return '';const rs=MK.claim,is=MK.iclaim.filter(r=>mkItemOk(r.item)),sum=c=>rs.filter(r=>r.status==='sold'&&(r.cur==='gems')===(c==='gems')).reduce((a,r)=>a+mkNet(r),0)+is.filter(r=>r.status==='sold'&&(r.cur==='gems')===(c==='gems')).reduce((a,r)=>a+(r.net|0),0),g=sum('gold'),m=sum('gems');
+  const irow=r=>{const sold=r.status==='sold';return `<div class="ui-card ui-card--row mk-row mk-cl-row"><div class="mk-art mk-iart">${itemIco(r.item)}</div><div class="grow mk-mid"><b class="mk-nm">${itemName(r.item)} <span class="lvt">×${fmt(r.qty)}</span></b><span class="small muted">${sold?`賣出 ${fmt(r.qty)} 個・共 ${fmt(r.total)}`:`${MK_DAYS} 天沒賣完`}</span></div>${sold?mkPrice(r.cur,r.net|0):'<span class="small muted mk-cl-back">退回道具欄</span>'}</div>`};
   const row=r=>{const w=r.weapon||{},b=BP[bpId(r.bp)];if(!b)return '';const sold=r.status==='sold';
     return `<div class="ui-card ui-card--row mk-row mk-cl-row"><div class="mk-art">${wArt(b.id,{frame:fq(w)})}</div><div class="grow mk-mid"><b class="mk-nm">${wName({...w,b:b.id})}</b><span class="small muted">${sold?`售價 ${fmt(r.price)}`:`${MK_DAYS} 天未售出`}</span></div>${sold?mkPrice(r.cur,mkNet(r)):'<span class="small muted mk-cl-back">退回道具欄</span>'}</div>`};
-  return `<div class="mk-claim"><div class="mk-cl-head"><b class="t-gold grow">待領取 ${rs.length} 件</b>${btn(ui.mkBusy?'領取中…':'全部領取','mkclaim',{cls:'btn-primary sm',dis:ui.mkBusy})}</div>
-   <div class="mk-list">${rs.map(row).join('')}</div>${g||m?`<div class="mk-cl-sum"><span class="small muted grow">實收（扣 ${MK_FEE*100}%）</span>${g?mkPrice('gold',g):''}${m?mkPrice('gems',m):''}</div>`:''}</div>`}
+  return `<div class="mk-claim"><div class="mk-cl-head"><b class="t-gold grow">待領取 ${rs.length+is.length} 筆</b>${btn(ui.mkBusy?'領取中…':'全部領取','mkclaim',{cls:'btn-primary sm',dis:ui.mkBusy})}</div>
+   <div class="mk-list">${rs.map(row).join('')}${is.map(irow).join('')}</div>${g||m?`<div class="mk-cl-sum"><span class="small muted grow">實收（扣 ${MK_FEE*100}%）</span>${g?mkPrice('gold',g):''}${m?mkPrice('gems',m):''}</div>`:''}</div>`}
 async function mkList(id,cur,price){const w=S.weapons.find(x=>x.id===id);if(!w)return toast('找不到這把武器','bad');if(!mkSellable(w))return toast('上鎖或駐守村莊中的武器不能上架','bad');
   price=Math.floor(+price);if(!(price>=MK_MIN))return toast(`最低售價 ${MK_MIN}`,'bad');if(price>MK_MAXP[cur])return toast(`最高售價 ${fmt(MK_MAXP[cur])}`,'bad');
   if(MK.mine.length>=MK_MAX)return toast(`同時最多上架 ${MK_MAX} 件`,'bad');if(ui.mkBusy)return;ui.mkBusy=true;
@@ -763,13 +791,31 @@ async function mkBuy(id){const r=MK.rows.find(x=>x.id===id);if(!r)return;if(mkMe
     try{const x=await mkApi('buy',{p_id:id});row=x&&x.id?x:r;mkPaid(row.id);S[row.cur]=Math.max(0,S[row.cur]-row.price);w=mkGive(row.weapon);mkMark('got',row.id)}finally{CLOUD.busy=false}
     if(await mkSaved())await mkApi('ack',{p_ids:[row.id]}).catch(()=>{});snd('coin');toast(`購買成功：${BP[w.b].n} +${w.lv} 已放進道具欄`,'ok');ui.sheet=null}
   catch(e){toast('購買失敗：'+MK_ERR(e.message),'bad')}finally{ui.mkBusy=false;mkLoad()}}   // 若其實已成交，mkLoad 對帳會補發武器並扣款
-async function mkCancel(id){if(ui.mkBusy)return;ui.mkBusy=true;
-  try{await mkApi('cancel',{p_id:id});toast('已下架，武器退回道具欄','ok')}
+async function mkCancel(id){if(ui.mkBusy)return;ui.mkBusy=true;const r=MK.mine.find(x=>x.id===id)||MK.rows.find(x=>x.id===id);
+  try{if(mkIsItem(r)){await mkItemTx(()=>mkApi('cancel_item',{p_id:id}));toast(`已下架，剩下的 ${fmt(r.left_qty)} 個${itemName(r.item)}退回道具欄`,'ok');ui.sheet=null}
+    else{await mkApi('cancel',{p_id:id});toast('已下架，武器退回道具欄','ok')}}
   catch(e){toast('下架失敗：'+MK_ERR(e.message),'bad')}finally{ui.mkBusy=false;await mkLoad()}}   // 退回武器統一由對帳處理（只會退一次）
+// v4.56 上架道具：單價＋數量，上架時伺服器直接從雲端存檔扣掉
+async function mkListItem(k,cur,price,qty){if(!mkItemOk(k))return toast('這個東西不能上架','bad');
+  price=Math.floor(+price);qty=Math.floor(+qty);if(!(price>=MK_MIN))return toast(`單價最低 ${MK_MIN}`,'bad');if(price>MK_MAXP[cur])return toast(`單價最高 ${fmt(MK_MAXP[cur])}`,'bad');
+  if(!(qty>=1))return toast('數量至少 1 個','bad');if(qty>mkHave(k))return toast(`你只有 ${fmt(mkHave(k))} 個`,'bad');
+  if(MK.mine.length>=MK_MAX)return toast(`同時最多上架 ${MK_MAX} 件`,'bad');if(ui.mkBusy)return;ui.mkBusy=true;render();
+  try{await mkItemTx(()=>mkApi('list_item',{p_item:k,p_qty:qty,p_cur:cur,p_price:price,p_nick:S.nick||'無名鐵匠'}));
+    toast(`已上架：${itemName(k)} ×${fmt(qty)}，每個 ${fmt(price)} ${MK_CUR[cur][1]}`,'ok');ui.sheet=null;ui.result=null;MK.tab='mine';snd('deliver')}
+  catch(e){toast('上架失敗：'+MK_ERR(e.message),'bad')}finally{ui.mkBusy=false;mkLoad()}}
+// v4.56 買道具：可以只買一部分
+async function mkBuyItem(id,qty){const r=MK.rows.find(x=>x.id===id);if(!r)return;if(mkMe(r))return toast('不能買自己上架的東西','bad');qty=Math.floor(+qty);
+  if(!(qty>=1&&qty<=r.left_qty))return toast(`數量要在 1～${fmt(r.left_qty)} 之間`,'bad');if(S[r.cur]<r.price*qty)return toast(`${MK_CUR[r.cur][1]}不足`,'bad');if(ui.mkBusy)return;ui.mkBusy=true;render();
+  try{await mkItemTx(()=>mkApi('buy_item',{p_id:id,p_qty:qty}));snd('coin');toast(`購買成功：${itemName(r.item)} ×${fmt(qty)} 已放進道具欄`,'ok');ui.sheet=null}
+  catch(e){toast('購買失敗：'+MK_ERR(e.message),'bad')}finally{ui.mkBusy=false;mkLoad()}}
 if(typeof window!=='undefined')setInterval(()=>{if(AUTH&&CLOUD.ready&&!document.hidden)mkReconcile(true)},60000);
 // ---- 畫面 ----
 const mkPrice=(cur,p,cls='')=>`<span class="mk-price ${cls}">${img(MK_CUR[cur][0])}<b>${fmt(p)}</b></span>`;
-function mkRow(r,act){const w=r.weapon,b=BP[bpId(r.bp)],me=mkMe(r);
+const mkWho=r=>mkMe(r)?'<span class="t-gold">我的上架</span>':esc(r.seller_nick||'無名鐵匠');
+function mkItemRow(r,act){return `<button class="ui-card ui-card--row mk-row ${mkMe(r)?'me':''}" data-act="${act}" data-id="${r.id}"><div class="mk-art mk-iart">${itemIco(r.item)}</div>
+   <div class="grow mk-mid"><b class="mk-nm">${itemName(r.item)} <span class="lvt">×${fmt(r.left_qty)}</span></b><span class="small muted">${MATS[r.item]?'材料':'道具'}・標價是一個的價格</span>
+   <span class="small muted">${mkWho(r)}・剩 ${fmtT(mkLeft(r))}</span></div><span class="mk-pu">${mkPrice(r.cur,r.price)}<i>每個</i></span></button>`}
+function mkRow(r,act){if(mkIsItem(r))return mkItemRow(r,act);const w=r.weapon,b=BP[bpId(r.bp)],me=mkMe(r);
   return `<button class="ui-card ui-card--row mk-row ${me?'me':''}" data-act="${act}" data-id="${r.id}"><div class="mk-art">${wArt(b.id,{frame:fq(w)})}</div>
    <div class="grow mk-mid"><b class="mk-nm">${wName({...w,b:b.id})}</b><span class="small muted">${CATS[b.cat]}・攻擊力 ${fmt(power({...w,b:b.id}))}</span>
    <span class="small muted">${me?'<span class="t-gold">我的上架</span>':esc(r.seller_nick||'無名鐵匠')}・剩 ${fmtT(mkLeft(r))}</span></div>${mkPrice(r.cur,r.price)}</button>`}
@@ -777,26 +823,28 @@ function viewMarketPage(){if(!MK.t&&!MK.loading&&(AUTH||mkMock()))setTimeout(mkL
 function viewMarket(){
   if(!AUTH&&!mkMock())return `<div class="ui-panel panel mk-gate">${ptitle('交易所')}<div class="small muted center">交易所需要登入帳號才能使用，訪客進度只存在這支手機，無法和其他玩家交易。</div>${btn('登入／註冊','mklogin',{cls:'btn-primary big'})}</div>`;
   if(!MK.t&&!MK.loading&&!MK.err)setTimeout(mkLoad,0);
-  if(MK.tab==='sell')MK.tab='claim';   // v4.55 「上架武器」分頁改成「待領取」，上架改從道具欄點武器
-  const tabs=[['buy','購買'],['mine',`我的上架 ${MK.mine.length}/${MK_MAX}`],['claim',`待領取${MK.claim.length?' '+MK.claim.length+'<i class="dot mk-dot"></i>':''}`]].map(([k,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${MK.tab===k?'on':''}" data-act="mktab" data-k="${k}">${n}</button>`).join('');
+  if(MK.tab==='sell')MK.tab='claim';   // v4.56 「上架武器」分頁改成「待領取」，上架改從道具欄點武器
+  const tabs=[['buy','購買'],['mine',`我的上架 ${MK.mine.length}/${MK_MAX}`],['claim',`待領取${mkClaimN()?' '+mkClaimN()+'<i class="dot mk-dot"></i>':''}`]].map(([k,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${MK.tab===k?'on':''}" data-act="mktab" data-k="${k}">${n}</button>`).join('');
   let body='';
-  if(MK.tab==='buy'){const cats=['all',...new Set(MK.rows.map(r=>BP[bpId(r.bp)].cat))];
-    let rows=MK.rows.filter(r=>(MK.cat==='all'||BP[bpId(r.bp)].cat===MK.cat)&&(MK.cur==='all'||r.cur===MK.cur));
-    if(MK.sort==='low')rows=[...rows].sort((a,b)=>(a.cur===b.cur?a.price-b.price:a.cur==='gold'?-1:1));if(MK.sort==='pow')rows=[...rows].sort((a,b)=>power({...b.weapon,b:bpId(b.bp)})-power({...a.weapon,b:bpId(a.bp)}));
+  if(MK.tab==='buy'){const cats=['all',...new Set(MK.rows.map(mkCat))];
+    let rows=MK.rows.filter(r=>(MK.cat==='all'||mkCat(r)===MK.cat)&&(MK.cur==='all'||r.cur===MK.cur));
+    if(MK.sort==='low')rows=[...rows].sort((a,b)=>(a.cur===b.cur?a.price-b.price:a.cur==='gold'?-1:1));if(MK.sort==='pow'){const P=r=>mkIsItem(r)?-1:power({...r.weapon,b:bpId(r.bp)});rows=[...rows].sort((a,b)=>P(b)-P(a))}
     const chip=(act,k,n,on)=>`<button class="ui-btn ui-btn--chip chipbtn ${on?'on':''}" data-act="${act}" data-k="${k}">${n}</button>`;
-    body=`<div class="mk-filter"><div class="hscroll mk-chips">${cats.map(c=>chip('mkcat',c,c==='all'?'全部':CATS[c],MK.cat===c)).join('')}</div>
+    body=`<div class="mk-filter"><div class="hscroll mk-chips">${cats.map(c=>chip('mkcat',c,c==='all'?'全部':c==='item'?'道具':CATS[c],MK.cat===c)).join('')}</div>
       <div class="mk-chips row">${chip('mkcur','all','全部',MK.cur==='all')}${chip('mkcur','gold','金幣',MK.cur==='gold')}${chip('mkcur','gems','鑽石',MK.cur==='gems')}<span class="grow"></span>${chip('mksort','new','最新',MK.sort==='new')}${chip('mksort','low','價低',MK.sort==='low')}${chip('mksort','pow','攻擊力',MK.sort==='pow')}</div></div>
       <div class="mk-list">${rows.length?rows.map(r=>mkRow(r,'mkview')).join(''):`<div class="small muted center mk-empty">${MK.loading?'讀取中…':'目前沒有符合條件的商品'}</div>`}</div>`}
-  else if(MK.tab==='mine'){body=`<div class="mk-list">${MK.mine.length?MK.mine.map(r=>`<div class="mk-mine">${mkRow(r,'mkview')}${btn('下架','mkcancel',{cls:'btn-sec sm',attrs:`data-id="${r.id}"`})}</div>`).join(''):`<div class="small muted center mk-empty">${MK.loading?'讀取中…':'你目前沒有上架中的武器'}</div>`}</div>
-      <div class="small muted mk-note">要上架：到道具欄點武器，按「上架」。成交後收入會放在「待領取」，按「全部領取」入帳（扣 ${MK_FEE*100}% 手續費）；上架 ${MK_DAYS} 天沒賣出也會放在待領取，領取後回到道具欄。</div>`}
-  else body=MK.claim.length?mkClaimBox():`<div class="small muted center mk-empty">${MK.loading?'讀取中…':'目前沒有要領取的東西'}</div><div class="small muted mk-note">賣出的收入、${MK_DAYS} 天沒賣出退回的武器都會放在這裡，按「全部領取」才入帳。</div>`;
+  else if(MK.tab==='mine'){body=`<div class="mk-list">${MK.mine.length?MK.mine.map(r=>`<div class="mk-mine">${mkRow(r,'mkview')}${btn('下架','mkcancel',{cls:'btn-sec sm',attrs:`data-id="${r.id}"`})}</div>`).join(''):`<div class="small muted center mk-empty">${MK.loading?'讀取中…':'你目前沒有上架中的東西'}</div>`}</div>
+      <div class="small muted mk-note">要上架：到道具欄點武器或道具，按「上架」（道具可以填單價和數量）。成交後收入會放在「待領取」，按「全部領取」入帳（扣 ${MK_FEE*100}% 手續費）；上架 ${MK_DAYS} 天沒賣出也會放在待領取，領取後回到道具欄。</div>`}
+  else body=mkClaimN()?mkClaimBox():`<div class="small muted center mk-empty">${MK.loading?'讀取中…':'目前沒有要領取的東西'}</div><div class="small muted mk-note">賣出的收入、${MK_DAYS} 天沒賣出退回的武器和道具都會放在這裡，按「全部領取」才入帳。</div>`;
   return `<div class="ui-panel panel mk">${ptitle(mkMock()?'離線模擬市場':'玩家交易')}<div class="mk-tabs">${tabs}<button class="ui-iconbtn mk-ref" data-act="mkref" aria-label="重新整理">${MK.loading?'…':'⟳'}</button></div>
    ${MK.err?`<div class="small t-danger center mk-err">${MK.err}</div>`:''}${body}</div>`}
 function mkWeaponBox(w){w={...w,b:bpId(w.b)};const b=BP[w.b];   // v4.53 跟武器小卡同一套：名稱含屬性、攻擊力、四格數值
   return `<div class="ui-panel panel mk-wp"><div class="wp-top">${wArt(b.id,{frame:fq(w)})}<div class="grow"><div class="wp-nm">${wName(w)}</div>
     <div class="wp-sub"><span>${CATS[b.cat]}・${kindN(b)}</span></div><div class="wp-pow"><b>${fmt(power(w))}</b><span>攻擊力（每秒傷害）</span></div></div></div>${wpGrid(w)}</div>`}
 function sheetMk(s){const head=t=>`<div class="sheet-head"><span></span><h2>${t}</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>`;
+  if(s.t==='mksi')return sheetMkSellItem(s.k,head);
   if(s.t==='mkw'){const r=MK.rows.find(x=>x.id===s.id)||MK.mine.find(x=>x.id===s.id);if(!r)return head('交易所')+'<div class="small muted center">這件商品已經不在架上了</div>';
+    if(mkIsItem(r))return sheetMkItem(r,head);
     const me=mkMe(r),have=S[r.cur],lack=have<r.price;
     return head('交易所商品')+`<div class="lbw-owner"><div class="grow"><b>${me?'我的上架':esc(r.seller_nick||'無名鐵匠')}</b><div class="small muted">剩 ${fmtT(mkLeft(r))} 自動下架</div></div>${mkPrice(r.cur,r.price,'big')}</div>${mkWeaponBox({...r.weapon,b:bpId(r.bp)})}
      ${me?btn('下架','mkcancel',{cls:'btn-sec big',attrs:`data-id="${r.id}"`}):`<div class="small muted center mk-have">持有 ${img(MK_CUR[r.cur][0])} ${fmt(have)}${lack?'<span class="t-danger">（不足）</span>':''}</div>${btn(`購買　${fmt(r.price)} ${MK_CUR[r.cur][1]}`,'mkbuy',{cls:'btn-primary big',attrs:`data-id="${r.id}"`,dis:lack||ui.mkBusy})}`}`}
@@ -809,6 +857,30 @@ function sheetMk(s){const head=t=>`<div class="sheet-head"><span></span><h2>${t}
     <div class="kv"><span>成交後實收</span><b class="mk-net t-gold">${p?fmt(net)+' '+MK_CUR[cur][1]:'—'}</b></div>
     <div class="small muted">上架期間武器會先從道具欄移出；${MK_DAYS} 天沒賣出自動退回，也可以隨時下架。</div></div>
    ${btn('確認上架','mksell',{cls:'btn-primary big',attrs:`data-id="${w.id}"`,dis:p<MK_MIN||ui.mkBusy})}`}
+
+// v4.56 道具商品詳情：買家填要買幾個
+const mkItemBox=(k,sub)=>`<div class="ui-panel panel mk-ibox"><div class="mk-ib-top"><div class="mk-ib-ico">${itemIco(k)}</div><div class="grow"><div class="wp-nm">${itemName(k)}</div><div class="small muted">${sub}</div></div></div><div class="small muted mk-ib-d">${MATS[k]?MAT_D[k]||'':ITEMS[k][2]}</div></div>`;
+function sheetMkItem(r,head){const me=mkMe(r),q=Math.max(1,Math.min(r.left_qty,Math.floor(+(ui.mkBq||1))||1)),tot=r.price*q,have=S[r.cur],lack=have<tot;
+  return head('交易所商品')+`<div class="lbw-owner"><div class="grow"><b>${me?'我的上架':esc(r.seller_nick||'無名鐵匠')}</b><div class="small muted">剩 ${fmtT(mkLeft(r))} 自動下架</div></div><span class="mk-pu">${mkPrice(r.cur,r.price,'big')}<i>每個</i></span></div>
+   ${mkItemBox(r.item,`還剩 <b>${fmt(r.left_qty)}</b> 個・你持有 ${fmt(mkHave(r.item))} 個`)}
+   ${me?btn('下架（剩下的退回道具欄）','mkcancel',{cls:'btn-sec big',attrs:`data-id="${r.id}"`}):`<div class="ui-panel panel mk-form">
+    <div class="kv"><span>購買數量</span><b class="row mk-qrow"><input id="mkbq" class="mk-in" type="number" inputmode="numeric" min="1" max="${r.left_qty}" step="1" value="${q}"><button class="ui-btn ui-btn--chip chipbtn" data-act="mkbqall" data-id="${r.id}">全部</button></b></div>
+    <div class="kv"><span>總價</span><b class="mk-btot t-gold">${fmt(tot)} ${MK_CUR[r.cur][1]}</b></div>
+    <div class="small muted center mk-have">持有 ${img(MK_CUR[r.cur][0])} ${fmt(have)}<span class="t-danger mk-lack">${lack?'（不足）':''}</span></div></div>
+    ${btn(`購買`,'mkbuyi',{cls:'btn-primary big',attrs:`data-id="${r.id}"`,dis:lack||ui.mkBusy})}`}`}
+// v4.56 上架道具：收取貨幣、單價、數量
+function sheetMkSellItem(k,head){if(!mkItemOk(k))return head('上架道具')+'<div class="small muted center">這個東西不能上架</div>';
+  const cur=MK.sellCur,have=mkHave(k),p=Math.max(0,Math.floor(+(ui.mkPrice||0))),q=Math.max(0,Math.min(have,Math.floor(+(ui.mkQty??1)||0))),tot=p*q,net=Math.floor(tot*(1-MK_FEE));
+  return head('上架道具')+mkItemBox(k,`持有 <b>${fmt(have)}</b> 個`)+`<div class="ui-panel panel mk-form">
+    <div class="kv"><span>收取貨幣</span><b class="row">${['gold','gems'].map(c=>`<button class="ui-btn ui-btn--chip chipbtn ${cur===c?'on':''}" data-act="mkscur" data-k="${c}">${img(MK_CUR[c][0])}${MK_CUR[c][1]}</button>`).join('')}</b></div>
+    <div class="kv"><span>單價（一個）</span><b><input id="mkiprice" class="mk-in" type="number" inputmode="numeric" min="10" step="1" placeholder="最低 10" value="${ui.mkPrice||''}"></b></div>
+    <div class="kv"><span>數量</span><b class="row mk-qrow"><input id="mkiqty" class="mk-in" type="number" inputmode="numeric" min="1" max="${have}" step="1" value="${q||''}"><button class="ui-btn ui-btn--chip chipbtn" data-act="mkiqall" data-k="${k}">全部</button></b></div>
+    <div class="kv"><span>總價</span><b class="mk-itot">${tot?fmt(tot):'—'}</b></div>
+    <div class="kv"><span>手續費 ${MK_FEE*100}%</span><b class="mk-fee">${tot?'-'+fmt(tot-net):'—'}</b></div>
+    <div class="kv"><span>全部賣出實收</span><b class="mk-net t-gold">${tot?fmt(net)+' '+MK_CUR[cur][1]:'—'}</b></div>
+    <div class="small muted">上架期間這些道具會先從道具欄移出；買家可以只買一部分，賣掉的錢放在交易所「待領取」。${MK_DAYS} 天沒賣完的會退回，也可以隨時下架。</div></div>
+   ${btn('確認上架','mkselli',{cls:'btn-primary big',attrs:`data-k="${k}"`,dis:p<MK_MIN||q<1||ui.mkBusy})}`}
+const mkSellBtn=k=>(AUTH||mkMock())&&mkItemOk(k)&&mkHave(k)>0?btn('上架交易所','mksellit',{cls:'btn-sec big mk-sellit',attrs:`data-k="${k}"`}):'';
 
 /* ---------- 排行榜（v3.16 電腦對手版：虛構的北境鐵匠；上架前改接真人資料，畫面沿用） ---------- */
 const LB_NAMES=['霜錘・埃里克','鐵顎・博格','灰燼・西格麗','渡鴉・烏爾夫','熔心・托爾芬','狼牙・英格麗','寒鋼・哈康','冰脊・阿斯特麗','雷砧・比約恩','黑爐・古納',
@@ -1147,6 +1219,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.56',d:'10/24',t:'交易所可以賣道具',b:['強化石、附魔石、英靈・遺物和所有材料都能上架：在道具欄點道具，按「上架交易所」，填<b>單價</b>和<b>數量</b>','買家可以只買一部分，填要買幾個就好，買剩的繼續掛著','交易所的「上架武器」分頁改成<b>待領取</b>：賣出的錢、沒賣出退回的武器和道具都放這裡，有東西時亮紅點','上架武器改成在道具欄點武器，按「上架」'],g:['mk']},
  {v:'4.55',d:'10/24',t:'同款武器疊一格',b:['道具欄的武器頁：<b>一模一樣的武器</b>（同一把、同強化等級、同屬性）放在同一格，右下角顯示數量','點進去強化、附魔、駐守、上架、熔解都只會動其中一把，動過的會自己分出來一格','駐守中的武器還是一把一格；道具欄上限 200 把照算每一把'],g:['bag']},
  {v:'4.54',d:'10/24',t:'新材料・附魔石・英靈遺物',b:['新增 <b>8 種材料</b>，名字都跟怪物故事有關：第一界每關掉中庭鐵礦、松林硬木，第二界掉約頓霜鐵、約頓巨木；1-7 石皮巨魔掉巨魔石皮、2-8 幻術巨人王掉骨頭、1-10 海姆達爾掉彩虹橋碎晶、2-10 索爾掉索爾雷晶','新武器的配方改成<b>金幣＋材料</b>（開局 7 把還是只花金幣），一般武器大約掛機 30 分鐘就湊得齊','新道具<b>附魔石</b>：附魔一次花 1 顆加金幣，打倒怪物有機率掉','<b>英靈・遺物</b>開始會掉了：每打倒一隻 2% 掉 1 個，越後面的關卡越容易掉紅光、金光','遺物可以打開：金幣、材料、強化石、附魔石、Boss 素材，運氣好還會開到武器','強化石、附魔石有新圖示了；村莊詳情會列出每打倒一隻可能掉的東西'],g:['forge','ench','bag']},
  {v:'4.53',d:'10/24',t:'交易所武器資訊',b:['交易所列表、上架清單、待領取的武器名稱會顯示<b>屬性</b>（例如「+7 冰封 霜溪鋼劍」）','點商品看到的詳情改成跟武器小卡一樣：攻擊力、攻速、附加效果、相剋、屬性弱點倍率都看得到'],g:['mk']},
@@ -1224,7 +1297,7 @@ const GUIDE=[
   {k:'quest',ic:'ic_check',n:'每日任務・簽到・成就',s:'每天領活躍度寶箱',v:'4.43',h:'<b>每日任務</b>：完成登入、收成、鍛造、強化、熔解累積活躍度，40／70／100 點各開一個寶箱。<br><b>七日簽到</b>：漏簽不會歸零，第 7 天領完從第 1 天重新開始。<br><b>委託成就</b>：免費拿鑽石。<br>v4.43 起所有獎勵都是金幣或鑽石。'},
   {k:'shop',ic:'nav_shop',n:'商城',s:'月卡、狩獵號角',v:'4.43',h:'封測期間<b>月卡免費</b>：立得鑽石，之後每天再領。<br>可以用鑽石買狩獵號角。<br>v4.43 起防爆卷、祝福石、符文祈願、旅行商人、殘渣兌換都已拿掉。'}]],
  ['玩家互動',[
-  {k:'mk',ic:'nav_market',n:'交易所',s:'金幣或鑽石買賣武器',v:'4.53',h:'用金幣或鑽石上架武器，最低 10，成交收 5% 手續費。<br>任何武器都能買賣，不限關卡進度。點商品可以看攻擊力、攻速、附加效果、相剋和屬性，跟自己的武器小卡一樣。<br>賣出或上架 3 天沒賣出時，交易所會亮紅點，最上面「待領取」列出賣了什麼、收多少，按「全部領取」才入帳、退回的武器才放回道具欄。<br>最多同時上架 10 件。<br>收藏（上鎖）或駐守中的武器不能上架。'},
+  {k:'mk',ic:'nav_market',n:'交易所',s:'金幣或鑽石買賣武器和道具',v:'4.56',h:'用金幣或鑽石買賣，最低 10，成交收 5% 手續費。任何武器、道具都能買賣，不限關卡進度。<br><b>上架武器</b>：在道具欄點武器，按「上架」，填售價。收藏（上鎖）或駐守中的武器不能上架。<br><b>上架道具</b>：在道具欄點道具或材料，按「上架交易所」，填一個的單價和數量。買家可以只買一部分，買剩的繼續掛著。<br>賣出的錢、上架 3 天沒賣出退回的東西，都放在交易所的「待領取」分頁（有東西會亮紅點），按「全部領取」才入帳。<br>最多同時上架 10 件（一筆道具算一件）。'},
   {k:'chat',ic:'it_horn',n:'聊天與跑馬燈',s:'世界頻道、系統公告、武器卡',v:'3.93',h:'世界頻道可以和全服玩家聊天（鐵匠 Lv3 以上可以發言），系統頻道會顯示全服 +10 以上的強化公告。<br>點名字可以看玩家名片；聊天可以貼出自己的武器卡、戴稱號。<br>跑馬燈出現強化公告時可以按「恭喜」。'},
   {k:'gd',ic:'ui_player_emblem',n:'好友與公會',s:'捐獻升級、公會加成、貢獻商店',v:'4.43',h:'好友最多 30 人。<br>鐵匠 Lv5 可以建立公會（50,000 金幣），Lv3 可以加入。<br>捐獻金幣或鑽石增加公會經驗和個人貢獻；公會升級會加狩獵金幣、首領傷害和成員上限。<br>貢獻商店的舊道具已拿掉，新道具設計中。離開公會後 12 小時內不能再加入。'},
   {k:'set',ic:'ic_gear',n:'設定與公告',s:'右上角齒輪',v:'4.03',h:'右上角齒輪裡有更新公告、玩法說明和音效設定。<br>有新的公告或玩法時，齒輪會亮紅點；沒看過的項目標 <b>NEW</b>，看過就消失。'}]]
@@ -1723,7 +1796,7 @@ let RES_H='';function renderRes(){const el=document.getElementById('res');if(!el
 const ART_HAS_NAV_MARKET=true;    // 交易所分頁圖示（AI 美術）到位後改 true
 const TABS=[['village','村莊','nav_village'],['forge','鐵匠鋪','nav_forge'],['armory','道具欄','nav_armory'],['market','交易所',ART_HAS_NAV_MARKET?'nav_market':'it_gold'],['shop','商城','nav_shop']];
 let NAV_H='';function renderNav(){const N=document.getElementById('nav'),h=TABS.map(([k,n,ic])=>{const dot=k==='village'?bossDot()||S.villages.some(v=>v.bank.cycles)||anyGive()||questDotN()>0:k==='armory'?anyGive()||ui.tab!=='armory'&&S.weapons.some(wNew)
-    :k==='forge'?forgeIdle()||BPS.some(bpNew):k==='market'?(S.mkNew>0||MK.claim.length>0)&&ui.tab!=='market':k==='shop'?monthlyDot():false,hot=k==='village'&&S.villages.some((st,i)=>vState(i)[0]==='full');
+    :k==='forge'?forgeIdle()||BPS.some(bpNew):k==='market'?(S.mkNew>0||mkClaimN()>0)&&ui.tab!=='market':k==='shop'?monthlyDot():false,hot=k==='village'&&S.villages.some((st,i)=>vState(i)[0]==='full');
   return `<button data-act="tab" data-k="${k}" class="ui-navtab ${ui.tab===k?'on':''}">${img(ic)}<span>${n}</span>${dot||hot?`<i class="dot give-dot${hot?' hot':''}"></i>`:''}</button>`}).join('');if(h!==NAV_H||!N.firstChild){NAV_H=h;N.innerHTML=h}}
 
 /* ---------- 鐵匠鋪 ---------- */
@@ -2340,7 +2413,7 @@ function sheetDev(){
      <div class="label">v3.98 好友＋公會</div><div class="small muted" style="margin-bottom:6px">${chatOn()?'已登入：打開的是真的公會／好友；模擬按鈕只在本機未登入時可用':'未登入：公會、好友用離線模擬'}</div><div class="devgrid">${B('gdopen','打開公會','btn-primary')}${B('gdnone','模擬：還沒加入公會')}${B('gdlead','模擬：我是會長（有入會申請）')}${B('gdmem','模擬：我是一般成員')}${B('gdlv5','模擬：公會升到 Lv.5')}${B('gdchat','打開公會聊天')}${B('fropen','打開好友（有 2 個申請）')}${B('gdbonus','檢查公會加成（金幣、首領）')}</div>
      <div class="label">檢查</div><div class="devgrid">${B('chfilter','測試輸入檢查（網址、電話、字數）')}${B('tsec','安全設定檢查（含聊天 SQL）')}</div>`,
    mk:`<div class="label">交易所（v3.41）</div><div class="small muted" style="margin-bottom:6px">${AUTH?'目前連線真實伺服器（'+esc(S.nick||AUTH.user.email)+'）':'未登入：交易所使用「離線模擬」，只存在這支手機，用來測試畫面與流程'}</div>
-     <div class="devgrid">${B('mkopen','開啟交易所')}${B('mksettle','立即結算我的成交／過期')}${B('mkclaimt','待領取測試（2 賣出＋1 退回）')}${B('mkcard','v4.53 商品詳情新版（+7 冰封武器）')}</div>
+     <div class="devgrid">${B('mkopen','開啟交易所')}${B('mksettle','立即結算我的成交／過期')}${B('mkclaimt','待領取測試（2 賣出＋1 退回）')}${B('mkcard','v4.53 商品詳情新版（+7 冰封武器）')}${B('mkisell','v4.56 上架道具（補 50 顆強化石）')}${B('mkisim','v4.56 假裝有人買走我上架的道具一半（離線模擬）')}</div>
      <div class="label">離線模擬專用（未登入時）</div><div class="devgrid">${B('mksold','模擬：我最新的上架被買走')}${B('mkexp','模擬：我的上架全部過期')}${B('mkreset','重設模擬市場')}</div>`,
    save:`<div class="label">v4.18 封測暫停（目前 MAINT=${MAINT}）</div><div class="devgrid">${B('maintprev','預覽維護公告畫面')}</div>
      <div class="label">取暱稱預覽（v3.38，不用登入、不連伺服器）</div><div class="devgrid">${B('cnameprev','預覽「註冊後取名」流程')}</div><div class="small muted" style="margin:4px 0 8px">輸入「冰脊」或「測試重複」可看重複暱稱的提示；確定後會接著播開場故事。</div>
@@ -2409,6 +2482,8 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='maintprev'){ui.sheet=null;render();return showMaint(null,true)}
   if(k==='mkopen'){ui.sheet=null;ui.tab='market';mkLoad();return render()}
   if(k==='mksettle'){mkSettle(false).then(()=>mkLoad());return}
+  if(k==='mkisell'){S.items[STONE]=stones()+50;save();ui.mkPrice='';ui.mkQty=1;ui.sheet={t:'mksi',k:STONE};render();return toast('強化石 +50；填單價和數量後按確認上架','ok')}
+  if(k==='mkisim'){if(!mkMock())return toast('這是離線模擬專用（請先登出）','bad');mkMockApi('sim_sell').then(q=>{ui.sheet=null;ui.tab='market';MK.t=0;mkLoad();toast(`已模擬賣出 ${q} 個，到「待領取」看看`,'ok')}).catch(e=>toast(e.message,'bad'));return}
   if(k==='mkcard'){const b=BPS.find(x=>x.cat==='sword')||BPS[0],w={b:b.id,q:0,lv:7,traits:[],ench:[{k:'ice',v:2},null,null,null]},id=-777;   // v4.53 假商品，只用來看詳情排版
     MK.rows=MK.rows.filter(r=>r.id!==id);MK.rows.unshift({id,seller:'npc',seller_nick:'測試賣家',weapon:w,bp:b.id,lv:7,q:0,cur:'gold',price:12345,expires_at:new Date(Date.now()+2*864e5).toISOString(),created_at:new Date().toISOString()});
     if(!MK.t)MK.t=Date.now();ui.tab='market';MK.tab='buy';ui.sheet={t:'mkw',id};render();return toast('列表最上面也有這件（名稱應該有「冰封」）；這是假商品，不能真的買')}
@@ -2691,10 +2766,12 @@ document.addEventListener('click',e=>{
    uidpv:()=>{const on=document.body.classList.toggle('dpv');try{localStorage.setItem('nrs-dpv',on?'1':'0')}catch(e){}render()},
    uifpv:()=>{document.body.classList.toggle('fpv');render()},
    uiskintest:()=>{if(UI_SKIN['btn-primary']&&UI_SKIN['btn-primary']._test){UI_SKIN['btn-primary']=null}else{UI_SKIN['btn-primary']={src:'art/ui_btn_wood.webp',slice:[40,70,40,70],border:[12,24,12,24],css:'padding:2px 10px',_test:true}}applySkin();render()},
-   devoff:()=>setDev(false),mute:()=>sndSettings(),sndfix:()=>{sfxWake(true);const was=S.mute;S.mute=false;snd('coin');S.mute=was;toast(was?'音效已重新啟動（目前音效是關閉的）':'音效已重新啟動')},sndmute:()=>{S.mute=!S.mute;save();if(!S.mute)snd('ui_click');sndSettings()},devset:()=>{ui[d.k]=+d.v;render()},devsets:()=>{ui[d.k]=d.v;render()},noItem:()=>{ui[d.k]=false;ui.riskArm=null;render()},devforce:()=>{DEV.force=d.k||null;toast(DEV.force?'下一次強化測試武器時會套用指定結果':'已取消指定');render()},vforge:()=>{const b=BP[d.k];if(!b)return;const l=bpLock(b);ui.sheet=null;ui.tab='forge';ui.ftab='bp';ui.cat=b.cat;ui.bp=b.id;ui.qty=1;render();const t=document.querySelector(`#view [data-act="bp"][data-k="${b.id}"]`);scrollTo(0,t?t.getBoundingClientRect().top+scrollY-140:0);for(const e of [document.querySelector('#view [data-act="cat"].on'),t]){const h=e&&e.closest('.hscroll,.cats,[class*=scroll]');if(h)h.scrollLeft+=e.getBoundingClientRect().left-h.getBoundingClientRect().left-(h.clientWidth-e.offsetWidth)/2}if(l)toast(`${b.n}還沒解鎖：${l}`,'bad')},forgeCat:()=>{ui.tab='forge';ui.ftab='bp';ui.cat=d.k;const f=d.k==='all'?BPS.filter(b=>!bpLock(b)).sort((x,y)=>y.base*TIERS[y.t].mult-x.base*TIERS[x.t].mult)[0]:BPS.find(b=>b.cat===d.k&&!bpLock(b));if(f)ui.bp=f.id;render();scrollTo(0,0)},iteminfo:()=>{ui.result={t:'info',...itemInfo(d.k)};render()},relicopen:()=>relicOpen(d.k,+d.n||0),matinfo:()=>{ui.result={t:'info',...matInfo(d.k,d.v)};render()},aclear:()=>{ui.acat='all';ui.aq='all';ui.ast='all';render()},info:()=>{ui.result={t:'info',...INFO[d.k]()};render()},devtab:()=>{ui.devTab=d.k;render()},
+   devoff:()=>setDev(false),mute:()=>sndSettings(),sndfix:()=>{sfxWake(true);const was=S.mute;S.mute=false;snd('coin');S.mute=was;toast(was?'音效已重新啟動（目前音效是關閉的）':'音效已重新啟動')},sndmute:()=>{S.mute=!S.mute;save();if(!S.mute)snd('ui_click');sndSettings()},devset:()=>{ui[d.k]=+d.v;render()},devsets:()=>{ui[d.k]=d.v;render()},noItem:()=>{ui[d.k]=false;ui.riskArm=null;render()},devforce:()=>{DEV.force=d.k||null;toast(DEV.force?'下一次強化測試武器時會套用指定結果':'已取消指定');render()},vforge:()=>{const b=BP[d.k];if(!b)return;const l=bpLock(b);ui.sheet=null;ui.tab='forge';ui.ftab='bp';ui.cat=b.cat;ui.bp=b.id;ui.qty=1;render();const t=document.querySelector(`#view [data-act="bp"][data-k="${b.id}"]`);scrollTo(0,t?t.getBoundingClientRect().top+scrollY-140:0);for(const e of [document.querySelector('#view [data-act="cat"].on'),t]){const h=e&&e.closest('.hscroll,.cats,[class*=scroll]');if(h)h.scrollLeft+=e.getBoundingClientRect().left-h.getBoundingClientRect().left-(h.clientWidth-e.offsetWidth)/2}if(l)toast(`${b.n}還沒解鎖：${l}`,'bad')},forgeCat:()=>{ui.tab='forge';ui.ftab='bp';ui.cat=d.k;const f=d.k==='all'?BPS.filter(b=>!bpLock(b)).sort((x,y)=>y.base*TIERS[y.t].mult-x.base*TIERS[x.t].mult)[0]:BPS.find(b=>b.cat===d.k&&!bpLock(b));if(f)ui.bp=f.id;render();scrollTo(0,0)},iteminfo:()=>{const r=itemInfo(d.k);ui.result={t:'info',...r,acts:(r.acts||'')+mkSellBtn(d.k)};render()},relicopen:()=>relicOpen(d.k,+d.n||0),matinfo:()=>{const r=matInfo(d.k,d.v);ui.result={t:'info',...r,acts:d.v?r.acts:(r.acts||'')+mkSellBtn(d.k)};render()},aclear:()=>{ui.acat='all';ui.aq='all';ui.ast='all';render()},info:()=>{ui.result={t:'info',...INFO[d.k]()};render()},devtab:()=>{ui.devTab=d.k;render()},
    shoptab:()=>{ui.shopTab=d.k;if(d.k==='mk'&&(AUTH||mkMock()))mkLoad();render()},mktab:()=>{MK.tab=d.k;render()},mkcat:()=>{MK.cat=d.k;render()},mkcur:()=>{MK.cur=d.k;render()},mksort:()=>{MK.sort=d.k;render()},mkref:()=>mkLoad(),
-   mkview:()=>{ui.sheet={t:'mkw',id:+d.id};render()},mkbuy:()=>mkBuy(+d.id),mkcancel:()=>mkCancel(+d.id),mkclaim:()=>mkClaim(),mksellw:()=>{ui.mkPrice='';ui.sheet={t:'mks',id:+d.id};render()},mkscur:()=>{MK.sellCur=d.k;render()},
+   mkview:()=>{ui.mkBq=1;ui.sheet={t:'mkw',id:+d.id};render()},mkbuy:()=>mkBuy(+d.id),mkcancel:()=>mkCancel(+d.id),mkclaim:()=>mkClaim(),mksellw:()=>{ui.mkPrice='';ui.sheet={t:'mks',id:+d.id};render()},mkscur:()=>{MK.sellCur=d.k;render()},
    mksell:()=>{const v=document.getElementById('mkprice');if(v)ui.mkPrice=v.value;mkList(+d.id,MK.sellCur,ui.mkPrice)},mklogin:()=>showLogin(),
+   mksellit:()=>{ui.result=null;ui.mkPrice='';ui.mkQty=1;ui.sheet={t:'mksi',k:d.k};render()},mkiqall:()=>{ui.mkQty=mkHave(d.k);render()},mkbqall:()=>{const r=MK.rows.find(x=>x.id===+d.id);if(r)ui.mkBq=r.left_qty;render()},
+   mkselli:()=>{const v=id=>{const e=document.getElementById(id);return e?e.value:''};ui.mkPrice=v('mkiprice');ui.mkQty=v('mkiqty');mkListItem(d.k,MK.sellCur,ui.mkPrice,ui.mkQty)},mkbuyi:()=>{const e=document.getElementById('mkbq');mkBuyItem(+d.id,e?e.value:1)},
    rename:()=>{ui.result=null;render();showName(!S.nick)},
    player:()=>{const t=Date.now();ui.tapN=(t-(ui.tapT||0)<1500?(ui.tapN||0):0)+1;ui.tapT=t;if(ui.tapN>=20&&(!CLOUD_ONLY||CLOUD.admin)){ui.tapN=0;clearTimeout(ui.lvT);ui.result=null;setDev(!devMode());toast(devMode()?'已開啟開發者模式：右上角齒輪裡多了「開發者工具」。':'已關閉開發者模式。')}else{clearTimeout(ui.lvT);const n=ui.tapN;ui.lvT=setTimeout(()=>{if(ui.tapN===n)showLevel()},300)}},
    up:()=>upgrade(d.k),topup:()=>{S.gems+=+d.n;toast('測試儲值：鑽石 +'+d.n,'ok');save();render()},
@@ -2705,8 +2782,14 @@ document.addEventListener('wheel',e=>{const h=e.target.closest('.hscroll,.catbar
 document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('[role=button][data-act]')){e.preventDefault();e.target.click()}});
 document.addEventListener('input',e=>{if(e.target.id!=='mkprice')return;ui.mkPrice=e.target.value;const p=Math.max(0,Math.floor(+e.target.value||0)),net=Math.floor(p*(1-MK_FEE)),q=x=>document.querySelector(x);
   if(q('.mk-fee'))q('.mk-fee').textContent=p?'-'+fmt(p-net):'—';if(q('.mk-net'))q('.mk-net').textContent=p?fmt(net)+' '+MK_CUR[MK.sellCur][1]:'—';const bt=q('[data-act=mksell]');if(bt)bt.disabled=p<MK_MIN});
+document.addEventListener('input',e=>{const id=e.target.id,q=x=>document.querySelector(x),set=(x,t)=>{const o=q(x);if(o)o.textContent=t};   // v4.56 道具上架／購買：總價即時更新
+  if(id==='mkiprice'||id==='mkiqty'){if(id==='mkiprice')ui.mkPrice=e.target.value;else ui.mkQty=e.target.value;const s=ui.sheet;if(!s||s.t!=='mksi')return;
+    const p=Math.max(0,Math.floor(+ui.mkPrice||0)),n=Math.max(0,Math.min(mkHave(s.k),Math.floor(+ui.mkQty||0))),t=p*n,net=Math.floor(t*(1-MK_FEE));
+    set('.mk-itot',t?fmt(t):'—');set('.mk-fee',t?'-'+fmt(t-net):'—');set('.mk-net',t?fmt(net)+' '+MK_CUR[MK.sellCur][1]:'—');const bt=q('[data-act=mkselli]');if(bt)bt.disabled=p<MK_MIN||n<1}
+  if(id==='mkbq'){ui.mkBq=e.target.value;const s=ui.sheet,r=s&&MK.rows.find(x=>x.id===s.id);if(!r)return;const n=Math.floor(+ui.mkBq||0),t=r.price*Math.max(0,n),lack=S[r.cur]<t;
+    set('.mk-btot',fmt(t)+' '+MK_CUR[r.cur][1]);set('.mk-lack',lack?'（不足）':'');const bt=q('[data-act=mkbuyi]');if(bt)bt.disabled=lack||n<1||n>r.left_qty}});
 document.addEventListener('input',e=>{if(e.target.id!=='sndvol')return;S.vol=+e.target.value/100;const o=document.querySelector('.snd-v');if(o)o.textContent=e.target.value+'%'});
-document.addEventListener('change',e=>{const id=e.target.id;if(id==='mkprice'||id==='cxIn'||e.target.classList.contains('gx-in'))return;
+document.addEventListener('change',e=>{const id=e.target.id;if(id==='mkprice'||e.target.classList.contains('mk-in')||id==='cxIn'||e.target.classList.contains('gx-in'))return;
 if(id==='sndvol'){save();snd('ui_click');return sndSettings()}if(id==='aq')ui.aq=e.target.value;if(id==='ast')ui.ast=e.target.value;if(id==='asort')ui.asort=e.target.value;render()});
 }
 

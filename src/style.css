@@ -1118,7 +1118,7 @@ html,body,button,[data-act],label,input,select{touch-action:manipulation}
 .mk-mine{display:flex;gap:6px;align-items:center}.mk-mine .mk-row{flex:1;min-width:0}.mk-mine>.btn{flex:none}
 .mk-note{margin:8px 2px}.mk-empty{padding:24px 0}.mk-err{margin:6px 0}.mk-gate{display:grid;gap:12px;text-align:center}
 .mk-form{display:grid;gap:8px}.mk-form .kv b.row{display:flex;gap:6px}.mk-form .chipbtn{display:flex;align-items:center;gap:4px;padding:4px 10px}.mk-form .chipbtn img{width:16px;height:16px}
-#mkprice{width:140px;text-align:right;background:#0c0907;border:1px solid var(--line2);border-radius:8px;color:#f3e6c8;padding:6px 8px;font-size:16px}
+#mkprice,.mk-in{width:140px;text-align:right;background:#0c0907;border:1px solid var(--line2);border-radius:8px;color:#f3e6c8;padding:6px 8px;font-size:16px}
 .mk-row{background:linear-gradient(#1d1611,#120e0a);border:1px solid var(--line2);color:inherit;border-radius:10px}
 .mk-chips.row{flex-wrap:nowrap}.mk-chips.row .chipbtn{padding:4px 8px}
 .mk-have{display:flex;align-items:center;justify-content:center;gap:4px}.mk-have img{width:18px;height:18px}
@@ -1849,6 +1849,12 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .vx-drop{margin-top:6px}
 /* v4.55 同款武器疊一格：右下角數量，跟道具同一個樣式 */
 .wt-art .wt-x{right:7%;bottom:7%;z-index:3;pointer-events:none;font-size:12px;padding:2px 5px}
-/* v4.55 交易所「待領取」分頁的紅點 */
+/* v4.56 交易所「待領取」分頁的紅點 */
 .mk-tabs .chipbtn{position:relative}.mk-dot{top:2px;right:6px}
+/* v4.56 交易所賣道具：道具圖示格、每個的價格、數量輸入、道具說明 */
+.mk-iart{display:flex;align-items:center;justify-content:center;border:1px solid var(--line2);border-radius:8px;background:radial-gradient(#2a2016,#120e0a)}.mk-iart>img,.mk-iart>.ph-ico{width:82%;height:82%}
+.mk-pu{display:flex;flex-direction:column;align-items:flex-end;flex:none}.mk-pu i{font-style:normal;font-size:11px;color:#9a8c76}
+.mk-ib-top{display:flex;gap:12px;align-items:center}.mk-ib-ico{width:64px;height:64px;flex:none;display:flex;align-items:center;justify-content:center;border:1px solid var(--line2);border-radius:10px;background:radial-gradient(#2a2016,#120e0a)}.mk-ib-ico>img,.mk-ib-ico>.ph-ico{width:84%;height:84%}
+.mk-ib-d{margin-top:8px;line-height:1.6}.mk-ib-d:empty{display:none}
+.mk-qrow{align-items:center}.mk-qrow .mk-in{width:96px}.mk-sellit{margin-top:8px;width:100%}
 </style>

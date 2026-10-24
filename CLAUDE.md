@@ -64,6 +64,7 @@ git add -A && git commit -m "v3.57 …" && git push    # GitHub Pages 約 1 分�
   - 排行榜：真人資料 `lb` 表（`lb_submit`、`lb_rename`），首次達成發獎勵。
   - 暱稱：註冊後立刻取，2～8 字、不可重複。
 - **交易所**：玩家間買賣武器，金幣或鑽石計價、手續費 5%、最低價 10、上架 3 天、最多 10 件；上鎖或駐守中的武器不能上架。RPC：`market_list / market_buy / market_cancel / market_pending / market_ack`，都要帶 `p_sid`；用帳本（`S.mk`）確保每筆只入帳一次。
+  v4.56 道具也能賣（單價＋數量，買家可買部分）：`market_list_item / market_buy_item / market_cancel_item / market_item_pending / market_item_claim`（sql/19），伺服器直接改雲端存檔，遊戲端用 `mkItemTx` 先存檔、暫停自動存檔、呼叫後 `cloudPull` 讀回。交易所分頁：購買／我的上架／待領取；上架從道具欄點武器或道具。
 - **公告與玩法說明（v4.03）**：右上角齒輪（取代喇叭）→ 設定頁：更新公告、玩法說明、音效、開發者工具（只有開發者模式）。內容寫在 `game.js` 的 `NW_LOG`（公告，新的放最上面）和 `GUIDE`（玩法，`v`＝最後更新版本）。**每次更新都要在 `NW_LOG` 加一則，並更新 `GUIDE` 裡改到的項目和 `v`**；玩家沒看過的標 NEW、齒輪亮紅點（存檔 `S.nwSeen`／`S.glSeen`）。不會自動跳出（Mochi 選）。
 - **新手導覽**：`TUT` 步驟陣列，支援 `sel`（高亮目標）、`tf`（動態文字）、`done`；目標會自動捲到畫面內。
 - **畫面更新**：`render()` 會保留鐵匠鋪上方 hero 區塊（避免動畫重跑）、保留橫向捲動位置；導覽列和上方資源列只有內容變了才重畫。

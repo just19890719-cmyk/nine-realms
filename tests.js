@@ -515,7 +515,7 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.44 舊武器刪除：要在放回測試資料前檢查
-  const bd=[...newWpnTests(real),...chTests(),...matTests(real),...mkCardTests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
+  const bd=[...newWpnTests(real),...chTests(),...matTests(real),...mkCardTests(),...mkItemTests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
     T('BD2 神明材質階、神格覺醒拿掉',TIERS.length===5&&typeof GOD==='undefined'&&typeof awkN==='undefined',`材質 ${TIERS.length} 階`)];
   return withTestBps(()=>runTests0(mode,bd))}
 // v4.44 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
@@ -620,3 +620,12 @@ function mkCardTests(){const w={b:'w1_sword',q:0,lv:7,traits:[],ench:[{k:'ice',v
   const row=mkRow(r,'mkview'),box=mkWeaponBox(w),e=wElem(w);
   return [T('MKC1 交易所列表名稱有屬性',!!e&&row.includes(e.tn)&&row.includes('wn-el'),e?e.tn:'無屬性'),
     T('MKC2 商品詳情有攻速／附加效果／相剋／屬性四格',['攻速','附加效果','相剋','屬性'].every(k=>box.includes(k))&&box.includes('wp-g')&&!box.includes('可以重抽'))]}
+
+// v4.56 交易所賣道具：列表、上架頁、購買頁、待領取筆數
+function mkItemTests(){const r={id:-6,kind:'i',item:STONE,qty:30,left_qty:12,seller:'npc',seller_nick:'x',weapon:{item:STONE},bp:null,cur:'gold',price:300,expires_at:new Date(Date.now()+864e5).toISOString()};
+  const row=mkRow(r,'mkview'),head=()=>'',sell=sheetMkSellItem(STONE,head),buy=sheetMkItem(r,head),ic=MK.iclaim;MK.iclaim=[{key:'f1',status:'sold',item:STONE,qty:3,cur:'gold',total:900,net:855}];
+  const n=mkClaimN(),box=mkClaimBox();MK.iclaim=ic;
+  return [T('MKI1 道具商品顯示名稱、剩餘數量、每個的價格',row.includes(itemName(STONE))&&row.includes('×12')&&row.includes('每個')&&mkCat(r)==='item'),
+    T('MKI2 上架道具頁有單價、數量、全部按鈕',sell.includes('mkiprice')&&sell.includes('mkiqty')&&sell.includes('mkiqall')),
+    T('MKI3 買道具頁可以填數量',buy.includes('mkbq')&&buy.includes('mkbuyi')),
+    T('MKI4 道具賣出算進待領取',n===MK.claim.length+1&&box.includes('855'),`待領取 ${n}`)]}
