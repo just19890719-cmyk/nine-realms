@@ -1893,4 +1893,8 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .dv-h b{flex:none;color:var(--gold-hi);font-size:15px}
 .dv-now{flex:none;font-size:11px;padding:1px 6px;border-radius:999px;background:var(--gold);color:#1a1208;font-weight:700}
 .dv-more{margin-top:12px;width:100%}
+/* v4.66 收成裡直接掉的武器圖 */
+.hico .wart{width:48px;height:48px;border-radius:4px}.hico .wart img{border-radius:0}
+.hm .wart{width:20px;height:20px;border-radius:3px}.hm .wart img{border-radius:0}
+.vx-wd span{white-space:nowrap}
 </style>
