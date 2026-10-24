@@ -537,10 +537,23 @@ function withTestBps(f){const keep=BPS.slice(),add=TEST_BPS.filter(b=>!BP[b.id])
   try{return f()}finally{BPS.length=0;BPS.push(...keep);add.forEach(b=>delete BP[b.id]);S.weapons=S.weapons.filter(w=>BP[w.b]);S.jobs=S.jobs.filter(j=>BP[j.b])}}   // 測試留下的舊圖紙武器一起清掉
 function runTests0(mode,bd){
   if(mode==='econ')return econHtml(12)+econHtml(8);
-  const r=runAll({N:100000});r.res.push(...bd,...frameLvTests(),...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...storyTests(),...curveTests(),...vNeedTests(),...vPickTests(),...bsTglTests(),...godWordTests(),...hitTests(),...enchTests(),...wsTests());const pass=r.res.filter(x=>x.pass).length;
+  const r=runAll({N:100000});r.res.push(...bd,...frameLvTests(),...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...storyTests(),...curveTests(),...vNeedTests(),...vPickTests(),...bsTglTests(),...godWordTests(),...hitTests(),...enchTests(),...wsTests(),...wpnTests());const pass=r.res.filter(x=>x.pass).length;
   return `<div><b>${pass}/${r.res.length} 通過</b>（${r.ms} 毫秒）</div>`+resHtml(r.res);
 }
 // v4.34 武器框顏色看強化等級
 function frameLvTests(){if(typeof FLV==='undefined')return[];const exp={0:0,1:1,6:1,7:2,8:2,9:3,10:6,11:4,12:5,15:5},bad=Object.entries(exp).filter(([lv,f])=>FLV(+lv)!==f);
   const nm=[0,3,7,9,10,11,12].map(lv=>FLV_T[FLV(lv)]).join('');return[T('FL2 品階名稱：凡鐵、精鍛、寒鋒、血刃、神鑄、星魂、永恆',nm==='凡鐵精鍛寒鋒血刃神鑄星魂永恆',nm),T('FL1 框色：+0 灰、+1～+6 綠、+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石',!bad.length,bad.length?'錯：'+bad.map(x=>'+'+x[0]).join('、'):'10 個等級都對')]}
+// v4.40 新武器系統：每類每秒傷害一樣、單擊＝每秒傷害×攻速、附加效果機率、相剋形態
+function wpnTests(){if(typeof CSPD==='undefined')return[];const cats=Object.keys(CSPD),one=c=>BPS.find(b=>b.cat===c);
+  const ws=cats.filter(one).map(c=>{const b=one(c);return{b:b.id,q:4,lv:6,ench:[null,null,null,null],id:-1}});
+  const qOk=ws.every(w=>power(w)===power({...w,q:0}));
+  const hit=ws.every(w=>Math.abs(hitDmg(w)-power(w)*CSPD[bpOf(w).cat]/procE(6))<=1);
+  const pr=[0,1,6,7,9,12].map(procP).map(x=>Math.round(x*100)).join('/');
+  const rc=['man','beast','giant','fly'].every(r=>Object.values(CAT_RACE).includes(r))&&MON_RACE.length===VILLAGES.length;
+  const sw=ws.find(w=>bpOf(w).cat==='sword'),hm=ws.find(w=>bpOf(w).cat==='hammer');
+  const rm=sw&&hm?[raceMult(sw,0),raceMult(sw,6),raceMult(hm,6),raceMult({...hm,lv:15},6),raceMult({...hm,lv:0},6)].join('/'):'';
+  return[T('WP1 攻擊力不看品質（暫時沒有稀有度）',qOk,ws.length+' 類'),T('WP2 單擊＝每秒傷害×攻速÷附加效果平均',hit,ws.map(w=>CATS[bpOf(w).cat]+hitDmg(w)).join(' ')),
+    T('WP3 附加效果機率 +0/+1/+6/+7/+9/+12＝0/2/12/16/25/40%',pr==='0/2/12/16/25/40',pr),
+    T('WP4 相剋：四種形態都有武器剋、20 關都有形態',rc,MON_RACE.join(',')),
+    T('WP5 劍打人形 +6 ×1.06、錘打巨型 +6 ×1.06、+15 封頂 ×1.12、+0 沒有加成',rm==='1.06/1/1.06/1.12/1',rm)]}
 if(typeof module!=='undefined')module.exports={runAll,econReport,simulate,levelCheck};

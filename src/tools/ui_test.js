@@ -27,7 +27,7 @@ const {chromium}=require('playwright');
   await p.evaluate(()=>devdo('forge'));await p.waitForTimeout(150);
   await p.click('[data-act=tab][data-k=armory]');await ov('武器庫');
   await p.click('.wgrid [data-act=wopen]');await p.waitForTimeout(150);await ov('武器詳情');
-  const hasSec=await p.evaluate(()=>['詳細資訊','特性','附魔'].every(t=>document.querySelector('.sheet').textContent.includes(t)));R(hasSec,'武器詳情含特性／附魔／詳細資訊（v3.15 精簡版）');
+  const hasSec=await p.evaluate(()=>!!document.querySelector('.sheet.wpop')&&['攻速','附加效果','相剋','屬性'].every(t=>document.querySelector('.sheet').textContent.includes(t)));R(hasSec,'點武器跳出小卡，有攻速／附加效果／相剋／屬性（v4.40）');
   await p.click('[data-act=wmode][data-m=give]');await p.click('[data-act=deliver]');await p.waitForTimeout(100);
   R(await p.evaluate(()=>S.villages[0].status==='cleared'),'交付 1-1');
   // 村莊收成
