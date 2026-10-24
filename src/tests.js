@@ -143,13 +143,13 @@ function enhanceTests(N=100000){
     S=fresh();const g0=S.gold,st0=stones();const w=mk('t1_ironsword');const r1=enhanceCore(w.id,{}),g1=S.gold,s1=stones();
     S.items[STONE]=0;const r0=enhanceCore(w.id,{});
     S.items[STONE]=0;const m=meltCore(w.id);
-    const vs={strat:'normal',bank:{cycles:0,gold:0,mats:{},events:0}};for(let c=0;c<400;c++)rollCycle(19,null,vs,NOW());const late=vs.bank.mats[STONE]|0;
-    const v0={strat:'normal',bank:{cycles:0,gold:0,mats:{},events:0}};for(let c=0;c<400;c++)rollCycle(0,null,v0,NOW());const early=v0.bank.mats[STONE]|0;
+    const vs={strat:'normal',bank:{cycles:0,gold:0,mats:{},events:0}};for(let c=0;c<40000;c++)rollCycle(19,null,vs,NOW());const late=vs.bank.mats[STONE]|0;
+    const v0={strat:'normal',bank:{cycles:0,gold:0,mats:{},events:0}};for(let c=0;c<40000;c++)rollCycle(0,null,v0,NOW());const early=v0.bank.mats[STONE]|0;
     S.villages[0].bank={cycles:3,gold:10,mats:{[STONE]:4},events:0};const k0=stones();collectCore(0);const got=stones()-k0;
     const v=mk('t1_woodaxe');S.villages[0].weaponId=v.id;S.items[STONE]=5;const r2=enhanceCore(v.id,{});
     res.push(T('C3 強化石：每次 1 顆不花金幣、沒有就擋下、收成掉落（越後面越多）收進道具、熔解退 1 顆、駐守不能強化',
-      st0===10&&r1.k==='ok'&&s1===9&&g1===g0&&r0.err==='強化石不夠'&&m&&m[STONE]===1&&late>early*3&&early>100&&got===4&&!S.mats[STONE]&&r2.err,
-      `新存檔 ${st0} 顆；強化後剩 ${s1} 顆、金幣${g1===g0?'沒變':'有變(錯誤)'}；沒石頭「${r0.err}」；熔解退 ${m&&m[STONE]} 顆；400 輪 1-1 ${early} 顆、2-10 ${late} 顆；收成進道具 ${got} 顆；駐守「${r2.err}」`));
+      st0===10&&r1.k==='ok'&&s1===9&&g1===g0&&r0.err==='強化石不夠'&&m&&m[STONE]===1&&stoneE(19)>stoneE(0)&&late>100&&early>100&&got===4&&!S.mats[STONE]&&r2.err,
+      `新存檔 ${st0} 顆；強化後剩 ${s1} 顆、金幣${g1===g0?'沒變':'有變(錯誤)'}；沒石頭「${r0.err}」；熔解退 ${m&&m[STONE]} 顆；每 4 萬隻 1-1 ${early} 顆、2-10 ${late} 顆；收成進道具 ${got} 顆；駐守「${r2.err}」`));
   });
   // 完整過程模擬：用幾顆強化石、燒幾把 +6
   const journey=(target,runs=20000)=>{let tries=0,reach=0;
@@ -400,7 +400,7 @@ function evtTests0(){const res=[];
     const sun=Date.UTC(2026,9,25,0,0)-TZ8,sat=sun-60e3,mon=sun+DAY,nsun=sun+7*DAY;
     res.push(T('J1 台灣時間週日 00:00 換週、首領整週開打',evtWeek(sat)+1===evtWeek(sun)&&evtWeek(mon)===evtWeek(sun)&&evtWeek(nsun)===evtWeek(sun)+1&&evtStart(evtWeek(sun))===sun&&evtNow().k==='boss',`週六 23:59＝${evtWeek(sat)}、週日 0 點＝${evtWeek(sun)}、週一＝${evtWeek(mon)}`));
     S=fresh();S.villages[0].strat='normal';const st=S.villages[0];rollCycle(0,null,st,mon);const g1=st.bank.gold;st.bank={cycles:0,gold:0,mats:{},events:0};rollCycle(0,null,st,mon+4*DAY);const g2=st.bank.gold;
-    res.push(T('J2 取消雙倍收成：週一和週五收成金幣一樣',g1===g2&&g2===VILLAGES[0].gold,`週一 ${g1}、週五 ${g2}`));
+    res.push(T('J2 取消雙倍收成：週一和週五收成金幣一樣',g1===g2&&g2===vKillGold(0),`週一 ${g1}、週五 ${g2}`));
     S=fresh();S.gold=0;const w=makeWeapon('t3_greatsword',3,8,[]);const b=evtNow().boss,d0=bossDmgOf(w,b);
     // v3.85 駐守首領：最多 3 把、按時間累積、駐守中不能打村莊／強化／熔解、收回會結算；v3.87 換週武器留著、傷害歸零
     const w2=makeWeapon('t3_greatsword',2,5,[]),w3=makeWeapon('t2_longsword',1,3,[]),w4=makeWeapon('t2_longsword',1,2,[]);
@@ -497,10 +497,10 @@ function hitTests(){const cats=[...new Set(BPS.map(b=>b.cat))],miss=cats.filter(
 function enchTests(){let lv0=0;const mk=(e)=>({id:-1,b:'t3_greataxe',q:0,lv:lv0,traits:[],ench:[e||null,null,null,null]});while(lv0<15&&power(mk())<VILLAGES[8].req)lv0++;   // 攻擊力剛好過需求，弱點才看得出差別（狩獵時間最多縮到 60%）
   const pairOk=Object.entries(ELEM_OPP).every(([a,b])=>ELEM_OPP[b]===a)&&Object.keys(ELEM).length===6&&Object.values(ELEM).every(x=>x.tn.length===3&&x.tn[2].length<=4&&(x.tn[2].includes(x.n[0])||x.tn[2].includes(x.n[1])));
   const i=8,d0=gameDur(i,mk(),'normal'),d1=gameDur(i,mk({k:'ice',v:3}),'normal'),d2=gameDur(i,mk({k:'fire',v:3}),'normal');
-  const S0=S;S=fresh();const w=makeWeapon('t1_woodaxe',0,0,[],[{k:'fire',v:2},null,null,null]);const st=S.villages[0];st.status='cleared';st.weaponId=w.id;st.cycleStart=NOW();ui.tab='village';ui.realm=0;const h=viewVillage();S=S0;
+  const S0=S;S=fresh();const w=makeWeapon('t1_woodaxe',0,0,[],[{k:'fire',v:2},null,null,null]);const st=S.villages[0];st.status='cleared';st.weaponId=w.id;st.cycleStart=NOW();ui.tab='village';ui.realm=0;const h=viewVillage(),sv=ui.sheet;S.villages[1].status='open';const hs=sheetVillage(1);ui.sheet=sv;S=S0;
   const bOk=EVT_BOSS.every(b=>b.weak&&ELEM[b.weak.el])&&bossWeak(mk({k:'ice',v:3}),EVT_BOSS[2])===1.6&&!bossWeak(mk({k:'fire',v:3}),EVT_BOSS[2]);
-  const ok=pairOk&&d1<d0&&d2===d0&&/class="vweak hit"/.test(h)&&bOk&&typeof AFFIX==='undefined';
-  return[T('I 屬性附魔：6 種三組互剋、三級名稱 4 字內、打中弱點狩獵變快、卡片弱點標籤變綠、首領弱點用屬性、舊附魔表已刪',!!ok,`1-9 狩獵時間：無屬性 ${fmtT(d0)}、永凍之霜 ${fmtT(d1)}、滅世之焰 ${fmtT(d2)}；互剋 ${pairOk}；首領 ${bOk}`)]}
+  const ok=pairOk&&d1<d0&&d2===d0&&!/vweak|限時挑戰/.test(h)&&/弱點/.test(hs)&&bOk&&typeof AFFIX==='undefined';
+  return[T('I 屬性附魔：6 種三組互剋、三級名稱 4 字內、打中弱點打得更快、弱點只在詳情顯示（卡片不顯示）、首領弱點用屬性、舊附魔表已刪',!!ok,`1-9 狩獵時間：無屬性 ${fmtT(d0)}、永凍之霜 ${fmtT(d1)}、滅世之焰 ${fmtT(d2)}；互剋 ${pairOk}；首領 ${bOk}`)]}
 // v3.90 工坊升級依關卡進度解鎖：沒收復到就不能升、扣不到錢；已經升上去的等級保留
 function wsTests(){const S0=S;S=fresh();S.gold=1e6;const at=n=>S.villages.forEach((v,i)=>{if(i<n)v.status='cleared'});
   upgradeCore('anvil');upgradeCore('furnace');const a0=S.anvil===1&&S.furnace===1&&S.gold===1e6;
@@ -515,7 +515,7 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.44 舊武器刪除：要在放回測試資料前檢查
-  const bd=[...newWpnTests(real),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
+  const bd=[...newWpnTests(real),...chTests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
     T('BD2 神明材質階、神格覺醒拿掉',TIERS.length===5&&typeof GOD==='undefined'&&typeof awkN==='undefined',`材質 ${TIERS.length} 階`)];
   return withTestBps(()=>runTests0(mode,bd))}
 // v4.44 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
@@ -566,6 +566,22 @@ function wpnTests(){if(typeof CSPD==='undefined')return[];const cats=Object.keys
 if(typeof module!=='undefined')module.exports={runAll,econReport,simulate,levelCheck};
 
 // v4.51 新武器 17 把（武器系統定案第 9 節）：開局 7 把、兩界一階數值、解鎖關卡、偏難需求、金幣配方、暫代圖
+// v4.52 限時挑戰：血量公式、需求剛好約 48 秒、60 秒內打倒才收復、收復只發一次獎勵、卡片不顯示弱點和「限時挑戰」
+function chTests(){return withSandbox(chTests0)}
+function chTests0(){const mk=(id,lv)=>({id:-1,b:id,q:0,lv,ench:[null,null,null,null],traits:[]}),w0=mk('w0_sword',0);
+  const hpOk=VHP(0)===Math.round(VILLAGES[0].req*48)&&VHP(9)===VILLAGES[9].req*60&&VHP(18)===VILLAGES[18].req*60;
+  const sec=vSec(0,w0),durOk=Math.abs(sec-48)<.01&&Math.abs(gameDur(0,w0,'normal')-sec*1000*STRATS.normal.time)<1;
+  let win=0,lose=0;for(let n=0;n<100;n++){if(chPlan(0,w0).win!=null)win++;if(chPlan(9,w0).win!=null)lose++}
+  const p=chPlan(0,w0),tOk=p.win!=null&&p.win<=CH_SEC*1000&&p.ev.every((e,k)=>!k||e[0]>=p.ev[k-1][0])&&p.ev.reduce((a,e)=>a+e[1],0)>=p.hp;
+  const S0=S;S=fresh();S.villages[0].status='open';const g0=S.gold,r1=chWinCore(0),g1=S.gold,r2=chWinCore(0),g2=S.gold,once=r1.first&&!r2.first&&g1-g0===(FIRST_GOLD[0]||0)&&g2===g1&&S.villages[0].status==='cleared'&&S.villages[1].status==='open';
+  S.villages[1].status='open';ui.tab='village';ui.realm=0;const h=viewVillage();S=S0;
+  const cardOk=!/vweak|限時挑戰/.test(h)&&/data-act="vopen"/.test(h);
+  const se=stoneE(0)===.004&&Math.abs(stoneE(89)-.004*1.89)<1e-12;
+  return[T('CH1 怪物血量＝需求 × 60 秒 × 0.8（第 9、10 關 ×1.0）',hpOk,`1-1 ${VHP(0)}、1-10 ${VHP(9)}、2-9 ${VHP(18)}`),
+   T('CH2 攻擊力剛好等於需求約 48 秒打倒，掛機一輪＝打倒一隻',durOk,`1-1 開局劍 ${sec.toFixed(1)} 秒`),
+   T('CH3 60 秒內打倒才收復：需求剛好幾乎都贏，差太多一定輸，傷害照時間排',win>=90&&lose===0&&tOk,`1-1 贏 ${win}/100、1-10 贏 ${lose}/100`),
+   T('CH4 收復獎勵只發一次、開下一關',!!once,`首次 ${r1&&r1.fg} 金幣、第二次 ${r2&&r2.first?'又發(錯誤)':'不再發'}`),
+   T('CH5 村莊卡片不顯示弱點和「限時挑戰」，只有挑戰按鈕；強化石每隻 0.4% 往後遞增',cardOk&&se,cardOk?'正常':'卡片還有弱點或限時挑戰')]}
 function newWpnTests(real){const mk=(id,lv)=>({id:-1,b:id,q:0,lv,ench:[null,null,null,null],traits:[]}),P=(id,lv)=>power(mk(id,lv));
   const st=real.filter(b=>b.unlock===0),cats=Object.keys(CSPD),ul=real.filter(b=>b.unlock).map(b=>b.unlock).join(',');
   const pw=[P('w0_sword',0),P('w1_sword',0),P('w2_axe',0),P('w1_troll',0),P('g_hofund',0)].join('/');
