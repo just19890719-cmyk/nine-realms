@@ -593,9 +593,11 @@ function stackTests(){return withSandbox(()=>{const S0=S;S=fresh();const b=(BPS.
   for(let n=0;n<6;n++)makeWeapon(b,0,0);makeWeapon(b,0,3);const e=makeWeapon(b,0,0);e.ench[0]={k:ek,v:1};const lk=makeWeapon(b,0,0);lk.lock=true;
   const g=wStacks(S.weapons),six=g.find(x=>x.n===6),one=S.weapons[0];ui.tab='armory';ui.atab='w';ui.acat='all';ui.aq='all';ui.ast='all';
   const h=viewArmory(),tiles=(h.match(/data-act="wopen"/g)||[]).length,badge=/wt-x">×6</.test(h);
-  ui.sheet={t:'w',id:one.id,m:'main'};const sh=sheetWeapon(one.id,'main');one.lv=1;const g2=wStacks(S.weapons);S=S0;
+  ui.sheet={t:'w',id:one.id,m:'main'};const sh=sheetWeapon(one.id,'main');one.lv=1;const g2=wStacks(S.weapons);
+  const two=S.weapons[1];one.lv=0;ui.sheet={t:'w',id:two.id,m:'main'};one.test=two.test=false;const k0=wKey(two);ui.stkNext={id:two.id,k:k0};two.lv=6;stkFollow();const fol=ui.sheet.id!==two.id&&wKey(W(ui.sheet.id))===k0;two.lv=0;ui.sheet=null;S=S0;
   return[T('ST1 同圖紙同等級同屬性才疊一格：6 把 +0 一格，+3、附魔、收藏各自一格',g.length===4&&!!six&&tiles===4&&badge,`${g.length} 格・畫面 ${tiles} 格`),
-   T('ST2 點進去只動一把：強化其中一把就分出來，小卡寫「同款共 6 把」',/同款共 6 把/.test(sh)&&g2.length===5&&g2.find(x=>x.n===5),`強化後 ${g2.length} 格`)]})}
+   T('ST2 點進去只動一把：強化其中一把就分出來，小卡寫「同款共 6 把」',/同款共 6 把/.test(sh)&&g2.length===5&&g2.find(x=>x.n===5),`強化後 ${g2.length} 格`),
+   T('ST3 一鍵安定值後小卡換到下一把同款 +0，按鈕叫「一鍵安定值」',fol&&/一鍵安定值/.test(sh),fol?'有換':'沒換')]})}
 function chTests(){return withSandbox(chTests0)}
 function chTests0(){const mk=(id,lv)=>({id:-1,b:id,q:0,lv,ench:[null,null,null,null],traits:[]}),w0=mk('w0_sword',0);
   const hpOk=VHP(0)===Math.round(VILLAGES[0].req*48)&&VHP(9)===VILLAGES[9].req*60&&VHP(18)===VILLAGES[18].req*60;
