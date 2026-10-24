@@ -1818,4 +1818,15 @@ body.dpv .hero .dp-far{animation:dpSway 14s ease-in-out infinite alternate,dpPus
 .smf .f2{animation-delay:-4.2s}.smf .f3{animation-delay:-3.6s}.smf .f4{animation-delay:-3s}.smf .f5{animation-delay:-2.4s}.smf .f6{animation-delay:-1.8s}.smf .f7{animation-delay:-1.2s}.smf .f8{animation-delay:-.6s}
 @keyframes smF{0%{opacity:1}12.5%,100%{opacity:0}}
 @media (prefers-reduced-motion:reduce){.smf img{animation:none}}
+/* v4.48 鐵匠待機改成慢動作：f1 一直墊在最底下（大部分時間靜止），每 20 秒做兩段慢動作（呼吸握鎚、轉頭看爐火再微笑），每格淡入淡出 0.6 秒；f8 跟 f1 幾乎一樣，不用 */
+.smf img{opacity:0;animation:none}.smf .f1{opacity:1}.smf .f8{display:none}
+.smf img:not(.f1){animation-duration:20s;animation-iteration-count:infinite;animation-timing-function:ease-in-out;animation-delay:0s}
+.smf .f2{animation-name:smF2}.smf .f3{animation-name:smF3}.smf .f4{animation-name:smF4}.smf .f5{animation-name:smF5}.smf .f6{animation-name:smF6}.smf .f7{animation-name:smF7}
+@keyframes smF2{0%,30.00%{opacity:0}33.00%,42.00%{opacity:1}42.05%,100%{opacity:0}}
+@keyframes smF3{0%,39.00%{opacity:0}42.00%,51.00%{opacity:1}51.05%,100%{opacity:0}}
+@keyframes smF4{0%,48.00%{opacity:0}51.00%,54.00%{opacity:1}57.00%,100%{opacity:0}}
+@keyframes smF5{0%,70.00%{opacity:0}73.00%,81.00%{opacity:1}81.05%,100%{opacity:0}}
+@keyframes smF6{0%,78.00%{opacity:0}81.00%,91.00%{opacity:1}91.05%,100%{opacity:0}}
+@keyframes smF7{0%,88.00%{opacity:0}91.00%,96.00%{opacity:1}99.00%,100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.smf img:not(.f1){animation:none!important;opacity:0}}
 </style>
