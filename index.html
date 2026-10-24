@@ -1758,7 +1758,7 @@ const UI_ART_PREVIEW={
 const VERSION=3;
 const ART_V='?v=3';  // 武器顯示圖改過透明度：加版本號，避免瀏覽器沿用舊快取
 // v3.76 第二界的 AI 圖還沒到：先借第一界的圖顯示，圖到了刪掉對應那一項就好
-const ART_WAIT={g_hofund_disp:'t4_sword_disp',g_hofund:'t4_sword',g_skadi_disp:'t4_bow_disp',g_skadi:'t4_bow',mat_hrelic:'it_horn',mat_srelic:'mat_fur',fx_godaura:'fx_ok'};   // v4.15 神明武器的 AI 圖還沒到：先借巨人武器圖
+const ART_WAIT={};
 const A=n=>(n=ART_WAIT[n]||n,(typeof UI_ART!=='undefined'&&UI_ART[n])||'art/'+n+'.webp'+(n.endsWith('_disp')?ART_V:/^(mon|boss|bg)_|^v\d+$/.test(n)?'?m=4.14':''));  // UI_ART（skin.js）可把既有圖示換成新素材路徑；預設空白＝不變
 const MATS={iron:'鐵礦',oak:'橡木',leather:'皮革',silver:'霜銀',fang:'狼牙',scale:'龍鱗',rainbow:'虹橋碎晶',rune:'符文石',shard:'符文碎片',fur:'魔狼黑毛',icecore:'霜巨人冰核',fireheart:'火巨人焰心',serpent:'海蛇鱗',giantbone:'巨人骨',permafrost:'永凍霜晶',thunderiron:'雷鳴鐵',elderroot:'世界樹古根',hrelic:'霍夫德劍柄',srelic:'斯卡蒂弓臂'};
 const MATART={iron:'mat_iron',oak:'mat_oak',leather:'mat_leather',silver:'mat_silver',fang:'mat_fang',scale:'mat_scale',rainbow:'mat_rainbow',rune:'mat_rune',shard:'mat_shard',fur:'mat_fur',icecore:'mat_icecore',fireheart:'mat_fireheart',serpent:'mat_serpent',giantbone:'mat_giantbone',permafrost:'mat_permafrost',thunderiron:'mat_thunderiron',elderroot:'mat_elderroot',hrelic:'mat_hrelic',srelic:'mat_srelic'};
