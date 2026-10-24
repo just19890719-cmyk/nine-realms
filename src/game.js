@@ -249,7 +249,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.46';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.47';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1076,6 +1076,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.47',d:'10/24',t:'鐵匠換上新樣貌・鐵匠鋪更有電影感',b:['鐵匠鋪和導覽頭像的鐵匠，換成跟開場故事、封面<b>同一個人</b>，而且會動了：呼吸、調整握鎚、轉頭看爐火','鐵匠身上會被爐火照亮、跟著火光閃動，畫面加上電影色調和景深，傾斜手機時前後景立體感更明顯']},
  {v:'4.46',d:'10/24',t:'新武器系統：攻速、附加效果、相剋',b:['<b>點武器跳出武器小卡</b>，不再蓋滿整個畫面：攻速、單擊、附加效果、相剋、屬性集中在四格，下面的進度條看得到強化到下一級會變多少','武器名稱改成「<b>+7 寒霜 鐵劍</b>」（強化／附魔／武器名），附魔名稱會依屬性發光，等級越高越亮','<b>攻擊力＝每秒傷害</b>，已經算進附加效果的平均；七類武器攻速不同，強化越高越常觸發附加效果','新增<b>相剋</b>：怪物分人形、野獸、巨型、飛行；劍、雙刀剋人形，長柄、斧剋野獸，錘、弩剋巨型，弓剋飛行，強化每一級多 1%（+12 為 +12%）','拿掉<b>品質倍率</b>和<b>品階名稱</b>，強化等級和框色就是武器的階段；「短刃」改名「雙刀」'],g:['wpn']},
  {v:'4.45',d:'10/24',t:'屬性附魔與怪物弱點',b:['屬性一律用<b>文字和顏色</b>標示，附魔改成跟武器詳情一樣的<b>小卡</b>','舊的 12 種附魔（迅捷、掠奪、剋巨人…）和圖紙天生詞條<b>全部拿掉</b>，武器身上的舊附魔已清空','新的<b>屬性附魔</b>：每把武器 1 欄，隨機出烈焰、霜寒、雷霆、劇毒、神聖、暗影其中一種，分三級（一級 70%、二級 25%、三級 5%），三級叫滅世之焰、雷神之怒這類名字','每隻怪物都有屬性，<b>三對宿敵互剋</b>：烈焰⇄霜寒、雷霆⇄劇毒、神聖⇄暗影','村莊卡片多了「<b>弱點</b>」標籤；武器打中弱點傷害 ×1.2／1.4／1.6，標籤變綠，狩獵更快','鍛造出來的武器一律無屬性；屬性不加攻擊力，沒打中也不扣傷害'],g:['ench','hp']},
  {v:'4.44',d:'10/24',t:'舊武器全部收起，準備全新武器',b:['為了從第一界重新設計全新武器，<b>舊武器、舊圖紙、神明武器和神格覺醒</b>全部拿掉','鐵匠鋪「圖紙」暫時是空的，新武器做好會陸續加入','新手導覽等新武器上線後再開放'],g:['forge']},
@@ -1638,6 +1639,8 @@ function commissionCard(){const i=S.villages.findIndex(v=>v.status==='open');
   return `<div class="ui-card comm">${ptitle('目前委託')}<div class="comm-in">${img('v'+(i+1),'comm-img')}<div><b>${vNo(i)} ${v.name}</b><div class="small muted">任何武器都能交付</div></div></div>
    ${btn('前往村莊 »','tab',{cls:'btn-sec sm',attrs:'data-k="village"'})}</div>`}
 // 版型 E 場景互動：場景裡的物件本身就是按鈕（炭火桶＝熔解、鐵砧＝工坊升級、工具架＝鐵匠天賦），委託做成用鐵鍊吊著的告示牌
+// v4.47 鐵匠待機動作：8 格 AI 動作圖疊在一起，只切 opacity 輪播（style.css .smf）
+const smFr=(cls,alt)=>`<div class="${cls} smf"${alt?` role="img" aria-label="${alt}"`:''}>${[1,2,3,4,5,6,7,8].map(k=>`<img class="f${k}" src="${A('sm_'+k)}" alt="">`).join('')}</div>`;
 function heroScene(){const i=S.villages.findIndex(v=>v.status==='open'),D=n=>A('dp/'+n);
   const obj=(cls,src,act,label,ic)=>`<button class="hs-obj ${cls}" data-act="${act}" aria-label="${label}"><img class="hs-img" src="${D(src)}" alt=""><span class="hs-tag">${img(ic)}${label}</span></button>`;
   let board='';if(i>=0){const v=VILLAGES[i],f=S.weapons.some(w=>eligible(i,w))?1:0;
@@ -1695,7 +1698,7 @@ function viewForge(){
   const hv=ui.heroV||'F';   // v3.18 主畫面版型：正式採用 F（上橫幅＋下工具列）；開發模式可切換 O/A～E 比較
   const sideH='';   // v4.36 工坊／熔解入口拿掉
   const fv=ui.forgeV||'O';   // v3.19 鐵匠鋪內容頁預覽：O 原版／1 主畫面縮成橫條／2 主畫面收起（只在鍛造中分頁顯示）
-  return `<section class="hero hv-${hv} fv-${fv} ft-${ui.ftab}"><img class="dp dp-far" src="${D('forge_far')}" alt=""><img class="dp dp-glow" src="${D('forge_fireglow')}" alt=""><img class="dp dp-glow g2" src="${D('forge_fireglow')}" alt=""><img class="dp dp-barrel" src="${D('prop_barrel')}" alt=""><img class="dp dp-steam" src="${D('fx_smoke_wisp')}" alt="">${img('smith','smith','鐵匠')}<div class="dp dp-fog"></div><div class="dp dp-embers">${dpEmb}</div><img class="dp dp-fg dp-chains" src="${D('prop_chains')}" alt=""><img class="dp dp-fg dp-coal" src="${D('prop_coal')}" alt=""><img class="dp dp-fg dp-hammer" src="${D('prop_hammer')}" alt="">
+  return `<section class="hero hv-${hv} fv-${fv} ft-${ui.ftab}"><img class="dp dp-far" src="${D('forge_far')}" alt=""><img class="dp dp-glow" src="${D('forge_fireglow')}" alt=""><img class="dp dp-glow g2" src="${D('forge_fireglow')}" alt=""><img class="dp dp-barrel" src="${D('prop_barrel')}" alt=""><img class="dp dp-steam" src="${D('fx_smoke_wisp')}" alt="">${smFr('smith','鐵匠')}${smFr('smith dp dp-smlit','')}<div class="dp dp-fog"></div><div class="dp dp-embers">${dpEmb}</div><div class="dp dp-grade"></div><img class="dp dp-fg dp-chains" src="${D('prop_chains')}" alt=""><img class="dp dp-fg dp-coal" src="${D('prop_coal')}" alt=""><img class="dp dp-fg dp-hammer" src="${D('prop_hammer')}" alt="">
    ${hv==='C'||hv==='E'||hv==='F'?'':sideH}${hv==='C'||hv==='E'||hv==='F'?'':hv==='B'?commBadge():commissionCard()}${hv==='E'?heroScene():''}${hv==='F'?heroRibbon():''}</section>${hv==='C'?`<div class="hero-info">${sideH}${commissionCard()}</div>`:''}
   ${tabs.length<2?'':`<div class="subtabs">${tabs.map(([k,n])=>`<button class="ui-tab ${ui.ftab===k?'on':''}" data-act="ftab" data-k="${k}">${n}${k==='queue'&&done||k==='bp'&&BPS.some(bpNew)?'<i class="dot"></i>':''}</button>`).join('')}</div>`}${body}`;
 }
@@ -2679,14 +2682,14 @@ function signAuto(){if(ui.signAuto||!S||!signReady()||!(S.tut>=TUT.length)||ui.s
 function tipDraw(){let o=document.getElementById('tip');const k=!document.body.classList.contains('gating')&&!ui.busy&&!ui.result&&S.tut>=TUT.length?tipKey():null;
   if(!k||(S.tips||{})[k]){if(o&&(!k||o.dataset.k!==k))o.remove();return}
   if(o&&o.dataset.k===k)return;if(o)o.remove();
-  o=document.createElement('div');o.id='tip';o.dataset.k=k;o.innerHTML=`<div class="tut-box tip-box"><img class="tut-face" src="${A('smith')}" alt=""><div class="tut-body"><div class="tut-txt"><b>${TIPS[k][0]}</b>｜${TIPS[k][1]}</div><div class="tut-btns"><button class="ui-btn ui-btn--primary btn btn-primary sm" data-tip="ok">知道了</button></div></div></div>`;
+  o=document.createElement('div');o.id='tip';o.dataset.k=k;o.innerHTML=`<div class="tut-box tip-box"><img class="tut-face" src="${A('sm_1')}" alt=""><div class="tut-body"><div class="tut-txt"><b>${TIPS[k][0]}</b>｜${TIPS[k][1]}</div><div class="tut-btns"><button class="ui-btn ui-btn--primary btn btn-primary sm" data-tip="ok">知道了</button></div></div></div>`;
   o.addEventListener('click',e=>{if(!e.target.closest('[data-tip]'))return;e.stopPropagation();S.tips=S.tips||{};S.tips[k]=1;save();o.remove();snd('ui_click')});document.body.appendChild(o)}
 const tutOn=()=>typeof S.tut==='number'&&S.tut<TUT.length&&BPS.some(b=>!b.dev)&&!document.body.classList.contains('gating');   // v4.44 沒有正式圖紙（只有開發者測試圖紙）時先不跑新手導覽
 function tutStep(n){S.tut=n;const nx=TUT[n];if(nx&&nx.go&&!ui.busy){nx.go();render()}if(n>=TUT.length&&!S.tutRw){S.tutRw=1;S.gems+=50;toast('新手導覽完成：鑽石 +50','ok')}save();tutDraw(true)}
 function tutDraw(force){let o=document.getElementById('tut');document.body.classList.toggle('tutoring',tutOn());
   if(!tutOn()){if(o)o.remove();return}
   const st=TUT[S.tut];if(!st.ok&&st.done&&st.done()){return tutStep(S.tut+1)}
-  if(!o){o=document.createElement('div');o.id='tut';o.innerHTML='<div class="tut-ring"></div><div class="tut-box"><img class="tut-face" src="'+A('smith')+'" alt=""><div class="tut-body"><div class="tut-txt"></div><div class="tut-btns"></div></div></div>';document.body.appendChild(o);
+  if(!o){o=document.createElement('div');o.id='tut';o.innerHTML='<div class="tut-ring"></div><div class="tut-box"><img class="tut-face" src="'+A('sm_1')+'" alt=""><div class="tut-body"><div class="tut-txt"></div><div class="tut-btns"></div></div></div>';document.body.appendChild(o);
     o.addEventListener('click',e=>{const b=e.target.closest('[data-tut]');if(!b)return;e.stopPropagation();snd('ui_click');if(b.dataset.tut==='skip'){S.tut=99;save();tutDraw()}else tutStep(S.tut+1)})}
   if(force||o.dataset.k!==String(S.tut)){o.dataset.k=S.tut;o.querySelector('.tut-txt').innerHTML=st.t;
     o.querySelector('.tut-btns').innerHTML=`<span class="small muted">${S.tut+1}／${TUT.length}</span>${st.ok?`<button class="ui-btn ui-btn--primary btn btn-primary sm" data-tut="next">${st.ok}</button>`:''}${st.end?'':'<button class="tut-skip" data-tut="skip">略過導覽</button>'}`}
