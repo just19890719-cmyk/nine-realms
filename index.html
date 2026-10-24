@@ -1889,7 +1889,7 @@ const VERSION=3;
 const ART_V='?v=3';  // 武器顯示圖改過透明度：加版本號，避免瀏覽器沿用舊快取
 // v3.76 第二界的 AI 圖還沒到：先借第一界的圖顯示，圖到了刪掉對應那一項就好
 const ART_WAIT={};
-const A=n=>(n=ART_WAIT[n]||n,(typeof UI_ART!=='undefined'&&UI_ART[n])||'art/'+n+'.webp'+(n.endsWith('_disp')?ART_V:/^(mon|boss|bg)_|^v\d+$/.test(n)?'?m=4.14':''));  // UI_ART（skin.js）可把既有圖示換成新素材路徑；預設空白＝不變
+const A=n=>(n=ART_WAIT[n]||n,(typeof UI_ART!=='undefined'&&UI_ART[n])||'art/'+n+'.webp'+(n.endsWith('_disp')?ART_V:/^(mon|boss|bg)_|^v\d+$/.test(n)?'?m=4.25':''));  // UI_ART（skin.js）可把既有圖示換成新素材路徑；預設空白＝不變
 const MATS={iron:'鐵礦',oak:'橡木',leather:'皮革',silver:'霜銀',fang:'狼牙',scale:'龍鱗',rainbow:'虹橋碎晶',rune:'符文石',shard:'符文碎片',fur:'魔狼黑毛',icecore:'霜巨人冰核',fireheart:'火巨人焰心',serpent:'海蛇鱗',giantbone:'巨人骨',permafrost:'永凍霜晶',thunderiron:'雷鳴鐵',elderroot:'世界樹古根',hrelic:'霍夫德劍柄',srelic:'斯卡蒂弓臂'};
 const MATART={iron:'mat_iron',oak:'mat_oak',leather:'mat_leather',silver:'mat_silver',fang:'mat_fang',scale:'mat_scale',rainbow:'mat_rainbow',rune:'mat_rune',shard:'mat_shard',fur:'mat_fur',icecore:'mat_icecore',fireheart:'mat_fireheart',serpent:'mat_serpent',giantbone:'mat_giantbone',permafrost:'mat_permafrost',thunderiron:'mat_thunderiron',elderroot:'mat_elderroot',hrelic:'mat_hrelic',srelic:'mat_srelic'};
 const CATS={axe:'斧',sword:'劍',dagger:'短刃',polearm:'長柄',hammer:'錘',bow:'弓',crossbow:'弩',shield:'盾',throw:'投擲',tool:'工具'};
@@ -2181,7 +2181,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.23';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.25';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -3001,6 +3001,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.25',d:'10/24',t:'1-2～1-4 怪物全身圖重新繪製',b:['1-2 賽赫利姆尼爾：身上多了英靈殿每晚被宰殺留下的傷疤','1-3 哈提：披著符文鎖鏈馬具的巨狼','1-4 斯庫爾：背上的冰刺更完整，撲擊動作更有力'],g:['hit']},
  {v:'4.23',d:'10/24',t:'第一界 10 隻怪物都有全身圖了',b:['1-5 瓦爾拉文（戰場鴉魔）：半鴉半狼，爪子抓著撕破的戰旗','1-6 克拉肯（深海巨怪）、1-7 山怪特羅爾（披著龍鱗的石皮巨魔）','1-8 石心巨人赫朗格尼爾（扛著磨刀石巨棒）、1-9 穆斯貝爾騎兵（騎著火鬃戰馬）、1-10 守望之神海姆達爾','點怪物小圖展開戰鬥畫面，就能看到待機和攻擊的動作'],g:['hit']},
  {v:'4.22',d:'10/24',t:'戰鬥畫面新增 3 隻全身怪物',b:['1-2 賽赫利姆尼爾（不死野豬）、1-3 哈提（追月之狼）、1-4 斯庫爾（追日之狼）換成全身圖','點怪物小圖展開戰鬥畫面，就會看到牠們待機和撲上來攻擊的動作'],g:['hit']},
  {v:'4.21',d:'10/24',t:'戰鬥畫面改成點了才展開',b:['村莊卡片平常維持原本的怪物小圖動畫','<b>點怪物小圖</b>才會展開騎士與怪物的戰鬥畫面，一次只會開一個；點戰鬥畫面就收起來','戰鬥畫面裡兩下連續傷害的數字分開一點，不再疊在一起'],g:['hit']},
