@@ -70,8 +70,8 @@ const awkN=(w,lv)=>godOf(w)?AWK_LV.filter(l=>(lv??w.lv)>=l).length:0;   // 已�
 const awkVal=(w,k,lv)=>{const g=godOf(w);if(!g)return 0;const n=awkN(w,lv);return g.aw.slice(0,n).filter(a=>a[1]===k).reduce((s,a)=>s+a[2],0)};
 function recipe(b){if(b.r)return b.r;if(b.t===0){const sec={axe:'oak',polearm:'oak',bow:'oak',crossbow:'oak',throw:'leather',tool:'oak',sword:'leather',dagger:'leather',shield:'oak',hammer:'iron'}[b.cat];return add({iron:3},{[sec]:2})}
   if(b.t===1)return{silver:3,fang:2,iron:2};if(b.t===4)return{giantbone:3,permafrost:2,thunderiron:2,rune:2};return{scale:2,rune:2,silver:2}}
-// v4.34 武器框顏色看強化等級（Mochi 選）：+0 灰、+1～+6 綠、+7～+8 藍、+9～+10 紅、+11 紫、+12 鑽石；框圖 art/frame_lv0～5（AI 細雷電框）
-const FLV=lv=>(lv|=0)<=0?0:lv<=6?1:lv<=8?2:lv<=10?3:lv===11?4:5,FLV_N=['灰','綠','藍','紅','紫','鑽石'];const fq=w=>'_lv'+FLV(w.lv),lc=w=>'l'+FLV(w.lv);
+// v4.34 武器框顏色看強化等級（Mochi 選）：+0 灰、+1～+6 綠、+7～+8 藍、+9 金、+10 紅、+11 紫、+12 鑽石；框圖 art/frame_lv0～6（AI 細雷電框，6＝金），+9 以上微微閃亮
+const FLV=lv=>(lv|=0)<=0?0:lv<=6?1:lv<=8?2:lv===9?6:lv===10?3:lv===11?4:5,FLV_N=['灰','綠','藍','紅','紫','鑽石','金'];const fq=w=>'_lv'+FLV(w.lv),lc=w=>'l'+FLV(w.lv);
 const QUAL=[{n:'普通',m:1},{n:'精良',m:1.2},{n:'稀有',m:1.45},{n:'史詩',m:1.8},{n:'傳說',m:2.3}];
 // 品質權重用整數（千分比），每級鐵砧位移加總為 0，總和恆為 1000
 const QW=[550,280,120,40,10],QSHIFT=[-70,30,25,11,4];
@@ -1130,7 +1130,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
- {v:'4.34',d:'10/24',t:'武器框顏色看強化等級',b:['武器框改成新的細雷電框，顏色看<b>強化等級</b>：+0 灰、+1～+6 綠、+7～+8 藍、+9～+10 紅、+11 紫、+12 鑽石','武器庫、交易所、排行榜、聊天武器卡都一樣，一眼就看得出哪幾把是賭過的','品質（普通～傳說）改成只看名稱下方的小字'],g:['enh']},
+ {v:'4.34',d:'10/24',t:'武器框顏色看強化等級',b:['武器框改成新的細雷電框，顏色看<b>強化等級</b>：+0 灰、+1～+6 綠、+7～+8 藍、+9 金、+10 紅、+11 紫、+12 鑽石；+9 以上的框會微微閃亮','武器庫、交易所、排行榜、聊天武器卡都一樣，一眼就看得出哪幾把是賭過的','品質（普通～傳說）改成只看名稱下方的小字'],g:['enh']},
  {v:'4.32',d:'10/24',t:'戰鬥畫面怪物不再被切到・打法統一',b:['展開戰鬥畫面時，怪物整隻都在框內（之前野豬、霜狼、海怪等體型寬的怪物左邊會被切掉）','怪物被重擊打退時也不會超出框','戰鬥畫面收起時，卡片上的小怪物也用一樣的打法：長柄是<b>貫穿</b>（之前小怪物還是舊的流血），攻速和附加效果都跟戰鬥畫面相同'],g:['hit']},
  {v:'4.30',d:'10/24',t:'雷神索爾登場',b:['2-10 換上<b>雷神索爾</b>的頭像、全身圖和維莫爾河渡口新背景（之前暫時用斯卡蒂的圖）','1-8 泥巨人莫庫卡爾菲有全身圖了，2-9 石籬原換上新背景（巨石牆和赫朗格尼爾）','<b>索爾之錘</b>和<b>雷神錘柄</b>換上自己的圖'],g:['hp','god']},
  {v:'4.29',d:'10/24',t:'村莊詳情小修正',b:['「首次收復獎勵」改成佔一整列，小螢幕不會再折成兩行','2-10 維莫爾河渡口改成要戰錘後，攻擊力需求照難度曲線調成 1040'],g:[]},
@@ -1175,7 +1175,7 @@ const GUIDE=[
  ['基礎',[
   {k:'forge',ic:'t1_ironhammer_disp',n:'鍛造',s:'選圖紙、放材料，5 秒打好一批',v:'3.86',h:'在鐵匠鋪「圖紙」選一張圖紙，材料和金幣夠就能按「開始鍛造」。<br>一次一批（最多 10 把），不管幾把都是 <b>5 秒</b>完成。<br>熔爐等級決定能打哪種材質：鐵製 Lv1、霜銀 Lv2、龍鱗 Lv4、神器 Lv5、巨人 Lv6。<br>收復村莊會解鎖新圖紙。'},
   {k:'qual',ic:'tr_sharp',n:'品質與先天特性',s:'普通到傳說，攻擊力最多 2.3 倍',v:'3.77',h:'品質：普通 ×1、精良 ×1.2、稀有 ×1.45、史詩 ×1.8、傳說 ×2.3。鐵砧等級越高，好品質機率越高。<br>霜銀以上有保底：連續 9 把低於稀有，第 10 把必定稀有。<br>鍛造時會隨機帶<b>先天特性</b>（鋒利、堅固、輕巧、尋寶、巨人獵手、符文親和），品質越高特性越多、數值越高。'},
-  {k:'enh',ic:'it_bless',n:'強化',s:'+1～+6 安定，+7 起有機率爆裝',v:'4.34',h:'所有材質的安定值都是 <b>+6</b>：+1～+6 失敗只扣金幣，不會爆裝。<br>+7 起是危險區，成功率依序 45／35／25／18／12／8／5／3／2%（+7～+15）。失敗時爆裝機率 50% 起，每級 +5%，最高 90%。<br><b>防爆卷</b>：爆裝時保住武器。<b>祝福石</b>：成功率 +10%。<br>爆裝會留下殘渣，可以換材料。<br>武器框顏色代表強化等級：+0 灰、+1～+6 綠、+7～+8 藍、+9～+10 紅、+11 紫、+12 鑽石。'},
+  {k:'enh',ic:'it_bless',n:'強化',s:'+1～+6 安定，+7 起有機率爆裝',v:'4.34',h:'所有材質的安定值都是 <b>+6</b>：+1～+6 失敗只扣金幣，不會爆裝。<br>+7 起是危險區，成功率依序 45／35／25／18／12／8／5／3／2%（+7～+15）。失敗時爆裝機率 50% 起，每級 +5%，最高 90%。<br><b>防爆卷</b>：爆裝時保住武器。<b>祝福石</b>：成功率 +10%。<br>爆裝會留下殘渣，可以換材料。<br>武器框顏色代表強化等級：+0 灰、+1～+6 綠、+7～+8 藍、+9 金、+10 紅、+11 紫、+12 鑽石，+9 以上會閃亮。'},
   {k:'ench',ic:'mat_shard',n:'附魔',s:'符文碎片隨機出 12 種詞條，一關一關學會',v:'4.28',h:'用 1 個符文碎片＋金幣隨機附魔一種詞條，重新附魔會蓋掉那一格。<br>符文要<b>一關一關學會</b>：開局會烈焰、霜寒、迅捷、掠奪、豐收；1-3 開放學會尋珍、1-6 貪婪、1-7 雷霆、1-8 剋巨人、1-10 神聖、2-6 劇毒和剋龍。已經附在武器上的不受影響。<br><b>攻擊力</b>：烈焰、霜寒、雷霆、劇毒、神聖。凡鐵傷不了神，打神（1-10、2-10）一定要<b>神聖</b>。<br><b>狩獵</b>：迅捷、掠奪、貪婪、尋珍、豐收。<br><b>剋制</b>：剋巨人（1-8 巨人足跡一定要有）、剋龍（2-6 蠕龍礦坑一定要有、打尼德霍格）。1-9 灰燼要塞要<b>霜寒</b>。<br>附魔欄：鐵砧 Lv1 開 2 格、Lv3 第 3 格、Lv5 第 4 格。'},
   {k:'god',ic:'g_hofund_disp',n:'神明武器與神格覺醒',s:'用神的遺物鍛造，強化越高覺醒越多',v:'4.26',h:'每一界最後一關是神。駐守神的關卡狩獵，每輪有 20% 機率掉<b>神的遺物</b>（1-10 霍夫德劍柄、2-10 雷神錘柄）。<br>收集 6 個遺物加材料，就能在鐵匠鋪鍛造<b>霍夫德之劍</b>（熔爐 Lv5）或<b>索爾之錘</b>（熔爐 Lv6）。它們是那一界最強的武器，但比不上下一界的新材質。<br><b>神格覺醒</b>：強化到 +7、+9、+11、+13、+15 會逐段覺醒，效果只算在這把武器身上（狩獵時間、稀有素材或材料、攻擊力 +10%、首領傷害 +15%）。+15 完全覺醒有專屬稱號、全服公告和金色光環。<br>強化規則和一般武器一樣，+7 以上失敗還是可能爆裝，記得用防爆卷。'},
   {k:'melt',ic:'mat_iron',n:'熔解回收',s:'不要的武器換回金幣和材料',v:'3.71',h:'熔解退回一半鍛造金幣、三成材料，25% 機率多得符文碎片。<br>收藏（上鎖）的武器不會被熔解。<br>爆裝留下的殘渣可以在熔解回收頁換鐵礦、霜銀、符文碎片。'},
@@ -1323,7 +1323,7 @@ function devAllWeapons(ids){const L=[0,1,6,7,9,10,15],q=ui.devAllQ??-1,lv=ui.dev
   ids.forEach((id,i)=>{const w=makeWeapon(id,q<0?i%5:q,lv<0?L[i%L.length]:lv,[]);w.lv=lv<0?L[i%L.length]:lv;w.test=true});
   ui.sheet=null;ui.tab='armory';ui.acat='all';ui.aq='all';ui.ast='test';scrollTo(0,0);toast('已產生 '+ids.length+' 把測試武器（武器庫已篩選「測試」）')}
 function wArt(id,{frame=null,cls='',aura=false}={}){const bp=frame==='bp',k=(frame!=null?(WFIT[id]||.65):.8)*100,o=(100-k)/2;   // frame:'bp'＝圖紙底圖（墊在武器下面，安全距離同外框）；aura＝v4.08 神格完全覺醒光環（墊在武器下面）
-  return `<span class="wart ${cls}">${bp?`<img class="wart-bg" src="${A('bp_paper2')}" alt="">`:''}${aura?`<img class="wart-aura" src="${A('fx_godaura')}" alt="">`:''}<img class="wart-w" src="${A(id+'_disp')}" alt="" style="left:${o}%;top:${o}%;width:${k}%;height:${k}%">${frame!=null&&!bp?`<img class="wart-f" src="${A('frame'+frame)}" alt="">`:''}</span>`}
+  return `<span class="wart ${cls}">${bp?`<img class="wart-bg" src="${A('bp_paper2')}" alt="">`:''}${aura?`<img class="wart-aura" src="${A('fx_godaura')}" alt="">`:''}<img class="wart-w" src="${A(id+'_disp')}" alt="" style="left:${o}%;top:${o}%;width:${k}%;height:${k}%">${frame!=null&&!bp?`<img class="wart-f" src="${A('frame'+frame)}" alt="">${/^_lv[3-6]$/.test(frame)?`<img class="wart-f wart-shine" src="${A('frame'+frame)}" alt="">`:''}`:''}</span>`}
 const cutArt=src=>src.replace(/\.webp$/,'_disp.webp'+ART_V); // 去背版武器圖（暗色底轉透明），特效才能包住武器
 // 預先載入特效圖，避免第一次播放時閃白
 function preloadVfx(){setTimeout(()=>{for(const k in VFX)for(let i=1;i<=VFX[k].N;i++){const im=new Image();im.src=vfxSrc(VFX[k],i)}},1500)}
@@ -1644,7 +1644,7 @@ function uiGallery(){
    <div class="uig-grid"><div class="ui-card pcard"><b>商品卡 card</b><span class="small muted">說明文字</span></div><div class="ui-card ui-card--option strat"><b>選項卡</b><span class="small">一般</span></div><div class="ui-card ui-card--option strat on"><b>選項卡</b><span class="small">選中</span></div></div>
    <div class="ui-card ui-card--row mrow">${img('mat_iron')}<div class="grow"><b>清單列 card-row</b><span class="small muted">商人、交付、佇列</span></div></div>
    <div class="label">武器格與強化等級框</div>
-   <div class="wgrid uig-wgrid">${[0,3,7,9,11,12].map(lv=>`<div class="wt ${lc({lv})}b"><span class="wt-art">${wArt('t2_longsword',{frame:fq({lv})})}</span><span class="wt-name ${lc({lv})}"><span class="wt-lv">+${lv}</span>${FLV_N[FLV(lv)]}框</span></div>`).join('')}</div>
+   <div class="wgrid uig-wgrid">${[0,3,7,9,10,11,12].map(lv=>`<div class="wt ${lc({lv})}b"><span class="wt-art">${wArt('t2_longsword',{frame:fq({lv})})}</span><span class="wt-name ${lc({lv})}"><span class="wt-lv">+${lv}</span>${FLV_N[FLV(lv)]}框</span></div>`).join('')}</div>
    <div class="label">視窗</div>
    <div class="uig-demo"><div class="ui-sheet sheet uig-static"><div class="sheet-head"><span style="width:44px"></span><h2>底部抽屜 sheet</h2>${btn(img('ic_close'),'',{cls:'icon-btn img'})}</div><div class="small">內容區</div></div></div>
    <div class="uig-demo"><div class="ui-modal modal-card uig-static">${ptitle('置中彈窗 modal')}<div class="small center">說明文字</div>${btn('確定','',{cls:'btn-primary big'})}</div></div>
@@ -2552,7 +2552,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
    qopen:()=>{ui.qTab='d';ui.sheet={t:'a'};ui.tab='village'},
    achall:()=>{S.stats.harvest=Math.max(S.stats.harvest,300);S.stats.enhOk=Math.max(S.stats.enhOk,50);S.stats.melted=Math.max(S.stats.melted,30);S.stats.forged[0]+=50},
    testw:()=>{const bp=['t1_ironsword','t2_longsword','t3_greatsword','m_firegiant'][ui.devTier??0];const w=makeWeapon(bp,ui.devTier===3?3:2,ui.devLv??0,[]);w.test=true;ui.enhLast=null;ui.riskArm=ui.riskOk=null;ui.sheet={t:'w',id:w.id,m:'enh'};toast('已送出測試武器')},
-   allw:()=>devAllWeapons(BPS.map(b=>b.id)),flvtest:()=>{S.weapons=S.weapons.filter(w=>!w.test||where(w)>=0);[12,11,10,9,8,7,6,1,0].forEach(lv=>{const w=makeWeapon('t2_longsword',0,lv,[]);w.test=true});ui.sheet=null;ui.tab='armory';ui.acat='all';ui.aq='all';ui.ast='test';ui.asort='lv';render();scrollTo(0,0);toast('已產生 +0～+12 測試武器：灰、綠、藍、紅、紫、鑽石框')},regenw:()=>devAllWeapons(WREGEN),
+   allw:()=>devAllWeapons(BPS.map(b=>b.id)),flvtest:()=>{S.weapons=S.weapons.filter(w=>!w.test||where(w)>=0);[12,11,10,9,8,7,6,1,0].forEach(lv=>{const w=makeWeapon('t2_longsword',0,lv,[]);w.test=true});ui.sheet=null;ui.tab='armory';ui.acat='all';ui.aq='all';ui.ast='test';ui.asort='lv';render();scrollTo(0,0);toast('已產生 +0～+12 測試武器：灰、綠、藍、金、紅、紫、鑽石框')},regenw:()=>devAllWeapons(WREGEN),
    cleartest:()=>{const n=S.weapons.filter(w=>w.test&&where(w)<0).length;S.weapons=S.weapons.filter(w=>!w.test||where(w)>=0);toast('已清除 '+n+' 把測試武器')},
    daily:()=>S.monthly.last='',fill:()=>{while(S.weapons.length<195)makeWeapon('t1_woodaxe',0,0,[]);toast('武器庫已塞到 195 把，試試容量上限')},
    reset:()=>{if(!ui.confirmReset){ui.confirmReset=true;return}S=fresh();ui.confirmReset=false;ui.sheet=null;toast('存檔已重置。')}})[k]();
