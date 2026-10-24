@@ -283,7 +283,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.57';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.58';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1219,6 +1219,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.58',d:'10/24',t:'強化特效加強',b:['<b>一鍵強化</b>改成連擊演出：每升一級跳出大數字、連擊數越疊越高、符文一道道亮起、音調越來越高，最後一下爆出金光（點畫面可以略過）','安定區每次強化成功也會跳大數字，同一把武器連續成功會顯示連擊','<b>+7 以上成功</b>的光效改成新外框的顏色：+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石；外框換新顏色時跳出「升階」','強化成功率、爆裝率都沒有改']},
  {v:'4.57',d:'10/24',t:'新手導覽重做',b:['新玩家的<b>新手導覽</b>重新開放，照現在的玩法一步一步教','流程：打造鐵爐村伐木斧 → 60 秒挑戰 1-1 → 留下來掛機 → 收成 → 看材料和遺物 → 打鐵劍練強化 → 附魔 → 新圖紙 → 領月卡','挑戰輸了導覽會提示再挑戰，不會卡住','完成導覽一樣送 <b>50 鑽石</b>'],g:[]},
  {v:'4.56',d:'10/24',t:'交易所可以賣道具',b:['強化石、附魔石、英靈・遺物和所有材料都能上架：在道具欄點道具，按「上架交易所」，填<b>單價</b>和<b>數量</b>','買家可以只買一部分，填要買幾個就好，買剩的繼續掛著','交易所的「上架武器」分頁改成<b>待領取</b>：賣出的錢、沒賣出退回的武器和道具都放這裡，有東西時亮紅點','上架武器改成在道具欄點武器，按「上架」'],g:['mk']},
  {v:'4.55',d:'10/24',t:'同款武器疊一格',b:['道具欄的武器頁：<b>一模一樣的武器</b>（同一把、同強化等級、同屬性）放在同一格，右下角顯示數量','點進去強化、附魔、駐守、上架、熔解都只會動其中一把，動過的會自己分出來一格','駐守中的武器還是一把一格；道具欄上限 200 把照算每一把'],g:['bag']},
@@ -1285,7 +1286,7 @@ const GUIDE=[
  ['基礎',[
   {k:'forge',ic:'t1_ironhammer_disp',n:'鍛造',s:'選圖紙、付金幣和材料，5 秒打好一批',v:'4.54',h:'在鐵匠鋪「圖紙」選一張圖紙，金幣和材料夠就能按「開始鍛造」。開局 7 把只花金幣；之後的武器要用打怪掉的材料：第一界用<b>中庭鐵礦、松林硬木</b>，第二界用<b>約頓霜鐵、約頓巨木</b>，怪物主題武器另外要怪物部位（1-7 巨魔石皮、2-8 幻術巨人王骨），Boss 武器要 Boss 素材（1-10 彩虹橋碎晶、2-10 索爾雷晶）。<br>開局就有 7 種武器的圖紙；收復第一界 1-2、1-4、1-6、1-7、1-10，第二界 2-1、2-3、2-5、2-8、2-10 會解鎖新圖紙。第 7／8 關是<b>怪物主題武器</b>（攻擊力多 10%），第 10 關是 <b>Boss 武器</b>（帶專屬特效）。兩界為一階，同一階的武器一樣強，想變強就要強化。<br>一次一批（最多 10 把），不管幾把都是 <b>5 秒</b>完成，進度條就在「開始鍛造」下方，可以取消（金幣全退）。'},
   {k:'wpn',ic:'cat_sword',n:'武器數值與相剋',s:'攻速、附加效果、相剋，點武器看小卡',v:'4.46',h:'點武器會跳出小卡。<b>攻擊力＝每秒傷害</b>，已經算進附加效果的平均。<br>七類武器攻速：雙刀 0.6 秒、劍 1.0、弓 1.1、長柄 1.2、斧 1.3、弩 1.6、錘 1.8 秒；每秒傷害都差不多，攻速慢的單擊比較重。<br><b>附加效果</b>：劍會心、斧流血、錘震碎、雙刀中毒、長柄貫穿、弓穿心、弩破甲；+1～+6 每級觸發率 2%，+7 起 16／20／25／30／35／40%。<br><b>相剋</b>：怪物分人形、野獸、巨型、飛行。劍、雙刀剋人形，長柄、斧剋野獸，錘、弩剋巨型，弓剋飛行；打被剋的怪物傷害多「強化等級 %」，+12 為 +12%，跟屬性弱點一起算。<br>武器名稱是「+7 寒霜 鐵劍」：強化等級、附魔、武器名。'},
-  {k:'enh',ic:'it_bless',n:'強化',s:'每次 1 顆強化石，最高 +12',v:'4.50',h:'每次強化用 <b>1 顆強化石</b>，不花金幣，成功或失敗都會用掉。強化石從村莊收成拿（越後面的關卡掉越多），熔解武器也會退 1 顆。<br>+1～+6 一定成功。+7 起是危險區：+7 35%、+8 32.5%、+9 30%，失敗就爆裝；+10～+12 每級 1%，失敗時 1/3 維持原樣、2/3 爆裝。最高 <b>+12</b>。<br>攻擊倍率：+6 ×1.6、+7 ×1.9、+8 ×2.25、+9 ×2.65、+10 ×3.3、+11 ×4、+12 ×4.8。<br>武器的框色看強化等級：+0 灰、+1～+6 綠、+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石，+9 以上的框有電流繞著跑。'},
+  {k:'enh',ic:'it_bless',n:'強化',s:'每次 1 顆強化石，最高 +12',v:'4.58',h:'每次強化用 <b>1 顆強化石</b>，不花金幣，成功或失敗都會用掉。強化石從村莊收成拿（越後面的關卡掉越多），熔解武器也會退 1 顆。<br>+1～+6 一定成功。+7 起是危險區：+7 35%、+8 32.5%、+9 30%，失敗就爆裝；+10～+12 每級 1%，失敗時 1/3 維持原樣、2/3 爆裝。最高 <b>+12</b>。<br>攻擊倍率：+6 ×1.6、+7 ×1.9、+8 ×2.25、+9 ×2.65、+10 ×3.3、+11 ×4、+12 ×4.8。<br>武器的框色看強化等級：+0 灰、+1～+6 綠、+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石，+9 以上的框有電流繞著跑。<br>強化成功的光效就是新框的顏色，換到新顏色時會跳出「升階」。「一鍵強化」會一級一級連擊播放，點畫面可以略過。'},
   {k:'ench',ic:'mat_shard',n:'屬性附魔',s:'6 種屬性 × 3 個等級，打中怪物弱點加傷害',v:'4.54',h:'鍛造出來的武器一律<b>無屬性</b>。每次附魔花 <b>1 顆附魔石</b>加金幣，隨機附魔，得到 1 種屬性（每把武器只有 1 欄，重抽會蓋掉舊的）。<br>屬性 6 種：<b>烈焰、霜寒、雷霆、劇毒、神聖、暗影</b>，機率一樣。等級越高越難抽：一級 70%、二級 25%、三級 5%。<br>名稱：烈焰 餘燼／烈焰／滅世之焰；霜寒 寒霜／冰封／永凍之霜；雷霆 雷光／雷鳴／雷神之怒；劇毒 蝕毒／蛇毒／巨蟒之毒；神聖 微光／聖光／光神聖輝；暗影 幽影／暗夜／盲神之影。<br><b>相剋（三對宿敵）</b>：烈焰⇄霜寒、雷霆⇄劇毒、神聖⇄暗影。每隻怪物都有屬性，弱點就是對手屬性。<br>打中弱點：一級 ×1.2、二級 ×1.4、三級 ×1.6，狩獵更快、收成更多。沒打中或無屬性都是正常傷害，不會扣。屬性不加攻擊力。'},
   {k:'bag',ic:'nav_forge',n:'道具欄',s:'同一種道具疊一格，沒有上限',v:'4.55',h:'下方導覽的「<b>道具欄</b>」（原本的武器庫）分「武器／材料」兩頁，道具在「材料」頁。<br>武器頁：一模一樣的武器（同一把、同強化等級、同屬性）疊在同一格，右下角是數量；點進去的操作只動其中一把。上限 200 把照算每一把。同一種道具放在同一格，右下角顯示數量，沒有上限。<br>道具：<b>強化石</b>（強化用）、<b>附魔石</b>（附魔用）、<b>英靈・遺物</b>（綠光、藍光、紅光、金光四種，光芒越亮內容越好）。三種都是打倒怪物有機率掉，越後面的關卡掉越多、好遺物越多。<br>點遺物可以看開出機率，按「打開 1 個」或「全部打開」：可能開到金幣、材料、強化石、附魔石、Boss 素材或武器。<br>材料：每一界 2 種一般材料，加上怪物部位和 Boss 素材，點一下看哪裡掉、哪把武器會用到。'},
   {k:'melt',ic:'mat_iron',n:'熔解',s:'不要的武器換回金幣',v:'4.43',h:'在武器詳情按「熔解」：退回一半鍛造金幣。<br>收藏（上鎖）的武器不能熔解。'}]],
@@ -1357,10 +1358,12 @@ function autoEnhCost(w){let g=0;for(let lv=w.lv;lv<stable(w);lv++)g+=enhCost(w)/
 function autoEnhance(id){if(ui.busy)return;const w=W(id);if(!w)return;const s=stable(w);
   if(busyW(w))return toast('駐守中的武器要先收回。','bad');if(w.lv>=s)return toast(`已經達到安定值 +${s}。`);
   const from=w.lv,g0=stones();let tries=0,fails=0,err='';
-  while(w.lv<s&&tries<500){const r=enhanceCore(id,{});if(r.err){err=r.err;break}tries++;if(r.k!=='ok')fails++}
+  const steps=[];while(w.lv<s&&tries<500){const r=enhanceCore(id,{});if(r.err){err=r.err;break}tries++;if(r.k!=='ok')fails++;steps.push({k:r.k,lv:w.lv})}
   if(!tries){toast(err||'無法強化。','bad');return render()}
-  ui.enhLast=null;snd(w.lv>from?'upgrade':'ui_error');
-  toast(`一鍵強化 +${from} → <b>+${w.lv}</b>：強化 ${tries} 次、失敗 ${fails} 次${w.test?'（測試武器免費）':'，用掉 '+fmt(g0-stones())+' 顆強化石'}${err?`。${err}，已停止`:''}`,w.lv>=s?'ok':'bad');render()}
+  ui.enhLast=null;if(err)toast(`${err}，一鍵強化停在 +${w.lv}`,'bad');
+  // v4.58 一鍵強化改成逐級連擊演出（結果上面已經算好）
+  ui.sheet={t:'w',id,m:'enh'};ui.riskArm=ui.riskOk=null;render();
+  playCombo(id,from,steps,{id,k:'ok',t:`一鍵強化 +${from} → +${w.lv}`,d:`強化 ${tries} 次、失敗 ${fails} 次${w.test?'（測試武器免費）':'，用掉 '+fmt(g0-stones())+' 顆強化石'}`})}
 const DEV={force:null};
 function enhance(id){
   if(ui.busy)return;                          // 動畫播放中鎖定，只能點舞台略過
@@ -1483,8 +1486,11 @@ function tl(el,T,stops){if(!el)return;const kf=stops.map(([t,st,e])=>({...st,off
   if(kf[0].offset>0)kf.unshift({...stops[0][1],offset:0});if(kf[kf.length-1].offset<1)kf.push({...stops[stops.length-1][1],offset:1});
   for(let i=1;i<kf.length;i++)if(kf[i].offset<kf[i-1].offset)kf[i].offset=kf[i-1].offset;
   const a=el.animate(kf.map((k,i)=>({...k,easing:(kf[i+1]&&kf[i+1].easing)||'linear'})),{duration:T,fill:'forwards'});fxState.anims.push(a);return a}
-function playSeq(k,T,t0,t1,{hold=t1,X=60,peak=1}={}){const box=document.querySelector(`#enhStage [data-seq="${k}"]`);if(!box)return;const im=[...box.children],span=(t1-t0)/im.length;box.style.visibility='visible';
-  im.forEach((el,i)=>{const a=t0+span*i,end=i===im.length-1?hold:a+span;tl(el,T,[[0,{opacity:0}],[Math.max(0,a-X/2),{opacity:0}],[a+X/2,{opacity:peak}],[end,{opacity:peak}],[end+X,{opacity:0}]])})}
+function playSeq(k,T,t0,t1,o={}){const box=document.querySelector(`#enhStage [data-seq="${k}"]`);if(!box)return;box.style.visibility='visible';cutImgs([...box.children],T,t0,t1,o)}
+// v4.58 畫格硬切：同一瞬間只亮一格，不交叉淡化（時間點跟原本一樣）；只有第一格淡入、最後一格淡出
+function cutImgs(im,T,t0,t1,{hold=t1,X=60,peak=1}={}){const span=(t1-t0)/im.length,last=im.length-1;
+  im.forEach((el,i)=>{const a=t0+span*i,end=i===last?hold:a+span;
+    tl(el,T,[[0,{opacity:0}],...(i?[[a,{opacity:0}],[a,{opacity:peak}]]:[[Math.max(0,a-X/2),{opacity:0}],[a+X/2,{opacity:peak}]]),[end,{opacity:peak}],[i<last?end:end+X,{opacity:0}]])})}
 // 武器預設斜放（圖本身就是左下到右上）；直立＝轉 -45°
 const CAM=(s,x=0,y=0,r=0)=>({transform:`translate(${x}%,${y}%) scale(${s}) rotate(${r}deg)`});
 function runRune(k,danger){
@@ -1554,7 +1560,7 @@ function runRune(k,danger){
   const R0=REV+(danger?280:80);tl(rb,T,[[0,{opacity:0,transform:'translateY(10px)'}],[R0,{opacity:0,transform:'translateY(10px)'}],[R0+200,{opacity:1,transform:'none'}]]);
   if(hint)tl(hint,T,[[0,{opacity:.75}],[REV-200,{opacity:.75}],[REV,{opacity:0}]]);
   snd('enh_start');later(REV,()=>snd(ENH_SND[k],1,danger?1:.7));
-  fxState.timer=setTimeout(finishFx,T+60);
+  fxState.timer=setTimeout(finishFx,T+60);return{T,REV};
 }
 function playFx(danger,w,next,res){
   stopFx();let stage=document.getElementById('enhStage');
@@ -1567,7 +1573,69 @@ function playFx(danger,w,next,res){
   document.querySelectorAll('.sheet [data-act="enhance"]').forEach(b=>{b.disabled=true;b.textContent='強化中…'});
   fxState={res,w,anims:[],raf:0,done:false,timer:0};ui.fxDone=finishFx;
   if(matchMedia('(prefers-reduced-motion: reduce)').matches)return finishFx();
-  runRune(res.k,!!danger);
+  ['#enhStage [data-seq="ok"]','#enhStage [data-seq="climax"]','#rnGlow'].forEach(q=>{const e=document.querySelector(q);if(e)e.style.filter=''});   // v4.58 清掉上一次升階換的顏色
+  const tm=runRune(res.k,!!danger);if(res.k==='ok')enhExtra(!!danger,next,tm,res.id);
+}
+/* v4.58 強化演出加強（Mochi 選 B）：疊在符文動畫上面的額外圖層，不改符文時間軸、不改任何數值
+   安定區：大數字＋連擊數；+7～+12 成功：光效換成新外框顏色，進到新顏色時跳「升階」；一鍵強化：逐級連擊播放 */
+const TIER_RGB=['200,200,200','120,220,120','110,170,255','255,70,60','190,110,255','170,235,255','255,205,90'];   // 依 FLV：灰、綠、藍、紅、紫、鑽石、金
+const TIER_FLT=['grayscale(1)','hue-rotate(75deg)','hue-rotate(180deg) saturate(1.5)','hue-rotate(-40deg) saturate(2.4)','hue-rotate(235deg) saturate(1.6)','hue-rotate(150deg) saturate(.55) brightness(1.4)','saturate(1.3) brightness(1.1)'];   // 現有金色特效圖換色
+const exNum=(t,cls='',st='')=>{const e=document.createElement('div');e.className='ex-num '+cls;e.innerHTML=t;if(st)e.style.cssText=st;return e};
+const POP=(s=1)=>({transform:`translate(-50%,-50%) scale(${s})`});
+function exOv(){const st=document.getElementById('enhStage');if(!st)return null;st.querySelectorAll('.ex-ov').forEach(e=>e.remove());const ov=document.createElement('div');ov.className='ex-ov';st.appendChild(ov);return ov}
+function enhExtra(danger,next,{T,REV},id){const ov=exOv();if(!ov)return;
+  if(!danger){ // 安定區：大數字彈出＋連擊（同一把武器 4 秒內連續成功）
+    const c=ui.cmb&&ui.cmb.id===id&&Date.now()-ui.cmb.t<4000?ui.cmb.n+1:1;ui.cmb={id,n:c,t:Date.now()+T};
+    const n=ov.appendChild(exNum('+'+next));tl(n,T,[[0,{opacity:0,...POP(1.9)}],[REV,{opacity:0,...POP(1.9)}],[REV+1,{opacity:1,...POP(1.9)}],[REV+140,{opacity:1,...POP(1)},'ease-out'],[T-120,{opacity:1,...POP(1)}],[T,{opacity:0,...POP(1.05)}]]);
+    if(c>1){const m=ov.appendChild(exNum(`連擊 ×${c}`,'ex-cmb'));tl(m,T,[[0,{opacity:0,transform:'rotate(-6deg) scale(1.6)'}],[REV,{opacity:0,transform:'rotate(-6deg) scale(1.6)'}],[REV+1,{opacity:1,transform:'rotate(-6deg) scale(1.6)'}],[REV+160,{opacity:1,transform:'rotate(-6deg) scale(1)'},'ease-out'],[T,{opacity:1,transform:'rotate(-6deg) scale(1)'}]])}
+    return}
+  if(next<7)return;ui.cmb=null;
+  const fl=FLV(next),up=fl!==FLV(next-1),rgb=TIER_RGB[fl];['#enhStage [data-seq="ok"]','#enhStage [data-seq="climax"]','#rnGlow'].forEach(q=>{const e=document.querySelector(q);if(e)e.style.filter=TIER_FLT[fl]});
+  const k=1+(next-7)*.06,sq=document.getElementById('enhSq'),st=document.getElementById('enhStage'),W=document.getElementById('fxW');
+  // 換色的高潮特效：沿用 climax 畫格（AI 圖）＋色彩濾鏡，硬切播放
+  const box=document.createElement('div');box.className='ly ex-seq';box.style.filter=TIER_FLT[fl];box.style.transform=`scale(${k})`;box.innerHTML=RUNE_FX.climax.map(src=>`<img src="${src}" alt="">`).join('');sq.appendChild(box);
+  cutImgs([...box.children],T,REV-60,REV+(up?520:360),{X:80,peak:up?1:.8});
+  const f=document.createElement('div');f.className='ex-fl';f.style.background=`radial-gradient(closest-side,rgba(${rgb},.9),rgba(${rgb},0))`;sq.appendChild(f);
+  tl(f,T,[[0,{opacity:0,transform:'scale(.5)'}],[REV-20,{opacity:0,transform:'scale(.5)'}],[REV+40,{opacity:up?1:.7,transform:`scale(${1.2*k})`}],[REV+(up?520:340),{opacity:0,transform:`scale(${1.8*k})`}]]);
+  if(W)tl(W,T,[[0,{filter:'none'}],[REV,{filter:'none'}],[REV+200,{filter:`drop-shadow(0 0 ${14*k}px rgba(${rgb},1))`}],[T,{filter:`drop-shadow(0 0 ${9*k}px rgba(${rgb},.85))`}]]);
+  if(st)tl(st,T,[[0,{boxShadow:'inset 0 0 0 rgba(0,0,0,0)'}],[REV,{boxShadow:'inset 0 0 0 rgba(0,0,0,0)'}],[REV+120,{boxShadow:`inset 0 0 ${40*k}px rgba(${rgb},.85)`}],[T,{boxShadow:`inset 0 0 ${26*k}px rgba(${rgb},.55)`}]]);
+  const n=ov.appendChild(exNum(`${up?'<b>升階</b>':''}+${next}`,'ex-tier',`--tc:${rgb};font-size:${Math.round(56*k)}px`));
+  tl(n,T,[[0,{opacity:0,...POP(2.2)}],[REV+60,{opacity:0,...POP(2.2)}],[REV+61,{opacity:1,...POP(2.2)}],[REV+240,{opacity:1,...POP(1)},'cubic-bezier(.2,1.6,.4,1)'],[T,{opacity:1,...POP(1)}]]);
+  if(up)later(REV+160,()=>snd('unlock',1,.75));
+}
+// 一鍵強化：結果已經在 autoEnhance 算好，這裡只逐級播放（每級約 0.3 秒，越後面越快），點畫面略過
+function playCombo(id,from,steps,res){
+  stopFx();const st=document.getElementById('enhStage'),w=W(id);if(!st||!w||matchMedia('(prefers-reduced-motion: reduce)').matches){ui.enhLast={...res,test:false};return render()}
+  st.classList.add('playing');st.dataset.act='fxskip';st.classList.remove('danger','rn-red','guarded');st.classList.add('safe');{const z=st.querySelector('.enh-zone');if(z)z.textContent='安定區';const L=st.querySelectorAll('.enh-lv .lvt');if(L.length>1){L[0].textContent='+'+from;L[1].textContent='+'+(from+1)}}
+  const rb=document.getElementById('enhRibbon');rb.className='enh-ribbon k-ok';rb.innerHTML=`<b>${res.t}</b><span>${res.d}</span>`;rb.style.opacity=0;
+  document.querySelectorAll('.sheet [data-act="enhance"],.sheet [data-act="autoEnh"]').forEach(b=>{b.disabled=true});
+  fxState={res,w,anims:[],raf:0,done:false,timer:0};ui.fxDone=finishFx;ui.busy=true;ui.cmb=null;
+  const ov=exOv(),sq=document.getElementById('enhSq'),cam=document.getElementById('enhCam'),Wp=document.getElementById('fxW'),wi=Wp&&Wp.querySelector('.wimg'),glow=document.getElementById('rnGlow'),hint=document.getElementById('enhHint'),fl=document.getElementById('fxFlash'),SP=[...document.querySelectorAll('#rnSpokes .sp')],lvt=st.querySelectorAll('.enh-lv .lvt');
+  const n=steps.length,ts=[];let t=380;for(let i=0;i<n;i++){ts.push(t);t+=Math.max(170,Math.min(420,2600/n)-i*22)}
+  const tF=ts[n-1]+120,T=tF+1100;
+  tl(cam,T,[[0,CAM(1)],[tF,CAM(1.1,0,4),'ease-in'],[tF+300,CAM(1.02),'ease-out'],[T,CAM(1)]]);
+  const shk=[[0,{transform:'none'}]],wst=[[0,{filter:'brightness(1)'}]],gst=[[0,{opacity:0}]];
+  steps.forEach((s,i)=>{const a=ts[i],ok=s.k==='ok',p=1+i*1.2/Math.max(1,n-1),b=i+1<n?ts[i+1]:T-120,last=i===n-1;
+    later(a,()=>{snd(ok?'enh_spoke':'ui_error',ok?.85+i*.1:1);lvt.forEach((e,j)=>e.textContent='+'+(s.lv-(ok?1:0)+j))});
+    if(ok){shk.push([a,{transform:'none'}],[a+30,{transform:`translate(${-p*1.6}px,${p}px)`}],[a+70,{transform:`translate(${p*1.6}px,${-p}px)`}],[a+110,{transform:'none'}]);
+      wst.push([a,{filter:`brightness(${1.1+i*.08})`}],[a+40,{filter:`brightness(${1.8+i*.1}) drop-shadow(0 0 ${8+i*2}px rgba(255,210,120,1))`}],[a+200,{filter:`brightness(${1.15+i*.08}) drop-shadow(0 0 ${4+i*1.5}px rgba(255,200,90,.9))`}]);
+      gst.push([a,{opacity:.1+.6*i/n}],[a+50,{opacity:.4+.6*(i+1)/n}],[a+220,{opacity:.15+.6*(i+1)/n}])}
+    const e=ov.appendChild(exNum(ok?'+'+s.lv:`+${s.lv}<small>失敗</small>`,ok?'':'fail'));
+    tl(e,T,[[0,{opacity:0,...POP(1.8)}],[a,{opacity:0,...POP(1.8)}],[a,{opacity:1,...POP(1.8)}],[a+120,{opacity:1,...POP(1)},'ease-out'],...(last?[[tF,{opacity:1,...POP(1)}],[tF+160,{opacity:1,...POP(1.25)},'ease-out'],[tF+400,{opacity:1,transform:'translate(-50%,-78%) scale(.95)'},'ease-out'],[T,{opacity:1,transform:'translate(-50%,-78%) scale(.95)'}]]:[[b,{opacity:1,...POP(1)}],[b,{opacity:0,...POP(1)}]])]);
+    if(i>0){const c=ov.appendChild(exNum(`連擊 ×${i+1}`,'ex-cmb'));tl(c,T,[[0,{opacity:0,transform:'rotate(-6deg) scale(1.5)'}],[a,{opacity:0,transform:'rotate(-6deg) scale(1.5)'}],[a,{opacity:1,transform:'rotate(-6deg) scale(1.5)'}],[a+130,{opacity:1,transform:'rotate(-6deg) scale(1)'},'ease-out'],...(last?[[T,{opacity:1,transform:'rotate(-6deg) scale(1)'}]]:[[b,{opacity:1,transform:'rotate(-6deg) scale(1)'}],[b,{opacity:0,transform:'rotate(-6deg) scale(1)'}]])])}});
+  // 八道符文跟著等級一道道亮起，最後一下全亮
+  const okIdx=steps.map((s,i)=>s.k==='ok'?i:-1).filter(i=>i>=0);
+  SP.forEach((el,j)=>{const i=okIdx[Math.min(okIdx.length-1,Math.floor(j*okIdx.length/SP.length))];if(i==null)return tl(el,T,[[0,{opacity:0}]]);const a=j>=SP.length-1?tF:ts[i];
+    tl(el,T,[[0,{opacity:0,filter:'brightness(1)'}],[a,{opacity:0,filter:'brightness(2.2)'}],[a+50,{opacity:1,filter:'brightness(2.2)'}],[a+160,{opacity:1,filter:'brightness(1)'}],[T,{opacity:1,filter:'brightness(1)'}]])});
+  shk.push([tF,{transform:'none'}],[tF+40,{transform:'translate(-5px,3px)'}],[tF+90,{transform:'translate(5px,-3px)'}],[tF+140,{transform:'translate(-2px,0)'}],[tF+200,{transform:'none'}]);
+  wst.push([tF,{filter:'brightness(2.4)'}],[tF+300,{filter:'brightness(1.8) drop-shadow(0 0 18px rgba(255,220,150,1))'}],[T,{filter:'brightness(1.15) drop-shadow(0 0 8px rgba(255,220,150,.7))'}]);
+  gst.push([tF,{opacity:1}],[T,{opacity:.7}]);
+  tl(st,T,shk);if(wi)tl(wi,T,wst);if(glow)tl(glow,T,gst);
+  playSeq('spark',T,tF-40,tF+260,{X:50,peak:.95});playSeq('ok',T,tF+40,T-150,{X:100});
+  fl.style.background='radial-gradient(closest-side,rgba(255,240,210,.95),rgba(255,240,210,0))';tl(fl,T,[[0,{opacity:0,transform:'scale(.5)'}],[tF-40,{opacity:0,transform:'scale(.5)'}],[tF,{opacity:1,transform:'scale(1.3)'}],[tF+280,{opacity:0,transform:'scale(1.8)'}]]);
+  tl(rb,T,[[0,{opacity:0,transform:'translateY(10px)'}],[tF+300,{opacity:0,transform:'translateY(10px)'}],[tF+500,{opacity:1,transform:'none'}]]);
+  if(hint)tl(hint,T,[[0,{opacity:.75}],[tF-200,{opacity:.75}],[tF,{opacity:0}]]);
+  snd('enh_start');later(tF,()=>snd('enh_ok'));fxState.timer=setTimeout(finishFx,T+60);
 }
 function anim(el,kf,opt){const a=el.animate(kf,{fill:'forwards',easing:'ease-out',...opt});fxState.anims.push(a);return a}
 function runTimeline(k,v){
@@ -1632,14 +1700,14 @@ function finishFx(){if(!fxState||fxState.resultShown)return;const{res}=fxState;s
   const cv=document.getElementById('fxCanvas');if(cv)cv.getContext('2d').clearRect(0,0,cv.width,cv.height); // 不留殘影
   ui.busy=false;ui.lockUntil=Date.now()+350;ui.enhLast={id:res.id,k:res.k,t:res.t,d:res.d,test:!res.id};renderLayer()}
 const FXW={axe:['t2_wolfaxe','霜狼戰斧'],sword:['t2_longsword','霜銀長劍'],spear:['t3_halberd','龍鱗戟'],bow:['t2_longbow','霜銀長弓']};
-function testFx(k,safe,guarded){const f=FXW[ui.devFxW||'axe'];const art=A(f[0]),name=f[1];
-  const t={ok:['強化成功 +8','只播放特效，不影響存檔'],fail:['強化失敗','只播放特效，不影響存檔'],broke:['武器已損毀','只播放特效，武器沒有真的消失'],saved:['防爆卷生效','只播放特效，不影響存檔']}[k];
-  const danger=!safe;ui.enhLast=null;ui.sheet={t:'fxt',k,art,next:8,danger};renderLayer();ui.busy=true;playFx(danger,{art,name},8,{k,t:t[0],d:t[1],guarded:!!guarded||(k==='saved'&&!safe)})}   // 防爆生效一定是有勾防爆卷，所以一律藍光
+function testFx(k,safe,guarded,lv=8){const f=FXW[ui.devFxW||'axe'];const art=A(f[0]),name=f[1];
+  const t={ok:['強化成功 +'+lv,'只播放特效，不影響存檔'],fail:['強化失敗','只播放特效，不影響存檔'],broke:['武器已損毀','只播放特效，武器沒有真的消失'],saved:['防爆卷生效','只播放特效，不影響存檔']}[k];
+  const danger=!safe;ui.enhLast=null;ui.sheet={t:'fxt',k,art,next:lv,danger};renderLayer();ui.busy=true;playFx(danger,{art,name},lv,{k,t:t[0],d:t[1],guarded:!!guarded||(k==='saved'&&!safe)})}   // 防爆生效一定是有勾防爆卷，所以一律藍光
 function sheetFxTest(o){const last=ui.enhLast&&ui.enhLast.test?ui.enhLast:null;
   return `<div class="sheet-head"><span style="width:44px"></span><h2>強化動畫測試</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>
-  ${stageHtml({art:last&&last.k==='broke'?null:o.art,danger:o.danger,from:7,to:8,zone:o.danger?'危險區':'安定區',ribbon:last?`<b>${last.t}</b><span>${last.d}</span>`:'',rk:last&&last.k})}
+  ${stageHtml({art:last&&last.k==='broke'?null:o.art,danger:o.danger,from:(o.next||8)-1,to:o.next||8,zone:o.danger?'危險區':'安定區',ribbon:last?`<b>${last.t}</b><span>${last.d}</span>`:'',rk:last&&last.k})}
   <div class="small muted center">使用道具欄裡攻擊力最高的武器播放，不會改動存檔。動畫中點畫面或按按鈕都能略過。</div>
-  <div class="fxt-btns">${[['fxs_ok','安全成功'],['fxs_fail','安全失敗（紅光）'],['fx_ok','危險成功'],['fx_fail','危險失敗'],['fx_broke','爆裝'],['fx_saved','防爆'],['fxg_ok','防爆中・成功（藍光）'],['fxg_fail','防爆中・失敗（藍光）'],['fxg_saved','防爆中・防爆生效（藍光）'],['autoenh','一鍵強化到安定值（新增 +0 鐵錘）']].map(([k,n])=>btn(n,'devdo',{cls:'btn-sec',attrs:`data-k="${k}"`})).join('')}</div>`}
+  <div class="fxt-btns">${[['fxs_ok','安全成功'],['fxs_fail','安全失敗（紅光）'],['fx_ok','危險成功'],['fx_fail','危險失敗'],['fx_broke','爆裝'],['fx_saved','防爆'],['fxg_ok','防爆中・成功（藍光）'],['fxg_fail','防爆中・失敗（藍光）'],['fxg_saved','防爆中・防爆生效（藍光）'],['autoenh','一鍵強化到安定值（新增 +0 鐵錘）'],['fxt_7','v4.58 升階 +7（藍）'],['fxt_8','v4.58 +8（藍、不升階）'],['fxt_9','v4.58 升階 +9（紅）'],['fxt_10','v4.58 升階 +10（金）'],['fxt_11','v4.58 升階 +11（紫）'],['fxt_12','v4.58 升階 +12（鑽石）']].map(([k,n])=>btn(n,'devdo',{cls:'btn-sec',attrs:`data-k="${k}"`})).join('')}</div>`}
 
 /* ---------- 共用元件 ---------- */
 
@@ -2530,6 +2598,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='cnameprev'){ui.sheet=null;render();return showName(true,true)}
   if(k==='cname'){ui.sheet=null;render();return showName(!S.nick)}if(k==='sfxaltclr'){SFX_VAR_KEYS.forEach(n=>{if(SFX_ALT[n])sfxSetAlt(n,'')});toast('音效已全部切回原版');return render()}
   const m=S.mats,give=(b,q,lv,ench,traits)=>{makeWeapon(b,q,lv,traits,ench);toast('已放入道具欄')};
+  if(k.startsWith('fxt_')){if(ui.busy)return;return testFx('ok',false,false,+k.slice(4))}   // v4.58 升階演出
   if(k.startsWith('fxs_')){if(ui.busy)return;return testFx(k.slice(4),true)}
   if(k.startsWith('fxg_')){if(ui.busy)return;return testFx(k.slice(4),false,true)}
   if(k.startsWith('fx_')){if(ui.busy)return;return testFx(k.slice(3))}
@@ -2569,7 +2638,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='tmon'){const i=S.villages.findIndex(st=>st.weaponId!=null&&st.cycleStart!=null&&W(st.weaponId));if(i<0)return toast('先交付一把武器到村莊','bad');const w=W(S.villages[i].weaponId);   // v3.73
     S.villages[i].cycleStart=NOW()-dur(i,w)+3000;ui.sheet=null;ui.tab='village';render();setTimeout(()=>{const c=document.querySelector(`#view .vcard[data-i="${i}"]`);if(c)c.scrollIntoView({block:'center'})},50);
     return toast(`${vNo(i)} ${MONS[i]}剩一點血，3 秒後擊倒（看血條歸零、「擊倒！」和收成按鈕）`)}
-  if(k==='autoenh'){const w=makeWeapon('dev_hammer',1,0);S.gold=Math.max(S.gold,5000);ui.sheet={t:'w',id:w.id,m:'main'};autoEnhance(w.id);return}   // 測試一鍵強化：放一把 +0 鐵錘、補到 5000 金後執行
+  if(k==='autoenh'){const w=makeWeapon('dev_hammer',1,0);w.test=true;S.gold=Math.max(S.gold,5000);ui.sheet={t:'w',id:w.id,m:'main'};autoEnhance(w.id);return}   // 測試一鍵強化：放一把 +0 鐵錘、補到 5000 金後執行
   
   if(k==='tsec'){ui.testOut='檢查中…';render();   // v3.63 確認開發者工具、伺服器防作弊已更新
     const row=(ok,t)=>`<div>${ok?'✓':'✗'} ${t}</div>`;
