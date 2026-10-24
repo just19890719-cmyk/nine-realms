@@ -283,7 +283,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.63';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.64';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1219,6 +1219,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.64',d:'10/24',t:'強化特效顏色統一',b:['+7 以上強化時，武器的光暈也改成外框顏色（+7 藍光裡不再混黃光）','成功時不再跳「升階 +N」大字，下方已經有「強化成功 +N」','開發者工具拿掉用不到的「安全區失敗」和「防爆」按鈕'],g:['enh']},
  {v:'4.63',d:'10/24',t:'商城購買小卡更順',b:['商城買材料時，調數量或按購買只會更新數字和價格，小卡<b>不會再整張重新跳出</b>'],g:['shop']},
  {v:'4.62',d:'10/24',t:'開發者工具整理',b:['管理員用的開發者工具改成<b>依版本</b>排列，新的在最上面；拿掉已刪除系統的測試按鈕','一般玩家的遊戲內容沒有改變']},
  {v:'4.61',d:'10/24',t:'強化時石碑不再晃動・新閃電',b:['+7 以上強化失敗時，符文能量會聚起來又熄滅散掉、冒一縷灰煙','爆裝的黑煙換成新圖：武器被一團帶紫光餘燼的黑煙吞掉後散去','強化動畫播放時，符文石碑固定不動（不再推近、震動），只有光、閃電和武器有動作','+10 換成新的<b>金色閃電</b>、+12 換成新的<b>鑽石閃電</b>（水晶碎片和稜鏡光）']},
@@ -1290,7 +1291,7 @@ const GUIDE=[
  ['基礎',[
   {k:'forge',ic:'t1_ironhammer_disp',n:'鍛造',s:'選圖紙、付金幣和材料，5 秒打好一批',v:'4.54',h:'在鐵匠鋪「圖紙」選一張圖紙，金幣和材料夠就能按「開始鍛造」。開局 7 把只花金幣；之後的武器要用打怪掉的材料：第一界用<b>中庭鐵礦、松林硬木</b>，第二界用<b>約頓霜鐵、約頓巨木</b>，怪物主題武器另外要怪物部位（1-7 巨魔石皮、2-8 幻術巨人王骨），Boss 武器要 Boss 素材（1-10 彩虹橋碎晶、2-10 索爾雷晶）。<br>開局就有 7 種武器的圖紙；收復第一界 1-2、1-4、1-6、1-7、1-10，第二界 2-1、2-3、2-5、2-8、2-10 會解鎖新圖紙。第 7／8 關是<b>怪物主題武器</b>（攻擊力多 10%），第 10 關是 <b>Boss 武器</b>（帶專屬特效）。兩界為一階，同一階的武器一樣強，想變強就要強化。<br>一次一批（最多 10 把），不管幾把都是 <b>5 秒</b>完成，進度條就在「開始鍛造」下方，可以取消（金幣全退）。'},
   {k:'wpn',ic:'cat_sword',n:'武器數值與相剋',s:'攻速、附加效果、相剋，點武器看小卡',v:'4.46',h:'點武器會跳出小卡。<b>攻擊力＝每秒傷害</b>，已經算進附加效果的平均。<br>七類武器攻速：雙刀 0.6 秒、劍 1.0、弓 1.1、長柄 1.2、斧 1.3、弩 1.6、錘 1.8 秒；每秒傷害都差不多，攻速慢的單擊比較重。<br><b>附加效果</b>：劍會心、斧流血、錘震碎、雙刀中毒、長柄貫穿、弓穿心、弩破甲；+1～+6 每級觸發率 2%，+7 起 16／20／25／30／35／40%。<br><b>相剋</b>：怪物分人形、野獸、巨型、飛行。劍、雙刀剋人形，長柄、斧剋野獸，錘、弩剋巨型，弓剋飛行；打被剋的怪物傷害多「強化等級 %」，+12 為 +12%，跟屬性弱點一起算。<br>武器名稱是「+7 寒霜 鐵劍」：強化等級、附魔、武器名。'},
-  {k:'enh',ic:'it_bless',n:'強化',s:'每次 1 顆強化石，最高 +12',v:'4.58',h:'每次強化用 <b>1 顆強化石</b>，不花金幣，成功或失敗都會用掉。強化石從村莊收成拿（越後面的關卡掉越多），熔解武器也會退 1 顆。<br>+1～+6 一定成功。+7 起是危險區：+7 35%、+8 32.5%、+9 30%，失敗就爆裝；+10～+12 每級 1%，失敗時 1/3 維持原樣、2/3 爆裝。最高 <b>+12</b>。<br>攻擊倍率：+6 ×1.6、+7 ×1.9、+8 ×2.25、+9 ×2.65、+10 ×3.3、+11 ×4、+12 ×4.8。<br>武器的框色看強化等級：+0 灰、+1～+6 綠、+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石，+9 以上的框有電流繞著跑。<br>+1～+6 按強化直接出結果；+7 起符文石碑的燈光就是那一級外框的顏色，成功換到新顏色時會跳出「升階」。「一鍵強化」會一級一級連擊播放，點畫面可以略過。'},
+  {k:'enh',ic:'it_bless',n:'強化',s:'每次 1 顆強化石，最高 +12',v:'4.64',h:'每次強化用 <b>1 顆強化石</b>，不花金幣，成功或失敗都會用掉。強化石從村莊收成拿（越後面的關卡掉越多），熔解武器也會退 1 顆。<br>+1～+6 一定成功。+7 起是危險區：+7 35%、+8 32.5%、+9 30%，失敗就爆裝；+10～+12 每級 1%，失敗時 1/3 維持原樣、2/3 爆裝。最高 <b>+12</b>。<br>攻擊倍率：+6 ×1.6、+7 ×1.9、+8 ×2.25、+9 ×2.65、+10 ×3.3、+11 ×4、+12 ×4.8。<br>武器的框色看強化等級：+0 灰、+1～+6 綠、+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石，+9 以上的框有電流繞著跑。<br>+1～+6 按強化直接出結果；+7 起符文石碑的燈光和武器光暈就是那一級外框的顏色。「一鍵強化」會一級一級連擊播放，點畫面可以略過。'},
   {k:'ench',ic:'mat_shard',n:'屬性附魔',s:'6 種屬性 × 3 個等級，打中怪物弱點加傷害',v:'4.54',h:'鍛造出來的武器一律<b>無屬性</b>。每次附魔花 <b>1 顆附魔石</b>加金幣，隨機附魔，得到 1 種屬性（每把武器只有 1 欄，重抽會蓋掉舊的）。<br>屬性 6 種：<b>烈焰、霜寒、雷霆、劇毒、神聖、暗影</b>，機率一樣。等級越高越難抽：一級 70%、二級 25%、三級 5%。<br>名稱：烈焰 餘燼／烈焰／滅世之焰；霜寒 寒霜／冰封／永凍之霜；雷霆 雷光／雷鳴／雷神之怒；劇毒 蝕毒／蛇毒／巨蟒之毒；神聖 微光／聖光／光神聖輝；暗影 幽影／暗夜／盲神之影。<br><b>相剋（三對宿敵）</b>：烈焰⇄霜寒、雷霆⇄劇毒、神聖⇄暗影。每隻怪物都有屬性，弱點就是對手屬性。<br>打中弱點：一級 ×1.2、二級 ×1.4、三級 ×1.6，狩獵更快、收成更多。沒打中或無屬性都是正常傷害，不會扣。屬性不加攻擊力。'},
   {k:'bag',ic:'nav_forge',n:'道具欄',s:'同一種道具疊一格，沒有上限',v:'4.60',h:'下方導覽的「<b>道具欄</b>」（原本的武器庫）分「武器／材料」兩頁，道具在「材料」頁。<br>武器頁：一模一樣的武器（同一把、同強化等級、同屬性）疊在同一格，右下角是數量；點進去的操作只動其中一把；按「一鍵安定值」後小卡會換到下一把同款，可以一直按。上限 200 把照算每一把。同一種道具放在同一格，右下角顯示數量，沒有上限。<br>道具：<b>強化石</b>（強化用）、<b>附魔石</b>（附魔用）、<b>英靈・遺物</b>（綠光、藍光、紅光、金光四種，光芒越亮內容越好）。三種都是打倒怪物有機率掉，越後面的關卡掉越多、好遺物越多。<br>點遺物可以看開出機率，按「打開 1 個」或「全部打開」：可能開到金幣、材料、強化石、附魔石、Boss 素材或武器。<br>材料：每一界 2 種一般材料，加上怪物部位和 Boss 素材，點一下看哪裡掉、哪把武器會用到。'},
   {k:'melt',ic:'mat_iron',n:'熔解',s:'不要的武器換回金幣',v:'4.43',h:'在武器詳情按「熔解」：退回一半鍛造金幣。<br>收藏（上鎖）的武器不能熔解。'}]],
@@ -1526,7 +1527,7 @@ function runRune(k,danger){
     const shk=[[0,{transform:'none'}]];for(let i=0;i<lit;i++){const t=S0+i*DT;shk.push([t,{transform:'none'}],[t+30,{transform:'translate(-1.5px,1px)'}],[t+70,{transform:'none'}])}
     // 武器：越亮越多
     // 防爆卷保護中：武器光暈改藍色（跟石碑一致）
-    const GD=!!(fxState&&fxState.res&&fxState.res.guarded),GC=GD?'110,185,255':'255,200,90',GC2=GD?'150,210,255':'255,220,150';
+    const GD=!!(fxState&&fxState.res&&fxState.res.guarded),TR=fxState&&fxState.res&&fxState.res.rgb,GC=GD?'110,185,255':TR||'255,200,90',GC2=GD?'150,210,255':TR||'255,220,150';   // v4.64 +7 起武器光暈也用外框顏色（Mochi：藍光裡不要有黃光）
     const wpre=[[0,{filter:N,opacity:1}],[S0,{filter:N,opacity:1}],[ts,{filter:`brightness(${1+lit*.08}) drop-shadow(0 0 ${4+lit*1.5}px rgba(${GC},.9))`,opacity:1}]];
     fl.style.background='radial-gradient(closest-side,rgba(255,250,235,.95),rgba(255,250,235,0))';
     if(k==='ok'){ // 全亮：整塊石碑亮起、雷擊、閃光、星芒
@@ -1572,7 +1573,7 @@ function playFx(danger,w,next,res){
   document.querySelectorAll('.sheet [data-act="enhance"]').forEach(b=>{b.disabled=true;b.textContent='強化中…'});
   fxState={res,w,anims:[],raf:0,done:false,timer:0};ui.fxDone=finishFx;
   if(matchMedia('(prefers-reduced-motion: reduce)').matches)return finishFx();
-  {const fl=FLV(next);stage.classList.toggle('tier',!!danger);stage.style.setProperty('--tf',TIER_FLT[fl]);res.hue=danger?TIER_HUE[fl]:0;
+  {const fl=FLV(next);stage.classList.toggle('tier',!!danger);stage.style.setProperty('--tf',TIER_FLT[fl]);res.hue=danger?TIER_HUE[fl]:0;res.rgb=danger?TIER_RGB[fl]:null;
    const own=danger&&(fl===6?RUNE_FX.boltGold:fl===5?RUNE_FX.boltDia:null);stage.classList.toggle('ownbolt',!!own);   // v4.61 金、鑽石：成功時那道主閃電也換成專屬圖
    document.querySelectorAll('#enhStage [data-seq="light"] img').forEach((im,i)=>{const src=(own||RUNE_FX.light)[i];if(im.getAttribute('src')!==src)im.src=src})}   // v4.58 危險區整塊石碑的燈光用外框顏色（+7～+8 藍、+9 紅…）
   const tm=runRune(res.k,!!danger);if(danger)enhBolts(next,res.k,tm);if(danger&&res.k==='fail')enhFailFx(tm);if(res.k==='ok')enhExtra(!!danger,next,tm,res.id);
@@ -1597,8 +1598,7 @@ function enhExtra(danger,next,{T,REV},id){const ov=exOv();if(!ov)return;
   tl(f,T,[[0,{opacity:0,transform:'scale(.5)'}],[REV-20,{opacity:0,transform:'scale(.5)'}],[REV+40,{opacity:up?1:.7,transform:`scale(${1.2*k})`}],[REV+(up?520:340),{opacity:0,transform:`scale(${1.8*k})`}]]);
   if(W)tl(W,T,[[0,{filter:'none'}],[REV,{filter:'none'}],[REV+200,{filter:`drop-shadow(0 0 ${14*k}px rgba(${rgb},1))`}],[T,{filter:`drop-shadow(0 0 ${9*k}px rgba(${rgb},.85))`}]]);
   if(st)tl(st,T,[[0,{boxShadow:'inset 0 0 0 rgba(0,0,0,0)'}],[REV,{boxShadow:'inset 0 0 0 rgba(0,0,0,0)'}],[REV+120,{boxShadow:`inset 0 0 ${40*k}px rgba(${rgb},.85)`}],[T,{boxShadow:`inset 0 0 ${26*k}px rgba(${rgb},.55)`}]]);
-  const n=ov.appendChild(exNum(`${up?'<b>升階</b>':''}+${next}`,'ex-tier',`--tc:${rgb};font-size:${Math.round(56*k)}px`));
-  tl(n,T,[[0,{opacity:0,...POP(2.2)}],[REV+60,{opacity:0,...POP(2.2)}],[REV+61,{opacity:1,...POP(2.2)}],[REV+240,{opacity:1,...POP(1)},'cubic-bezier(.2,1.6,.4,1)'],[T,{opacity:1,...POP(1)}]]);
+  // v4.64 拿掉「升階 +N」大字（Mochi：下面已經有強化成功 +N）
   if(up)later(REV+160,()=>snd('unlock',1,.75));
 }
 // 一鍵強化：結果已經在 autoEnhance 算好，這裡只逐級播放（每級約 0.3 秒，越後面越快），點畫面略過
@@ -1722,7 +1722,7 @@ function sheetFxTest(o){const last=ui.enhLast&&ui.enhLast.test?ui.enhLast:null;
   return `<div class="sheet-head"><span style="width:44px"></span><h2>強化動畫測試</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>
   ${stageHtml({art:last&&last.k==='broke'?null:o.art,danger:o.danger,from:(o.next||8)-1,to:o.next||8,zone:o.danger?'危險區':'安定區',ribbon:last?`<b>${last.t}</b><span>${last.d}</span>`:'',rk:last&&last.k})}
   <div class="small muted center">使用道具欄裡攻擊力最高的武器播放，不會改動存檔。動畫中點畫面或按按鈕都能略過。</div>
-  <div class="fxt-btns">${[['fxs_ok','安全成功'],['fxs_fail','安全失敗（紅光）'],['fx_ok','危險成功'],['fx_fail','危險失敗'],['fx_broke','爆裝'],['fx_saved','防爆'],['fxg_ok','防爆中・成功（藍光）'],['fxg_fail','防爆中・失敗（藍光）'],['fxg_saved','防爆中・防爆生效（藍光）'],['autoenh','一鍵強化到安定值（新增 +0 鐵錘）'],['fxt_7','v4.58 升階 +7（藍）'],['fxt_8','v4.58 +8（藍、不升階）'],['fxt_9','v4.58 升階 +9（紅）'],['fxt_10','v4.58 升階 +10（金）'],['fxt_11','v4.58 升階 +11（紫）'],['fxt_12','v4.58 升階 +12（鑽石）']].map(([k,n])=>btn(n,'devdo',{cls:'btn-sec',attrs:`data-k="${k}"`})).join('')}</div>`}
+  <div class="fxt-btns">${[['fx_green','+1～+6 綠光'],['fx_ok','危險成功'],['fx_fail','危險失敗'],['fx_broke','爆裝'],['autoenh','一鍵強化到安定值（新增 +0 鐵錘）'],['fxt_7','升階 +7（藍）'],['fxt_8','+8（藍、不升階）'],['fxt_9','升階 +9（紅）'],['fxt_10','升階 +10（金）'],['fxt_11','升階 +11（紫）'],['fxt_12','升階 +12（鑽石）']].map(([k,n])=>btn(n,'devdo',{cls:'btn-sec',attrs:`data-k="${k}"`})).join('')}</div>`}
 
 /* ---------- 共用元件 ---------- */
 
@@ -2461,11 +2461,12 @@ function viewShop(){
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'4.64',t:'+7 起武器光暈用外框顏色、拿掉升階大字；拿掉安全區失敗和防爆按鈕',b:[['fxt_7','強化 +7（藍，看有沒有黃光）'],['fxt_10','強化 +10（金）'],['fx_green','+1～+6 綠光']]},
  {v:'4.63',t:'商城購買小卡：調數量、購買不再重新跳出',b:[['shopcard','打開松林硬木購買小卡（給 5,000 金幣）']]},
  {v:'4.61',t:'強化特效：石碑不動、金／鑽石閃電、燈光同色、失敗與爆裝新特效',b:[['fx_ok','危險區・成功'],['fx_fail','危險區・失敗'],['fx_broke','危險區・爆裝'],['fxt_10','升階 +10（金閃電）'],['fxt_12','升階 +12（鑽石閃電）']]},
  {v:'4.60',t:'同款武器疊一格・一鍵安定值連按',b:[['wstack','產生同款武器（6 把 +0、3 把 +3、2 把附魔）並打開道具欄']]},
  {v:'4.59',t:'商城整理：七日簽到搬進商城、材料可以買、拿掉狩獵號角',b:[['shopsg','簽到可再領並打開商城'],['sg_d7','簽到：跳到第 7 天'],['sg_reset','簽到：今天可再領'],['shopbroke','金幣鑽石歸零（看買不起）']]},
- {v:'4.58',t:'強化特效：綠光、外框色石碑、閃電、黑煙爆裝、強化小卡',b:[['autoenh','一鍵強化到安定值（每級綠光連續演出）'],['fxt_7','升階 +7（藍）'],['fxt_8','+8（藍、不升階）'],['fxt_9','升階 +9（紅）'],['fxt_10','升階 +10（金）'],['fxt_11','升階 +11（紫）'],['fxt_12','升階 +12（鑽石）'],['fx_broke','爆裝（黑煙）'],['fxs_ok','安全區・成功（綠光）']]},
+ {v:'4.58',t:'強化特效：綠光、外框色石碑、閃電、黑煙爆裝、強化小卡',b:[['autoenh','一鍵強化到安定值（每級綠光連續演出）'],['fxt_7','升階 +7（藍）'],['fxt_8','+8（藍、不升階）'],['fxt_9','升階 +9（紅）'],['fxt_10','升階 +10（金）'],['fxt_11','升階 +11（紫）'],['fxt_12','升階 +12（鑽石）'],['fx_broke','爆裝（黑煙）'],['fx_green','+1～+6 綠光']]},
  {v:'4.57',t:'新手導覽重做（22 步：伐木斧 → 挑戰 1-1 → 收成 → 強化 → 附魔 → 月卡 → 任務）',b:[['tutnew','用新存檔從頭跑導覽（會清空目前進度）'],['tutch','跳到導覽「挑戰 1-1」那一步（給伐木斧）'],['tutrestart','保留存檔，從第 1 步重看'],['tutnext','導覽跳下一步']]},
  {v:'4.56',t:'交易所可以賣道具（單價＋數量、買家可買一部分）',b:[['mkisell','上架道具（補 50 顆強化石）'],['mkisim','假裝有人買走我上架的道具一半（離線模擬）'],['mkopen','開啟交易所']]},
  {v:'4.54',t:'8 種新材料、附魔石、英靈・遺物掉落',b:[['matall','材料各 +100、附魔石 +20'],['dropsim','打倒 1000 隻的掉落'],['relicsim','遺物掉落機率＋開箱 1000 次統計'],['relic5','四種英靈・遺物各 +5'],['relic0','英靈・遺物全部歸零'],['relicbag','打開道具欄'],['relicinfo','點英靈・遺物看說明']]},
@@ -2529,10 +2530,10 @@ function sheetDev(){
      ${SFX_VAR_KEYS.length?`<div class="label">音效試用（v3.32，只是試聽，選定後再正式換）</div><div class="sfxalt">${SFX_VAR_KEYS.map(n=>`<div class="sfxalt-r"><span>${SFX_NO[n]}. ${SFX_NAME[n]}</span>${SFX_VARS[n].map(v=>`<button class="ui-btn ui-btn--chip chipbtn ${(SFX_VARS[n].includes(SFX_ALT[n])?SFX_ALT[n]||'':'')===v?'on':''}" data-act="sfxalt" data-k="${n}" data-v="${v}">${v||'原'}</button>`).join('')}</div>`).join('')}</div>
      <div class="devgrid">${B('sfxaltclr','全部切回原版')}</div>`:''}
      <div class="label">2. 指定下一次強化結果（只對測試武器有效）</div>
-     <div class="row">${[['ok','成功'],['fail','普通失敗'],['break','爆裝'],['saved','防爆'],['','不指定']].map(([k,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(DEV.force||'')===k?'on':''}" data-act="devforce" data-k="${k}">${n}</button>`).join('')}</div>
-     <div class="small muted">目前：${DEV.force?{ok:'成功',fail:'普通失敗',break:'爆裝',saved:'防爆'}[DEV.force]:'不指定（照正常機率）'}</div>
-     <div class="label">3. 只播放強化動畫（不做任何判定）</div><div class="small muted">爆裝／失敗／防爆時停在第幾道符文</div><div class="row">${[[-1,'隨機'],[0,'第 1 道'],[2,'第 3 道'],[4,'第 5 道'],[6,'第 7 道']].map(([v,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devStop??-1)===v?'on':''}" data-act="devset" data-k="devStop" data-v="${v}">${n}</button>`).join('')}</div><div class="small muted">武器類型</div><div class="row">${Object.entries({axe:'斧',sword:'劍',spear:'長矛',bow:'弓'}).map(([k,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devFxW||'axe')===k?'on':''}" data-act="devsets" data-k="devFxW" data-v="${k}">${n}</button>`).join('')}</div><div class="small muted">安全區（約 0.5 秒）</div><div class="devgrid">${B('fxs_ok','安全區・成功')}${B('fxs_fail','安全區・失敗')}</div>
-     <div class="small muted">危險區（約 2.8 秒）</div><div class="devgrid">${B('fx_ok','危險區・成功')}${B('fx_fail','危險區・失敗')}${B('fx_broke','危險區・爆裝')}${B('fx_saved','危險區・防爆')}</div>`,
+     <div class="row">${[['ok','成功'],['fail','普通失敗'],['break','爆裝'],['','不指定']].map(([k,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(DEV.force||'')===k?'on':''}" data-act="devforce" data-k="${k}">${n}</button>`).join('')}</div>
+     <div class="small muted">目前：${DEV.force?{ok:'成功',fail:'普通失敗',break:'爆裝'}[DEV.force]:'不指定（照正常機率）'}</div>
+     <div class="label">3. 只播放強化動畫（不做任何判定）</div><div class="small muted">爆裝／失敗時停在第幾道符文</div><div class="row">${[[-1,'隨機'],[0,'第 1 道'],[2,'第 3 道'],[4,'第 5 道'],[6,'第 7 道']].map(([v,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devStop??-1)===v?'on':''}" data-act="devset" data-k="devStop" data-v="${v}">${n}</button>`).join('')}</div><div class="small muted">武器類型</div><div class="row">${Object.entries({axe:'斧',sword:'劍',spear:'長矛',bow:'弓'}).map(([k,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devFxW||'axe')===k?'on':''}" data-act="devsets" data-k="devFxW" data-v="${k}">${n}</button>`).join('')}</div><div class="small muted">安定區 +1～+6（一定成功，不播動畫）</div><div class="devgrid">${B('fx_green','綠光')}</div>
+     <div class="small muted">危險區（約 2.8 秒）</div><div class="devgrid">${B('fx_ok','危險區・成功')}${B('fx_fail','危險區・失敗')}${B('fx_broke','危險區・爆裝')}</div>`,
    test:`<div class="devgrid">${B('tsec','安全設定檢查（v3.65）','btn-primary')}${B('tquick','執行快速測試')}${B('odds','強化機率表')}${B('curve','難度曲線：每關需求')}${B('tecon','執行 30 天經濟模擬')}${B('ticon','檢查 App icon')}</div>${ui.testOut?`<div class="test-out">${ui.testOut}</div>`:''}`,
    ui:tab==='ui'?uiGallery():'',
    save:`<div class="label">雲端存檔</div><div class="small" style="margin-bottom:6px">${AUTH?`帳號：${AUTH.user.email}<br>狀態：${CLOUD.busy?'同步中…':CLOUD.err?'⚠ '+CLOUD.err:CLOUD.last?'已同步 '+new Date(CLOUD.last).toLocaleTimeString():'尚未同步'}${CLOUD.dirty?'（有未上傳的變更）':''}`:'目前是訪客（只存在這支手機）'}</div>
@@ -2648,8 +2649,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='cname'){ui.sheet=null;render();return showName(!S.nick)}if(k==='sfxaltclr'){SFX_VAR_KEYS.forEach(n=>{if(SFX_ALT[n])sfxSetAlt(n,'')});toast('音效已全部切回原版');return render()}
   const m=S.mats,give=(b,q,lv,ench,traits)=>{makeWeapon(b,q,lv,traits,ench);toast('已放入道具欄')};
   if(k.startsWith('fxt_')){if(ui.busy)return;return testFx('ok',false,false,+k.slice(4))}   // v4.58 升階演出
-  if(k.startsWith('fxs_')){if(ui.busy)return;return testFx(k.slice(4),true)}
-  if(k.startsWith('fxg_')){if(ui.busy)return;return testFx(k.slice(4),false,true)}
+  if(k==='fx_green'){const f=FXW[ui.devFxW||'axe'];ui.enhLast=null;ui.sheet={t:'fxt',k:'ok',art:A(f[0]),next:3,danger:false};renderLayer();return greenFlash()}   // v4.64 安定區一定成功，只測綠光
   if(k.startsWith('fx_')){if(ui.busy)return;return testFx(k.slice(3))}
   if(k==='lbtie'){if(!AUTH)return toast('要先登入才能測試','bad');const R=LBR.rows,T=LBR.t,B0=S.best[0],me=AUTH.user.id,w={b:Object.keys(BP)[0],q:0,lv:0};
     S.best[0]={p:5000,...w,traits:[],ench:[],sub:true};LBR.t=1;LBR.rows={0:[{user_id:'a',nick:'早到',p:5000,w,updated_at:'2026-01-01T00:00:00Z'},{user_id:me,nick:'我',p:5000,w,updated_at:'2026-01-02T00:00:00Z'},{user_id:'b',nick:'晚到',p:5000,w,updated_at:'2026-01-03T00:00:00Z'}]};
