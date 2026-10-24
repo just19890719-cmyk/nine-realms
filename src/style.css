@@ -1580,7 +1580,7 @@ html.scrimmed .cbar{display:none}
 .bs{position:relative;height:132px;border-radius:6px;overflow:hidden;border:1px solid #3a2e22;contain:layout paint}
 .bs-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 62%;filter:brightness(.45) saturate(.85)}
 .bs-gd{position:absolute;left:0;right:0;bottom:0;height:30%;background:linear-gradient(180deg,transparent,rgba(0,0,0,.6))}
-.bs-mon{position:absolute;left:-4%;bottom:-5%;height:110%;aspect-ratio:1;z-index:2;animation:bsLunge calc(var(--K)*var(--n)) infinite;animation-delay:var(--dp)}
+.bs-mon{position:absolute;left:6%;bottom:0;height:96%;aspect-ratio:1;z-index:2;animation:bsLunge calc(var(--K)*var(--n)) infinite;animation-delay:var(--dp)}
 .bs-br{position:absolute;inset:0;transform-origin:50% 95%;animation:bsBreath 1.6s ease-in-out infinite}
 .bs-hb{position:absolute;inset:0;transform-origin:50% 95%}
 .bs-hb img{position:absolute;inset:0;width:100%;height:100%}
