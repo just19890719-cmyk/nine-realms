@@ -1572,4 +1572,124 @@ html.scrimmed .cbar{display:none}
 .mt-body{font-size:14px;line-height:1.7;color:var(--bone)}.mt-body p{margin:0 0 8px}
 .mt-warn{color:#ff9474}.mt-sign{text-align:right;color:var(--ash);font-size:13px;margin:0!important}
 .mt-box .gt-ttl{text-align:center}
+/* v4.20 村莊卡片戰鬥條：怪物在左、騎士在右；騎士 12 格動作依武器類別（kn_*），攻速照武器系統定案；背景固定不動 */
+.vcard.bt{flex-wrap:wrap;row-gap:6px;padding-top:6px}
+.vcard.bt>.bs{flex:0 0 100%;order:-1}
+.bs{position:relative;height:132px;border-radius:6px;overflow:hidden;border:1px solid #3a2e22;contain:layout paint}
+.bs-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 62%;filter:brightness(.45) saturate(.85)}
+.bs-gd{position:absolute;left:0;right:0;bottom:0;height:30%;background:linear-gradient(180deg,transparent,rgba(0,0,0,.6))}
+.bs-mon{position:absolute;left:-4%;bottom:-5%;height:110%;aspect-ratio:1;z-index:2;animation:bsLunge calc(var(--K)*var(--n)) infinite;animation-delay:var(--dp)}
+.bs-br{position:absolute;inset:0;transform-origin:50% 95%;animation:bsBreath 1.6s ease-in-out infinite}
+.bs-hb{position:absolute;inset:0;transform-origin:50% 95%}
+.bs-hb img{position:absolute;inset:0;width:100%;height:100%}
+.bs-hb .atk{opacity:0;animation:bsAtk calc(var(--K)*var(--n)) infinite step-end;animation-delay:var(--dp)}
+.bs-hb .idle{animation:bsIdle calc(var(--K)*var(--n)) infinite step-end;animation-delay:var(--dp)}
+.bs-hb .fl{opacity:0;filter:brightness(0) invert(1)}
+.bs-mon.pt .fl{filter:brightness(2.2)}
+.bs-hb .tn{opacity:0;transition:opacity .25s}
+.bs-mon.t-bleed .tn{opacity:.45;filter:sepia(1) saturate(5) hue-rotate(-35deg)}
+.bs-mon.t-poison .tn{opacity:.45;filter:sepia(1) saturate(4) hue-rotate(55deg)}
+.bs-mon.pt .bs-hb img{inset:14% 8% 4% 18%;width:74%;height:82%;border-radius:50%;-webkit-mask-image:radial-gradient(closest-side,#000 62%,transparent);mask-image:radial-gradient(closest-side,#000 62%,transparent)}
+.bs-mon.hit .bs-hb{animation:bsHit var(--hd) ease-out}
+.bs-mon.hit .fl{animation:bsFlash var(--hd) ease-out}
+.bs-mon.kill .bs-hb{animation:monKill .8s ease-out}
+.bs-mon .mon-slash{display:none}
+.bs-mon .mon-pop{top:12%;font-size:19px;color:#fff;text-shadow:0 0 3px #000,0 2px 2px #000;z-index:5}
+.bs-mon .mon-pop.crit{font-size:23px;top:6%;color:#ffd98e}
+.bs-mon .mon-pop.buff{color:#ffb35a}
+.bs-mon .mon-pop.bleed{color:#ff6a5a;font-size:14px;top:36%;text-shadow:0 0 3px #000,0 1px 2px #000}
+.bs-mon .mon-pop.poison{color:#7dff6a;font-size:14px;top:36%;text-shadow:0 0 3px #000,0 1px 2px #000}
+.bs-mon .mon-pop.kill{font-size:18px;top:30%}
+.bs-kn{position:absolute;right:calc(-6% - 8px);bottom:-4%;height:123.2%;aspect-ratio:960/440;z-index:3}
+.bs-kn img{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 4px 5px rgba(0,0,0,.7));opacity:0;animation:none var(--K) infinite step-end;animation-delay:var(--d)}
+.bs.c-sw{--A:6%;--R:-3.6deg;--hd:480ms}.bs.c-ax{--A:8%;--R:-4.8deg;--hd:500ms}.bs.c-hm{--A:11%;--R:-6.6deg;--hd:600ms}.bs.c-dg{--A:3%;--R:-1.8deg;--hd:360ms}
+.bs.c-sp{--A:7%;--R:-4.2deg;--hd:480ms}.bs.c-bw{--A:6%;--R:-3.6deg;--hd:440ms}.bs.c-cb{--A:9%;--R:-5.4deg;--hd:520ms}
+@keyframes bsBreath{0%,100%{transform:none}50%{transform:scale(1.015,1.03)}}
+@keyframes bsHit{0%{transform:translateX(calc(var(--A)*-.25))}10%{transform:translate(calc(var(--A)*-.15),-1px)}20%{transform:translate(calc(var(--A)*-.3),1px)}30%{transform:translateX(calc(var(--A)*-1)) rotate(var(--R))}55%{transform:translateX(calc(var(--A)*-.35)) rotate(calc(var(--R)*.3))}100%{transform:none}}
+@keyframes bsFlash{0%{opacity:.75}20%{opacity:.5}30%{opacity:.2}45%,100%{opacity:0}}
+@keyframes bsLunge{0%,72%{transform:none}76%,88%{transform:translateX(8%)}93%,100%{transform:none}}
+@keyframes bsIdle{0%{opacity:1}72%{opacity:0}91%{opacity:1}}
+@keyframes bsAtk{0%{opacity:0}72%{opacity:1}91%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.bs-mon,.bs-br,.bs-hb,.bs-hb img{animation:none!important}}
+@keyframes kn-sw0{0%{opacity:1}5.99%{opacity:1}6.00%{opacity:0}86.00%{opacity:1}100%{opacity:1}}.bs.c-sw .k0{animation-name:kn-sw0}
+@keyframes kn-sw1{0%{opacity:0}6.00%{opacity:1}15.99%{opacity:1}16.00%{opacity:0}100%{opacity:0}}.bs.c-sw .k1{animation-name:kn-sw1}
+@keyframes kn-sw2{0%{opacity:0}16.00%{opacity:1}35.99%{opacity:1}36.00%{opacity:0}100%{opacity:0}}.bs.c-sw .k2{animation-name:kn-sw2}
+@keyframes kn-sw6{0%{opacity:0}36.00%{opacity:1}40.99%{opacity:1}41.00%{opacity:0}100%{opacity:0}}.bs.c-sw .k6{animation-name:kn-sw6}
+@keyframes kn-sw7{0%{opacity:0}41.00%{opacity:1}44.99%{opacity:1}45.00%{opacity:0}100%{opacity:0}}.bs.c-sw .k7{animation-name:kn-sw7}
+@keyframes kn-sw8{0%{opacity:0}45.00%{opacity:1}55.99%{opacity:1}56.00%{opacity:0}100%{opacity:0}}.bs.c-sw .k8{animation-name:kn-sw8}
+@keyframes kn-sw9{0%{opacity:0}56.00%{opacity:1}63.99%{opacity:1}64.00%{opacity:0}100%{opacity:0}}.bs.c-sw .k9{animation-name:kn-sw9}
+@keyframes kn-sw10{0%{opacity:0}64.00%{opacity:1}75.99%{opacity:1}76.00%{opacity:0}100%{opacity:0}}.bs.c-sw .k10{animation-name:kn-sw10}
+@keyframes kn-sw11{0%{opacity:0}76.00%{opacity:1}85.99%{opacity:1}86.00%{opacity:0}100%{opacity:0}}.bs.c-sw .k11{animation-name:kn-sw11}
+.bs.c-sw{--K:1000ms}
+@keyframes kn-ax0{0%{opacity:1}7.68%{opacity:1}7.69%{opacity:0}90.77%{opacity:1}100%{opacity:1}}.bs.c-ax .k0{animation-name:kn-ax0}
+@keyframes kn-ax4{0%{opacity:0}7.69%{opacity:1}13.07%{opacity:1}13.08%{opacity:0}46.15%{opacity:1}55.37%{opacity:1}55.38%{opacity:0}100%{opacity:0}}.bs.c-ax .k4{animation-name:kn-ax4}
+@keyframes kn-ax5{0%{opacity:0}13.08%{opacity:1}18.45%{opacity:1}18.46%{opacity:0}55.38%{opacity:1}59.99%{opacity:1}60.00%{opacity:0}100%{opacity:0}}.bs.c-ax .k5{animation-name:kn-ax5}
+@keyframes kn-ax7{0%{opacity:0}18.46%{opacity:1}24.61%{opacity:1}24.62%{opacity:0}73.85%{opacity:1}79.99%{opacity:1}80.00%{opacity:0}100%{opacity:0}}.bs.c-ax .k7{animation-name:kn-ax7}
+@keyframes kn-ax1{0%{opacity:0}24.62%{opacity:1}30.76%{opacity:1}30.77%{opacity:0}100%{opacity:0}}.bs.c-ax .k1{animation-name:kn-ax1}
+@keyframes kn-ax2{0%{opacity:0}30.77%{opacity:1}39.99%{opacity:1}40.00%{opacity:0}100%{opacity:0}}.bs.c-ax .k2{animation-name:kn-ax2}
+@keyframes kn-ax3{0%{opacity:0}40%{opacity:1}46.14%{opacity:1}46.15%{opacity:0}100%{opacity:0}}.bs.c-ax .k3{animation-name:kn-ax3}
+@keyframes kn-ax6{0%{opacity:0}60%{opacity:1}73.84%{opacity:1}73.85%{opacity:0}100%{opacity:0}}.bs.c-ax .k6{animation-name:kn-ax6}
+@keyframes kn-ax9{0%{opacity:0}80%{opacity:1}85.37%{opacity:1}85.38%{opacity:0}100%{opacity:0}}.bs.c-ax .k9{animation-name:kn-ax9}
+@keyframes kn-ax11{0%{opacity:0}85.38%{opacity:1}90.76%{opacity:1}90.77%{opacity:0}100%{opacity:0}}.bs.c-ax .k11{animation-name:kn-ax11}
+.bs.c-ax{--K:1300ms}
+@keyframes kn-hm0{0%{opacity:1}8.32%{opacity:1}8.33%{opacity:0}86.67%{opacity:1}100%{opacity:1}}.bs.c-hm .k0{animation-name:kn-hm0}
+@keyframes kn-hm2{0%{opacity:0}8.33%{opacity:1}15.55%{opacity:1}15.56%{opacity:0}100%{opacity:0}}.bs.c-hm .k2{animation-name:kn-hm2}
+@keyframes kn-hm3{0%{opacity:0}15.56%{opacity:1}23.32%{opacity:1}23.33%{opacity:0}100%{opacity:0}}.bs.c-hm .k3{animation-name:kn-hm3}
+@keyframes kn-hm5{0%{opacity:0}23.33%{opacity:1}34.43%{opacity:1}34.44%{opacity:0}100%{opacity:0}}.bs.c-hm .k5{animation-name:kn-hm5}
+@keyframes kn-hm6{0%{opacity:0}34.44%{opacity:1}45.55%{opacity:1}45.56%{opacity:0}100%{opacity:0}}.bs.c-hm .k6{animation-name:kn-hm6}
+@keyframes kn-hm7{0%{opacity:0}45.56%{opacity:1}48.32%{opacity:1}48.33%{opacity:0}100%{opacity:0}}.bs.c-hm .k7{animation-name:kn-hm7}
+@keyframes kn-hm8{0%{opacity:0}48.33%{opacity:1}50.55%{opacity:1}50.56%{opacity:0}100%{opacity:0}}.bs.c-hm .k8{animation-name:kn-hm8}
+@keyframes kn-hm9{0%{opacity:0}50.56%{opacity:1}68.88%{opacity:1}68.89%{opacity:0}100%{opacity:0}}.bs.c-hm .k9{animation-name:kn-hm9}
+@keyframes kn-hm10{0%{opacity:0}68.89%{opacity:1}77.77%{opacity:1}77.78%{opacity:0}100%{opacity:0}}.bs.c-hm .k10{animation-name:kn-hm10}
+@keyframes kn-hm11{0%{opacity:0}77.78%{opacity:1}86.66%{opacity:1}86.67%{opacity:0}100%{opacity:0}}.bs.c-hm .k11{animation-name:kn-hm11}
+.bs.c-hm{--K:1800ms}
+@keyframes kn-dg0{0%{opacity:1}6.66%{opacity:1}6.67%{opacity:0}83.33%{opacity:1}100%{opacity:1}}.bs.c-dg .k0{animation-name:kn-dg0}
+@keyframes kn-dg1{0%{opacity:0}6.67%{opacity:1}14.99%{opacity:1}15.00%{opacity:0}100%{opacity:0}}.bs.c-dg .k1{animation-name:kn-dg1}
+@keyframes kn-dg3{0%{opacity:0}15.00%{opacity:1}24.99%{opacity:1}25.00%{opacity:0}100%{opacity:0}}.bs.c-dg .k3{animation-name:kn-dg3}
+@keyframes kn-dg5{0%{opacity:0}25.00%{opacity:1}33.32%{opacity:1}33.33%{opacity:0}100%{opacity:0}}.bs.c-dg .k5{animation-name:kn-dg5}
+@keyframes kn-dg6{0%{opacity:0}33.33%{opacity:1}39.99%{opacity:1}40.00%{opacity:0}100%{opacity:0}}.bs.c-dg .k6{animation-name:kn-dg6}
+@keyframes kn-dg7{0%{opacity:0}40%{opacity:1}49.99%{opacity:1}50.00%{opacity:0}100%{opacity:0}}.bs.c-dg .k7{animation-name:kn-dg7}
+@keyframes kn-dg8{0%{opacity:0}50%{opacity:1}59.99%{opacity:1}60.00%{opacity:0}100%{opacity:0}}.bs.c-dg .k8{animation-name:kn-dg8}
+@keyframes kn-dg10{0%{opacity:0}60%{opacity:1}71.66%{opacity:1}71.67%{opacity:0}100%{opacity:0}}.bs.c-dg .k10{animation-name:kn-dg10}
+@keyframes kn-dg11{0%{opacity:0}71.67%{opacity:1}83.32%{opacity:1}83.33%{opacity:0}100%{opacity:0}}.bs.c-dg .k11{animation-name:kn-dg11}
+.bs.c-dg{--K:600ms}
+@keyframes kn-sp0{0%{opacity:1}6.66%{opacity:1}6.67%{opacity:0}81.67%{opacity:1}100%{opacity:1}}.bs.c-sp .k0{animation-name:kn-sp0}
+@keyframes kn-sp1{0%{opacity:0}6.67%{opacity:1}13.32%{opacity:1}13.33%{opacity:0}100%{opacity:0}}.bs.c-sp .k1{animation-name:kn-sp1}
+@keyframes kn-sp2{0%{opacity:0}13.33%{opacity:1}19.99%{opacity:1}20.00%{opacity:0}100%{opacity:0}}.bs.c-sp .k2{animation-name:kn-sp2}
+@keyframes kn-sp3{0%{opacity:0}20%{opacity:1}27.49%{opacity:1}27.50%{opacity:0}100%{opacity:0}}.bs.c-sp .k3{animation-name:kn-sp3}
+@keyframes kn-sp4{0%{opacity:0}27.50%{opacity:1}37.49%{opacity:1}37.50%{opacity:0}100%{opacity:0}}.bs.c-sp .k4{animation-name:kn-sp4}
+@keyframes kn-sp5{0%{opacity:0}37.50%{opacity:1}46.66%{opacity:1}46.67%{opacity:0}100%{opacity:0}}.bs.c-sp .k5{animation-name:kn-sp5}
+@keyframes kn-sp6{0%{opacity:0}46.67%{opacity:1}49.99%{opacity:1}50.00%{opacity:0}100%{opacity:0}}.bs.c-sp .k6{animation-name:kn-sp6}
+@keyframes kn-sp7{0%{opacity:0}50%{opacity:1}53.32%{opacity:1}53.33%{opacity:0}100%{opacity:0}}.bs.c-sp .k7{animation-name:kn-sp7}
+@keyframes kn-sp8{0%{opacity:0}53.33%{opacity:1}56.66%{opacity:1}56.67%{opacity:0}100%{opacity:0}}.bs.c-sp .k8{animation-name:kn-sp8}
+@keyframes kn-sp9{0%{opacity:0}56.67%{opacity:1}64.99%{opacity:1}65.00%{opacity:0}100%{opacity:0}}.bs.c-sp .k9{animation-name:kn-sp9}
+@keyframes kn-sp10{0%{opacity:0}65.00%{opacity:1}73.32%{opacity:1}73.33%{opacity:0}100%{opacity:0}}.bs.c-sp .k10{animation-name:kn-sp10}
+@keyframes kn-sp11{0%{opacity:0}73.33%{opacity:1}81.66%{opacity:1}81.67%{opacity:0}100%{opacity:0}}.bs.c-sp .k11{animation-name:kn-sp11}
+.bs.c-sp{--K:1200ms}
+@keyframes kn-bw0{0%{opacity:1}6.35%{opacity:1}6.36%{opacity:0}92.73%{opacity:1}100%{opacity:1}}.bs.c-bw .k0{animation-name:kn-bw0}
+@keyframes kn-bw1{0%{opacity:0}6.36%{opacity:1}12.72%{opacity:1}12.73%{opacity:0}100%{opacity:0}}.bs.c-bw .k1{animation-name:kn-bw1}
+@keyframes kn-bw2{0%{opacity:0}12.73%{opacity:1}19.08%{opacity:1}19.09%{opacity:0}100%{opacity:0}}.bs.c-bw .k2{animation-name:kn-bw2}
+@keyframes kn-bw3{0%{opacity:0}19.09%{opacity:1}25.44%{opacity:1}25.45%{opacity:0}100%{opacity:0}}.bs.c-bw .k3{animation-name:kn-bw3}
+@keyframes kn-bw4{0%{opacity:0}25.45%{opacity:1}31.81%{opacity:1}31.82%{opacity:0}100%{opacity:0}}.bs.c-bw .k4{animation-name:kn-bw4}
+@keyframes kn-bw5{0%{opacity:0}31.82%{opacity:1}39.99%{opacity:1}40.00%{opacity:0}100%{opacity:0}}.bs.c-bw .k5{animation-name:kn-bw5}
+@keyframes kn-bw6{0%{opacity:0}40%{opacity:1}54.54%{opacity:1}54.55%{opacity:0}100%{opacity:0}}.bs.c-bw .k6{animation-name:kn-bw6}
+@keyframes kn-bw7{0%{opacity:0}54.55%{opacity:1}60.90%{opacity:1}60.91%{opacity:0}100%{opacity:0}}.bs.c-bw .k7{animation-name:kn-bw7}
+@keyframes kn-bw8{0%{opacity:0}60.91%{opacity:1}69.08%{opacity:1}69.09%{opacity:0}100%{opacity:0}}.bs.c-bw .k8{animation-name:kn-bw8}
+@keyframes kn-bw9{0%{opacity:0}69.09%{opacity:1}77.26%{opacity:1}77.27%{opacity:0}100%{opacity:0}}.bs.c-bw .k9{animation-name:kn-bw9}
+@keyframes kn-bw10{0%{opacity:0}77.27%{opacity:1}85.44%{opacity:1}85.45%{opacity:0}100%{opacity:0}}.bs.c-bw .k10{animation-name:kn-bw10}
+@keyframes kn-bw11{0%{opacity:0}85.45%{opacity:1}92.72%{opacity:1}92.73%{opacity:0}100%{opacity:0}}.bs.c-bw .k11{animation-name:kn-bw11}
+.bs.c-bw{--K:1100ms}
+@keyframes kn-cb0{0%{opacity:1}6.87%{opacity:1}6.88%{opacity:0}93.75%{opacity:1}100%{opacity:1}}.bs.c-cb .k0{animation-name:kn-cb0}
+@keyframes kn-cb1{0%{opacity:0}6.88%{opacity:1}13.74%{opacity:1}13.75%{opacity:0}100%{opacity:0}}.bs.c-cb .k1{animation-name:kn-cb1}
+@keyframes kn-cb2{0%{opacity:0}13.75%{opacity:1}20.61%{opacity:1}20.62%{opacity:0}100%{opacity:0}}.bs.c-cb .k2{animation-name:kn-cb2}
+@keyframes kn-cb3{0%{opacity:0}20.62%{opacity:1}27.49%{opacity:1}27.50%{opacity:0}100%{opacity:0}}.bs.c-cb .k3{animation-name:kn-cb3}
+@keyframes kn-cb4{0%{opacity:0}27.50%{opacity:1}34.99%{opacity:1}35.00%{opacity:0}100%{opacity:0}}.bs.c-cb .k4{animation-name:kn-cb4}
+@keyframes kn-cb5{0%{opacity:0}35.00%{opacity:1}49.99%{opacity:1}50.00%{opacity:0}100%{opacity:0}}.bs.c-cb .k5{animation-name:kn-cb5}
+@keyframes kn-cb6{0%{opacity:0}50%{opacity:1}57.49%{opacity:1}57.50%{opacity:0}100%{opacity:0}}.bs.c-cb .k6{animation-name:kn-cb6}
+@keyframes kn-cb7{0%{opacity:0}57.50%{opacity:1}63.74%{opacity:1}63.75%{opacity:0}100%{opacity:0}}.bs.c-cb .k7{animation-name:kn-cb7}
+@keyframes kn-cb8{0%{opacity:0}63.75%{opacity:1}70.61%{opacity:1}70.62%{opacity:0}100%{opacity:0}}.bs.c-cb .k8{animation-name:kn-cb8}
+@keyframes kn-cb9{0%{opacity:0}70.62%{opacity:1}78.74%{opacity:1}78.75%{opacity:0}100%{opacity:0}}.bs.c-cb .k9{animation-name:kn-cb9}
+@keyframes kn-cb10{0%{opacity:0}78.75%{opacity:1}86.86%{opacity:1}86.88%{opacity:0}100%{opacity:0}}.bs.c-cb .k10{animation-name:kn-cb10}
+@keyframes kn-cb11{0%{opacity:0}86.88%{opacity:1}93.74%{opacity:1}93.75%{opacity:0}100%{opacity:0}}.bs.c-cb .k11{animation-name:kn-cb11}
+.bs.c-cb{--K:1600ms}
 </style>
