@@ -518,7 +518,7 @@ function wsTests(){const S0=S;S=fresh();S.gold=1e6;const at=n=>S.villages.forEac
   return[T('J 工坊升級依關卡解鎖（鐵砧 1-2/1-4/1-7/1-10、熔爐 1-3/1-5/1-6/1-7）',a0&&a1&&a2&&a3&&keep,`沒收復不能升 ${a0}；1-2→鐵砧 2 ${a1}；1-4→鐵砧 3 ${a2}；1-7→鐵砧 4、熔爐 5、鐵砧 5 還鎖 ${a3}；舊等級保留 ${keep}（${gates}）`)]}
 // v4.07 難度曲線：每關需求不低於曲線、1-1 以外剛打好的普通武器不能直接交、需求數字和公告一致
 function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter((d,i)=>i&&d.v.req<d.curve*.97),free=rows.filter((d,i)=>i&&d.need[0]===0),nw=NW_LOG.find(n=>n.v==='4.07'),txt=nw?nw.b.join(''):'';
-  const want={1:14,4:44,5:55,7:155,9:310,10:280,13:545,14:420,15:420,18:900},miss=Object.entries(want).filter(([i,r])=>VILLAGES[i].req!==r||!txt.includes(VILLAGES[i].name+' '+r));
+  const want={1:14,4:44,5:55,7:155,9:310,10:280,13:545,14:420,15:420,18:900},miss=Object.entries(want).filter(([i,r])=>VILLAGES[i].req!==r||!txt.includes(({石籬原:'熔岩裂口'}[VILLAGES[i].name]||VILLAGES[i].name)+' '+r))   // v4.24 2-9 改名，4.07 公告裡還是舊名;
   return[T('N1 每關需求不低於難度曲線（中度）',!low.length,low.length?low.map(d=>d.v.name+' '+d.v.req+'<'+d.curve).join('、'):'20 關都 ≥ 曲線'),
     T('N2 1-1 以外普通 +0 不能直接交付',!free.length,free.length?free.map(d=>d.v.name).join('、'):'都要強化'),
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}

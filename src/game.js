@@ -307,7 +307,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.28';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.29';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1127,6 +1127,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.29',d:'10/24',t:'村莊詳情小修正',b:['「首次收復獎勵」改成佔一整列，小螢幕不會再折成兩行','2-10 維莫爾河渡口改成要戰錘後，攻擊力需求照難度曲線調成 1040'],g:[]},
  {v:'4.28',d:'10/24',t:'符文一關一關學會',b:['附魔不再一開始就抽得到全部 12 種：開局會<b>烈焰、霜寒、迅捷、掠奪、豐收</b>，之後 1-3 學會尋珍、1-6 貪婪、1-7 雷霆、1-8 剋巨人、1-10 神聖、2-6 劇毒和剋龍','還沒學會的詞條在附魔頁會鎖住並寫出哪一關開放，剩下的詞條機率變高，卡關時比較好抽到剋巨人、神聖','已經附在武器上的詞條全部保留','符文祈願只會給你去過的土地上的寶物：還沒開放的關卡素材抽不到，那份機率平分給霜銀和狼牙'],g:['ench','shop']},
  {v:'4.27',d:'10/24',t:'神明用「祂」',b:['稱呼神明一律用「祂」，怪物用「牠」','村莊詳情的怪物大圖，打神的關卡會寫「本村要打的神明」'],g:['hp']},
  {v:'4.26',d:'10/24',t:'第一、二界的故事串起來了',b:['20 關的說明和怪物傳說改寫成一條主線：諸神打開九界的門讓怪物湧進人間，打敗海姆達爾後去約頓海姆拉攏巨人','2-10 換成<b>雷神索爾</b>（維莫爾河渡口），要<b>戰錘＋神聖</b>；神明武器斯卡蒂之弓改成<b>索爾之錘</b>（天生雷霆），遺物改成雷神錘柄','1-8 和 2-9 對調：1-8 泥巨人莫庫卡爾菲、2-9 赫朗格尼爾（改名<b>石籬原</b>，要斧，掉巨人骨）','已經打好的斯卡蒂之弓和弓臂會自動變成索爾之錘和雷神錘柄，強化等級不變'],g:['god','hp']},
