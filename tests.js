@@ -469,10 +469,15 @@ function mythTests(){const n=VILLAGES.length,bad=MONS.filter(x=>x.length>6),j=EV
 function dexTests(){const sv=ui.sheet,bad=VILLAGES.map((v,i)=>i).filter(i=>{ui.sheet={t:'v',i};const h=monDex(i),r0=Math.floor(i/10)*10;
   return!h.includes(A('mon_'+(i+1)))||!h.includes(`data-k="${r0+(i-r0+9)%10}"`)||!h.includes(`data-k="${r0+(i-r0+1)%10}"`)});ui.sheet=sv;
   return[T('H 怪物大圖：20 座村莊詳情都有自己的怪物，左右翻只在同一界循環',!bad.length,bad.length?'錯：'+bad.map(vNo).join('、'):'20 座都正常')]}
-// v4.06 神的關卡：名稱、條件跟劇情一致（1-10 彩虹橋頭要神聖、2-10 索列姆海姆要剋巨人），沒有村莊再要剋龍
+// v4.06／v4.14 關卡跟故事一致：名稱、條件、掉落都要對得上怪物（打神要神聖、打龍要剋龍、火要霜寒）
 function godReqTests(){const v=VILLAGES[9],u=VILLAGES[19],mk=e=>({id:-1,b:'t3_halberd',q:3,lv:15,traits:[],ench:[e,null,null,null]});
-  const ok=v.name==='彩虹橋頭'&&v.need==='holy'&&u.name==='索列姆海姆'&&u.need==='giant'&&!VILLAGES.some(x=>x.need==='dragon'||/世界樹根穴|烏特加德城/.test(x.name))&&eligible(9,mk({k:'holy',v:15}))&&!eligible(9,mk({k:'dragon',v:40}))&&TAGN[v.tag];
-  return[T('H 神的關卡：1-10 彩虹橋頭只收神聖、2-10 索列姆海姆要剋巨人，剋龍不再是委託條件',!!ok,`1-10 ${v.name}/${v.need}、2-10 ${u.name}/${u.need}`)]}
+  const gods=VILLAGES.map((x,i)=>i).filter(i=>/神/.test(MON_T[i])),badGod=gods.filter(i=>VILLAGES[i].need!=='holy'),old=VILLAGES.filter(x=>/世界樹根穴|烏特加德城$|鐵爐村|鹿角堡|渡鴉灣|雪峰營地|冰川裂谷|雷鳴峽谷|霜晶礦坑|冰巨人王庭/.test(x.name)&&x!==VILLAGES[17]);
+  const drag=VILLAGES[15],noScale=VILLAGES.filter((x,i)=>[7,9,12].includes(i)&&x.drops.some(d=>d[0]==='scale'));
+  const ok=v.name==='彩虹橋頭'&&u.name==='索列姆海姆'&&u.cat==='bow'&&!badGod.length&&!old.length&&VILLAGES[17].name==='烏特加德城'&&VILLAGES[8].need==='frost'&&drag.need==='dragon'&&drag.drops.some(d=>d[0]==='scale')&&!noScale.length&&v.drops.some(d=>d[0]==='rainbow')&&MATS.rainbow&&eligible(9,mk({k:'holy',v:15}))&&!eligible(9,mk({k:'dragon',v:40}))&&TAGN[v.tag]&&TAGN[drag.tag];
+  return[T('H 關卡跟故事一致：神的關卡都要神聖、2-10 要弓、1-9 要霜寒、2-6 蠕龍要剋龍且掉龍鱗、舊名稱都換掉、1-10 掉虹橋碎晶',!!ok,`沒要神聖的神：${badGod.map(vNo).join('、')||'無'}；舊名稱：${old.map(x=>x.name).join('、')||'無'}；不該掉龍鱗：${noScale.map(x=>x.name).join('、')||'無'}`)]}
+// v4.14 村莊需求：每座村莊的需求面板都列得出同類圖紙
+function vNeedTests(){const bad=VILLAGES.map((v,i)=>i).filter(i=>{const h=vNeedPanel(i);return !/data-act="vforge"/.test(h)||/data-act="bp"/.test(h)});
+  return[T('H 村莊需求：每座村莊都列出可點的同類圖紙（點了跳到鍛造頁）',!bad.length,bad.length?'沒有圖紙：'+bad.map(vNo).join('、'):VILLAGES.length+' 座都有')]}
 // v4.02 武器打法：每種還在的武器類別都有打法與說明，連擊間隔加起來比攻擊間隔短
 function hitTests(){const cats=[...new Set(BPS.map(b=>b.cat))],miss=cats.filter(c=>!HIT[c]||!HIT_N[c]);
   const bad=Object.entries(HIT).filter(([k,h])=>{const z={};let sum=0;for(let n=0;n<400;n++){const p=h.plan(z);if(p.some(x=>x[0]>=h.iv*.85))return true;sum+=p.reduce((a,x)=>a+x[1],0)}return k!=='shield'&&Math.abs(sum/400/h.E-1)>.15});
@@ -502,7 +507,7 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){
   if(mode==='econ')return econHtml(12)+econHtml(8);
-  const r=runAll({N:100000});r.res.push(...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...curveTests(),...hitTests(),...enchTests(),...wsTests());const pass=r.res.filter(x=>x.pass).length;
+  const r=runAll({N:100000});r.res.push(...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...curveTests(),...vNeedTests(),...hitTests(),...enchTests(),...wsTests());const pass=r.res.filter(x=>x.pass).length;
   return `<div><b>${pass}/${r.res.length} 通過</b>（${r.ms} 毫秒）</div>`+resHtml(r.res);
 }
 if(typeof module!=='undefined')module.exports={runAll,econReport,simulate,levelCheck};
