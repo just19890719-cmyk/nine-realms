@@ -1756,6 +1756,8 @@ html.scrimmed .cbar{display:none}
 .ib-ico img{width:40px;height:40px;border-radius:4px}
 .ib-x{position:absolute;right:-10px;bottom:-4px;background:#1a120a;border:1px solid #7a5a2a;color:#f1d79a;font-size:11px;font-weight:700;font-style:normal;line-height:1;padding:2px 4px;border-radius:8px;font-variant-numeric:tabular-nums}
 .ph-ico{width:40px;height:40px;border:1px dashed #8a6a3a;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#b99a66;line-height:1.1;text-align:center}
+.ph-ico[style]{border-color:var(--gl);box-shadow:0 0 10px var(--gl),inset 0 0 8px var(--gl)}
+.ib-gl{font-size:11px;font-weight:700;line-height:1.2}
 .info-ico .ph-ico{width:96px;height:96px;font-size:13px;margin:0 auto}
 .modal-card .ui-btn+.ui-btn{margin-top:8px}
 </style>
@@ -2078,8 +2080,10 @@ const FURNACE_COST=[0,3000,6000,15000,40000,150000],ANVIL_COST=[0,2000,8000,2500
 const WS_GATE={furnace:[0,0,3,5,6,7,10],anvil:[0,0,2,4,7,10]};
 VILLAGES.forEach(v=>v.drops=[]);   // v4.43 舊材料刪除：村莊暫時只掉金幣（新的掉落等 Mochi 重新設計）
 // v4.43 舊道具（防爆卷、祝福石、傳說圖紙、殘渣）全部刪除。新道具：英靈・遺物（打開內容等 Mochi 設定，圖待生成）
-// [名稱, 圖示（null＝還沒有圖）, 說明]
-const ITEMS={relic:['英靈・遺物',null,'英靈留在戰場上的遺物，打開會得到東西（內容設計中）。']};
+// [名稱, 圖示（null＝還沒有圖）, 說明, 光芒, 光芒顏色]；v4.43 英靈・遺物分綠／藍／紅／金四種光芒，之後各放不同等級的內容（Mochi）
+const RELIC_DESC='英靈留在戰場上的遺物，光芒越亮，裡面的東西越好。打開會得到東西（內容設計中）。';
+const ITEMS={relic_g:['英靈・遺物',null,RELIC_DESC,'綠光','#5fd36a'],relic_b:['英靈・遺物',null,RELIC_DESC,'藍光','#4fa3ff'],relic_r:['英靈・遺物',null,RELIC_DESC,'紅光','#ff5a4a'],relic_y:['英靈・遺物',null,RELIC_DESC,'金光','#ffc940']};
+const RELICS=Object.keys(ITEMS).filter(k=>k.startsWith('relic_'));
 const RATE=[0,.95,.9,.85,.8,.75,.7,.45,.35,.25,.18,.12,.08,.05,.03,.02];   // v4.00 Mochi 選難度 B（天堂W 風格）：+7～+15 原本 60/50/40/30/22/15/10/7/5%
 const ACH=[
   {id:'c3',n:'收復 1-3 狼嚎谷',g:'v',ic:'v3',p:()=>[cleared(),3],test:()=>cleared()>=3,r:{gems:50}},
@@ -2169,8 +2173,8 @@ const pct=x=>Math.round(x*1000)/10+'%';
 function fmtT(ms){const s=Math.max(0,Math.ceil(ms/1000));if(s>=3600)return Math.floor(s/3600)+'時'+Math.floor(s%3600/60)+'分';if(s>=60)return Math.floor(s/60)+'分'+String(s%60).padStart(2,'0')+'秒';return s+'秒'}
 const today=()=>new Date(NOW()).toLocaleDateString('sv');
 function weighted(list,wf){const tot=list.reduce((s,x)=>s+wf(x),0);let r=Math.random()*tot;for(const x of list){r-=wf(x);if(r<0)return x}return list[list.length-1]}
-const itemName=k=>MATS[k]||(ITEMS[k]||[k])[0];
-const itemIco=(k,cls='')=>{const a=k==='gold'?'it_gold':k==='gems'?'it_gems':MATS[k]?MATART[k]:ITEMS[k]&&ITEMS[k][1];return a?img(a,cls):`<span class="ph-ico ${cls}">待生圖</span>`};
+const itemName=k=>MATS[k]||(ITEMS[k]?ITEMS[k][0]+(ITEMS[k][3]?'（'+ITEMS[k][3]+'）':''):k);
+const itemIco=(k,cls='')=>{const a=k==='gold'?'it_gold':k==='gems'?'it_gems':MATS[k]?MATART[k]:ITEMS[k]&&ITEMS[k][1];const gl=ITEMS[k]&&ITEMS[k][4];return a?img(a,cls):`<span class="ph-ico ${cls}" ${gl?`style="--gl:${gl}"`:''}>待生圖</span>`};
 
 /* ---------- 狀態與存檔 ---------- */
 const KEY='nine-realms-smith-v3',KEY_V2='nine-realms-smith-v2';
@@ -2179,7 +2183,7 @@ function freshVillage(i){return{status:i===0?'open':'locked',weaponId:null,cycle
 const GAME_SPEED=1;    // v3.69 原本的封測 10 倍速已直接寫進狩獵／鍛造時間，畫面上的時間都是真實時間
 const OFFLINE_H=12;    // v3.69 離線累積上限（真實時間 12 小時）
 function fresh(){return{v:VERSION,gold:500,fcRw:true,gems:100,speed:GAME_SPEED,capH:OFFLINE_H,pity:0,
-  mats:{},items:{relic:0},furnace:1,anvil:1,slots:1,weapons:[],nextId:1,jobs:[],
+  mats:{},items:{relic_g:0,relic_b:0,relic_r:0,relic_y:0},furnace:1,anvil:1,slots:1,weapons:[],nextId:1,jobs:[],
   villages:VILLAGES.map((v,i)=>freshVillage(i)),monthly:{until:0,last:''},daily:null,sign:{n:0,last:''},stats:freshStats(),ach:{},best:{},lbRw:{},rep:{lv:1,xp:0,t:{}},lastSeen:NOW(),clockWarn:false}}
 function migrateV2(o){
   const s=fresh();s.gold=o.gold||0;s.gems=o.gems||0;Object.assign(s.mats,o.mats||{});Object.assign(s.items,o.items||{});
@@ -3035,7 +3039,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
- {v:'4.43',d:'10/24',t:'舊道具和材料全部刪除・新道具欄',b:['舊的<b>防爆卷、祝福石、傳說圖紙、殘渣</b>和<b>所有材料</b>全部刪除，新的道具和材料重新設計中','鍛造、附魔暫時<b>只花金幣</b>；村莊暫時只掉金幣','商城拿掉旅行商人、符文祈願、殘渣兌換；任務、簽到、成就的獎勵改成金幣和鑽石','下方的「武器庫」改名「<b>道具欄</b>」，分「武器／材料」兩頁；材料頁的道具同一種疊一格，右下角是數量，沒有上限（鐵匠鋪的材料分頁拿掉）','新道具<b>英靈・遺物</b>：打開會得到什麼還在設計中'],g:['bag','forge','shop','quest']},
+ {v:'4.43',d:'10/24',t:'舊道具和材料全部刪除・新道具欄',b:['舊的<b>防爆卷、祝福石、傳說圖紙、殘渣</b>和<b>所有材料</b>全部刪除，新的道具和材料重新設計中','鍛造、附魔暫時<b>只花金幣</b>；村莊暫時只掉金幣','商城拿掉旅行商人、符文祈願、殘渣兌換；任務、簽到、成就的獎勵改成金幣和鑽石','下方的「武器庫」改名「<b>道具欄</b>」，分「武器／材料」兩頁；材料頁的道具同一種疊一格，右下角是數量，沒有上限（鐵匠鋪的材料分頁拿掉）','新道具<b>英靈・遺物</b>：分綠光、藍光、紅光、金光四種，光芒越亮內容越好，打開會得到什麼還在設計中'],g:['bag','forge','shop','quest']},
  {v:'4.39',d:'10/24',t:'村莊卡片可以展開戰鬥畫面',b:['駐守中的村莊卡片下方多了<b>往下的箭頭</b>，點一下展開騎士打怪物的戰鬥畫面，再點一次收起','展開後還看得到這隻怪物<b>每輪會掉什麼</b>（附機率，點材料看用途）和<b>已經打到、還沒收成</b>的東西'],g:['hit']},
  {v:'4.38',d:'10/24',t:'畫面精簡：拿掉用不到的功能',b:['駐守中的村莊不再開詳情頁：掉落直接看卡片，<b>點卡片上的武器</b>跳出小卡，可以看武器、換武器、收回武器','村莊詳情的「需要的武器」拿掉（已經不限武器）','<b>狩獵策略</b>拿掉，一律一般狩獵','<b>排行榜</b>先全部關掉','鐵匠鋪的「<b>鍛造中</b>」分頁拿掉，進度條直接顯示在「開始鍛造」下方','<b>全服首領討伐</b>先拿掉，駐守首領的武器放回武器庫'],g:['vil','forge']},
  {v:'4.37',d:'10/24',t:'村莊不限武器・拿掉特性、重鍊和盾',b:['村莊委託<b>不限武器</b>：不指定類別、不看攻擊力、不用特定附魔，任何武器都能交（武器越強狩獵越快）','鍛造不再帶<b>先天特性</b>（鋒利、堅固、輕巧、尋寶、巨人獵手、符文親和）','<b>巨人體重鍊</b>拿掉了，第二界材料用來鍛造巨人武器','<b>盾</b>拿掉了：4 張盾圖紙不再出現；1-5 鴉巢堡、2-5 永凍湖的故事跟著改寫'],g:['vil','qual','realm']},
@@ -3090,7 +3094,7 @@ const GUIDE=[
   {k:'enh',ic:'it_bless',n:'強化',s:'+1～+6 安定，+7 起有機率爆裝',v:'4.43',h:'所有材質的安定值都是 <b>+6</b>：+1～+6 失敗只扣金幣，不會爆裝。<br>+7 起是危險區，成功率依序 45／35／25／18／12／8／5／3／2%（+7～+15）。失敗時爆裝機率 50% 起，每級 +5%，最高 90%。<br>v4.43 起防爆卷、祝福石、殘渣都已刪除，爆裝就是失去武器。<br>武器的<b>品階</b>和框色看強化等級：+0 凡鐵（灰）、+1～+6 精鍛（綠）、+7～+8 寒鋒（藍）、+9 血刃（紅）、+10 神鑄（金）、+11 星魂（紫）、+12 永恆（鑽石），+9 以上的框有電流繞著跑。'},
   {k:'ench',ic:'mat_shard',n:'附魔',s:'花金幣隨機出 12 種詞條，一關一關學會',v:'4.43',h:'花金幣隨機附魔一種詞條，重新附魔會蓋掉那一格。<br>符文要<b>一關一關學會</b>：開局會烈焰、霜寒、迅捷、掠奪、豐收；1-3 開放學會尋珍、1-6 貪婪、1-7 雷霆、1-8 剋巨人、1-10 神聖、2-6 劇毒和剋龍。已經附在武器上的不受影響。<br><b>攻擊力</b>：烈焰、霜寒、雷霆、劇毒、神聖。<br><b>狩獵</b>：迅捷、掠奪、貪婪、尋珍、豐收。<br><b>剋制</b>：剋巨人、剋龍（打尼德霍格）。1-9 灰燼要塞要<b>霜寒</b>。<br>附魔欄：目前開放 2 格。'},
   {k:'god',ic:'g_hofund_disp',n:'神明武器與神格覺醒',s:'用神的遺物鍛造，強化越高覺醒越多',v:'4.26',h:'每一界最後一關是神。駐守神的關卡狩獵，每輪有 20% 機率掉<b>神的遺物</b>（1-10 霍夫德劍柄、2-10 雷神錘柄）。<br>收集 6 個遺物加材料，就能在鐵匠鋪鍛造<b>霍夫德之劍</b>（熔爐 Lv5）或<b>索爾之錘</b>（熔爐 Lv6）。它們是那一界最強的武器，但比不上下一界的新材質。<br><b>神格覺醒</b>：強化到 +7、+9、+11、+13、+15 會逐段覺醒，效果只算在這把武器身上（狩獵時間、稀有素材或材料、攻擊力 +10%、首領傷害 +15%）。+15 完全覺醒有專屬稱號、全服公告和金色光環。<br>強化規則和一般武器一樣，+7 以上失敗還是可能爆裝，記得用防爆卷。'},
-  {k:'bag',ic:'nav_forge',n:'道具欄',s:'同一種道具疊一格，沒有上限',v:'4.43',h:'下方導覽的「<b>道具欄</b>」（原本的武器庫）分「武器／材料」兩頁，道具在「材料」頁。同一種道具放在同一格，右下角顯示數量，沒有上限。<br>目前只有<b>英靈・遺物</b>：英靈留在戰場上的遺物，打開會得到東西（內容設計中）。<br>舊的防爆卷、祝福石、傳說圖紙、殘渣和所有舊材料都已刪除，新的道具和材料重新設計中。'},
+  {k:'bag',ic:'nav_forge',n:'道具欄',s:'同一種道具疊一格，沒有上限',v:'4.43',h:'下方導覽的「<b>道具欄</b>」（原本的武器庫）分「武器／材料」兩頁，道具在「材料」頁。同一種道具放在同一格，右下角顯示數量，沒有上限。<br>目前只有<b>英靈・遺物</b>：英靈留在戰場上的遺物，分<b>綠光、藍光、紅光、金光</b>四種，光芒越亮內容越好，打開會得到東西（內容設計中）。<br>舊的防爆卷、祝福石、傳說圖紙、殘渣和所有舊材料都已刪除，新的道具和材料重新設計中。'},
   {k:'melt',ic:'mat_iron',n:'熔解',s:'不要的武器換回金幣',v:'4.43',h:'在武器詳情按「熔解」：退回一半鍛造金幣。<br>收藏（上鎖）的武器不能熔解。'}]],
  ['村莊與戰鬥',[
   {k:'vil',ic:'nav_village',n:'村莊委託與收成',s:'交武器收復村莊、自動狩獵收成',v:'4.43',h:'任何武器都能交給村莊收復（不限類別、攻擊力和附魔），解鎖下一座村莊和新圖紙，第一次收復有金幣獎勵。<br>交付後武器會駐守狩獵，自動帶回金幣（v4.43 起舊材料刪除，新的掉落設計中），<b>離線最多累積 12 小時</b>。換上更強的武器狩獵更快。<br>每輪會掉什麼直接看村莊卡片右邊。<b>點卡片上的武器</b>會跳出小卡，可以看武器詳情、換武器或收回武器。<br>「全部收成」只收目前在看的這一界；另一界可以收成時，地圖圖示會亮紅點。'},
@@ -3569,9 +3573,9 @@ function viewBag(){const mk=Object.keys(MATS);
   return `<div class="pagehead"><h2>道具欄</h2></div>${atabs()}<div class="ui-panel panel"><div class="small muted">同一種東西放同一格，右下角是數量，沒有上限。點一下看說明。</div>
    <div class="ib-h"><b>道具</b><span>${Object.keys(ITEMS).length} 種</span></div><div class="matgrid">${Object.keys(ITEMS).map(itemBox).join('')}</div>
    <div class="ib-h"><b>材料</b><span>${mk.length} 種</span></div>${mk.length?`<div class="matgrid">${mk.map(k=>matBox(k)).join('')}</div>`:'<div class="small muted">新的材料設計中。</div>'}</div>`}
-const itemBox=k=>`<button class="matbox mb-tap ib" data-act="iteminfo" data-k="${k}"><span class="ib-ico">${itemIco(k)}${S.items[k]?`<i class="ib-x">×${fmt(S.items[k])}</i>`:''}</span><span class="mb-n">${ITEMS[k][0]}</span></button>`;
+const itemBox=k=>`<button class="matbox mb-tap ib" data-act="iteminfo" data-k="${k}"><span class="ib-ico">${itemIco(k)}${S.items[k]?`<i class="ib-x">×${fmt(S.items[k])}</i>`:''}</span><span class="mb-n">${ITEMS[k][0]}</span>${ITEMS[k][3]?`<span class="ib-gl" style="color:${ITEMS[k][4]}">${ITEMS[k][3]}</span>`:''}</button>`;
 function itemInfo(k){const n=S.items[k]|0;
-  return {ico:itemIco(k),title:ITEMS[k][0],html:`持有 <b>${fmt(n)}</b> 個<br><br>${ITEMS[k][2]}`,acts:k==='relic'?btn('打開（內容設計中）','relicopen',{cls:'btn-sec big',dis:true}):''}}
+  return {ico:itemIco(k),title:itemName(k),html:`持有 <b>${fmt(n)}</b> 個<br><br>${ITEMS[k][2]}`,acts:RELICS.includes(k)?btn('打開（內容設計中）','relicopen',{cls:'btn-sec big',dis:true}):''}}
 // v3.61 材料倉庫：點材料顯示用途（哪些材質的圖紙會用到）與取得方式，直接從圖紙配方、村莊掉落、商店資料算出來
 function matInfo(k,vp){const tiers=[...new Set(BPS.filter(b=>recipe(b)[k]).map(b=>TIERS[b.t].n))],named=BPS.filter(b=>b.r&&b.r[k]).map(b=>b.n);
   const use=[];if(tiers.length)use.push(`鍛造 <b>${tiers.join('、')}</b> 武器${named.length?`（神器：${named.join('、')}）`:''}`);if(k==='shard')use.push('武器<b>附魔</b>（每次 1 個，隨機抽詞條）');if(k==='rainbow')use.push('海姆達爾守的彩虹橋碎片，第九界<b>阿斯嘉</b>的武器會用到（還沒開放，先存著）');
@@ -4126,7 +4130,7 @@ function sheetDev(){
   const B=(k,t,c='btn-sec')=>`<button class="ui-btn ui-btn--${btnVariant(c)} btn ${c} sm" data-act="devdo" data-k="${k}">${t}</button>`,tab=ui.devTab||'res';
   const body={
    res:`<div class="label">貨幣</div><div class="devgrid">${B('gold','金幣 +5,000')}${B('gems','鑽石 +1,000')}</div>
-     <div class="label">v4.43 道具欄（舊道具、材料已刪除）</div><div class="devgrid">${B('relic5','英靈・遺物 +5')}${B('relic0','英靈・遺物歸零')}${B('relicbag','打開道具欄')}${B('relicinfo','點英靈・遺物看說明')}</div>
+     <div class="label">v4.43 道具欄（舊道具、材料已刪除）</div><div class="devgrid">${B('relic5','四種英靈・遺物各 +5')}${B('relic0','英靈・遺物全部歸零')}${B('relicbag','打開道具欄')}${B('relicinfo','點英靈・遺物看說明')}</div>
      <div class="label">v3.71 鐵匠聲望／天賦</div><div class="devgrid">${B('rep1','聲望升 1 級')}${B('rep10','聲望升 10 級')}${B('represet','天賦點全部退回')}${B('repzero','聲望歸零（Lv.1）')}${B('repopen','打開鐵匠天賦')}</div>
      <div class="label">v3.87 首領討伐（整週・週日結算・目前：${evtNow().boss.n}）</div><div class="devgrid">${B('evtnext','模擬換週（下一隻首領）')}${B('evtfast','首領駐守時間 −10 小時')}${B('evtdmg','我的傷害 +5,000（只改顯示）')}${B('evtreset','本週首領進度清空')}${B('evtgdead','模擬全服打倒首領')}${B('evtgalive','模擬全服血量剩 45%＋排名武器')}${B('evtgrank','模擬上週排名第 2')}</div>
      <div class="label">v3.76 第二界約頓海姆（目前：${rfOpen()?'已開放':'未開放'}・收復 ${cleared()}/${VILLAGES.length}）</div><div class="devgrid">${B('r2open','開放第二界（收復 1-1～1-10）')}${B('r2mats','金幣 +20 萬')}${B('r2wpn','送史詩神器斧＋剋巨人')}${B('r2all','第二界全部收復')}${B('r2lock','第二界改回未開放')}${B('r2fur','熔爐升到 Lv6（可鍛造巨人武器）')}${B('r2t4','顯示 8 把巨人武器（測試）')}</div>
@@ -4284,7 +4288,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
     if(k==='uiv'){ui.tab='village';render();return scrollToNextVillage()}
     if(k==='uiarm'){ui.tab='armory';render();return scrollTo(0,500)}
     if(k==='uiforge'){ui.tab='forge';ui.ftab='bp';render();const h=document.querySelector('#view .hscroll');if(h)scrollTo(0,h.getBoundingClientRect().top+scrollY-200);return toast('手指放在圖紙列上直接上下滑，整頁應該會跟著捲')}
-    if(k==='uimat'){ui.tab='armory';ui.atab='m';ui.result={t:'info',...itemInfo('relic')};return render()}
+    if(k==='uimat'){ui.tab='armory';ui.atab='m';ui.result={t:'info',...itemInfo('relic_y')};return render()}
     ui.tab='shop';render();const m=document.querySelector('#view .mlist');if(m)scrollTo(0,m.getBoundingClientRect().top+scrollY-160);return}
   if(k==='cnameprev'){ui.sheet=null;render();return showName(true,true)}
   if(k==='cname'){ui.sheet=null;render();return showName(!S.nick)}if(k==='sfxaltclr'){SFX_VAR_KEYS.forEach(n=>{if(SFX_ALT[n])sfxSetAlt(n,'')});toast('音效已全部切回原版');return render()}
@@ -4352,7 +4356,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
     fetch('manifest.webmanifest').then(r=>r.json()).then(m=>{ui.testOut+=`<div>manifest：${m.name}，icons ${m.icons.length} 個 ✓</div>`;render()}).catch(()=>{ui.testOut+='<div>manifest 讀取失敗 ✗</div>';render()});render();return}
   if(k==='tquick'||k==='tecon'){if(typeof runTests!=='function'){ui.testOut='載入測試程式中…';render();const sc=document.createElement('script');sc.src='tests.js?v='+BUILD_ID;sc.charset='utf-8';sc.onload=()=>devdo(k);sc.onerror=()=>{ui.testOut='測試程式沒有載入。';render()};document.head.appendChild(sc);return}
     ui.testOut='執行中…';render();setTimeout(()=>{ui.testOut=k==='tquick'?runTests('quick'):runTests('econ');render()},30);return}
-  ({gold:()=>S.gold+=5000,gems:()=>S.gems+=1000,relic5:()=>S.items.relic+=5,relic0:()=>S.items.relic=0,relicbag:()=>{ui.sheet=null;ui.tab='armory';ui.atab='m'},relicinfo:()=>{ui.sheet=null;ui.tab='armory';ui.atab='m';ui.result={t:'info',...itemInfo('relic')}},
+  ({gold:()=>S.gold+=5000,gems:()=>S.gems+=1000,relic5:()=>RELICS.forEach(k=>S.items[k]=(S.items[k]||0)+5),relic0:()=>RELICS.forEach(k=>S.items[k]=0),relicbag:()=>{ui.sheet=null;ui.tab='armory';ui.atab='m'},relicinfo:()=>{ui.sheet=null;ui.tab='armory';ui.atab='m';ui.result={t:'info',...itemInfo('relic_y')}},
    bsall:()=>{Object.keys(KN).forEach((c,i)=>{const b=BPS.filter(x=>x.cat===c).sort((x,y)=>x.t-y.t)[0];if(!b)return;const st=S.villages[i];
        const w=makeWeapon(b.id,2,6);if(st.status!=='cleared')st.status='cleared';st.weaponId=w.id;st.cycleStart=NOW()-dur(i,w)*.3;delete MONFX.hp[i]});
      ui.sheet=null;ui.tab='village';ui.realm=0;ui.bsOpen=0;toast('1-1～1-7 各駐守一種武器（+6）：劍、斧、錘、雙刀、長柄、弓、弩。點怪物小圖展開戰鬥畫面（1-1 是全身怪物，其他先用頭像）','ok')},

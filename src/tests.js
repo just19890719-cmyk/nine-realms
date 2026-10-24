@@ -158,7 +158,7 @@ function saveTests(){
   const res=[];
   withSandbox(()=>{
     // 新存檔
-    S=fresh();res.push(T('E1 新存檔結構完整',S.v===3&&S.villages.length===VILLAGES.length&&S.weapons.length===0&&S.stats&&S.items.relic===0&&!Object.keys(S.mats).length&&Object.keys(S.items).join()==='relic','v'+S.v));
+    S=fresh();res.push(T('E1 新存檔結構完整',S.v===3&&S.villages.length===VILLAGES.length&&S.weapons.length===0&&S.stats&&!Object.keys(S.mats).length&&Object.keys(S.items).join()==='relic_g,relic_b,relic_r,relic_y'&&Object.values(S.items).every(x=>x===0),'v'+S.v));
     // v2 遷移
     const o={gold:999,gems:50,mats:{iron:5,oak:5,leather:5,silver:2,fang:1,scale:0,rune:0,shard:3},items:{scroll:2,bless:0,blueprint:0},furnace:2,anvil:1,slots:1,nextId:3,
       weapons:[{id:1,b:'t1_woodaxe',q:1,lv:3,ench:[{k:'swift',v:8}]},{id:1,b:'t1_farmspear',q:0,lv:2,ench:[]},{id:5,b:'xx_missing',q:0,lv:0}],jobs:[],
@@ -214,8 +214,8 @@ function saveTests(){
     res.push(T('E14 收藏武器不能熔解、武器庫滿 200 把不能再鍛造',m1===null&&!!W(lk.id)&&typeof f1==='string',`收藏熔解${m1===null?'被擋下':'成功(錯誤)'}；滿倉鍛造：${typeof f1==='string'?f1:'成功(錯誤)'}`));
     // v4.43 舊材料、道具刪除：材料表空、道具只剩英靈・遺物、村莊不掉材料、鍛造只花金幣、獎勵只有金幣鑽石
     const rw=[...ACH.map(a=>a.r),...SIGN,...DAILY_BOX.map(x=>x[1]()),repBox(10)].every(r=>Object.keys(r).every(k=>k==='gold'||k==='gems'));
-    res.push(T('E13 舊材料與道具已刪除，獎勵只剩金幣和鑽石',!Object.keys(MATS).length&&Object.keys(ITEMS).join()==='relic'&&VILLAGES.every(v=>!v.drops.length)&&BPS.every(b=>!Object.keys(recipe(b)).length)&&rw&&!GD_SHOP.length&&GD_DON.every(x=>x.k!=='iron'),
-      `材料 ${Object.keys(MATS).length} 種；道具 ${Object.keys(ITEMS).map(k=>ITEMS[k][0]).join('、')}；獎勵${rw?'只有金幣鑽石':'還有舊道具(錯誤)'}`));
+    res.push(T('E13 舊材料與道具已刪除，獎勵只剩金幣和鑽石',!Object.keys(MATS).length&&Object.keys(ITEMS).join()==='relic_g,relic_b,relic_r,relic_y'&&RELICS.length===4&&VILLAGES.every(v=>!v.drops.length)&&BPS.every(b=>!Object.keys(recipe(b)).length)&&rw&&!GD_SHOP.length&&GD_DON.every(x=>x.k!=='iron'),
+      `材料 ${Object.keys(MATS).length} 種；道具 ${Object.keys(ITEMS).map(itemName).join('、')}；獎勵${rw?'只有金幣鑽石':'還有舊道具(錯誤)'}`));
   });
   return res;
 }
