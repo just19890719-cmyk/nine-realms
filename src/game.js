@@ -70,7 +70,7 @@ const awkN=(w,lv)=>godOf(w)?AWK_LV.filter(l=>(lv??w.lv)>=l).length:0;   // 已�
 const awkVal=(w,k,lv)=>{const g=godOf(w);if(!g)return 0;const n=awkN(w,lv);return g.aw.slice(0,n).filter(a=>a[1]===k).reduce((s,a)=>s+a[2],0)};
 function recipe(b){if(b.r)return b.r;if(b.t===0){const sec={axe:'oak',polearm:'oak',bow:'oak',crossbow:'oak',throw:'leather',tool:'oak',sword:'leather',dagger:'leather',shield:'oak',hammer:'iron'}[b.cat];return add({iron:3},{[sec]:2})}
   if(b.t===1)return{silver:3,fang:2,iron:2};if(b.t===4)return{giantbone:3,permafrost:2,thunderiron:2,rune:2};return{scale:2,rune:2,silver:2}}
-// v4.34 武器框顏色看強化等級（Mochi 選）：+0 灰、+1～+6 綠、+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石；框圖 art/frame_lv0～6（AI 細雷電框，3＝紅、6＝金），+9 以上電流往外竄（v4.36）
+// v4.34 武器框顏色看強化等級（Mochi 選）：+0 灰、+1～+6 綠、+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石；框圖 art/frame_lv0～6（AI 細雷電框，3＝紅、6＝金），+9 以上有一道電流繞著框跑（v4.36）
 const FLV=lv=>(lv|=0)<=0?0:lv<=6?1:lv<=8?2:lv===9?3:lv===10?6:lv===11?4:5,FLV_N=['灰','綠','藍','紅','紫','鑽石','金'];const fq=w=>'_lv'+FLV(w.lv),lc=w=>'l'+FLV(w.lv);
 const QUAL=[{n:'普通',m:1},{n:'精良',m:1.2},{n:'稀有',m:1.45},{n:'史詩',m:1.8},{n:'傳說',m:2.3}];
 // 品質權重用整數（千分比），每級鐵砧位移加總為 0，總和恆為 1000
@@ -1130,7 +1130,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
- {v:'4.36',d:'10/24',t:'+9 以上武器框的電流',b:['+9 以上的武器框改成<b>電流往外竄</b>的效果（原本是整框一明一暗）'],g:[]},
+ {v:'4.36',d:'10/24',t:'+9 以上武器框的電流',b:['+9 以上的武器框改成<b>一道電流繞著框打轉</b>（原本是整框一明一暗）'],g:[]},
  {v:'4.35',d:'10/24',t:'第二界 8 隻怪物有全身圖了',b:['2-1 九頭巨人斯里瓦爾迪、2-2 鐵森林狼王、2-3 吞屍巨鷹赫拉斯瓦爾格、2-4 巨人屍鬼德勞格','2-5 冰湖水妖諾克（拉著琴把你引上冰面）、2-6 洞穴蠕龍林德蟲、2-7 風之巨人卡瑞、2-8 幻術巨人王烏特加德洛基','20 關都有全身圖了：點怪物小圖展開戰鬥畫面，就能看到牠們待機和攻擊的動作','怪物被打中時的閃光跟著當下的動作走，不會再出現跟身體對不上的白影'],g:['hit']},
  {v:'4.35',d:'10/24',t:'戰鬥畫面不再出現兩隻怪物',b:['1-2、1-9、1-10 和第二界的村莊背景本來就畫了怪物，展開戰鬥畫面時會跟前面的怪物重複','現在戰鬥畫面只取背景裡沒有怪物的那一段（例如瞭望塔、燃燒的城堡、巨人營地、極光），卡片和詳情頁的背景不變'],g:['hit']},
  {v:'4.34',d:'10/24',t:'武器框顏色看強化等級',b:['武器框改成新的細雷電框，顏色看<b>強化等級</b>：+0 灰、+1～+6 綠、+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石；+9 以上的框會微微閃亮','武器庫、交易所、排行榜、聊天武器卡都一樣，一眼就看得出哪幾把是賭過的','品質（普通～傳說）改成只看名稱下方的小字'],g:['enh']},
@@ -1326,7 +1326,7 @@ function devAllWeapons(ids){const L=[0,1,6,7,9,10,15],q=ui.devAllQ??-1,lv=ui.dev
   ids.forEach((id,i)=>{const w=makeWeapon(id,q<0?i%5:q,lv<0?L[i%L.length]:lv,[]);w.lv=lv<0?L[i%L.length]:lv;w.test=true});
   ui.sheet=null;ui.tab='armory';ui.acat='all';ui.aq='all';ui.ast='test';scrollTo(0,0);toast('已產生 '+ids.length+' 把測試武器（武器庫已篩選「測試」）')}
 function wArt(id,{frame=null,cls='',aura=false}={}){const bp=frame==='bp',k=(frame!=null?(WFIT[id]||.65):.8)*100,o=(100-k)/2;   // frame:'bp'＝圖紙底圖（墊在武器下面，安全距離同外框）；aura＝v4.08 神格完全覺醒光環（墊在武器下面）
-  return `<span class="wart ${cls}">${bp?`<img class="wart-bg" src="${A('bp_paper2')}" alt="">`:''}${aura?`<img class="wart-aura" src="${A('fx_godaura')}" alt="">`:''}<img class="wart-w" src="${A(id+'_disp')}" alt="" style="left:${o}%;top:${o}%;width:${k}%;height:${k}%">${frame!=null&&!bp?`<img class="wart-f" src="${A('frame'+frame)}" alt="">${/^_lv[3-6]$/.test(frame)?`<img class="wart-f wart-shine" src="${A('frame'+frame)}" alt=""><img class="wart-f wart-shine e2" src="${A('frame'+frame)}" alt="">`:''}`:''}</span>`}
+  return `<span class="wart ${cls}">${bp?`<img class="wart-bg" src="${A('bp_paper2')}" alt="">`:''}${aura?`<img class="wart-aura" src="${A('fx_godaura')}" alt="">`:''}<img class="wart-w" src="${A(id+'_disp')}" alt="" style="left:${o}%;top:${o}%;width:${k}%;height:${k}%">${frame!=null&&!bp?`<img class="wart-f" src="${A('frame'+frame)}" alt="">${/^_lv[3-6]$/.test(frame)?`<span class="wart-run"><img src="${A('frame'+frame)}" alt=""></span>`:''}`:''}</span>`}
 const cutArt=src=>src.replace(/\.webp$/,'_disp.webp'+ART_V); // 去背版武器圖（暗色底轉透明），特效才能包住武器
 // 預先載入特效圖，避免第一次播放時閃白
 function preloadVfx(){setTimeout(()=>{for(const k in VFX)for(let i=1;i<=VFX[k].N;i++){const im=new Image();im.src=vfxSrc(VFX[k],i)}},1500)}
