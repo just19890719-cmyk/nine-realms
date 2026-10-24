@@ -470,7 +470,7 @@ function godReqTests(){const v=VILLAGES[9],u=VILLAGES[19],mk=e=>({id:-1,b:'t3_ha
   return[T('H 關卡跟故事一致：神的關卡都要神聖、2-10 要戰錘、1-9 要霜寒、2-6 蠕龍要剋龍、舊名稱都換掉（v4.43 掉落刪除，不再檢查）',!!ok,`沒要神聖的神：${badGod.map(vNo).join('、')||'無'}；舊名稱：${old.map(x=>x.name).join('、')||'無'}；不該掉龍鱗：${noScale.map(x=>x.name).join('、')||'無'}`)]}
 // v4.24 第一、二界故事主線：1-8／2-9 對調、2-10 索爾、代名詞（神＝祂，怪物＝牠，不用他／她／它）
 function storyTests(){const pr=[...MON_LORE,...VILLAGES.map(v=>v.txt)].map((t,i)=>[i,t]).filter(([i,t])=>/[他它]|(?<!巨人女巫放話：先打贏)她/.test(t.replace(/其他|試試它/g,'')));
-  const ok=MONS[7]==='莫庫卡爾菲'&&MONS[18]==='赫朗格尼爾'&&MONS[19]==='索爾'&&MON_T[19]==='雷神'&&VILLAGES[18].name==='石籬原'&&!VILLAGES[18].drops.some(d=>d[0]==='fireheart')&&KN_FULL.includes(18)&&KN_FULL.includes(7)&&KN_FULL.includes(19)&&!Object.keys(ART_WAIT).some(k=>!/^dev_/.test(k));   // v4.44 索爾之錘（神明武器）刪掉了，不再檢查
+  const ok=MONS[7]==='莫庫卡爾菲'&&MONS[18]==='赫朗格尼爾'&&MONS[19]==='索爾'&&MON_T[19]==='雷神'&&VILLAGES[18].name==='石籬原'&&!VILLAGES[18].drops.some(d=>d[0]==='fireheart')&&KN_FULL.includes(18)&&KN_FULL.includes(7)&&KN_FULL.includes(19)&&!Object.keys(ART_WAIT).some(k=>!/^dev_/.test(k)&&!BP_TMP[k.replace(/_disp$/,'')]);   // v4.51 新武器暫代圖例外   // v4.44 索爾之錘（神明武器）刪掉了，不再檢查
   return[T('H 故事主線：1-8 泥巨人、2-9 石籬原赫朗格尼爾（全身圖跟著搬）、2-10 雷神索爾',!!ok,`1-8 ${MONS[7]}、2-9 ${VILLAGES[18].name} ${MONS[18]}、2-10 ${MONS[19]}`),
     T('H 代名詞：怪物傳說和關卡說明不用他／她／它（指武器的「它」除外）',!pr.length,pr.length?'還有：'+pr.map(x=>x[0]).join('、'):'都改好了')]}
 // v4.27 神明用「祂」：神的傳說、村莊文字不能用他／她／牠
@@ -515,7 +515,7 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.44 舊武器刪除：要在放回測試資料前檢查
-  const bd=[T('BD1 正式圖紙全部刪除（含神明武器），只剩開發者測試圖紙',!real.length&&!BP.g_hofund&&!BP.t1_woodaxe&&BPS.every(b=>b.dev&&b.t===0),real.length?real.map(b=>b.n).join('、'):`測試圖紙 ${BPS.length} 張`),
+  const bd=[...newWpnTests(real),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
     T('BD2 神明材質階、神格覺醒拿掉',TIERS.length===5&&typeof GOD==='undefined'&&typeof awkN==='undefined',`材質 ${TIERS.length} 階`)];
   return withTestBps(()=>runTests0(mode,bd))}
 // v4.44 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
@@ -540,8 +540,8 @@ const TEST_BPS=[
  ['t4_hammer','熔岩巨錘','hammer',4,17],['t4_polearm','狂風巨戟','polearm',4,14],['t4_dagger','霜晶獠刃','dagger',4,11],['t4_shield','巨骨塔盾','shield',4,12]
 ].map(([id,n,cat,t,base,unlock,r])=>({id,n,cat,t,base,unlock:unlock??TIERS[t].unlock,r:r||undefined,test:true}))   // v4.45 天生詞條不讀
  .filter(b=>!['t1_handaxe','t1_shortspear','t2_daneaxe','t2_broadsword','t2_warspear','t2_seax','t3_doubleaxe','t3_saber','t3_spear','t3_scythe','t1_pickaxe','t1_sling','t2_throwaxe','t1_roundshield','t2_kiteshield','t3_shield','t4_shield'].includes(b.id));
-function withTestBps(f){const keep=BPS.slice(),add=TEST_BPS.filter(b=>!BP[b.id]);BPS.length=0;BPS.push(...add,...keep.filter(b=>b.dev));add.forEach(b=>BP[b.id]=b);
-  try{return f()}finally{BPS.length=0;BPS.push(...keep);add.forEach(b=>delete BP[b.id]);S.weapons=S.weapons.filter(w=>BP[w.b]);S.jobs=S.jobs.filter(j=>BP[j.b])}}   // 測試留下的舊圖紙武器一起清掉
+function withTestBps(f){const keep=BPS.slice(),add=TEST_BPS.filter(b=>!BP[b.id]),rq=VILLAGES.map(v=>v.req);BPS.length=0;BPS.push(...add,...keep.filter(b=>b.dev));add.forEach(b=>BP[b.id]=b);VILLAGES.forEach(v=>v.req=v.req0??v.req);   // v4.51 舊圖紙配舊需求
+  try{return f()}finally{BPS.length=0;BPS.push(...keep);VILLAGES.forEach((v,i)=>v.req=rq[i]);add.forEach(b=>delete BP[b.id]);S.weapons=S.weapons.filter(w=>BP[w.b]);S.jobs=S.jobs.filter(j=>BP[j.b])}}   // 測試留下的舊圖紙武器一起清掉
 function runTests0(mode,bd){
   if(mode==='econ')return econHtml(12)+econHtml(8);
   const r=runAll({N:100000});r.res.push(...bd,...frameLvTests(),...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...storyTests(),...curveTests(),...vNeedTests(),...vPickTests(),...bsTglTests(),...godWordTests(),...hitTests(),...enchTests(),...wsTests(),...wpnTests());const pass=r.res.filter(x=>x.pass).length;
@@ -564,3 +564,14 @@ function wpnTests(){if(typeof CSPD==='undefined')return[];const cats=Object.keys
     T('WP4 相剋：四種形態都有武器剋、20 關都有形態',rc,MON_RACE.join(',')),
     T('WP5 劍打人形 +6 ×1.06、錘打巨型 +6 ×1.06、+15 封頂 ×1.12、+0 沒有加成',rm==='1.06/1/1.06/1.12/1',rm)]}
 if(typeof module!=='undefined')module.exports={runAll,econReport,simulate,levelCheck};
+
+// v4.51 新武器 17 把（武器系統定案第 9 節）：開局 7 把、兩界一階數值、解鎖關卡、偏難需求、金幣配方、暫代圖
+function newWpnTests(real){const mk=(id,lv)=>({id:-1,b:id,q:0,lv,ench:[null,null,null,null],traits:[]}),P=(id,lv)=>power(mk(id,lv));
+  const st=real.filter(b=>b.unlock===0),cats=Object.keys(CSPD),ul=real.filter(b=>b.unlock).map(b=>b.unlock).join(',');
+  const pw=[P('w0_sword',0),P('w1_sword',0),P('w2_axe',0),P('w1_troll',0),P('g_hofund',0)].join('/');
+  const r1=P('w1_sword',6)<VILLAGES[9].req&&P('w1_sword',7)>=VILLAGES[9].req,r2=P('w2_axe',7)<VILLAGES[19].req&&P('w2_axe',8)>=VILLAGES[19].req;
+  return[T('NW1 新武器 17 把：開局 7 種各 1 把，第一界 2/4/6/7/10、第二界 1/3/5/8/10 關解鎖',real.length===17&&st.length===7&&cats.every(c=>st.some(b=>b.cat===c))&&ul==='2,4,6,7,10,11,13,15,18,20',`${real.length} 把・解鎖 ${ul}`),
+   T('NW2 數值兩界一階：開局 12、一般 15（第一二界一樣）、怪物主題 ×1.1、Boss 含專屬特效約 +20%',pw==='12/15/15/17/18'&&BP.g_hofund.fx&&BP.w1_troll.k==='m',pw),
+   T('NW3 偏難需求：1-10 要 +7、2-10 要 +8（+6／+7 不夠）',r1&&r2&&VREQ.length===20&&VILLAGES[0].req===12,`1-10 需求 ${VILLAGES[9].req}・2-10 需求 ${VILLAGES[19].req}`),
+   T('NW4 配方先只花金幣，各圖紙有自己的金幣價',real.every(b=>!Object.keys(recipe(b)).length&&goldOf(b)===b.gold&&b.gold>0)&&goldOf(BP.g_skadi)===10000,real.map(goldOf).join(',')),
+   T('NW5 17 把都用自己的圖（15 把新圖＋2 把 Boss 現有圖），不再借舊圖',real.every(b=>!ART_WAIT[b.id+'_disp']&&!ART_WAIT[b.id])&&real.filter(b=>!b.fx).every(b=>WFIT[b.id]===.6),Object.keys(BP_TMP).length+' 把暫代')]}
