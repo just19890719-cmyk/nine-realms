@@ -249,7 +249,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.48';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.49';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1076,6 +1076,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.49',d:'10/24',t:'修正鐵匠動作重疊',b:['修正鐵匠做動作時會出現兩個頭、兩隻手的問題，現在每一瞬間只會顯示一個姿勢']},
  {v:'4.48',d:'10/24',t:'鐵匠的動作變自然了',b:['鐵匠鋪的鐵匠大部分時間站著不動，每隔一段時間才<b>慢慢</b>呼吸、調整握鎚、轉頭看爐火，動作之間會淡入淡出']},
  {v:'4.47',d:'10/24',t:'鐵匠換上新樣貌・鐵匠鋪更有電影感',b:['鐵匠鋪和導覽頭像的鐵匠，換成跟開場故事、封面<b>同一個人</b>，而且會動了：呼吸、調整握鎚、轉頭看爐火','鐵匠身上會被爐火照亮、跟著火光閃動，畫面加上電影色調和景深，傾斜手機時前後景立體感更明顯']},
  {v:'4.46',d:'10/24',t:'新武器系統：攻速、附加效果、相剋',b:['<b>點武器跳出武器小卡</b>，不再蓋滿整個畫面：攻速、單擊、附加效果、相剋、屬性集中在四格，下面的進度條看得到強化到下一級會變多少','武器名稱改成「<b>+7 寒霜 鐵劍</b>」（強化／附魔／武器名），附魔名稱會依屬性發光，等級越高越亮','<b>攻擊力＝每秒傷害</b>，已經算進附加效果的平均；七類武器攻速不同，強化越高越常觸發附加效果','新增<b>相剋</b>：怪物分人形、野獸、巨型、飛行；劍、雙刀剋人形，長柄、斧剋野獸，錘、弩剋巨型，弓剋飛行，強化每一級多 1%（+12 為 +12%）','拿掉<b>品質倍率</b>和<b>品階名稱</b>，強化等級和框色就是武器的階段；「短刃」改名「雙刀」'],g:['wpn']},
@@ -1699,7 +1700,7 @@ function viewForge(){
   const hv=ui.heroV||'F';   // v3.18 主畫面版型：正式採用 F（上橫幅＋下工具列）；開發模式可切換 O/A～E 比較
   const sideH='';   // v4.36 工坊／熔解入口拿掉
   const fv=ui.forgeV||'O';   // v3.19 鐵匠鋪內容頁預覽：O 原版／1 主畫面縮成橫條／2 主畫面收起（只在鍛造中分頁顯示）
-  return `<section class="hero hv-${hv} fv-${fv} ft-${ui.ftab}"><img class="dp dp-far" src="${D('forge_far')}" alt=""><img class="dp dp-glow" src="${D('forge_fireglow')}" alt=""><img class="dp dp-glow g2" src="${D('forge_fireglow')}" alt=""><img class="dp dp-barrel" src="${D('prop_barrel')}" alt=""><img class="dp dp-steam" src="${D('fx_smoke_wisp')}" alt="">${smFr('smith','鐵匠')}${smFr('smith dp dp-smlit','')}<div class="dp dp-fog"></div><div class="dp dp-embers">${dpEmb}</div><div class="dp dp-grade"></div><img class="dp dp-fg dp-chains" src="${D('prop_chains')}" alt=""><img class="dp dp-fg dp-coal" src="${D('prop_coal')}" alt=""><img class="dp dp-fg dp-hammer" src="${D('prop_hammer')}" alt="">
+  return `<section class="hero hv-${hv} fv-${fv} ft-${ui.ftab}"><img class="dp dp-far" src="${D('forge_far')}" alt=""><img class="dp dp-glow" src="${D('forge_fireglow')}" alt=""><img class="dp dp-glow g2" src="${D('forge_fireglow')}" alt=""><img class="dp dp-barrel" src="${D('prop_barrel')}" alt=""><img class="dp dp-steam" src="${D('fx_smoke_wisp')}" alt="">${smFr('smith','鐵匠')}<div class="dp dp-firelit"></div><div class="dp dp-fog"></div><div class="dp dp-embers">${dpEmb}</div><div class="dp dp-grade"></div><img class="dp dp-fg dp-chains" src="${D('prop_chains')}" alt=""><img class="dp dp-fg dp-coal" src="${D('prop_coal')}" alt=""><img class="dp dp-fg dp-hammer" src="${D('prop_hammer')}" alt="">
    ${hv==='C'||hv==='E'||hv==='F'?'':sideH}${hv==='C'||hv==='E'||hv==='F'?'':hv==='B'?commBadge():commissionCard()}${hv==='E'?heroScene():''}${hv==='F'?heroRibbon():''}</section>${hv==='C'?`<div class="hero-info">${sideH}${commissionCard()}</div>`:''}
   ${tabs.length<2?'':`<div class="subtabs">${tabs.map(([k,n])=>`<button class="ui-tab ${ui.ftab===k?'on':''}" data-act="ftab" data-k="${k}">${n}${k==='queue'&&done||k==='bp'&&BPS.some(bpNew)?'<i class="dot"></i>':''}</button>`).join('')}</div>`}${body}`;
 }

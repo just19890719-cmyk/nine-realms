@@ -1813,20 +1813,20 @@ body.dpv .hero .dp-far{animation:dpSway 14s ease-in-out infinite alternate,dpPus
 @media (prefers-reduced-motion:reduce){body.dpv .hero .smith.dp-smlit{animation:none!important}}
 /* v4.47 鐵匠待機動作：8 格疊在一起，每格 0.6 秒輪流顯示 */
 .hero .smith.smf{aspect-ratio:520/780;width:auto}
-.smf img{position:absolute;inset:0;width:100%;height:100%;max-width:none;opacity:0;animation:smF 4.8s step-end infinite}
-.smf .f1{opacity:1}
-.smf .f2{animation-delay:-4.2s}.smf .f3{animation-delay:-3.6s}.smf .f4{animation-delay:-3s}.smf .f5{animation-delay:-2.4s}.smf .f6{animation-delay:-1.8s}.smf .f7{animation-delay:-1.2s}.smf .f8{animation-delay:-.6s}
-@keyframes smF{0%{opacity:1}12.5%,100%{opacity:0}}
-@media (prefers-reduced-motion:reduce){.smf img{animation:none}}
-/* v4.48 鐵匠待機改成慢動作：f1 一直墊在最底下（大部分時間靜止），每 20 秒做兩段慢動作（呼吸握鎚、轉頭看爐火再微笑），每格淡入淡出 0.6 秒；f8 跟 f1 幾乎一樣，不用 */
-.smf img{opacity:0;animation:none}.smf .f1{opacity:1}.smf .f8{display:none}
-.smf img:not(.f1){animation-duration:20s;animation-iteration-count:infinite;animation-timing-function:ease-in-out;animation-delay:0s}
-.smf .f2{animation-name:smF2}.smf .f3{animation-name:smF3}.smf .f4{animation-name:smF4}.smf .f5{animation-name:smF5}.smf .f6{animation-name:smF6}.smf .f7{animation-name:smF7}
-@keyframes smF2{0%,30.00%{opacity:0}33.00%,42.00%{opacity:1}42.05%,100%{opacity:0}}
-@keyframes smF3{0%,39.00%{opacity:0}42.00%,51.00%{opacity:1}51.05%,100%{opacity:0}}
-@keyframes smF4{0%,48.00%{opacity:0}51.00%,54.00%{opacity:1}57.00%,100%{opacity:0}}
-@keyframes smF5{0%,70.00%{opacity:0}73.00%,81.00%{opacity:1}81.05%,100%{opacity:0}}
-@keyframes smF6{0%,78.00%{opacity:0}81.00%,91.00%{opacity:1}91.05%,100%{opacity:0}}
-@keyframes smF7{0%,88.00%{opacity:0}91.00%,96.00%{opacity:1}99.00%,100%{opacity:0}}
-@media (prefers-reduced-motion:reduce){.smf img:not(.f1){animation:none!important;opacity:0}}
+.smf img{position:absolute;inset:0;width:100%;height:100%;max-width:none}
+/* v4.49 修正：淡入淡出會讓兩格疊在一起（兩個頭、兩隻手），而且第 1 格不能一直墊底。改成每一瞬間只顯示一格、硬切（step-end）；大部分時間停在第 1 格，每 20 秒慢慢做兩段動作 */
+.smf img,.smf .f1{opacity:0;animation-duration:20s;animation-iteration-count:infinite;animation-timing-function:step-end;animation-delay:0s}
+.smf .f1{animation-name:smG1}.smf .f2{animation-name:smG2}.smf .f3{animation-name:smG3}.smf .f4{animation-name:smG4}.smf .f5{animation-name:smG5}.smf .f6{animation-name:smG6}.smf .f7{animation-name:smG7}.smf .f8{display:none}
+@keyframes smG1{0%{opacity:1}30%{opacity:0}54%{opacity:1}70%{opacity:0}96%{opacity:1}100%{opacity:1}}
+@keyframes smG2{0%{opacity:0}30%{opacity:1}39%{opacity:0}100%{opacity:0}}
+@keyframes smG3{0%{opacity:0}39%{opacity:1}48%{opacity:0}100%{opacity:0}}
+@keyframes smG4{0%{opacity:0}48%{opacity:1}54%{opacity:0}100%{opacity:0}}
+@keyframes smG5{0%{opacity:0}70%{opacity:1}78%{opacity:0}100%{opacity:0}}
+@keyframes smG6{0%{opacity:0}78%{opacity:1}88%{opacity:0}100%{opacity:0}}
+@keyframes smG7{0%{opacity:0}88%{opacity:1}96%{opacity:0}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.smf img{animation:none!important;opacity:0}.smf .f1{opacity:1}}
+/* v4.49 爐火暖光改成一整片光（不再複製一份鐵匠疊上去），避免兩層鐵匠動作不同步疊出殘影 */
+body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:none;mix-blend-mode:soft-light;
+  background:radial-gradient(70% 90% at 8% 55%,rgba(255,140,50,.85),rgba(255,110,30,.35) 45%,transparent 75%);animation:dpLit 2.4s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){body.dpv .hero .dp-firelit{animation:none}}
 </style>
