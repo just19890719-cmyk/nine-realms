@@ -1829,4 +1829,15 @@ body.dpv .hero .dp-far{animation:dpSway 14s ease-in-out infinite alternate,dpPus
 body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:none;mix-blend-mode:soft-light;
   background:radial-gradient(70% 90% at 8% 55%,rgba(255,140,50,.85),rgba(255,110,30,.35) 45%,transparent 75%);animation:dpLit 2.4s ease-in-out infinite}
 @media (prefers-reduced-motion:reduce){body.dpv .hero .dp-firelit{animation:none}}
+/* v4.52 限時挑戰 */
+.ch-pick{text-align:center;min-width:0;display:flex;flex-direction:column}.ch-pick>.wt{width:100%}
+.ch-pick .small{margin-top:2px;white-space:nowrap}
+.ch-fight{padding:0;overflow:hidden}
+.ch-fight .bs{height:176px;cursor:default}
+.ch-pan .hpbar{height:22px}
+.ch-trow{margin-top:12px;align-items:baseline}
+.ch-t{font-size:22px}
+.ch-tbar i{background:linear-gradient(90deg,#8a6420,#e8b85c);transition:width .25s linear}
+.ch-w{margin-top:8px}
+.ch-tips{line-height:1.8}
 </style>
