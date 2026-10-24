@@ -1548,4 +1548,8 @@ html.scrimmed .cbar{display:none}
 .md-strip button{flex:0 1 26px;min-width:0;padding:0;border:0;background:none;cursor:pointer;border-radius:4px;overflow:hidden;opacity:.55}
 .md-strip button img{display:block;width:100%;aspect-ratio:1;object-fit:cover}
 .md-strip button.on{opacity:1;outline:1.5px solid var(--gold);outline-offset:-1.5px}
+/* v4.14 村莊需求：可點的圖紙列＋附魔說明 */
+.vneed .hscroll{margin-top:6px}
+.vneed-aff{display:flex;align-items:center;gap:8px;margin-top:8px;padding:6px 8px;border-radius:6px;background:rgba(0,0,0,.25)}
+.vneed-aff img{width:28px;height:28px;flex:none}
 </style>
