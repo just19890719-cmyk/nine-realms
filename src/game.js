@@ -1219,7 +1219,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
- {v:'4.61',d:'10/24',t:'強化時石碑不再晃動',b:['強化動畫播放時，符文石碑固定不動（不再推近、震動），只有光、閃電和武器有動作']},
+ {v:'4.61',d:'10/24',t:'強化時石碑不再晃動・新閃電',b:['強化動畫播放時，符文石碑固定不動（不再推近、震動），只有光、閃電和武器有動作','+10 換成新的<b>金色閃電</b>、+12 換成新的<b>鑽石閃電</b>（水晶碎片和稜鏡光）']},
  {v:'4.60',d:'10/24',t:'一鍵安定值・同款連按',b:['武器小卡的「一鍵 +6」改名<b>「一鍵安定值」</b>','同款武器疊在一格時，按一鍵安定值後小卡會自動換到<b>下一把同款</b>，可以一直按下去，不用回道具欄重點'],g:['enh','bag']},
  {v:'4.59',d:'10/24',t:'商城整理：簽到搬家・材料可以買',b:['<b>七日簽到</b>從任務搬到<b>商城</b>，每天第一次進遊戲會自動打開商城簽到（簽到獎勵之後會換新）','商城可以用<b>金幣或鑽石</b>買 8 種材料，點材料選數量購買','<b>狩獵號角</b>拿掉了','其他商品等正式上線再補齊'],g:['shop','quest']},
  {v:'4.58',d:'10/24',t:'強化特效加強',b:['<b>一鍵強化</b>改成連續演出：每升一級跳出大數字、符文一道道亮起綠光、音調越來越高，最後一下爆出光芒（點畫面可以略過）','+1～+6 單按強化不再播動畫，按下去直接出結果，石碑亮一下綠光；強化頁改成小卡，顯示強化石剩幾顆','<b>+7 以上</b>強化時，整塊符文石碑的燈光改成外框顏色：+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石；成功換到新顏色時跳出「升階」','+7 起石碑上會打閃電，等級越高閃電越多越強，+12 最華麗','強化成功率、爆裝率都沒有改']},
@@ -1467,7 +1467,7 @@ function playSfx(n){if(n==='sfx_enh_charge')return snd('enh_start');const k=n.re
 const ENH='art/enh/',VF=(n,i)=>`art/vfx16_${n}_${String(i).padStart(2,'0')}.webp`,rng=(a,b)=>Array.from({length:b-a+1},(_,i)=>a+i);
 // 暫代：新素材（rune_*）到之前先用現有 16 格特效；換成新素材只要改這張表
 const RN='art/rune/',RS=(n,a,b)=>rng(a,b).map(i=>`${RN}${n}_${i}.webp`);
-const RUNE_FX={light:RS('lightning',1,8),eclipse:RS('eclipse',1,8),climax:RS('climax',1,8),ok:RS('success',1,8),broke:RS('shatter',1,8),spark:RS('success',1,3)};
+const RUNE_FX={light:RS('lightning',1,8),eclipse:RS('eclipse',1,8),climax:RS('climax',1,8),ok:RS('success',1,8),broke:RS('shatter',1,8),spark:RS('success',1,3),boltGold:RS('bolt_gold',1,8),boltDia:RS('bolt_dia',1,8)};   // v4.61 +10 金色、+12 鑽石閃電（Mochi AI 圖）
 const RUNE_HAS_STONE=true;
 const seqHtml=(k,cls)=>`<div class="ly seq ${cls}" data-seq="${k}">${RUNE_FX[k].map(src=>`<img src="${src}" alt="">`).join('')}</div>`;
 function stageHtml(o){return `<div class="enh-stage rune ${o.danger?'danger':'safe tier'} ${o.cls||''}" id="enhStage"${o.danger?'':` style="--tf:${TIER_FLT[1]}"`}><img class="dp dp-sback" src="${A('dp/rune_back')}" alt=""><div class="stage-sq" id="enhSq">
@@ -1609,7 +1609,8 @@ function greenFlash(){const st=document.getElementById('enhStage');if(!st||match
 function enhBolts(next,k,{T,REV}){const sq=document.getElementById('enhSq');if(!sq||next<7)return;const fl=FLV(next),rgb=TIER_RGB[fl],n=next-6,after=k==='ok'?Math.max(0,next-9):0,P=[[18.7,-.2,1,0],[2,6,-1,-14],[40,4,1,16],[10,-6,-1,8],[34,-8,1,-10],[24,2,-1,4]];
   const end=REV-160,t0=620,gap=Math.max(140,(end-t0)/n),jolt=[[0,{transform:'none'}]];
   const bolt=(t,i,big)=>{const[x,y,fx,r]=P[i%P.length],s=(big?1.25:1)*(1+(next-7)*.05),b=document.createElement('div');b.className='ly ex-bolt';
-    b.style.cssText=`left:${x}%;top:${y}%;filter:${TIER_FLT[fl]} brightness(${1+(next-7)*.12});transform:scaleX(${fx}) rotate(${r}deg) scale(${s})`;b.innerHTML=RUNE_FX.light.map(src=>`<img src="${src}" alt="">`).join('');sq.appendChild(b);
+    const own=fl===6?RUNE_FX.boltGold:fl===5?RUNE_FX.boltDia:null;   // 金、鑽石用專屬閃電圖，其他用原本閃電換色
+    b.style.cssText=`left:${x}%;top:${y}%;filter:${own?'':TIER_FLT[fl]} brightness(${1+(next-7)*.12});transform:scaleX(${fx}) rotate(${r}deg) scale(${s})`;b.innerHTML=(own||RUNE_FX.light).map(src=>`<img src="${src}" alt="">`).join('');sq.appendChild(b);
     cutImgs([...b.children],T,t,t+300,{X:30,peak:1});const f=document.createElement('div');f.className='ex-fl';f.style.background=`radial-gradient(closest-side,rgba(${rgb},.55),rgba(${rgb},0))`;sq.appendChild(f);
     tl(f,T,[[0,{opacity:0}],[t,{opacity:0}],[t+40,{opacity:big?.9:.6}],[t+220,{opacity:0}]]);const p=1+(next-7)*.6;jolt.push([t,{transform:'none'}],[t+30,{transform:`translate(${p}px,${-p}px)`}],[t+70,{transform:`translate(${-p}px,${p/2}px)`}],[t+110,{transform:'none'}])};
   for(let i=0;i<n;i++)bolt(t0+gap*i,i,false);for(let i=0;i<after;i++)bolt(REV+260+i*190,n+i,true);
