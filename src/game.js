@@ -253,7 +253,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.46';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.44';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1060,7 +1060,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
- {v:'4.46',d:'10/24',t:'舊武器全部收起，準備全新武器',b:['為了從第一界重新設計全新武器，<b>舊武器、舊圖紙、神明武器和神格覺醒</b>全部拿掉','鐵匠鋪「圖紙」暫時是空的，新武器做好會陸續加入','新手導覽等新武器上線後再開放'],g:['forge']},
+ {v:'4.44',d:'10/24',t:'舊武器全部收起，準備全新武器',b:['為了從第一界重新設計全新武器，<b>舊武器、舊圖紙、神明武器和神格覺醒</b>全部拿掉','鐵匠鋪「圖紙」暫時是空的，新武器做好會陸續加入','新手導覽等新武器上線後再開放'],g:['forge']},
  {v:'4.43',d:'10/24',t:'舊道具和材料全部刪除・新道具欄',b:['舊的<b>防爆卷、祝福石、傳說圖紙、殘渣</b>和<b>所有材料</b>全部刪除，新的道具和材料重新設計中','鍛造、附魔暫時<b>只花金幣</b>；村莊暫時只掉金幣','商城拿掉旅行商人、符文祈願、殘渣兌換；任務、簽到、成就的獎勵改成金幣和鑽石','下方的「武器庫」改名「<b>道具欄</b>」，分「武器／材料」兩頁；材料頁的道具同一種疊一格，右下角是數量，沒有上限（鐵匠鋪的材料分頁拿掉）','新道具<b>英靈・遺物</b>：分綠光、藍光、紅光、金光四種，光芒越亮內容越好，打開會得到什麼還在設計中'],g:['bag','forge','shop','quest']},
  {v:'4.39',d:'10/24',t:'村莊卡片可以展開戰鬥畫面',b:['駐守中的村莊卡片下方多了<b>往下的箭頭</b>，點一下展開騎士打怪物的戰鬥畫面，再點一次收起','展開後還看得到這隻怪物<b>每輪會掉什麼</b>（附機率，點材料看用途）和<b>已經打到、還沒收成</b>的東西'],g:['hit']},
  {v:'4.38',d:'10/24',t:'畫面精簡：拿掉用不到的功能',b:['駐守中的村莊不再開詳情頁：掉落直接看卡片，<b>點卡片上的武器</b>跳出小卡，可以看武器、換武器、收回武器','村莊詳情的「需要的武器」拿掉（已經不限武器）','<b>狩獵策略</b>拿掉，一律一般狩獵','<b>排行榜</b>先全部關掉','鐵匠鋪的「<b>鍛造中</b>」分頁拿掉，進度條直接顯示在「開始鍛造」下方','<b>全服首領討伐</b>先拿掉，駐守首領的武器放回武器庫'],g:['vil','forge']},
@@ -1111,7 +1111,7 @@ const NW_LOG=[
 ];
 const GUIDE=[
  ['基礎',[
-  {k:'forge',ic:'t1_ironhammer_disp',n:'鍛造',s:'選圖紙、付金幣，5 秒打好一批',v:'4.46',h:'在鐵匠鋪「圖紙」選一張圖紙，金幣夠就能按「開始鍛造」（v4.43 起舊材料刪除，鍛造暫時只花金幣）。<br>一次一批（最多 10 把），不管幾把都是 <b>5 秒</b>完成，進度條就在「開始鍛造」下方，可以取消（金幣全退）。<br>熔爐等級決定能打哪種材質：鐵製 Lv1、霜銀 Lv2、龍鱗 Lv4、神器 Lv5、巨人 Lv6。<br>收復村莊會解鎖新圖紙。<br><b>v4.46</b>：舊武器和圖紙已全部收起，全新武器開發中。'},
+  {k:'forge',ic:'t1_ironhammer_disp',n:'鍛造',s:'選圖紙、付金幣，5 秒打好一批',v:'4.44',h:'在鐵匠鋪「圖紙」選一張圖紙，金幣夠就能按「開始鍛造」（v4.43 起舊材料刪除，鍛造暫時只花金幣）。<br>一次一批（最多 10 把），不管幾把都是 <b>5 秒</b>完成，進度條就在「開始鍛造」下方，可以取消（金幣全退）。<br>熔爐等級決定能打哪種材質：鐵製 Lv1、霜銀 Lv2、龍鱗 Lv4、神器 Lv5、巨人 Lv6。<br>收復村莊會解鎖新圖紙。<br><b>v4.44</b>：舊武器和圖紙已全部收起，全新武器開發中。'},
   {k:'qual',ic:'it_blueprint',n:'品質',s:'普通到傳說，攻擊力最多 2.3 倍',v:'4.37',h:'品質：普通 ×1、精良 ×1.2、稀有 ×1.45、史詩 ×1.8、傳說 ×2.3。鐵砧等級越高，好品質機率越高。<br>霜銀以上有保底：連續 9 把低於稀有，第 10 把必定稀有。<br>v4.37 起鍛造不再帶先天特性，武器強度只看材質、品質、強化和附魔。'},
   {k:'enh',ic:'it_bless',n:'強化',s:'+1～+6 安定，+7 起有機率爆裝',v:'4.43',h:'所有材質的安定值都是 <b>+6</b>：+1～+6 失敗只扣金幣，不會爆裝。<br>+7 起是危險區，成功率依序 45／35／25／18／12／8／5／3／2%（+7～+15）。失敗時爆裝機率 50% 起，每級 +5%，最高 90%。<br>v4.43 起防爆卷、祝福石、殘渣都已刪除，爆裝就是失去武器。<br>武器的<b>品階</b>和框色看強化等級：+0 凡鐵（灰）、+1～+6 精鍛（綠）、+7～+8 寒鋒（藍）、+9 血刃（紅）、+10 神鑄（金）、+11 星魂（紫）、+12 永恆（鑽石），+9 以上的框有電流繞著跑。'},
   {k:'ench',ic:'mat_shard',n:'附魔',s:'花金幣隨機出 12 種詞條，一關一關學會',v:'4.43',h:'花金幣隨機附魔一種詞條，重新附魔會蓋掉那一格。<br>符文要<b>一關一關學會</b>：開局會烈焰、霜寒、迅捷、掠奪、豐收；1-3 開放學會尋珍、1-6 貪婪、1-7 雷霆、1-8 剋巨人、1-10 神聖、2-6 劇毒和剋龍。已經附在武器上的不受影響。<br><b>攻擊力</b>：烈焰、霜寒、雷霆、劇毒、神聖。<br><b>狩獵</b>：迅捷、掠奪、貪婪、尋珍、豐收。<br><b>剋制</b>：剋巨人、剋龍（打尼德霍格）。1-9 灰燼要塞要<b>霜寒</b>。<br>附魔欄：目前開放 2 格。'},
@@ -1643,7 +1643,7 @@ function viewForge(){
   const tabs=[['bp','圖紙']];   // v4.43 材料搬到下方「道具欄」頁（原武器庫）的「材料」分頁
   let body='';
   if(!BP[ui.bp]&&BPS.length)ui.bp=BPS[0].id;
-  if(ui.ftab==='bp'&&!BPS.length)body=`<div class="ui-panel panel center bp-empty"><b>新武器鍛造中</b><div class="small muted">舊武器和圖紙已全部收起，諸神鐵匠的全新武器即將登場。</div></div>`;   // v4.46 舊圖紙全部刪掉，新圖紙還沒加
+  if(ui.ftab==='bp'&&!BPS.length)body=`<div class="ui-panel panel center bp-empty"><b>新武器鍛造中</b><div class="small muted">舊武器和圖紙已全部收起，諸神鐵匠的全新武器即將登場。</div></div>`;   // v4.44 舊圖紙全部刪掉，新圖紙還沒加
   else if(ui.ftab==='bp'){
     const cats=['all',...Object.keys(CATS).filter(c=>BPS.some(b=>b.cat===c&&cleared()>=b.unlock))];
     const list=BPS.filter(b=>(ui.cat==='all'||b.cat===ui.cat)&&(cleared()+1>=b.unlock||b.t===0));
@@ -2153,7 +2153,7 @@ function sheetDev(){
      <div class="label">全部武器顯示測試（測試武器：不扣資源、不能交付村莊）</div>
      <div class="small muted">品質</div><div class="row">${[[-1,'輪替'],[0,'普通'],[1,'精良'],[2,'稀有'],[3,'史詩'],[4,'傳說']].map(([v,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devAllQ??-1)===v?'on':''}" data-act="devset" data-k="devAllQ" data-v="${v}">${n}</button>`).join('')}</div>
      <div class="small muted">強化等級</div><div class="row">${[[-1,'輪替'],[0,'+0'],[6,'+6'],[7,'+7'],[10,'+10'],[15,'+15']].map(([v,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devAllLv??-1)===v?'on':''}" data-act="devset" data-k="devAllLv" data-v="${v}">${n}</button>`).join('')}</div>
-     <div class="devgrid">${B('allw','產生全部 '+BPS.length+' 把測試圖紙武器','btn-primary')}${B('bpdel','v4.46 檢查：舊武器圖紙已刪（開鍛造頁）')}${B('cleartest','清除所有測試武器')}</div>
+     <div class="devgrid">${B('allw','產生全部 '+BPS.length+' 把測試圖紙武器','btn-primary')}${B('bpdel','v4.44 檢查：舊武器圖紙已刪（開鍛造頁）')}${B('cleartest','清除所有測試武器')}</div>
      <div class="devgrid">${B('flvtest','v4.34 武器框顏色：產生 +0～+12 九把')}</div>
      <div class="label">測試武器</div><div class="devgrid">${B('rmold','v4.37 舊特性／重鍊／盾武器（檢查都不顯示）')}${B('wt','3 把傳說測試武器')}${B('w6','+6 測試劍（剛好到安定值 +6）')}${B('wm','+0 史詩測試長柄（安定值 +6）')}${B('wg6','v4.00 +6 測試劍（安定值 +6，下一次進危險區）')}${B('w8','+8 測試長柄')}${B('wench','v3.84 新附魔測試武器（雷霆・貪婪・豐收・剋巨人＋堅固）')}${B('wench2','v3.84 新附魔測試武器 2（神聖・劇毒・尋珍・剋龍）')}${B('fill','道具欄塞到 195 把')}</div>`,
    prog:`<div class="label">v3.61 介面測試</div><div class="devgrid">${B('uiv','村莊：跳到待交付關卡')}${B('uiarm','道具欄：往下捲看分類置頂')}${B('uiforge','鐵匠鋪：圖紙區上下滑')}${B('uimat','材料倉庫：點材料看用途')}${B('uishop','旅行商人：輸入數量買賣')}</div>
@@ -2334,7 +2334,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
     if(k==='gwbstgl'){devdo('bsall');const st=S.villages[1];st.bank={cycles:12,gold:340,mats:Object.fromEntries(VILLAGES[1].drops.map(d=>[d[0],5])),events:0};ui.sheet=null;ui.bsOpen=1;save();render();setTimeout(()=>document.querySelectorAll('#view .vcard')[1]?.scrollIntoView({block:'start'}),50);return toast('1-2 已展開：上面戰鬥畫面、下面每輪掉落和已經打到的東西；點卡片下方的箭頭收起','ok')}
     if(k==='gwvpick'){const st=S.villages[0];if(st.weaponId==null||!W(st.weaponId)){const w=makeWeapon('dev_axe',0,0,[]);st.status='cleared';st.weaponId=w.id;st.cycleStart=NOW()}ui.tab='village';ui.realm=0;ui.sheet={t:'v',i:0};save();render();return toast('1-1 駐守中：點卡片上的武器就是這張小卡','ok')}
     if(k==='gwstory'){S.villages.forEach((v,i)=>{if(i<20&&v.status==='locked')v.status='open'});ui.tab='village';ui.sheet={t:'v',i:19};save();render();return toast('2-10 索爾詳情：用 ‹ › 翻到 2-9 赫朗格尼爾；1-8 莫庫卡爾菲在第一界','ok')}}
-  if(k==='bpdel'){const real=BPS.filter(b=>!b.dev),old=S.weapons.filter(w=>!BP[w.b]||!BP[w.b].dev).length;ui.sheet=null;ui.tab='forge';ui.ftab='bp';render();   // v4.46
+  if(k==='bpdel'){const real=BPS.filter(b=>!b.dev),old=S.weapons.filter(w=>!BP[w.b]||!BP[w.b].dev).length;ui.sheet=null;ui.tab='forge';ui.ftab='bp';render();   // v4.44
     return toast(`正式圖紙 ${real.length} 張（應該 0）、測試圖紙 ${BPS.length-real.length} 張、非測試武器 ${old} 把<br>${real.length?'還有：'+real.map(b=>b.n).join('、'):'舊圖紙已全部刪除'}`,real.length?'bad':'ok')}
   if(k==='monlore'){const n=((ui.monLoreI==null?-1:ui.monLoreI)+1)%VILLAGES.length;ui.monLoreI=n;ui.sheet={t:'v',i:n};render();return toast(`${vNo(n)} ${MON_T[n]}・${MONS[n]}（再按一次看下一隻）`)}   // v4.04
   if(k==='tmon'){const i=S.villages.findIndex(st=>st.weaponId!=null&&st.cycleStart!=null&&W(st.weaponId));if(i<0)return toast('先交付一把武器到村莊','bad');const w=W(S.villages[i].weaponId);   // v3.73
@@ -2672,7 +2672,7 @@ function tipDraw(){let o=document.getElementById('tip');const k=!document.body.c
   if(o&&o.dataset.k===k)return;if(o)o.remove();
   o=document.createElement('div');o.id='tip';o.dataset.k=k;o.innerHTML=`<div class="tut-box tip-box"><img class="tut-face" src="${A('smith')}" alt=""><div class="tut-body"><div class="tut-txt"><b>${TIPS[k][0]}</b>｜${TIPS[k][1]}</div><div class="tut-btns"><button class="ui-btn ui-btn--primary btn btn-primary sm" data-tip="ok">知道了</button></div></div></div>`;
   o.addEventListener('click',e=>{if(!e.target.closest('[data-tip]'))return;e.stopPropagation();S.tips=S.tips||{};S.tips[k]=1;save();o.remove();snd('ui_click')});document.body.appendChild(o)}
-const tutOn=()=>typeof S.tut==='number'&&S.tut<TUT.length&&BPS.some(b=>!b.dev)&&!document.body.classList.contains('gating');   // v4.46 沒有正式圖紙（只有開發者測試圖紙）時先不跑新手導覽
+const tutOn=()=>typeof S.tut==='number'&&S.tut<TUT.length&&BPS.some(b=>!b.dev)&&!document.body.classList.contains('gating');   // v4.44 沒有正式圖紙（只有開發者測試圖紙）時先不跑新手導覽
 function tutStep(n){S.tut=n;const nx=TUT[n];if(nx&&nx.go&&!ui.busy){nx.go();render()}if(n>=TUT.length&&!S.tutRw){S.tutRw=1;S.gems+=50;toast('新手導覽完成：鑽石 +50','ok')}save();tutDraw(true)}
 function tutDraw(force){let o=document.getElementById('tut');document.body.classList.toggle('tutoring',tutOn());
   if(!tutOn()){if(o)o.remove();return}

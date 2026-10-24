@@ -471,7 +471,7 @@ function godReqTests(){const v=VILLAGES[9],u=VILLAGES[19],mk=e=>({id:-1,b:'t3_ha
   return[T('H 關卡跟故事一致：神的關卡都要神聖、2-10 要戰錘、1-9 要霜寒、2-6 蠕龍要剋龍、舊名稱都換掉（v4.43 掉落刪除，不再檢查）',!!ok,`沒要神聖的神：${badGod.map(vNo).join('、')||'無'}；舊名稱：${old.map(x=>x.name).join('、')||'無'}；不該掉龍鱗：${noScale.map(x=>x.name).join('、')||'無'}`)]}
 // v4.24 第一、二界故事主線：1-8／2-9 對調、2-10 索爾、代名詞（神＝祂，怪物＝牠，不用他／她／它）
 function storyTests(){const pr=[...MON_LORE,...VILLAGES.map(v=>v.txt)].map((t,i)=>[i,t]).filter(([i,t])=>/[他它]|(?<!巨人女巫放話：先打贏)她/.test(t.replace(/其他|試試它/g,'')));
-  const ok=MONS[7]==='莫庫卡爾菲'&&MONS[18]==='赫朗格尼爾'&&MONS[19]==='索爾'&&MON_T[19]==='雷神'&&VILLAGES[18].name==='石籬原'&&!VILLAGES[18].drops.some(d=>d[0]==='fireheart')&&KN_FULL.includes(18)&&KN_FULL.includes(7)&&KN_FULL.includes(19)&&!Object.keys(ART_WAIT).some(k=>!/^dev_/.test(k));   // v4.46 索爾之錘（神明武器）刪掉了，不再檢查
+  const ok=MONS[7]==='莫庫卡爾菲'&&MONS[18]==='赫朗格尼爾'&&MONS[19]==='索爾'&&MON_T[19]==='雷神'&&VILLAGES[18].name==='石籬原'&&!VILLAGES[18].drops.some(d=>d[0]==='fireheart')&&KN_FULL.includes(18)&&KN_FULL.includes(7)&&KN_FULL.includes(19)&&!Object.keys(ART_WAIT).some(k=>!/^dev_/.test(k));   // v4.44 索爾之錘（神明武器）刪掉了，不再檢查
   return[T('H 故事主線：1-8 泥巨人、2-9 石籬原赫朗格尼爾（全身圖跟著搬）、2-10 雷神索爾',!!ok,`1-8 ${MONS[7]}、2-9 ${VILLAGES[18].name} ${MONS[18]}、2-10 ${MONS[19]}`),
     T('H 代名詞：怪物傳說和關卡說明不用他／她／它（指武器的「它」除外）',!pr.length,pr.length?'還有：'+pr.map(x=>x[0]).join('、'):'都改好了')]}
 // v4.27 神明用「祂」：神的傳說、村莊文字不能用他／她／牠
@@ -515,11 +515,11 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   const want={1:14,4:44,5:55,7:155,9:310,10:280,13:545,14:420,15:420,18:900},miss=Object.entries(want).filter(([i,r])=>VILLAGES[i].req!==r||!txt.includes(({石籬原:'熔岩裂口'}[VILLAGES[i].name]||VILLAGES[i].name)+' '+r))   // v4.24 2-9 改名，4.07 公告裡還是舊名;
   return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
-function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.46 舊武器刪除：要在放回測試資料前檢查
+function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.44 舊武器刪除：要在放回測試資料前檢查
   const bd=[T('BD1 正式圖紙全部刪除（含神明武器），只剩開發者測試圖紙',!real.length&&!BP.g_hofund&&!BP.t1_woodaxe&&BPS.every(b=>b.dev&&b.t===0),real.length?real.map(b=>b.n).join('、'):`測試圖紙 ${BPS.length} 張`),
     T('BD2 神明材質階、神格覺醒拿掉',TIERS.length===5&&typeof GOD==='undefined'&&typeof awkN==='undefined',`材質 ${TIERS.length} 階`)];
   return withTestBps(()=>runTests0(mode,bd))}
-// v4.46 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
+// v4.44 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
 const TEST_BPS=[
  ['t1_woodaxe','伐木斧','axe',0,14,0],['t1_handaxe','手斧','axe',0,12,0],
  ['t1_farmspear','農用長矛','polearm',0,11,1],['t1_shortspear','短矛','polearm',0,10,1],['t1_pickaxe','礦鎬','tool',0,11,1],
