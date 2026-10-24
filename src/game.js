@@ -725,6 +725,7 @@ async function mkReconcile(quiet){if((!AUTH||!CLOUD.ready)&&!mkMock())return;if(
       else if(mkMeBuyer(r)){if(!L.got.includes(r.id)){if(!mkPaid(r.id))S[r.cur]=Math.max(0,S[r.cur]-r.price);const w=mkGive(r.weapon);got.push(BP[w.b].n+' +'+w.lv);mkMark('got',r.id);changed=true}}
       ack.push(r.id)}
     const fresh=claim.filter(r=>!MK.seen.includes(r.id));MK.claim=claim.concat(MK.claim.filter(r=>r.fake));MK.seen.push(...fresh.map(r=>r.id));
+    if(fresh.length&&ui.tab!=='market')MK.tab='claim';   // v4.55 有新的賣出／退回：下次進交易所直接看到待領取
     if(fresh.length)toast(`交易所有 ${fresh.length} 件${fresh.some(r=>r.status==='sold')?'賣出':'退回'}，到交易所領取`,'ok');
     if(changed&&!(await mkSaved()))return;   // 存檔沒上傳成功：先不回報，下次再對一次（帳本保證不會重複）
     if(ack.length)await mkApi('ack',{p_ids:ack});
@@ -776,7 +777,8 @@ function viewMarketPage(){if(!MK.t&&!MK.loading&&(AUTH||mkMock()))setTimeout(mkL
 function viewMarket(){
   if(!AUTH&&!mkMock())return `<div class="ui-panel panel mk-gate">${ptitle('交易所')}<div class="small muted center">交易所需要登入帳號才能使用，訪客進度只存在這支手機，無法和其他玩家交易。</div>${btn('登入／註冊','mklogin',{cls:'btn-primary big'})}</div>`;
   if(!MK.t&&!MK.loading&&!MK.err)setTimeout(mkLoad,0);
-  const tabs=[['buy','購買'],['mine',`我的上架 ${MK.mine.length}/${MK_MAX}`],['sell','上架武器']].map(([k,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${MK.tab===k?'on':''}" data-act="mktab" data-k="${k}">${n}</button>`).join('');
+  if(MK.tab==='sell')MK.tab='claim';   // v4.55 「上架武器」分頁改成「待領取」，上架改從道具欄點武器
+  const tabs=[['buy','購買'],['mine',`我的上架 ${MK.mine.length}/${MK_MAX}`],['claim',`待領取${MK.claim.length?' '+MK.claim.length+'<i class="dot mk-dot"></i>':''}`]].map(([k,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${MK.tab===k?'on':''}" data-act="mktab" data-k="${k}">${n}</button>`).join('');
   let body='';
   if(MK.tab==='buy'){const cats=['all',...new Set(MK.rows.map(r=>BP[bpId(r.bp)].cat))];
     let rows=MK.rows.filter(r=>(MK.cat==='all'||BP[bpId(r.bp)].cat===MK.cat)&&(MK.cur==='all'||r.cur===MK.cur));
@@ -786,11 +788,9 @@ function viewMarket(){
       <div class="mk-chips row">${chip('mkcur','all','全部',MK.cur==='all')}${chip('mkcur','gold','金幣',MK.cur==='gold')}${chip('mkcur','gems','鑽石',MK.cur==='gems')}<span class="grow"></span>${chip('mksort','new','最新',MK.sort==='new')}${chip('mksort','low','價低',MK.sort==='low')}${chip('mksort','pow','攻擊力',MK.sort==='pow')}</div></div>
       <div class="mk-list">${rows.length?rows.map(r=>mkRow(r,'mkview')).join(''):`<div class="small muted center mk-empty">${MK.loading?'讀取中…':'目前沒有符合條件的商品'}</div>`}</div>`}
   else if(MK.tab==='mine'){body=`<div class="mk-list">${MK.mine.length?MK.mine.map(r=>`<div class="mk-mine">${mkRow(r,'mkview')}${btn('下架','mkcancel',{cls:'btn-sec sm',attrs:`data-id="${r.id}"`})}</div>`).join(''):`<div class="small muted center mk-empty">${MK.loading?'讀取中…':'你目前沒有上架中的武器'}</div>`}</div>
-      <div class="small muted mk-note">成交後收入會出現在上方「待領取」，按「全部領取」入帳（扣 ${MK_FEE*100}% 手續費）；上架 ${MK_DAYS} 天沒賣出也會放在待領取，領取後回到道具欄。</div>`}
-  else{const ws=S.weapons.filter(w=>!w.test).sort((a,b)=>power(b)-power(a));
-    body=`<div class="small muted mk-note">點選要上架的武器。上鎖、駐守村莊中的武器不能上架。</div><div class="mk-list">${ws.length?ws.map(w=>{const b=BP[w.b],ok=mkSellable(w);
-      return `<button class="ui-card ui-card--row mk-row ${ok?'':'off'}" data-act="mksellw" data-id="${w.id}" ${ok?'':'disabled'}><div class="mk-art">${wArt(b.id,{frame:fq(w)})}</div><div class="grow mk-mid"><b class="mk-nm">${wName(w)}</b><span class="small muted">${CATS[b.cat]}・攻擊力 ${fmt(power(w))}</span>${ok?'':`<span class="small t-danger">${w.lock?'已上鎖':'駐守村莊中'}</span>`}</div></button>`}).join(''):'<div class="small muted center mk-empty">道具欄是空的</div>'}</div>`}
-  return `<div class="ui-panel panel mk">${ptitle(mkMock()?'離線模擬市場':'玩家交易')}${mkClaimBox()}<div class="mk-tabs">${tabs}<button class="ui-iconbtn mk-ref" data-act="mkref" aria-label="重新整理">${MK.loading?'…':'⟳'}</button></div>
+      <div class="small muted mk-note">要上架：到道具欄點武器，按「上架」。成交後收入會放在「待領取」，按「全部領取」入帳（扣 ${MK_FEE*100}% 手續費）；上架 ${MK_DAYS} 天沒賣出也會放在待領取，領取後回到道具欄。</div>`}
+  else body=MK.claim.length?mkClaimBox():`<div class="small muted center mk-empty">${MK.loading?'讀取中…':'目前沒有要領取的東西'}</div><div class="small muted mk-note">賣出的收入、${MK_DAYS} 天沒賣出退回的武器都會放在這裡，按「全部領取」才入帳。</div>`;
+  return `<div class="ui-panel panel mk">${ptitle(mkMock()?'離線模擬市場':'玩家交易')}<div class="mk-tabs">${tabs}<button class="ui-iconbtn mk-ref" data-act="mkref" aria-label="重新整理">${MK.loading?'…':'⟳'}</button></div>
    ${MK.err?`<div class="small t-danger center mk-err">${MK.err}</div>`:''}${body}</div>`}
 function mkWeaponBox(w){w={...w,b:bpId(w.b)};const b=BP[w.b];   // v4.53 跟武器小卡同一套：名稱含屬性、攻擊力、四格數值
   return `<div class="ui-panel panel mk-wp"><div class="wp-top">${wArt(b.id,{frame:fq(w)})}<div class="grow"><div class="wp-nm">${wName(w)}</div>
@@ -2413,7 +2413,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
     MK.rows=MK.rows.filter(r=>r.id!==id);MK.rows.unshift({id,seller:'npc',seller_nick:'測試賣家',weapon:w,bp:b.id,lv:7,q:0,cur:'gold',price:12345,expires_at:new Date(Date.now()+2*864e5).toISOString(),created_at:new Date().toISOString()});
     if(!MK.t)MK.t=Date.now();ui.tab='market';MK.tab='buy';ui.sheet={t:'mkw',id};render();return toast('列表最上面也有這件（名稱應該有「冰封」）；這是假商品，不能真的買')}
   if(k==='mkclaimt'){const bps=BPS.filter(b=>b.t<=1),mk=(n,st,cur,price,q,lv)=>{const b=bps[n%bps.length];return {id:-(Date.now()%1e6)-n,fake:!mkMock(),seller:'me',bp:b.id,weapon:{b:b.id,q,lv,traits:[],ench:[null,null,null,null]},lv,q,cur,price,status:st,settled:false,buyer_ack:true,created_at:new Date().toISOString(),expires_at:new Date().toISOString()}};   // v4.08 待領取測試：離線模擬市場走真流程，登入中只是預覽（領取不入帳）
-    const rs=[mk(3,'sold','gold',3200,2,7),mk(5,'sold','gems',120,4,10),mk(6,'expired','gold',500,1,4)];ui.sheet=null;ui.tab='market';MK.tab='mine';
+    const rs=[mk(3,'sold','gold',3200,2,7),mk(5,'sold','gems',120,4,10),mk(6,'expired','gold',500,1,4)];ui.sheet=null;ui.tab='market';MK.tab='claim';
     if(mkMock()){const d=mkMockDB();rs.forEach(r=>{r.id=d.seq++;delete r.fake;d.rows.unshift(r)});mkMockSave(d);rs.forEach(r=>mkMark('listed',r.id));mkReconcile(true).then(()=>{render();scrollTo(0,0)})}
     else{MK.claim=MK.claim.filter(r=>!r.fake).concat(rs);render();scrollTo(0,0);toast('登入中：這是預覽，按領取不會真的入帳')}return}
   if(k==='mksold'||k==='mkexp'||k==='mkreset'){if(AUTH)return toast('這是離線模擬專用（請先登出）','bad');if(k==='mkreset'){try{localStorage.removeItem('nrs-mkmock')}catch(e){}MK.t=0;return toast('模擬市場已重設','ok')}
