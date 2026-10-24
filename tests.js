@@ -539,5 +539,5 @@ function runTests(mode){
 }
 // v4.34 武器框顏色看強化等級
 function frameLvTests(){if(typeof FLV==='undefined')return[];const exp={0:0,1:1,6:1,7:2,8:2,9:3,10:6,11:4,12:5,15:5},bad=Object.entries(exp).filter(([lv,f])=>FLV(+lv)!==f);
-  return[T('FL1 框色：+0 灰、+1～+6 綠、+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石',!bad.length,bad.length?'錯：'+bad.map(x=>'+'+x[0]).join('、'):'10 個等級都對')]}
+  const nm=[0,3,7,9,10,11,12].map(lv=>FLV_T[FLV(lv)]).join('');return[T('FL2 品階名稱：凡鐵、精鍛、寒鋒、血刃、神鑄、星魂、永恆',nm==='凡鐵精鍛寒鋒血刃神鑄星魂永恆',nm),T('FL1 框色：+0 灰、+1～+6 綠、+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石',!bad.length,bad.length?'錯：'+bad.map(x=>'+'+x[0]).join('、'):'10 個等級都對')]}
 if(typeof module!=='undefined')module.exports={runAll,econReport,simulate,levelCheck};
