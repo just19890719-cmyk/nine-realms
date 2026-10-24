@@ -515,7 +515,7 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.44 舊武器刪除：要在放回測試資料前檢查
-  const bd=[...newWpnTests(real),...chTests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
+  const bd=[...newWpnTests(real),...chTests(),...mkCardTests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
     T('BD2 神明材質階、神格覺醒拿掉',TIERS.length===5&&typeof GOD==='undefined'&&typeof awkN==='undefined',`材質 ${TIERS.length} 階`)];
   return withTestBps(()=>runTests0(mode,bd))}
 // v4.44 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
@@ -591,3 +591,9 @@ function newWpnTests(real){const mk=(id,lv)=>({id:-1,b:id,q:0,lv,ench:[null,null
    T('NW3 偏難需求：1-10 要 +7、2-10 要 +8（+6／+7 不夠）',r1&&r2&&VREQ.length===20&&VILLAGES[0].req===12,`1-10 需求 ${VILLAGES[9].req}・2-10 需求 ${VILLAGES[19].req}`),
    T('NW4 配方先只花金幣，各圖紙有自己的金幣價',real.every(b=>!Object.keys(recipe(b)).length&&goldOf(b)===b.gold&&b.gold>0)&&goldOf(BP.g_skadi)===10000,real.map(goldOf).join(',')),
    T('NW5 17 把都用自己的圖（15 把新圖＋2 把 Boss 現有圖），不再借舊圖',real.every(b=>!ART_WAIT[b.id+'_disp']&&!ART_WAIT[b.id])&&real.filter(b=>!b.fx).every(b=>WFIT[b.id]===.6),Object.keys(BP_TMP).length+' 把暫代')]}
+
+// v4.53 交易所：列表／詳情的武器名稱含屬性，詳情用武器小卡的四格數值
+function mkCardTests(){const w={b:'w1_sword',q:0,lv:7,traits:[],ench:[{k:'ice',v:2},null,null,null]},r={id:-5,seller:'npc',seller_nick:'x',weapon:w,bp:'w1_sword',lv:7,q:0,cur:'gold',price:100,expires_at:new Date(Date.now()+864e5).toISOString()};
+  const row=mkRow(r,'mkview'),box=mkWeaponBox(w),e=wElem(w);
+  return [T('MKC1 交易所列表名稱有屬性',!!e&&row.includes(e.tn)&&row.includes('wn-el'),e?e.tn:'無屬性'),
+    T('MKC2 商品詳情有攻速／附加效果／相剋／屬性四格',['攻速','附加效果','相剋','屬性'].every(k=>box.includes(k))&&box.includes('wp-g')&&!box.includes('可以重抽'))]}

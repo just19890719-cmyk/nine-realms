@@ -1840,4 +1840,6 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .ch-tbar i{background:linear-gradient(90deg,#8a6420,#e8b85c);transition:width .25s linear}
 .ch-w{margin-top:8px}
 .ch-tips{line-height:1.8}
+/* v4.53 交易所商品詳情用武器小卡排版 */
+.mk-wp .wp-top{padding-right:0}
 </style>
