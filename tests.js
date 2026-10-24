@@ -475,7 +475,7 @@ function godReqTests(){const v=VILLAGES[9],u=VILLAGES[19],mk=e=>({id:-1,b:'t3_ha
   const drag=VILLAGES[15],noScale=VILLAGES.filter((x,i)=>[7,9,12].includes(i)&&x.drops.some(d=>d[0]==='scale'));
   const ok=v.name==='彩虹橋頭'&&u.name==='索列姆海姆'&&u.cat==='bow'&&!badGod.length&&!old.length&&VILLAGES[17].name==='烏特加德城'&&VILLAGES[8].need==='frost'&&drag.need==='dragon'&&drag.drops.some(d=>d[0]==='scale')&&!noScale.length&&v.drops.some(d=>d[0]==='rainbow')&&MATS.rainbow&&eligible(9,mk({k:'holy',v:15}))&&!eligible(9,mk({k:'dragon',v:40}))&&TAGN[v.tag]&&TAGN[drag.tag];
   return[T('H 關卡跟故事一致：神的關卡都要神聖、2-10 要弓、1-9 要霜寒、2-6 蠕龍要剋龍且掉龍鱗、舊名稱都換掉、1-10 掉虹橋碎晶',!!ok,`沒要神聖的神：${badGod.map(vNo).join('、')||'無'}；舊名稱：${old.map(x=>x.name).join('、')||'無'}；不該掉龍鱗：${noScale.map(x=>x.name).join('、')||'無'}`)]}
-// v4.16 神明用「祂」：神的傳說、村莊文字不能用他／她／牠
+// v4.17 神明用「祂」：神的傳說、村莊文字不能用他／她／牠
 function godWordTests(){const bad=VILLAGES.map((v,i)=>i).filter(i=>isGod(i)&&/[他她牠]/.test(MON_LORE[i]+VILLAGES[i].txt)),nw=NW_LOG.filter(n=>/(海姆達爾|斯卡蒂)[^。]*[他她]/.test(n.b.join('')));
   return[T('H 神明用「祂」：神的傳說、村莊文字、公告都不用他／她／牠',!bad.length&&!nw.length,bad.length?'傳說：'+bad.map(vNo).join('、'):nw.length?'公告：'+nw.map(n=>n.v).join('、'):'都用祂')]}
 // v4.14 村莊需求：每座村莊的需求面板都列得出同類圖紙
