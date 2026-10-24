@@ -151,7 +151,7 @@ function enhanceTests(N=100000){
     S.villages[0].bank={cycles:3,gold:10,mats:{[STONE]:4},events:0};const k0=stones();collectCore(0);const got=stones()-k0;
     const v=mk('t1_woodaxe');S.villages[0].weaponId=v.id;S.items[STONE]=5;const r2=enhanceCore(v.id,{});
     res.push(T('C3 強化石：每次 1 顆不花金幣、沒有就擋下、收成掉落（越後面越多）收進道具、熔解退 1 顆、駐守不能強化',
-      st0===10&&r1.k==='ok'&&s1===9&&g1===g0&&r0.err==='強化石不夠'&&m&&m[STONE]===1&&stoneE(19)>stoneE(0)&&late>100&&early>100&&got===4&&!S.mats[STONE]&&r2.err,
+      st0===10&&r1.k==='ok'&&s1===9&&g1===g0&&r0.err==='強化石不夠'&&m&&m[STONE]===1&&stoneE(19)>stoneE(0)&&late>50&&early>50&&got===4&&!S.mats[STONE]&&r2.err,
       `新存檔 ${st0} 顆；強化後剩 ${s1} 顆、金幣${g1===g0?'沒變':'有變(錯誤)'}；沒石頭「${r0.err}」；熔解退 ${m&&m[STONE]} 顆；每 4 萬隻 1-1 ${early} 顆、2-10 ${late} 顆；收成進道具 ${got} 顆；駐守「${r2.err}」`));
   });
   // 完整過程模擬：用幾顆強化石、燒幾把 +6
@@ -402,8 +402,9 @@ function evtTests0(){const res=[];
     // v3.87 整週首領：台灣時間週日 00:00 換週；取消雙倍收成
     const sun=Date.UTC(2026,9,25,0,0)-TZ8,sat=sun-60e3,mon=sun+DAY,nsun=sun+7*DAY;
     res.push(T('J1 台灣時間週日 00:00 換週、首領整週開打',evtWeek(sat)+1===evtWeek(sun)&&evtWeek(mon)===evtWeek(sun)&&evtWeek(nsun)===evtWeek(sun)+1&&evtStart(evtWeek(sun))===sun&&evtNow().k==='boss',`週六 23:59＝${evtWeek(sat)}、週日 0 點＝${evtWeek(sun)}、週一＝${evtWeek(mon)}`));
-    S=fresh();S.villages[0].strat='normal';const st=S.villages[0];rollCycle(0,null,st,mon);const g1=st.bank.gold;st.bank={cycles:0,gold:0,mats:{},events:0};rollCycle(0,null,st,mon+4*DAY);const g2=st.bank.gold;
-    res.push(T('J2 取消雙倍收成：週一和週五收成金幣一樣',g1===g2&&g2===vKillGold(0),`週一 ${g1}、週五 ${g2}`));
+    S=fresh();S.villages[5].strat='normal';const st=S.villages[5];rollCycle(5,null,st,mon);const g1=st.bank.gold;st.bank={cycles:0,gold:0,mats:{},events:0};rollCycle(5,null,st,mon+4*DAY);   // v4.66 1-1～1-5 金幣改範圍隨機，改用 1-6
+   const g2=st.bank.gold;
+    res.push(T('J2 取消雙倍收成：週一和週五收成金幣一樣',g1===g2&&g2===vKillGold(5),`週一 ${g1}、週五 ${g2}`));
     S=fresh();S.gold=0;const w=makeWeapon('t3_greatsword',3,8,[]);const b=evtNow().boss,d0=bossDmgOf(w,b);
     // v3.85 駐守首領：最多 3 把、按時間累積、駐守中不能打村莊／強化／熔解、收回會結算；v3.87 換週武器留著、傷害歸零
     const w2=makeWeapon('t3_greatsword',2,5,[]),w3=makeWeapon('t2_longsword',1,3,[]),w4=makeWeapon('t2_longsword',1,2,[]);
@@ -518,7 +519,7 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.44 舊武器刪除：要在放回測試資料前檢查
-  const bd=[...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
+  const bd=[...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
     T('BD2 神明材質階、神格覺醒拿掉',TIERS.length===5&&typeof GOD==='undefined'&&typeof awkN==='undefined',`材質 ${TIERS.length} 階`)];
   return withTestBps(()=>runTests0(mode,bd))}
 // v4.44 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
@@ -607,12 +608,29 @@ function chTests0(){const mk=(id,lv)=>({id:-1,b:id,q:0,lv,ench:[null,null,null,n
   const S0=S;S=fresh();S.villages[0].status='open';const g0=S.gold,r1=chWinCore(0),g1=S.gold,r2=chWinCore(0),g2=S.gold,once=r1.first&&!r2.first&&g1-g0===(FIRST_GOLD[0]||0)&&g2===g1&&S.villages[0].status==='cleared'&&S.villages[1].status==='open';
   S.villages[1].status='open';ui.tab='village';ui.realm=0;const h=viewVillage();S=S0;
   const cardOk=!/vweak|限時挑戰/.test(h)&&/data-act="vopen"/.test(h);
-  const se=stoneE(0)===.004&&Math.abs(stoneE(89)-.004*1.89)<1e-12;
+  const se=stoneE(0)===.002&&Math.abs(stoneE(89)-.002*1.89)<1e-12;
   return[T('CH1 怪物血量＝需求 × 60 秒 × 0.8（第 9、10 關 ×1.0）',hpOk,`1-1 ${VHP(0)}、1-10 ${VHP(9)}、2-9 ${VHP(18)}`),
    T('CH2 攻擊力剛好等於需求約 48 秒打倒，掛機一輪＝打倒一隻',durOk,`1-1 開局劍 ${sec.toFixed(1)} 秒`),
    T('CH3 60 秒內打倒才收復：需求剛好幾乎都贏，差太多一定輸，傷害照時間排',win>=90&&lose===0&&tOk,`1-1 贏 ${win}/100、1-10 贏 ${lose}/100`),
    T('CH4 收復獎勵只發一次、開下一關',!!once,`首次 ${r1&&r1.fg} 金幣、第二次 ${r2&&r2.first?'又發(錯誤)':'不再發'}`),
-   T('CH5 村莊卡片不顯示弱點和「限時挑戰」，只有挑戰按鈕；強化石每隻 0.4% 往後遞增',cardOk&&se,cardOk?'正常':'卡片還有弱點或限時挑戰')]}
+   T('CH5 村莊卡片不顯示弱點和「限時挑戰」，只有挑戰按鈕；強化石每隻 0.2% 往後遞增（v4.65 減半）',cardOk&&se,cardOk?'正常':'卡片還有弱點或限時挑戰')]}
+// v4.66 打怪直接掉武器、1-1～1-5 每隻金幣範圍
+function wdTests(){if(typeof wDrops==='undefined')return[];const S0=S;const res=[];
+  try{S=JSON.parse(JSON.stringify(S0));S.villages.forEach(v=>v.status='open');const M=i=>Object.fromEntries(wDrops(i));
+    const a0=M(0),a6=M(6),a9=M(9),a19=M(19);
+    const ok1=a0._w0===.002&&!a0.w1_spear&&!a0.w1_troll&&a6.w1_troll===.003&&!a0.w1_troll&&a9.g_hofund===.001&&!a6.g_hofund&&a19.g_skadi===.001&&!a19._w0&&!a6.w1_spear;
+    S.villages.forEach(v=>v.status='cleared');const all=M(9),a12=M(12);const ok2=all.w1_spear===.0015&&all.w1_sword===.0015&&all.w1_xbow===.0015&&!all.w2_axe&&a12.w2_axe===.0015&&a12.w2_dual===.0015&&!a12.w1_spear&&!a12.w2_utgard;
+    res.push(T('WD1 掉武器：開局 0.2%（只第一界）、一般武器解鎖後 0.15%、怪物武器只在那關 0.3%、Boss 武器只在那關 0.1%',ok1&&ok2,JSON.stringify(a6)));
+    const st=S.villages[0];st.bank={cycles:1,gold:10,mats:{'w:w0_axe':2},events:0};const n0=S.weapons.length;const r=collectCore(0);
+    const ok3=S.weapons.length===n0+2&&S.weapons.slice(-2).every(w=>w.b==='w0_axe'&&w.lv===0);
+    while(S.weapons.length<CAP_WEAPONS)S.weapons.push({id:-9,b:'w0_axe',q:0,lv:0,ench:[null,null,null,null],traits:[]});
+    st.bank={cycles:1,gold:0,mats:{'w:w0_axe':1},events:0};const s0=S.items[STONE]|0,g0=S.gold;collectCore(0);
+    const ok4=S.weapons.length===CAP_WEAPONS&&(S.items[STONE]|0)===s0+1&&S.gold>g0;
+    res.push(T('WD2 收成時掉落武器放進道具欄；道具欄滿了自動熔解成金幣＋1 顆強化石',ok3&&ok4,`入帳 ${ok3?'正常':'錯誤'}、滿了 ${ok4?'熔解':'錯誤'}`));
+    const sb={strat:'normal',bank:{cycles:0,gold:0,mats:{},events:0}};let mn=1e9,mx=0;for(let c=0;c<400;c++){const g0=sb.bank.gold;rollCycle(0,null,sb,NOW());const d=sb.bank.gold-g0;mn=Math.min(mn,d);mx=Math.max(mx,d)}
+    res.push(T('KG1 1-1 每隻金幣 20～70 隨機（Mochi 填的範圍）、平均值給時薪用',mn>=20&&mx<=70&&mx-mn>30&&vKillGold(0)===45,`${mn}～${mx}`));
+  }catch(e){res.push(T('WD 掉武器測試',false,e.message))}finally{S=S0}
+  return res}
 function newWpnTests(real){const mk=(id,lv)=>({id:-1,b:id,q:0,lv,ench:[null,null,null,null],traits:[]}),P=(id,lv)=>power(mk(id,lv));
   const st=real.filter(b=>b.unlock===0),cats=Object.keys(CSPD),ul=real.filter(b=>b.unlock).map(b=>b.unlock).join(',');
   const pw=[P('w0_sword',0),P('w1_sword',0),P('w2_axe',0),P('w1_troll',0),P('g_hofund',0)].join('/');

@@ -127,7 +127,10 @@ VILLAGES.forEach((v,i)=>{v.req0=v.req;v.req=VREQ[i]??v.req});
 const CH_SEC=60,VHP_K=i=>i%10>=8?1:.8;
 const VHP=i=>Math.round(VILLAGES[i].req*CH_SEC*VHP_K(i));
 const vSec=(i,w)=>VHP(i)/Math.max(1e-9,vPow(i,w));   // 預估幾秒打倒一隻（已算攻速、強化、附加效果、弱點、相剋）
-const vKillGold=i=>Math.max(1,Math.round(VILLAGES[i].gold*CH_SEC*VHP_K(i)/VILLAGES[i].sec));   // 每打倒一隻的金幣   // v4.43 舊材料刪除：村莊暫時只掉金幣（新的掉落等 Mochi 重新設計）
+// v4.66 Mochi 在「填寫：各關掉落」填的每隻金幣範圍（沒填的關照舊公式）；vKillGold 回傳平均值（時薪、遺物金幣用），rollCycle 每隻在範圍內隨機
+const KILL_GOLD={0:[20,70],1:[10,15],2:[10,30],3:[10,40],4:[20,50]};
+const vKillGold=i=>KILL_GOLD[i]?Math.round((KILL_GOLD[i][0]+KILL_GOLD[i][1])/2):Math.max(1,Math.round(VILLAGES[i].gold*CH_SEC*VHP_K(i)/VILLAGES[i].sec));
+const killGoldTxt=i=>KILL_GOLD[i]?KILL_GOLD[i].map(fmt).join('～'):fmt(vKillGold(i));   // 每打倒一隻的金幣   // v4.43 舊材料刪除：村莊暫時只掉金幣（新的掉落等 Mochi 重新設計）
 // v4.43 舊道具（防爆卷、祝福石、傳說圖紙、殘渣）全部刪除。新道具：英靈・遺物（打開內容等 Mochi 設定，圖待生成）
 // [名稱, 圖示（null＝還沒有圖）, 說明, 光芒, 光芒顏色]；v4.43 英靈・遺物分綠／藍／紅／金四種光芒（圖 art/it_relic_g/b/r/y，Mochi AI 生圖），之後各放不同等級的內容（Mochi）
 const RELIC_DESC='英靈留在戰場上的遺物，光芒越亮，裡面的東西越好。打倒怪物有機率掉，越後面的關卡越容易掉到好的。';
@@ -226,8 +229,8 @@ const pct=x=>Math.round(x*1000)/10+'%';
 function fmtT(ms){const s=Math.max(0,Math.ceil(ms/1000));if(s>=3600)return Math.floor(s/3600)+'時'+Math.floor(s%3600/60)+'分';if(s>=60)return Math.floor(s/60)+'分'+String(s%60).padStart(2,'0')+'秒';return s+'秒'}
 const today=()=>new Date(NOW()).toLocaleDateString('sv');
 function weighted(list,wf){const tot=list.reduce((s,x)=>s+wf(x),0);let r=Math.random()*tot;for(const x of list){r-=wf(x);if(r<0)return x}return list[list.length-1]}
-const itemName=k=>MATS[k]||(ITEMS[k]?ITEMS[k][0]+(ITEMS[k][3]?'（'+ITEMS[k][3]+'）':''):k);
-const itemIco=(k,cls='')=>{const a=k==='gold'?'it_gold':k==='gems'?'it_gems':MATS[k]?MATART[k]:ITEMS[k]&&ITEMS[k][1];const gl=ITEMS[k]&&ITEMS[k][4];return a?img(a,cls):`<span class="ph-ico ${cls}" ${gl?`style="--gl:${gl}"`:''}>待生圖</span>`};
+const itemName=k=>k.startsWith('w:')?(BP[k.slice(2)]||{n:'武器'}).n:MATS[k]||(ITEMS[k]?ITEMS[k][0]+(ITEMS[k][3]?'（'+ITEMS[k][3]+'）':''):k);
+const itemIco=(k,cls='')=>{if(k.startsWith('w:'))return wArt(k.slice(2),{cls});const a=k==='gold'?'it_gold':k==='gems'?'it_gems':MATS[k]?MATART[k]:ITEMS[k]&&ITEMS[k][1];const gl=ITEMS[k]&&ITEMS[k][4];return a?img(a,cls):`<span class="ph-ico ${cls}" ${gl?`style="--gl:${gl}"`:''}>待生圖</span>`};
 
 /* ---------- 狀態與存檔 ---------- */
 const KEY='nine-realms-smith-v3',KEY_V2='nine-realms-smith-v2';
@@ -283,7 +286,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.64';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.66';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1021,12 +1024,19 @@ function rollEnhance(r,bc){const ok=Math.random()<r;if(ok)return'ok';return Math
 function makeWeapon(b,q,lv=0,traits,ench){b=bpId(b);const w={id:S.nextId++,b,q,lv,traits:traits||[],ench:ench||[null,null,null,null],created:NOW()};S.weapons.push(w);return w}
 function rollCycle(i,w,st,t){
   const v=VILLAGES[i],s=STRATS[st.strat],b=st.bank;b.cycles++;const x2=1;   // v3.87 取消雙倍收成（首領改整週）
-  const gs=goldMul(i,w);b.gold+=Math.round(vKillGold(i)*s.gold*gs*(1+(tal('gold')+gdGold())/100))*x2;   // v3.98 加上公會加成
+  const gs=goldMul(i,w),kg=KILL_GOLD[i]?rnd(...KILL_GOLD[i]):vKillGold(i);b.gold+=Math.round(kg*s.gold*gs*(1+(tal('gold')+gdGold())/100))*x2;   // v3.98 加上公會加成
   for(const d of v.drops){if(Math.random()<dropChance(i,w,d,st.strat)){let n=rnd(d[2],d[3]);if(d[1]>=RARE_P&&s.bonus&&Math.random()<s.bonus)n++;if(d[1]>=RARE_P&&w&&Math.random()<Math.min(CAP.harvest,affixVal(w,'harvest'))/100)n++;if(d[1]>=RARE_P)n*=x2;b.mats[d[0]]=(b.mats[d[0]]||0)+n}}
   const se=stoneE(i),sn=Math.floor(se)+(Math.random()<se%1?1:0);if(sn)b.mats[STONE]=(b.mats[STONE]||0)+sn;
   if(Math.random()<enchE(i))b.mats[ENSTONE]=(b.mats[ENSTONE]||0)+1;   // v4.54 附魔石
   if(Math.random()<RELIC_P){const k=relicTier(i);b.mats[k]=(b.mats[k]||0)+1}   // v4.54 英靈・遺物
+  for(const [k,p] of wDrops(i))if(Math.random()<p){const id=k==='_w0'?WD_START[rnd(0,WD_START.length-1)]:k;b.mats['w:'+id]=(b.mats['w:'+id]||0)+1}   // v4.66 直接掉武器
 }
+// v4.66 Mochi 選「照建議值」（填寫：各關掉落）：每打倒一隻直接掉武器。開局 7 種（第一界，隨機一把）0.2%；該界一般武器圖紙解鎖後每種 0.15%；怪物專屬武器在那一關 0.3%；Boss 武器在那一關 0.1%
+// 收成時放進道具欄（存在 bank.mats 的 'w:圖紙 id'）；道具欄滿了就照熔解換成金幣＋1 顆強化石
+const WDROP={start:.002,normal:.0015,m:.003,b:.001},WD_START=BPS.filter(b=>!b.dev&&!b.unlock).map(b=>b.id);
+function wDrops(i){const r=Math.floor(i/10),out=r===0&&WD_START.length?[['_w0',WDROP.start]]:[];
+  for(const b of BPS){if(b.dev||!b.unlock)continue;if(b.k==='m'||b.k==='b'){if(b.unlock-1===i)out.push([b.id,WDROP[b.k]])}else if(Math.floor((b.unlock-1)/10)===r&&!bpLock(b))out.push([b.id,WDROP.normal])}
+  return out}
 const enchE=i=>.003*(1+.01*i);   // v4.54 每打倒一隻掉附魔石的機率：1-1 0.3%，每往後一關多 1%（跟強化石同一個公式）
 // v4.54 英靈・遺物（武器系統定案 9-5，Mochi 選「每關都掉 4 種，後面關好箱多」）：每打倒一隻 2% 掉 1 個，等級照關卡在該界的位置（第 1→10 關）平均變化，每往後一界紅光 +1%、金光 +0.5%（從綠光扣）
 const RELIC_P=.02;
@@ -1051,7 +1061,7 @@ function relicOpenCore(k,n){const have=S.items[k]|0;if(!RELICS.includes(k)||!hav
   for(let x=0;x<n;x++){S.items[k]--;relicRoll(k,got)}
   for(const x in got){if(x==='_w')continue;if(x==='gold')S.gold+=got[x];else if(ITEMS[x])S.items[x]=(S.items[x]||0)+got[x];else S.mats[x]=(S.mats[x]||0)+got[x]}
   save();return{n,got}}
-const stoneE=i=>.004*(1+.01*i);   // v4.52 每打倒一隻掉強化石的機率（武器系統定案 9-7，推關速度「慢」）：1-1 0.4%，每往後一關多 1%（9-10 約 0.76%）
+const stoneE=i=>.002*(1+.01*i);   // v4.65 Mochi 選 C：全部村莊都掉、機率減半（武器系統定案 9-7）：1-1 0.2%，每往後一關多 1%（9-10 約 0.38%）
 function tick(){
   const t=NOW();let changed=false;
   if(t<S.lastSeen-5000){if(!S.clockWarn){S.clockWarn=true;toast('偵測到裝置時間倒退，狩獵與鍛造會暫停，直到時間恢復。')}}
@@ -1089,7 +1099,7 @@ function cancelJob(ix){const j=S.jobs[ix];if(!j)return false;S.jobs.splice(ix,1)
   if(j.cost){for(const k in j.cost.mats)S.mats[k]+=j.cost.mats[k];S.gold+=j.cost.gold}save();return true}
 function collectCore(i){const st=S.villages[i],b=st.bank;if(!b.cycles)return null;
   const got={gold:b.gold,...b.mats},n=b.cycles,ev=b.events;
-  S.gold+=b.gold;for(const k in b.mats){if(ITEMS[k])S.items[k]=(S.items[k]||0)+b.mats[k];else S.mats[k]=(S.mats[k]||0)+b.mats[k]}S.stats.harvest+=n;S.stats.goldIn+=b.gold;S.stats.events+=ev;repGain(n*REP_XP.harvest);
+  S.gold+=b.gold;for(const k in b.mats){if(k.startsWith('w:')){const id=k.slice(2);for(let x=0;x<b.mats[k];x++){if(S.weapons.length<CAP_WEAPONS&&BP[id])makeWeapon(id,0,0,[]);else{const g=BP[id]?Math.round(goldOf(BP[id])*.5):0;S.gold+=g;got.gold+=g;got[k]--;S.items[STONE]=stones()+1;got[STONE]=(got[STONE]||0)+1}}continue}if(ITEMS[k])S.items[k]=(S.items[k]||0)+b.mats[k];else S.mats[k]=(S.mats[k]||0)+b.mats[k]}S.stats.harvest+=n;S.stats.goldIn+=b.gold;S.stats.events+=ev;repGain(n*REP_XP.harvest);
   st.bank={cycles:0,gold:0,mats:{},events:0};
   if(st.weaponId!=null&&st.cycleStart!=null){const w=W(st.weaponId);if(w&&n>=capCycles(i,w))st.cycleStart=NOW()}
   save();return{got,n,ev}}
@@ -1219,6 +1229,8 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.66',d:'10/24',t:'打怪會直接掉武器',b:['村莊每打倒一隻都有機會直接掉武器：第一界開局武器 0.2%、這一界已解鎖的一般武器每種 0.15%','怪物專屬武器（1-7、2-8）0.3%、Boss 武器（1-10、2-10）0.1%，只在牠那一關掉','1-1～1-5 每隻金幣改成範圍隨機（例如 1-1 20～70 金幣）','掉落機率都寫在村莊詳情最下面'],g:['vil']},
+ {v:'4.65',d:'10/24',t:'強化石掉落調整',b:['村莊打倒怪物掉強化石的機率減半：1-1 0.2%，越後面的關卡越高（9-10 約 0.38%）','照「慢」的推關速度，第一界約可拿到 75 顆、第二界約 300 顆'],g:['enh']},
  {v:'4.64',d:'10/24',t:'強化特效顏色統一',b:['+7 以上強化時，武器的光暈也改成外框顏色（+7 藍光裡不再混黃光）','成功時不再跳「升階 +N」大字，下方已經有「強化成功 +N」','開發者工具拿掉用不到的「安全區失敗」和「防爆」按鈕'],g:['enh']},
  {v:'4.63',d:'10/24',t:'商城購買小卡更順',b:['商城買材料時，調數量或按購買只會更新數字和價格，小卡<b>不會再整張重新跳出</b>'],g:['shop']},
  {v:'4.62',d:'10/24',t:'開發者工具整理',b:['管理員用的開發者工具改成<b>依版本</b>排列，新的在最上面；拿掉已刪除系統的測試按鈕','一般玩家的遊戲內容沒有改變']},
@@ -1291,12 +1303,12 @@ const GUIDE=[
  ['基礎',[
   {k:'forge',ic:'t1_ironhammer_disp',n:'鍛造',s:'選圖紙、付金幣和材料，5 秒打好一批',v:'4.54',h:'在鐵匠鋪「圖紙」選一張圖紙，金幣和材料夠就能按「開始鍛造」。開局 7 把只花金幣；之後的武器要用打怪掉的材料：第一界用<b>中庭鐵礦、松林硬木</b>，第二界用<b>約頓霜鐵、約頓巨木</b>，怪物主題武器另外要怪物部位（1-7 巨魔石皮、2-8 幻術巨人王骨），Boss 武器要 Boss 素材（1-10 彩虹橋碎晶、2-10 索爾雷晶）。<br>開局就有 7 種武器的圖紙；收復第一界 1-2、1-4、1-6、1-7、1-10，第二界 2-1、2-3、2-5、2-8、2-10 會解鎖新圖紙。第 7／8 關是<b>怪物主題武器</b>（攻擊力多 10%），第 10 關是 <b>Boss 武器</b>（帶專屬特效）。兩界為一階，同一階的武器一樣強，想變強就要強化。<br>一次一批（最多 10 把），不管幾把都是 <b>5 秒</b>完成，進度條就在「開始鍛造」下方，可以取消（金幣全退）。'},
   {k:'wpn',ic:'cat_sword',n:'武器數值與相剋',s:'攻速、附加效果、相剋，點武器看小卡',v:'4.46',h:'點武器會跳出小卡。<b>攻擊力＝每秒傷害</b>，已經算進附加效果的平均。<br>七類武器攻速：雙刀 0.6 秒、劍 1.0、弓 1.1、長柄 1.2、斧 1.3、弩 1.6、錘 1.8 秒；每秒傷害都差不多，攻速慢的單擊比較重。<br><b>附加效果</b>：劍會心、斧流血、錘震碎、雙刀中毒、長柄貫穿、弓穿心、弩破甲；+1～+6 每級觸發率 2%，+7 起 16／20／25／30／35／40%。<br><b>相剋</b>：怪物分人形、野獸、巨型、飛行。劍、雙刀剋人形，長柄、斧剋野獸，錘、弩剋巨型，弓剋飛行；打被剋的怪物傷害多「強化等級 %」，+12 為 +12%，跟屬性弱點一起算。<br>武器名稱是「+7 寒霜 鐵劍」：強化等級、附魔、武器名。'},
-  {k:'enh',ic:'it_bless',n:'強化',s:'每次 1 顆強化石，最高 +12',v:'4.64',h:'每次強化用 <b>1 顆強化石</b>，不花金幣，成功或失敗都會用掉。強化石從村莊收成拿（越後面的關卡掉越多），熔解武器也會退 1 顆。<br>+1～+6 一定成功。+7 起是危險區：+7 35%、+8 32.5%、+9 30%，失敗就爆裝；+10～+12 每級 1%，失敗時 1/3 維持原樣、2/3 爆裝。最高 <b>+12</b>。<br>攻擊倍率：+6 ×1.6、+7 ×1.9、+8 ×2.25、+9 ×2.65、+10 ×3.3、+11 ×4、+12 ×4.8。<br>武器的框色看強化等級：+0 灰、+1～+6 綠、+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石，+9 以上的框有電流繞著跑。<br>+1～+6 按強化直接出結果；+7 起符文石碑的燈光和武器光暈就是那一級外框的顏色。「一鍵強化」會一級一級連擊播放，點畫面可以略過。'},
+  {k:'enh',ic:'it_bless',n:'強化',s:'每次 1 顆強化石，最高 +12',v:'4.65',h:'每次強化用 <b>1 顆強化石</b>，不花金幣，成功或失敗都會用掉。強化石從村莊收成拿（越後面的關卡掉越多），熔解武器也會退 1 顆。<br>+1～+6 一定成功。+7 起是危險區：+7 35%、+8 32.5%、+9 30%，失敗就爆裝；+10～+12 每級 1%，失敗時 1/3 維持原樣、2/3 爆裝。最高 <b>+12</b>。<br>攻擊倍率：+6 ×1.6、+7 ×1.9、+8 ×2.25、+9 ×2.65、+10 ×3.3、+11 ×4、+12 ×4.8。<br>武器的框色看強化等級：+0 灰、+1～+6 綠、+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石，+9 以上的框有電流繞著跑。<br>+1～+6 按強化直接出結果；+7 起符文石碑的燈光和武器光暈就是那一級外框的顏色。「一鍵強化」會一級一級連擊播放，點畫面可以略過。'},
   {k:'ench',ic:'mat_shard',n:'屬性附魔',s:'6 種屬性 × 3 個等級，打中怪物弱點加傷害',v:'4.54',h:'鍛造出來的武器一律<b>無屬性</b>。每次附魔花 <b>1 顆附魔石</b>加金幣，隨機附魔，得到 1 種屬性（每把武器只有 1 欄，重抽會蓋掉舊的）。<br>屬性 6 種：<b>烈焰、霜寒、雷霆、劇毒、神聖、暗影</b>，機率一樣。等級越高越難抽：一級 70%、二級 25%、三級 5%。<br>名稱：烈焰 餘燼／烈焰／滅世之焰；霜寒 寒霜／冰封／永凍之霜；雷霆 雷光／雷鳴／雷神之怒；劇毒 蝕毒／蛇毒／巨蟒之毒；神聖 微光／聖光／光神聖輝；暗影 幽影／暗夜／盲神之影。<br><b>相剋（三對宿敵）</b>：烈焰⇄霜寒、雷霆⇄劇毒、神聖⇄暗影。每隻怪物都有屬性，弱點就是對手屬性。<br>打中弱點：一級 ×1.2、二級 ×1.4、三級 ×1.6，狩獵更快、收成更多。沒打中或無屬性都是正常傷害，不會扣。屬性不加攻擊力。'},
   {k:'bag',ic:'nav_forge',n:'道具欄',s:'同一種道具疊一格，沒有上限',v:'4.60',h:'下方導覽的「<b>道具欄</b>」（原本的武器庫）分「武器／材料」兩頁，道具在「材料」頁。<br>武器頁：一模一樣的武器（同一把、同強化等級、同屬性）疊在同一格，右下角是數量；點進去的操作只動其中一把；按「一鍵安定值」後小卡會換到下一把同款，可以一直按。上限 200 把照算每一把。同一種道具放在同一格，右下角顯示數量，沒有上限。<br>道具：<b>強化石</b>（強化用）、<b>附魔石</b>（附魔用）、<b>英靈・遺物</b>（綠光、藍光、紅光、金光四種，光芒越亮內容越好）。三種都是打倒怪物有機率掉，越後面的關卡掉越多、好遺物越多。<br>點遺物可以看開出機率，按「打開 1 個」或「全部打開」：可能開到金幣、材料、強化石、附魔石、Boss 素材或武器。<br>材料：每一界 2 種一般材料，加上怪物部位和 Boss 素材，點一下看哪裡掉、哪把武器會用到。'},
   {k:'melt',ic:'mat_iron',n:'熔解',s:'不要的武器換回金幣',v:'4.43',h:'在武器詳情按「熔解」：退回一半鍛造金幣。<br>收藏（上鎖）的武器不能熔解。'}]],
  ['村莊與戰鬥',[
-  {k:'vil',ic:'nav_village',n:'村莊委託與收成',s:'交武器收復村莊、自動狩獵收成',v:'4.52',h:'還沒收復的村莊要<b>限時挑戰</b>：任何武器都能上（駐守中的也可以），<b>60 秒內打倒怪物</b>就收復，解鎖下一座村莊和新圖紙，第一次收復有金幣獎勵。整場戰鬥看得到血條和倒數，輸了馬上再試、沒有懲罰；選武器時會顯示預估秒數。<br>收復後可以讓武器駐守掛機，<b>每打倒一隻收成一次</b>，自動帶回金幣，<b>離線最多累積 12 小時</b>。換上更強的武器打得更快。<br>每輪會掉什麼直接看村莊卡片右邊。<b>點卡片上的武器</b>會跳出小卡，可以看武器詳情、換武器或收回武器。<br>「全部收成」只收目前在看的這一界；另一界可以收成時，地圖圖示會亮紅點。'},
+  {k:'vil',ic:'nav_village',n:'村莊委託與收成',s:'交武器收復村莊、自動狩獵收成',v:'4.66',h:'還沒收復的村莊要<b>限時挑戰</b>：任何武器都能上（駐守中的也可以），<b>60 秒內打倒怪物</b>就收復，解鎖下一座村莊和新圖紙，第一次收復有金幣獎勵。整場戰鬥看得到血條和倒數，輸了馬上再試、沒有懲罰；選武器時會顯示預估秒數。<br>收復後可以讓武器駐守掛機，<b>每打倒一隻收成一次</b>，自動帶回金幣，<b>離線最多累積 12 小時</b>。每隻還有機會<b>直接掉武器</b>：第一界的開局武器、這一界已解鎖圖紙的一般武器，怪物專屬武器和 Boss 武器只在牠那一關掉（機率在村莊詳情最下面）；道具欄滿了會自動熔解成金幣和強化石。換上更強的武器打得更快。<br>每輪會掉什麼直接看村莊卡片右邊。<b>點卡片上的武器</b>會跳出小卡，可以看武器詳情、換武器或收回武器。<br>「全部收成」只收目前在看的這一界；另一界可以收成時，地圖圖示會亮紅點。'},
   {k:'hp',ic:'mon_1',n:'怪物血條',s:'打中才扣血，扣多少＝傷害',v:'4.52',h:'村莊卡上的怪物有血條，武器打中才會扣血，扣多少就是造成的傷害。<br>還沒交付或沒有駐守武器的村莊，點開詳情上方有怪物大圖，按 ‹ › 翻看這一界 10 隻（還沒解鎖的只顯示黑影）。<br>怪物被打倒就完成一輪狩獵，換下一隻。<br>點村莊看詳情，血條同步顯示，下方還有這隻北歐神話怪物的稱號和傳說。每一界的最後一關都是神，每一關的名稱、掉落都跟那隻怪物或神的故事有關。<br>怪物血量＝村莊需求 × 60 秒 × 0.8（每界最後兩關 ×1.0），在村莊詳情裡看得到。<br>每隻怪物都有<b>屬性</b>，點開村莊詳情的「弱點」是牠怕的屬性（例如火焰騎兵怕霜寒、索爾死於蛇毒所以怕劇毒）；武器的屬性附魔打中弱點時，血條扣得更快。'},
   {k:'hit',ic:'cat_sword',n:'武器打法',s:'攻速不同、強化越高越常觸發附加效果',v:'4.39',h:'點村莊卡片下方的<b>往下箭頭</b>（或怪物小圖），會展開戰鬥畫面（一次一個，再點一下收起），下面還列出每輪掉落和已經打到、還沒收成的東西：騎士拿著駐守的武器打怪物，打中時怪物閃一下、停頓後被打退，跳出的數字就是傷害。戰鬥畫面收起時，卡片上的小怪物也是同樣的攻速和附加效果。<br>攻速：<b>劍</b> 1.0 秒、<b>斧</b> 1.3 秒（兩連斬）、<b>錘</b> 1.8 秒、<b>短刃</b> 0.6 秒、<b>長柄</b> 1.2 秒、<b>弓</b> 1.1 秒、<b>弩</b> 1.6 秒。<br>強化越高越常觸發附加效果（+1～+6 每級 2%，+7 起 16%～40%）：劍<b>會心</b>、斧<b>流血</b>、錘<b>震碎</b>、短刃<b>中毒</b>、長柄<b>貫穿</b>、弓<b>穿心</b>、弩<b>破甲</b>。狩獵時間和收成不受影響。'},
   {k:'realm',ic:'realm_2',n:'第二界 約頓海姆',s:'收復 1-10 後開放',v:'4.37',h:'收復 1-10 彩虹橋頭、打倒海姆達爾後開放第二界，用上方地圖列切換。<br>10 座新村莊、4 種新材料（巨人骨、永凍霜晶、雷鳴鐵、世界樹古根），第五階巨人武器要熔爐 Lv6。<br>v4.37 起巨人體重鍊已經拿掉，第二界材料用來鍛造巨人武器。'}]],
@@ -2330,11 +2342,12 @@ function sheetVillage(i){
   // v4.52 還沒收復＝選武器限時挑戰（駐守中的也能挑戰）；已收復＝指派駐守掛機。預估秒數已算攻速、強化、附加效果、弱點、相剋
   const open=st.status==='open',ok=S.weapons.filter(x=>eligible(i,x)&&(open||where(x)<0)).sort((a,b)=>vPow(i,b)-vPow(i,a)),wk=vWeak(i);
   const tile=x=>{const sec=vSec(i,x);return `<div class="ch-pick">${wTile(x,`data-act="${open?'chgo':'deliver'}" data-i="${i}" data-id="${x.id}"`)}<div class="small ${!open||sec<=CH_SEC?'t-ok':'t-danger'}">${open?`預估 ${Math.round(sec)} 秒`:`${fmt(kph(i,x))} 隻／小時`}</div></div>`};
-  return head+`<div class="ui-panel panel"><div class="kvgrid">${kv('怪物',MONS[i])}${kv('血量',fmt(VHP(i)))}${open?kv('時間限制',CH_SEC+' 秒'):kv('每隻金幣',fmt(vKillGold(i)))}${kv('弱點',wk?`<span class="elc-${wk}">${ELEM[wk].n}</span>`:'—')}${FIRST_GOLD[i]?kv('首次收復獎勵',st.status==='cleared'?'<span class="muted">已領取</span>':'<span class="t-gold">'+fmt(FIRST_GOLD[i])+' 金幣</span>').replace('class="kv"','class="kv kv-wide"'):''}</div></div>
-   ${v.drops.length?`<div class="ui-panel panel">${ptitle('每打倒一隻可能掉')}${drops('normal')}<div class="small muted vx-drop">另外：強化石 ${r1(stoneE(i)*100)}%・附魔石 ${r1(enchE(i)*100)}%・英靈・遺物 ${RELIC_P*100}%</div></div>`:''}${bank}
+  return head+`<div class="ui-panel panel"><div class="kvgrid">${kv('怪物',MONS[i])}${kv('血量',fmt(VHP(i)))}${open?kv('時間限制',CH_SEC+' 秒'):kv('每隻金幣',killGoldTxt(i))}${kv('弱點',wk?`<span class="elc-${wk}">${ELEM[wk].n}</span>`:'—')}${FIRST_GOLD[i]?kv('首次收復獎勵',st.status==='cleared'?'<span class="muted">已領取</span>':'<span class="t-gold">'+fmt(FIRST_GOLD[i])+' 金幣</span>').replace('class="kv"','class="kv kv-wide"'):''}</div></div>
+   ${v.drops.length?`<div class="ui-panel panel">${ptitle('每打倒一隻可能掉')}${drops('normal')}<div class="small muted vx-drop">另外：強化石 ${r1(stoneE(i)*100)}%・附魔石 ${r1(enchE(i)*100)}%・英靈・遺物 ${RELIC_P*100}%</div>${wDropTxt(i)}</div>`:''}${bank}
    <div class="ui-panel panel">${ptitle(open?'選一把武器挑戰':'指派駐守武器')}${ok.length?`<div class="wgrid">${ok.map(tile).join('')}</div><div class="small muted">${open?`${CH_SEC} 秒內打倒就收復，輸了可以馬上再試，沒有任何懲罰。`:'點武器即可駐守，每打倒一隻就收成一次。'}</div>`:`<div class="empty">道具欄沒有${open?'':'閒置的'}武器，先到鐵匠鋪鍛造一把。</div>`}</div>`;
 }
 // v4.38 「需要的武器」整段拿掉（Mochi：不限武器了就多餘）
+const wDropTxt=i=>{const L=wDrops(i);return L.length?`<div class="small muted vx-drop vx-wd">武器：${L.map(([k,p])=>`<span>${k==='_w0'?'鐵爐村武器（隨機一把）':BP[k].n} ${+(p*100).toFixed(2)}%</span>`).join('・')}</div>`:''};   // v4.66
 const gph=(i,w)=>{const v=VILLAGES[i],st=S.villages[i],gs=goldMul(i,w);return Math.round(3600000/gameDur(i,w)*vKillGold(i)*STRATS[st.strat].gold*gs*(1+(tal('gold')+gdGold())/100))};
 const kph=(i,w)=>Math.round(3600000/gameDur(i,w));   // v4.52 每小時擊殺數
 const harvestMini=g=>Object.entries(g).filter(([k,n])=>n).slice(0,4).map(([k,n])=>`<span class="hm">${itemIco(k)}${fmt(n)}</span>`).join('');
@@ -2461,6 +2474,8 @@ function viewShop(){
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'4.66',t:'打怪直接掉武器、1-1～1-5 金幣範圍',b:[['wdropsim','模擬 1-1／1-7／1-10／2-10 各打倒 10,000 隻，看掉幾把武器和金幣'],['wdrop1','1-1 駐守中的村莊塞 3 把掉落武器（按收成看）']]},
+ {v:'4.65',t:'強化石掉落機率減半（全部村莊都掉）',b:[['stonedrop','模擬 1-1／1-10／2-10 各打倒 1000 隻，看掉幾顆強化石']]},
  {v:'4.64',t:'+7 起武器光暈用外框顏色、拿掉升階大字；拿掉安全區失敗和防爆按鈕',b:[['fxt_7','強化 +7（藍，看有沒有黃光）'],['fxt_10','強化 +10（金）'],['fx_green','+1～+6 綠光']]},
  {v:'4.63',t:'商城購買小卡：調數量、購買不再重新跳出',b:[['shopcard','打開松林硬木購買小卡（給 5,000 金幣）']]},
  {v:'4.61',t:'強化特效：石碑不動、金／鑽石閃電、燈光同色、失敗與爆裝新特效',b:[['fx_ok','危險區・成功'],['fx_fail','危險區・失敗'],['fx_broke','危險區・爆裝'],['fxt_10','升階 +10（金閃電）'],['fxt_12','升階 +12（鑽石閃電）']]},
@@ -2759,6 +2774,8 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
    testw:()=>{const bp=['dev_sword','dev_sword','dev_sword','dev_sword'][ui.devTier??0];const w=makeWeapon(bp,ui.devTier===3?3:2,ui.devLv??0,[]);w.test=true;ui.enhLast=null;ui.riskArm=ui.riskOk=null;ui.sheet={t:'w',id:w.id,m:'enh'};toast('已送出測試武器')},
    stone50:()=>S.items[STONE]=stones()+50,stone0:()=>S.items[STONE]=0,
    stonereal:()=>{const bp=BPS.find(x=>x.cat==='sword');if(!bp)return toast('沒有劍的圖紙（開發者模式才有測試圖紙）','bad');const w=makeWeapon(bp.id,0,6,[]);S.items[STONE]=Math.max(stones(),20);ui.sheet={t:'w',id:w.id,m:'enh'};toast('真的 +6 劍：強化會用掉強化石，+7 起失敗就爆裝','ok')},
+   wdropsim:()=>{const out=[0,6,9,19].map(i=>{const st={strat:'normal',bank:{cycles:0,gold:0,mats:{},events:0}};for(let c=0;c<10000;c++)rollCycle(i,null,st,NOW());const ws=Object.entries(st.bank.mats).filter(([k])=>k.startsWith('w:')).map(([k,n])=>itemName(k)+' '+n).join('、')||'沒有';return `<b>${vNo(i)}</b> 每隻金幣 ${killGoldTxt(i)}（平均 ${fmt(Math.round(st.bank.gold/10000))}）・武器：${ws}`});ui.testOut='<div><b>打倒 10,000 隻</b>（約 133 小時）</div>'+out.join('<br>')},
+   wdrop1:()=>{const st=S.villages[0];st.bank.cycles=Math.max(1,st.bank.cycles);['w:w0_axe','w:w0_bow','w:'+(BP.w1_spear?'w1_spear':'w0_sword')].forEach(k=>st.bank.mats[k]=(st.bank.mats[k]||0)+1);toast('1-1 收成裡多了 3 把武器，按「全部收成」看');ui.tab='village';ui.realm=0},
    stonedrop:()=>{const out=[0,9,19].map(i=>{const st={strat:'normal',bank:{cycles:0,gold:0,mats:{},events:0}};for(let c=0;c<1000;c++)rollCycle(i,null,st,NOW());return vNo(i)+' '+(st.bank.mats[STONE]|0)+' 顆'});ui.testOut='<div><b>打倒 1000 隻掉的強化石</b>（每隻機率 '+[0,9,19].map(i=>(stoneE(i)*100).toFixed(2)+'%').join('／')+'）</div><div>'+out.join('、')+'</div>'},
    allw:()=>devAllWeapons(BPS.map(b=>b.id)),wpntest:()=>{S.weapons=S.weapons.filter(w=>!w.test||where(w)>=0);let f=null;for(const c of Object.keys(CSPD)){const b=BPS.find(x=>x.cat===c);if(!b)continue;const w=makeWeapon(b.id,0,6,[]);w.test=true;f=f||w}
     if(!f)return toast('目前沒有可用的圖紙');ui.tab='armory';ui.acat='all';ui.ast='test';ui.sheet={t:'w',id:f.id,m:'main'};render();toast('已產生七類 +6 測試武器，詳情頁看攻速、單擊、附加效果、相剋')},flvtest:()=>{S.weapons=S.weapons.filter(w=>!w.test||where(w)>=0);[12,11,10,9,8,7,6,1,0].forEach(lv=>{const w=makeWeapon('dev_sword',0,lv,[]);w.test=true});ui.sheet=null;ui.tab='armory';ui.acat='all';ui.aq='all';ui.ast='test';ui.asort='lv';render();scrollTo(0,0);toast('已產生 +0～+12 測試武器：灰、綠、藍、紅、金、紫、鑽石框')},
