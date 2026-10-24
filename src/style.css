@@ -1842,4 +1842,9 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .ch-tips{line-height:1.8}
 /* v4.53 交易所商品詳情用武器小卡排版 */
 .mk-wp .wp-top{padding-right:0}
+/* v4.54 英靈・遺物：開出機率表、打開按鈕、開箱結果 */
+.rl-tab{display:grid;grid-template-columns:1fr auto 1fr auto;gap:2px 10px;margin:6px 0 8px;font-size:13px}.rl-tab span{color:var(--ash)}.rl-tab b{color:var(--gold-hi);text-align:right}
+.rl-acts{display:flex;gap:8px;margin-top:10px}.rl-acts>*{flex:1;min-width:0}
+.rl-got{justify-content:center}.rl-got .hico{height:auto;padding-bottom:4px}.rl-got .hn{display:block;font-size:11px;color:var(--ash);text-align:center;line-height:1.2;margin-top:2px}.rl-w{margin-top:8px;font-size:13px}.rl-w b{display:block;margin-bottom:2px}
+.vx-drop{margin-top:6px}
 </style>
