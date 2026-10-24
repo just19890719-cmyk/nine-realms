@@ -1719,4 +1719,16 @@ html.scrimmed .cbar{display:none}
 .vcard .wchip[data-act]{cursor:pointer}
 /* v4.38 排行榜按鈕拿掉後村莊列只剩 2 顆，小螢幕也排一列 */
 @media(max-width:380px){.vbar.two{flex-wrap:nowrap}.vbar.two>.btn:first-child{flex:1 1 auto}.vbar.two>.btn:not(:first-child){flex:0 0 auto}}
+/* v4.39 駐守村莊卡片下方的箭頭：展開／收起戰鬥畫面 */
+.vcard .bs-tgl{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:44px;height:18px;padding:0;border:1px solid var(--line);border-bottom:0;border-radius:9px 9px 0 0;background:#241a12;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2}
+.vcard .bs-tgl i{width:8px;height:8px;border-right:2px solid #e8c27a;border-bottom:2px solid #e8c27a;transform:translateY(-2px) rotate(45deg)}
+.vcard .bs-tgl.up i{transform:translateY(2px) rotate(-135deg)}
+.vcard.tgl{padding-bottom:22px}
+/* v4.39 戰鬥畫面展開後的掉落／已打到 */
+.vcard .bs-more{flex:0 0 100%;order:5;padding:6px 2px 2px;border-top:1px solid var(--line)}
+.bs-more .bs-k{font-size:12px;color:#c9a46a;margin:4px 0}
+.bs-drops{display:flex;flex-wrap:wrap;gap:6px}
+.bs-d{display:flex;align-items:center;gap:4px;padding:3px 8px 3px 3px;border:1px solid var(--line);border-radius:6px;background:rgba(0,0,0,.3);color:inherit;font-size:12px;cursor:pointer}
+.bs-d img{width:26px;height:26px}.bs-d b{color:#e8c27a;font-weight:600}.bs-d.rare{border-color:#8a5cc7}
+.bs-got{display:flex;flex-wrap:wrap;gap:6px}.bs-got .hico{min-width:0;padding:4px 8px;flex-direction:row;gap:4px}.bs-got .hico img{width:28px;height:28px}
 </style>

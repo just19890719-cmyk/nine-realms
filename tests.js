@@ -488,6 +488,11 @@ function storyTests(){const pr=[...MON_LORE,...VILLAGES.map(v=>v.txt)].map((t,i)
 function godWordTests(){const bad=VILLAGES.map((v,i)=>i).filter(i=>/神/.test(MON_T[i]||'')&&/[他她牠]/.test(MON_LORE[i]+VILLAGES[i].txt));
   return[T('H 神明用「祂」：神的傳說、村莊文字都不用他／她／牠',!bad.length,bad.length?'傳說：'+bad.map(vNo).join('、'):'都用祂')]}
 // v4.38 駐守村莊不開詳情：點武器只出小卡（收回／換武器），沒有狩獵策略、沒有排行榜
+// v4.39 卡片箭頭：駐守卡片有往下箭頭，展開後有戰鬥畫面、每輪掉落、已打到
+function bsTglTests(){const S0=S,o=ui.bsOpen;S=fresh();const w=makeWeapon('t1_woodaxe',0,0,[]);const st=S.villages[0];st.status='cleared';st.weaponId=w.id;st.cycleStart=NOW();st.bank={cycles:3,gold:30,mats:{[VILLAGES[0].drops[0][0]]:2},events:0};
+  ui.tab='village';ui.realm=0;ui.bsOpen=null;const c=viewVillage();ui.bsOpen=0;const op=viewVillage();S=S0;ui.bsOpen=o;
+  const ok=/class="bs-tgl "[^>]*data-act="bsopen"/.test(c)&&!/bs-more/.test(c)&&/class="bs-tgl up"[^>]*data-act="bsclose"/.test(op)&&/class="bs /.test(op)&&/bs-drops/.test(op)&&(op.match(/class="bs-d[ "]/g)||[]).length===VILLAGES[0].drops.length&&/bs-got/.test(op)&&/×30/.test(op);
+  return[T('H 村莊卡片箭頭：收起時往下、展開有戰鬥畫面＋每輪掉落＋已打到、再點收起',!!ok,ok?'正常':'內容不對')]}
 function vPickTests(){const S0=S,sv=ui.sheet;S=fresh();const w=makeWeapon('t1_woodaxe',0,0,[]);const st=S.villages[0];st.status='cleared';st.weaponId=w.id;st.cycleStart=NOW();
   const h=sheetVillage(0),card=(()=>{ui.tab='village';ui.realm=0;return typeof viewVillage==='function'?viewVillage():''})();S=S0;ui.sheet=sv;
   const ok=/data-act="recall"/.test(h)&&/data-act="vswap"/.test(h)&&!/data-act="strat"/.test(h)&&!/lbopen/.test(h)&&LB_OFF&&lbRank(0)==null&&!lbReward(0).length;
@@ -533,7 +538,7 @@ function gwTests(){const ck=godCheck(),bad=ck.filter(x=>!x.ok);
     T('GW4 覺醒：+6 沒有、+7 狩獵 −3%、+11 攻擊力 ×1.1、+13 四段、+15 稱號',n6===0&&Math.abs(tr-.03)<1e-9&&p10===b10&&p11===b11&&n13===4&&!t0&&t1,`+6 段數 ${n6}；+7 縮短 ${tr}；+10 ${p10}/${b10}；+11 ${p11}/${b11}；+13 段數 ${n13}；稱號 ${t0}→${t1}`)]}
 function runTests(mode){
   if(mode==='econ')return econHtml(12)+econHtml(8);
-  const r=runAll({N:100000});r.res.push(...frameLvTests(),...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...storyTests(),...curveTests(),...vNeedTests(),...vPickTests(),...godWordTests(),...hitTests(),...enchTests(),...wsTests(),...gwTests());const pass=r.res.filter(x=>x.pass).length;
+  const r=runAll({N:100000});r.res.push(...frameLvTests(),...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...storyTests(),...curveTests(),...vNeedTests(),...vPickTests(),...bsTglTests(),...godWordTests(),...hitTests(),...enchTests(),...wsTests(),...gwTests());const pass=r.res.filter(x=>x.pass).length;
   return `<div><b>${pass}/${r.res.length} 通過</b>（${r.ms} 毫秒）</div>`+resHtml(r.res);
 }
 // v4.34 武器框顏色看強化等級
