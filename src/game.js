@@ -283,7 +283,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.59';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.60';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1219,6 +1219,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.60',d:'10/24',t:'一鍵安定值・同款連按',b:['武器小卡的「一鍵 +6」改名<b>「一鍵安定值」</b>','同款武器疊在一格時，按一鍵安定值後小卡會自動換到<b>下一把同款</b>，可以一直按下去，不用回道具欄重點'],g:['enh','bag']},
  {v:'4.59',d:'10/24',t:'商城整理：簽到搬家・材料可以買',b:['<b>七日簽到</b>從任務搬到<b>商城</b>，每天第一次進遊戲會自動打開商城簽到（簽到獎勵之後會換新）','商城可以用<b>金幣或鑽石</b>買 8 種材料，點材料選數量購買','<b>狩獵號角</b>拿掉了','其他商品等正式上線再補齊'],g:['shop','quest']},
  {v:'4.58',d:'10/24',t:'強化特效加強',b:['<b>一鍵強化</b>改成連續演出：每升一級跳出大數字、符文一道道亮起綠光、音調越來越高，最後一下爆出光芒（點畫面可以略過）','+1～+6 單按強化不再播動畫，按下去直接出結果，石碑亮一下綠光；強化頁改成小卡，顯示強化石剩幾顆','<b>+7 以上</b>強化時，整塊符文石碑的燈光改成外框顏色：+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石；成功換到新顏色時跳出「升階」','+7 起石碑上會打閃電，等級越高閃電越多越強，+12 最華麗','強化成功率、爆裝率都沒有改']},
  {v:'4.57',d:'10/24',t:'新手導覽重做',b:['新玩家的<b>新手導覽</b>重新開放，照現在的玩法一步一步教','流程：打造鐵爐村伐木斧 → 60 秒挑戰 1-1 → 留下來掛機 → 收成 → 看材料和遺物 → 打鐵劍練強化 → 附魔 → 新圖紙 → 領月卡','挑戰輸了導覽會提示再挑戰，不會卡住','完成導覽一樣送 <b>50 鑽石</b>'],g:[]},
@@ -1289,7 +1290,7 @@ const GUIDE=[
   {k:'wpn',ic:'cat_sword',n:'武器數值與相剋',s:'攻速、附加效果、相剋，點武器看小卡',v:'4.46',h:'點武器會跳出小卡。<b>攻擊力＝每秒傷害</b>，已經算進附加效果的平均。<br>七類武器攻速：雙刀 0.6 秒、劍 1.0、弓 1.1、長柄 1.2、斧 1.3、弩 1.6、錘 1.8 秒；每秒傷害都差不多，攻速慢的單擊比較重。<br><b>附加效果</b>：劍會心、斧流血、錘震碎、雙刀中毒、長柄貫穿、弓穿心、弩破甲；+1～+6 每級觸發率 2%，+7 起 16／20／25／30／35／40%。<br><b>相剋</b>：怪物分人形、野獸、巨型、飛行。劍、雙刀剋人形，長柄、斧剋野獸，錘、弩剋巨型，弓剋飛行；打被剋的怪物傷害多「強化等級 %」，+12 為 +12%，跟屬性弱點一起算。<br>武器名稱是「+7 寒霜 鐵劍」：強化等級、附魔、武器名。'},
   {k:'enh',ic:'it_bless',n:'強化',s:'每次 1 顆強化石，最高 +12',v:'4.58',h:'每次強化用 <b>1 顆強化石</b>，不花金幣，成功或失敗都會用掉。強化石從村莊收成拿（越後面的關卡掉越多），熔解武器也會退 1 顆。<br>+1～+6 一定成功。+7 起是危險區：+7 35%、+8 32.5%、+9 30%，失敗就爆裝；+10～+12 每級 1%，失敗時 1/3 維持原樣、2/3 爆裝。最高 <b>+12</b>。<br>攻擊倍率：+6 ×1.6、+7 ×1.9、+8 ×2.25、+9 ×2.65、+10 ×3.3、+11 ×4、+12 ×4.8。<br>武器的框色看強化等級：+0 灰、+1～+6 綠、+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石，+9 以上的框有電流繞著跑。<br>+1～+6 按強化直接出結果；+7 起符文石碑的燈光就是那一級外框的顏色，成功換到新顏色時會跳出「升階」。「一鍵強化」會一級一級連擊播放，點畫面可以略過。'},
   {k:'ench',ic:'mat_shard',n:'屬性附魔',s:'6 種屬性 × 3 個等級，打中怪物弱點加傷害',v:'4.54',h:'鍛造出來的武器一律<b>無屬性</b>。每次附魔花 <b>1 顆附魔石</b>加金幣，隨機附魔，得到 1 種屬性（每把武器只有 1 欄，重抽會蓋掉舊的）。<br>屬性 6 種：<b>烈焰、霜寒、雷霆、劇毒、神聖、暗影</b>，機率一樣。等級越高越難抽：一級 70%、二級 25%、三級 5%。<br>名稱：烈焰 餘燼／烈焰／滅世之焰；霜寒 寒霜／冰封／永凍之霜；雷霆 雷光／雷鳴／雷神之怒；劇毒 蝕毒／蛇毒／巨蟒之毒；神聖 微光／聖光／光神聖輝；暗影 幽影／暗夜／盲神之影。<br><b>相剋（三對宿敵）</b>：烈焰⇄霜寒、雷霆⇄劇毒、神聖⇄暗影。每隻怪物都有屬性，弱點就是對手屬性。<br>打中弱點：一級 ×1.2、二級 ×1.4、三級 ×1.6，狩獵更快、收成更多。沒打中或無屬性都是正常傷害，不會扣。屬性不加攻擊力。'},
-  {k:'bag',ic:'nav_forge',n:'道具欄',s:'同一種道具疊一格，沒有上限',v:'4.55',h:'下方導覽的「<b>道具欄</b>」（原本的武器庫）分「武器／材料」兩頁，道具在「材料」頁。<br>武器頁：一模一樣的武器（同一把、同強化等級、同屬性）疊在同一格，右下角是數量；點進去的操作只動其中一把。上限 200 把照算每一把。同一種道具放在同一格，右下角顯示數量，沒有上限。<br>道具：<b>強化石</b>（強化用）、<b>附魔石</b>（附魔用）、<b>英靈・遺物</b>（綠光、藍光、紅光、金光四種，光芒越亮內容越好）。三種都是打倒怪物有機率掉，越後面的關卡掉越多、好遺物越多。<br>點遺物可以看開出機率，按「打開 1 個」或「全部打開」：可能開到金幣、材料、強化石、附魔石、Boss 素材或武器。<br>材料：每一界 2 種一般材料，加上怪物部位和 Boss 素材，點一下看哪裡掉、哪把武器會用到。'},
+  {k:'bag',ic:'nav_forge',n:'道具欄',s:'同一種道具疊一格，沒有上限',v:'4.60',h:'下方導覽的「<b>道具欄</b>」（原本的武器庫）分「武器／材料」兩頁，道具在「材料」頁。<br>武器頁：一模一樣的武器（同一把、同強化等級、同屬性）疊在同一格，右下角是數量；點進去的操作只動其中一把；按「一鍵安定值」後小卡會換到下一把同款，可以一直按。上限 200 把照算每一把。同一種道具放在同一格，右下角顯示數量，沒有上限。<br>道具：<b>強化石</b>（強化用）、<b>附魔石</b>（附魔用）、<b>英靈・遺物</b>（綠光、藍光、紅光、金光四種，光芒越亮內容越好）。三種都是打倒怪物有機率掉，越後面的關卡掉越多、好遺物越多。<br>點遺物可以看開出機率，按「打開 1 個」或「全部打開」：可能開到金幣、材料、強化石、附魔石、Boss 素材或武器。<br>材料：每一界 2 種一般材料，加上怪物部位和 Boss 素材，點一下看哪裡掉、哪把武器會用到。'},
   {k:'melt',ic:'mat_iron',n:'熔解',s:'不要的武器換回金幣',v:'4.43',h:'在武器詳情按「熔解」：退回一半鍛造金幣。<br>收藏（上鎖）的武器不能熔解。'}]],
  ['村莊與戰鬥',[
   {k:'vil',ic:'nav_village',n:'村莊委託與收成',s:'交武器收復村莊、自動狩獵收成',v:'4.52',h:'還沒收復的村莊要<b>限時挑戰</b>：任何武器都能上（駐守中的也可以），<b>60 秒內打倒怪物</b>就收復，解鎖下一座村莊和新圖紙，第一次收復有金幣獎勵。整場戰鬥看得到血條和倒數，輸了馬上再試、沒有懲罰；選武器時會顯示預估秒數。<br>收復後可以讓武器駐守掛機，<b>每打倒一隻收成一次</b>，自動帶回金幣，<b>離線最多累積 12 小時</b>。換上更強的武器打得更快。<br>每輪會掉什麼直接看村莊卡片右邊。<b>點卡片上的武器</b>會跳出小卡，可以看武器詳情、換武器或收回武器。<br>「全部收成」只收目前在看的這一界；另一界可以收成時，地圖圖示會亮紅點。'},
@@ -1358,12 +1359,12 @@ function meltCheap(){snd('melt');const list=cheapList();if(!list.length)return t
 function autoEnhCost(w){let g=0;for(let lv=w.lv;lv<stable(w);lv++)g+=enhCost(w)/RATE[lv+1];return Math.ceil(g)}   // v4.50 算強化石顆數（+1～+6 必成功＝差幾級就幾顆）
 function autoEnhance(id){if(ui.busy)return;const w=W(id);if(!w)return;const s=stable(w);
   if(busyW(w))return toast('駐守中的武器要先收回。','bad');if(w.lv>=s)return toast(`已經達到安定值 +${s}。`);
-  const from=w.lv,g0=stones();let tries=0,fails=0,err='';
+  const from=w.lv,g0=stones();let tries=0,fails=0,err='';const nx=wSame(w)>1?{id,k:wKey(w)}:null;   // v4.60 同款疊一格：動畫播完小卡換到下一把同款，可以一直按（Mochi）
   const steps=[];while(w.lv<s&&tries<500){const r=enhanceCore(id,{});if(r.err){err=r.err;break}tries++;if(r.k!=='ok')fails++;steps.push({k:r.k,lv:w.lv})}
   if(!tries){toast(err||'無法強化。','bad');return render()}
   ui.enhLast=null;if(err)toast(`${err}，一鍵強化停在 +${w.lv}`,'bad');
   // v4.58 一鍵強化改成逐級連擊演出（結果上面已經算好）
-  ui.sheet={t:'w',id,m:'enh'};ui.riskArm=ui.riskOk=null;render();
+  ui.sheet={t:'w',id,m:'enh'};ui.riskArm=ui.riskOk=null;ui.stkNext=null;render();ui.stkNext=nx;
   playCombo(id,from,steps,{id,k:'ok',t:`一鍵強化 +${from} → +${w.lv}`,d:`強化 ${tries} 次、失敗 ${fails} 次${w.test?'（測試武器免費）':'，用掉 '+fmt(g0-stones())+' 顆強化石'}`})}
 const DEV={force:null};
 function enhance(id){
@@ -1831,6 +1832,10 @@ const kv=(k,v)=>`<div class="kv"><span>${k}</span><b>${v}</b></div>`;
 const wKey=w=>[w.b,w.lv|0,(e=>e?e.k+e.t:'')(wElem(w)),w.lock?1:0,w.test?1:0].join('|');
 const wStackable=w=>where(w)<0&&bossSlotOf(w)<0;
 function wStacks(ws){const m=new Map(),out=[];ws.forEach(w=>{if(!wStackable(w))return out.push({w,n:1,nw:wNew(w)});const k=wKey(w);let g=m.get(k);if(!g){g={w,n:0,nw:false};m.set(k,g);out.push(g)}g.n++;g.nw=g.nw||wNew(w)});return out}
+// v4.60 一鍵安定值後：小卡留在同款那一格（換成下一把還沒強化的同款），動畫播完才換
+function stkFollow(){const n=ui.stkNext,s=ui.sheet;if(!n||ui.busy)return;ui.stkNext=null;if(!s||s.t!=='w'||s.id!==n.id)return;
+  const w=W(n.id);if(w&&wStackable(w)&&wKey(w)===n.k)return;const x=S.weapons.find(v=>v.id!==n.id&&wStackable(v)&&wKey(v)===n.k);if(!x)return;
+  const r=ui.enhLast&&ui.enhLast.id===n.id?ui.enhLast:null;s.id=x.id;s.m='main';ui.enhLast=null;if(r)toast(`${r.t}<br>${r.d}`,'ok')}
 const wSame=w=>wStackable(w)?S.weapons.filter(x=>wStackable(x)&&wKey(x)===wKey(w)).length:1;
 function wTile(w,act,dot,n=1,nw=wNew(w)){const b=bpOf(w),i=where(w);
   return `<button class="wt ${lc(w)}b ${i>=0?'posted':''} ${w.lock?'locked-fav':''}" ${act}>${dot?'<i class="dot give-dot" title="可以交付村莊"></i>':''}<span class="wt-art">${wArt(b.id,{frame:fq(w)})}
@@ -2068,10 +2073,10 @@ function sheetWeapon(id,mode){
      ${wpGrid(w)}
      <div class="wp-lv"><div class="wp-bar">${Array.from({length:13},(_,k)=>`<i class="${k<=w.lv?'on':''} ${k===w.lv?'cur':''}" style="--c:var(--l${FLV(k)})"></i>`).join('')}</div>
       <div class="rw"><span>+0</span><span>${max?'已達 +12':`下一級 +${nx}：${pr?pr[0]+' <b>'+pct(procP(nx))+'</b>・':''}${rc?'相剋 <b>+'+raceBonus(w,nx)+'%</b>・':''}攻擊力 <b>${fmt(power(w,nx))}</b>`}</span><span>+12</span></div></div>
-     <div class="wp-a">${btn('強化','wmode',{cls:'btn-primary',attrs:`data-m="enh" data-id="${id}"`,dis:busy})}${btn(w.lv>=stable(w)?`已 +${stable(w)}`:`一鍵 +${stable(w)}`,'autoEnh',{cls:'btn-primary',attrs:`data-id="${id}"`,dis:busy||w.lv>=stable(w)||(!w.test&&stones()<enhCost(w))})}${btn('附魔','wmode',{cls:'btn-primary',attrs:`data-m="ench" data-id="${id}"`,dis:busy})}
+     <div class="wp-a">${btn('強化','wmode',{cls:'btn-primary',attrs:`data-m="enh" data-id="${id}"`,dis:busy})}${btn(w.lv>=stable(w)?`已 +${stable(w)}`:'一鍵安定值','autoEnh',{cls:'btn-primary',attrs:`data-id="${id}"`,dis:busy||w.lv>=stable(w)||(!w.test&&stones()<enhCost(w))})}${btn('附魔','wmode',{cls:'btn-primary',attrs:`data-m="ench" data-id="${id}"`,dis:busy})}
       ${i>=0?btn('收回','recall',{attrs:`data-i="${i}"`}):bs>=0?btn('收回','bossout',{attrs:`data-s="${bs}"`}):btn('駐守'+(canGive(w)?'<i class="dot give-dot"></i>':''),'wmode',{attrs:`data-m="give" data-id="${id}"`})}
       ${btn('上架','mksellw',{attrs:`data-id="${id}"`,dis:w.test||!mkSellable(w)})}${btn(ui.meltArm===id?'確認':'熔解','melt',{cls:'btn-danger',attrs:`data-id="${id}"`,dis:busy||w.lock})}</div>
-     ${(n=>n>1?`<div class="small muted center wp-note wp-stk">同款共 ${n} 把，強化、附魔、駐守、上架、熔解只會動這一把</div>`:'')(wSame(w))}${ui.meltArm===id?'<div class="small t-danger center wp-note">再按一次確認熔解，熔解後無法復原。</div>':busy?'<div class="small muted center wp-note">駐守中的武器要先收回，才能強化、附魔或熔解。</div>':w.lv<stable(w)?`<div class="small muted center wp-note">一鍵 +${stable(w)}：${w.test?'測試武器免費':'要 '+fmt(autoEnhCost(w))+' 顆強化石・持有 '+fmt(stones())}，不會爆裝</div>`:''}</div>`;
+     ${(n=>n>1?`<div class="small muted center wp-note wp-stk">同款共 ${n} 把，強化、附魔、駐守、上架、熔解只會動這一把</div>`:'')(wSame(w))}${ui.meltArm===id?'<div class="small t-danger center wp-note">再按一次確認熔解，熔解後無法復原。</div>':busy?'<div class="small muted center wp-note">駐守中的武器要先收回，才能強化、附魔或熔解。</div>':w.lv<stable(w)?`<div class="small muted center wp-note">一鍵安定值 +${stable(w)}：${w.test?'測試武器免費':'要 '+fmt(autoEnhCost(w))+' 顆強化石・持有 '+fmt(stones())}，不會爆裝</div>`:''}</div>`;
   }
   if(bs>=0)return head+showcase()+`<div class="goal">這把武器正在討伐首領，要先收回。</div>${btn('從首領收回','bossout',{cls:'btn-primary big',attrs:`data-s="${bs}"`})}`;
   if(i>=0&&mode!=='give')return head+showcase()+`<div class="goal">這把武器正在 ${VILLAGES[i].name} 駐守，要先收回。</div>${btn('從村莊收回','recall',{cls:'btn-primary big',attrs:`data-i="${i}"`})}`;
@@ -2770,7 +2775,7 @@ function fitNames(){const els=[...document.querySelectorAll('.wt-name')];if(!els
   const base=parseFloat(getComputedStyle(m[0][0]).fontSize)||14;m.forEach(([el,r])=>{el.style.fontSize=Math.max(11,Math.floor(base*r*2)/2)+'px'});
   m.forEach(([el])=>{let f=parseFloat(el.style.fontSize);if(el.scrollWidth>el.clientWidth+.5&&f>11)el.style.fontSize=Math.max(11,f-1)+'px'})}
 if(typeof window!=='undefined')window.addEventListener('resize',()=>fitNames());
-function renderLayer(){
+function renderLayer(){stkFollow();
   const L=document.getElementById('layer');const s=ui.sheet;let h='';
   const sc=document.querySelector('.sheet'),st=sc?sc.scrollTop:0,same=sc&&ui._lastSheet===JSON.stringify(s);
   if(s){const pop=s.t==='w'&&((s.m==='main'||s.m==='ench')&&!!W(s.id)||s.m==='enh'),full=!pop&&(s.t==='w'||s.t==='fxt');h+=`<div class="scrim ${pop?'wpopc':''} ${same?'still':''}" data-act="scrim"><div class="ui-sheet sheet ${full?'full':''} ${pop?'wpop':''} ${s.t==='chat'?'cx-sheet':''} ${same?'still':''}">${s.t==='w'?sheetWeapon(s.id,s.m):s.t==='v'?sheetVillage(s.i):s.t==='ch'&&ui.ch?sheetCh():s.t==='chr'&&ui.chr?sheetChr():s.t==='a'?sheetAch():s.t==='lb'?sheetLb(s.i):s.t==='lbw'?sheetLbW(s.i,s.k):s.t==='ws'?sheetWorkshop(s.k):s.t==='evt'?sheetEvt():s.t==='chat'?sheetChat():s.t==='gd'?sheetGuild():s.t==='fr'?sheetFriend():s.t==='bw'?sheetBossW(s.r,s.j):s.t==='fxt'?sheetFxTest(s):s.t==='set'?sheetSet(s.k):/^mk/.test(s.t)?sheetMk(s):sheetDev()}</div></div>`}
