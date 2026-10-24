@@ -3,9 +3,9 @@
 const VERSION=3;
 const ART_V='?v=3';  // 武器顯示圖改過透明度：加版本號，避免瀏覽器沿用舊快取
 // v3.76 第二界的 AI 圖還沒到：先借第一界的圖顯示，圖到了刪掉對應那一項就好
-const ART_WAIT={};
-const A=n=>(n=ART_WAIT[n]||n,(typeof UI_ART!=='undefined'&&UI_ART[n])||'art/'+n+'.webp'+(n.endsWith('_disp')?ART_V:/^(mon|boss|bg)_|^v\d+$/.test(n)?'?m=4.25':''));  // UI_ART（skin.js）可把既有圖示換成新素材路徑；預設空白＝不變
-const MATS={iron:'鐵礦',oak:'橡木',leather:'皮革',silver:'霜銀',fang:'狼牙',scale:'龍鱗',rainbow:'虹橋碎晶',rune:'符文石',shard:'符文碎片',fur:'魔狼黑毛',icecore:'霜巨人冰核',fireheart:'火巨人焰心',serpent:'海蛇鱗',giantbone:'巨人骨',permafrost:'永凍霜晶',thunderiron:'雷鳴鐵',elderroot:'世界樹古根',hrelic:'霍夫德劍柄',srelic:'斯卡蒂弓臂'};
+const ART_WAIT={g_skadi:'t4_hammer',g_skadi_disp:'t4_hammer_disp',mat_srelic:'mat_thunderiron'};   // v4.24 索爾之錘、雷神錘柄的圖還沒到，先借熔岩巨錘、雷鳴鐵
+const A=n=>(n=ART_WAIT[n]||n,(typeof UI_ART!=='undefined'&&UI_ART[n])||'art/'+n+'.webp'+(n.endsWith('_disp')?ART_V:/^(mon|boss|bg)_|^v\d+$/.test(n)?'?m=4.26':''));  // UI_ART（skin.js）可把既有圖示換成新素材路徑；預設空白＝不變
+const MATS={iron:'鐵礦',oak:'橡木',leather:'皮革',silver:'霜銀',fang:'狼牙',scale:'龍鱗',rainbow:'虹橋碎晶',rune:'符文石',shard:'符文碎片',fur:'魔狼黑毛',icecore:'霜巨人冰核',fireheart:'火巨人焰心',serpent:'海蛇鱗',giantbone:'巨人骨',permafrost:'永凍霜晶',thunderiron:'雷鳴鐵',elderroot:'世界樹古根',hrelic:'霍夫德劍柄',srelic:'雷神錘柄'};   // v4.24 2-10 換成索爾：srelic／g_skadi／skadi 代號沿用（存檔、SQL 不用搬），顯示名稱改成雷神
 const MATART={iron:'mat_iron',oak:'mat_oak',leather:'mat_leather',silver:'mat_silver',fang:'mat_fang',scale:'mat_scale',rainbow:'mat_rainbow',rune:'mat_rune',shard:'mat_shard',fur:'mat_fur',icecore:'mat_icecore',fireheart:'mat_fireheart',serpent:'mat_serpent',giantbone:'mat_giantbone',permafrost:'mat_permafrost',thunderiron:'mat_thunderiron',elderroot:'mat_elderroot',hrelic:'mat_hrelic',srelic:'mat_srelic'};
 const CATS={axe:'斧',sword:'劍',dagger:'短刃',polearm:'長柄',hammer:'錘',bow:'弓',crossbow:'弩',shield:'盾',throw:'投擲',tool:'工具'};
 // sec = 正式版 1× 秒數；試玩可在測試工具調整時間流速
@@ -18,7 +18,7 @@ const TIERS=[
   // v4.15 神明武器（Mochi 選方案 B）：打倒每一界第 10 關的神，用神的遺物重鍛祂的武器。每一界一階，倍率＝該界最高材質 ×1.35 左右，
   // 把天生詞條＋覺醒攻擊力全部算滿也要比下一界的新材質弱（快速測試 GW 會檢查）；第三界新材質預定約 ×35
   {n:'神明',mult:12,stable:6,sec:600,gold:30000,furnace:5,unlock:10,slag:60},   // 第一界：海姆達爾（神器 ×11 ↔ 巨人 ×16）
-  {n:'神明',mult:18,stable:6,sec:600,gold:60000,furnace:6,unlock:20,slag:90}    // 第二界：斯卡蒂（巨人 ×16 ↔ 第三界約 ×35）
+  {n:'神明',mult:18,stable:6,sec:600,gold:60000,furnace:6,unlock:20,slag:90}    // 第二界：索爾（巨人 ×16 ↔ 第三界約 ×35）
 ];
 const BPS=[
  ['t1_woodaxe','伐木斧','axe',0,14,0],['t1_handaxe','手斧','axe',0,12,0],
@@ -40,7 +40,7 @@ const BPS=[
  ['t4_axe','霜巨人戰斧','axe',4,16,13,null,['giant',20]],['t4_sword','巨人王劍','sword',4,15],['t4_bow','風暴巨弓','bow',4,12],['t4_crossbow','雷鳴攻城弩','crossbow',4,14],
  ['t4_hammer','熔岩巨錘','hammer',4,17],['t4_polearm','狂風巨戟','polearm',4,14],['t4_dagger','霜晶獠刃','dagger',4,11],['t4_shield','巨骨塔盾','shield',4,12],
  ['g_hofund','霍夫德之劍','sword',5,15,10,{hrelic:6,scale:5,rune:5},['holy',15]],
- ['g_skadi','斯卡蒂之弓','bow',6,12,20,{srelic:6,permafrost:6,icecore:3},['frost',12]]
+ ['g_skadi','索爾之錘','hammer',6,12,20,{srelic:6,thunderiron:6,icecore:3},['thunder',12]]
 ].map(([id,n,cat,t,base,unlock,r,inn])=>({id,n,cat,t,base,unlock:unlock??TIERS[t].unlock,r:r||undefined,inn}));
 const BP=Object.fromEntries(BPS.map(b=>[b.id,b]));
 // v3.20 同階同類只保留一把圖紙；移除的圖紙在存檔裡自動換成保留的那把
@@ -57,8 +57,8 @@ const AWK_LV=[7,9,11,13,15];
 const GOD={
  g_hofund:{god:'海姆達爾',v:9,relic:'hrelic',title:'watcher',lore:'海姆達爾在彩虹橋頭倒下，把佩劍的劍柄交給了你：「守望者看得見——你鍛的東西，配得上神。」強化越高，祂的力量醒得越多。',
   aw:[['守望之眼','time',3,'狩獵時間 −3%'],['彩虹橋之光','rare',8,'稀有素材掉落 +8%'],['九母之子','pow',10,'攻擊力 +10%'],['加拉爾號角','boss',15,'每週首領傷害 +15%'],['諸神黃昏的守望者','title',0,'稱號「守望者」＋全服公告＋光環']]},
- g_skadi:{god:'斯卡蒂',v:20,relic:'srelic',title:'skadi',lore:'斯卡蒂在父親的雪山宮殿認輸，留下祂的弓臂：「約頓海姆的獵人，從此跟著你的弓。」強化越高，雪山女神的力量醒得越多。',
-  aw:[['雪鞋疾行','time',3,'狩獵時間 −3%'],['雪山獵人','harv',10,'一般材料多 1 個的機率 +10%'],['冬之女神','pow',10,'攻擊力 +10%'],['狼嚎之山','boss',15,'每週首領傷害 +15%'],['雪山之主','title',0,'稱號「雪山之主」＋全服公告＋光環']]}
+ g_skadi:{god:'索爾',v:20,relic:'srelic',title:'skadi',lore:'索爾在維莫爾河渡口認輸，把那截太短的錘柄留給了你：「替我鍛一把柄夠長的錘。」強化越高，雷神的力量醒得越多。',
+  aw:[['山羊戰車','time',3,'狩獵時間 −3%'],['力量腰帶','harv',10,'一般材料多 1 個的機率 +10%'],['奧丁之子','pow',10,'攻擊力 +10%'],['雷霆鐵手套','boss',15,'每週首領傷害 +15%'],['雷霆之主','title',0,'稱號「雷霆之主」＋全服公告＋光環']]}
 };
 const godOf=w=>w&&GOD[bpId(w.b)];
 // 平衡檢查：天生攻擊力詞條＋覺醒攻擊力全部算滿的等效倍率，一定要比下一界的新材質低（第三界預定 ×35＝巨人 ×16 ×2.2）
@@ -111,27 +111,27 @@ const REALMS=['米德加德','約頓','尼福爾','亞爾夫','瓦納','斯瓦�
 // 第一界是新手界（中途會換 3 次材質）用比較緩的 DIFF_R1、1-1 固定 10；已上線的第一、二界只升不降（max(舊需求, 曲線)）；第三界起新材質只在 X-1 開放
 const DIFF_CURVE=[1.6,1.7,1.8,2.0,2.2,2.4,2.6,2.9,3.3,3.8],DIFF_R1=[1,1.3,1.45,1.6,1.6,1.7,1.8,1.6,1.8,2.0];
 const VILLAGES=[
- {name:'魅影林場',who:'村民・伐木工',cat:'axe',req:10,sec:120,gold:12,danger:0,tag:'labor',drops:[['iron',.8,1,1],['oak',.6,1,1]],txt:'鐵爐村的伐木工被林中魅妖引進林場深處，斧頭也全鈍了，冬天前得砍夠柴火。林場旁的老礦坑還挖得到鐵礦。'},
- {name:'松林哨站',who:'村民・守林人',cat:'polearm',req:14,sec:180,gold:24,danger:.02,tag:'beast',drops:[['oak',.8,1,1],['leather',.5,1,1]],txt:'英靈殿的不死野豬逃到人間，守林人要長矛擋住它。'},
- {name:'狼嚎谷',who:'村民・獵人',cat:'bow',req:15,sec:270,gold:45,danger:.04,tag:'beast',drops:[['leather',.8,1,1],['iron',.4,1,1],['fang',.15,1,1],['fur',.03,1,1]],txt:'追月之狼哈提在月下長嚎，獵人要一把射得到山頂的好弓。'},
- {name:'霜溪鎮',who:'鎮民自衛隊',cat:'sword',req:22,sec:360,gold:70,danger:.05,tag:'beast',drops:[['iron',.6,1,1],['silver',.35,1,1],['fang',.35,1,1]],txt:'追日之狼斯庫爾咬住了太陽，霜溪鎮整天不見日光，溪水全結冰，自衛隊要換新劍。'},
- {name:'鴉巢堡',who:'軍隊・堡壘守衛',cat:'shield',req:44,sec:720,gold:100,danger:.06,tag:'beast',drops:[['silver',.5,1,2],['fang',.4,1,2],['shard',.25,1,1]],txt:'戰場鴉魔在堡頂築巢，成群俯衝城牆，守衛需要堅固的盾。'},
- {name:'巨怪灣',who:'軍隊・港口衛兵',cat:'crossbow',req:55,sec:1080,gold:170,danger:.08,tag:'beast',drops:[['silver',.5,1,2],['shard',.3,1,1],['serpent',.12,1,1]],txt:'克拉肯在港外拖沉長船，衛兵要能遠射的弩。'},
- {name:'巨魔山口',who:'軍隊・山地軍團',cat:'hammer',req:75,sec:1440,gold:280,danger:.1,tag:'beast',drops:[['silver',.6,1,2],['fang',.6,1,2],['scale',.15,1,1],['rune',.15,1,1],['fur',.1,1,1],['shard',.15,1,1]],txt:'山怪特羅爾堵住山口，身上披著撿來的龍鱗，軍團要能砸碎石皮的戰錘。'},
- {name:'巨人足跡',who:'軍隊・王國先鋒',cat:'axe',req:155,sec:2160,gold:450,danger:.12,tag:'giant',need:'giant',drops:[['rune',.45,1,1],['shard',.5,1,2],['icecore',.15,1,1]],txt:'石心巨人的族人走下山了。武器必須帶有「剋巨人」。'},
- {name:'灰燼要塞',who:'軍隊・要塞騎士',cat:'sword',req:160,sec:2880,gold:700,danger:.14,tag:'giant',need:'frost',drops:[['scale',.3,1,1],['rune',.3,1,1],['shard',.3,1,1],['fireheart',.15,1,1]],txt:'穆斯貝爾的火焰騎兵騎著披龍鱗馬鎧的戰馬燒毀外牆。火要用霜壓，劍必須帶有「霜寒」。'},
- {name:'彩虹橋頭',who:'軍隊・登橋先鋒',cat:'polearm',req:310,sec:3600,gold:1000,danger:.16,tag:'god',need:'holy',drops:[['rainbow',.35,1,2],['rune',.3,1,1],['shard',.5,1,2],['hrelic',.2,1,1]],txt:'守望之神海姆達爾擋在彩虹橋頭，要你證明凡人鍛的武器配得上神界。凡鐵傷不了神，長柄武器必須帶有「神聖」。'},
+ {name:'魅影林場',who:'村民・伐木工',cat:'axe',req:10,sec:120,gold:12,danger:0,tag:'labor',drops:[['iron',.8,1,1],['oak',.6,1,1]],txt:'諸神熄了鐵匠的爐火後，九界的門跟著打開，林中魅妖第一個鑽進鐵爐村後山，把伐木工引進林場深處。斧頭全鈍了，冬天前得砍夠柴火。林場旁的老礦坑還挖得到鐵礦。'},
+ {name:'松林哨站',who:'村民・守林人',cat:'polearm',req:14,sec:180,gold:24,danger:.02,tag:'beast',drops:[['oak',.8,1,1],['leather',.5,1,1]],txt:'英靈殿的不死野豬趁神界的門打開逃到人間，守林人要長矛擋住牠。'},
+ {name:'狼嚎谷',who:'村民・獵人',cat:'bow',req:15,sec:270,gold:45,danger:.04,tag:'beast',drops:[['leather',.8,1,1],['iron',.4,1,1],['fang',.15,1,1],['fur',.03,1,1]],txt:'追月之狼哈提追著月亮跑進狼嚎谷，整夜對月長嚎，獵人要一把射得到山頂的好弓。'},
+ {name:'霜溪鎮',who:'鎮民自衛隊',cat:'sword',req:22,sec:360,gold:70,danger:.05,tag:'beast',drops:[['iron',.6,1,1],['silver',.35,1,1],['fang',.35,1,1]],txt:'哈提的兄弟斯庫爾咬住了太陽，霜溪鎮整天不見日光，溪水全結冰，自衛隊要換新劍。'},
+ {name:'鴉巢堡',who:'軍隊・堡壘守衛',cat:'shield',req:44,sec:720,gold:100,danger:.06,tag:'beast',drops:[['silver',.5,1,2],['fang',.4,1,2],['shard',.25,1,1]],txt:'人間打起仗來，戰場鴉魔吃飽了戰死者的心臟，在堡頂築巢，成群俯衝城牆，守衛需要堅固的盾。'},
+ {name:'巨怪灣',who:'軍隊・港口衛兵',cat:'crossbow',req:55,sec:1080,gold:170,danger:.08,tag:'beast',drops:[['silver',.5,1,2],['shard',.3,1,1],['serpent',.12,1,1]],txt:'克拉肯從北海游進巨怪灣，在港外拖沉運糧的長船，衛兵要能遠射的弩。'},
+ {name:'巨魔山口',who:'軍隊・山地軍團',cat:'hammer',req:75,sec:1440,gold:280,danger:.1,tag:'beast',drops:[['silver',.6,1,2],['fang',.6,1,2],['scale',.15,1,1],['rune',.15,1,1],['fur',.1,1,1],['shard',.15,1,1]],txt:'山怪特羅爾堵住山口，身上披著撿來的龍鱗，軍團要能砸碎石皮的戰錘。山口後面，就是巨人走下山的路。'},
+ {name:'巨人足跡',who:'軍隊・王國先鋒',cat:'axe',req:155,sec:2160,gold:450,danger:.12,tag:'giant',need:'giant',drops:[['rune',.45,1,1],['shard',.5,1,2],['icecore',.15,1,1]],txt:'山口一破，地上出現一排排泥巴大腳印：巨人們用黏土捏出的泥巨人莫庫卡爾菲，被派到人間探路。武器必須帶有「剋巨人」。'},
+ {name:'灰燼要塞',who:'軍隊・要塞騎士',cat:'sword',req:160,sec:2880,gold:700,danger:.14,tag:'giant',need:'frost',drops:[['scale',.3,1,1],['rune',.3,1,1],['shard',.3,1,1],['fireheart',.15,1,1]],txt:'九界的門也通到火之國，穆斯貝爾的火焰騎兵騎著披龍鱗馬鎧的戰馬燒毀外牆。火要用霜壓，劍必須帶有「霜寒」。'},
+ {name:'彩虹橋頭',who:'軍隊・登橋先鋒',cat:'polearm',req:310,sec:3600,gold:1000,danger:.16,tag:'god',need:'holy',drops:[['rainbow',.35,1,2],['rune',.3,1,1],['shard',.5,1,2],['hrelic',.2,1,1]],txt:'守望之神海姆達爾擋在彩虹橋頭，奉奧丁之命把凡人擋在神界門外。凡鐵傷不了神，長柄武器必須帶有「神聖」。'},
  // v3.76 第二界約頓海姆（收復 1-10 後開放）：要龍鱗／神器武器加「巨人體重鍊」
- {name:'霜巨人前哨',who:'遠征軍・斥候隊',cat:'axe',req:280,sec:3600,gold:1100,danger:.16,tag:'giant',drops:[['giantbone',.4,1,1],['silver',.6,1,2],['shard',.5,1,2]],txt:'九頭巨人守著進入約頓海姆的哨站，斥候隊要劈得開巨木柵欄的斧。'},
- {name:'鐵森林',who:'遠征軍・獵兵隊',cat:'bow',req:280,sec:4200,gold:1250,danger:.16,tag:'beast',drops:[['permafrost',.4,1,1],['fang',.6,1,2],['icecore',.15,1,1]],txt:'鐵森林的狼王帶著狼群在黑鐵色的枯林裡出沒，獵兵要能遠射的長弓。'},
+ {name:'霜巨人前哨',who:'遠征軍・斥候隊',cat:'axe',req:280,sec:3600,gold:1100,danger:.16,tag:'giant',drops:[['giantbone',.4,1,1],['silver',.6,1,2],['shard',.5,1,2]],txt:'彩虹橋被封，遠征軍只能繞進約頓海姆找巨人結盟。九頭巨人守著入口的哨站，不打贏牠，沒有巨人會聽凡人說話。斥候隊要劈得開巨木柵欄的斧。'},
+ {name:'鐵森林',who:'遠征軍・獵兵隊',cat:'bow',req:280,sec:4200,gold:1250,danger:.16,tag:'beast',drops:[['permafrost',.4,1,1],['fang',.6,1,2],['icecore',.15,1,1]],txt:'鐵森林的狼王帶著狼群在黑鐵色的枯林裡出沒，巨人女巫放話：先打贏我養的狼，再來談結盟。獵兵要能遠射的長弓。'},
  {name:'巨鷹之崖',who:'遠征軍・弩兵團',cat:'crossbow',req:260,sec:4800,gold:1400,danger:.17,tag:'beast',drops:[['thunderiron',.5,1,1],['rune',.35,1,1]],txt:'吞屍巨鷹赫拉斯瓦爾格坐在崖頂拍翅，颳起雷暴，弩兵團要射得穿風暴的重弩。'},
- {name:'巨骨墓場',who:'遠征軍・重裝隊',cat:'hammer',req:545,sec:5400,gold:1550,danger:.17,tag:'giant',drops:[['giantbone',.5,1,2],['rune',.4,1,1],['shard',.5,1,2]],txt:'巨人屍鬼爬出了墳墓，得用戰錘把它們砸回土裡。'},
+ {name:'巨骨墓場',who:'遠征軍・重裝隊',cat:'hammer',req:545,sec:5400,gold:1550,danger:.17,tag:'giant',drops:[['giantbone',.5,1,2],['rune',.4,1,1],['shard',.5,1,2]],txt:'巨人屍鬼守著先祖的陪葬寶物爬出了墳墓，得用戰錘把牠們砸回土裡。'},
  {name:'永凍湖',who:'湖畔漁村・守衛',cat:'shield',req:420,sec:6000,gold:1700,danger:.18,tag:'beast',drops:[['permafrost',.5,1,2],['icecore',.2,1,1],['serpent',.15,1,1]],txt:'冰湖水妖用琴聲引人上冰，漁村守衛需要擋得住冰刺的盾。'},
  {name:'蠕龍礦坑',who:'礦工公會・護衛',cat:'dagger',req:420,sec:6000,gold:1800,danger:.18,tag:'dragon',need:'dragon',drops:[['permafrost',.45,1,1],['thunderiron',.35,1,1],['scale',.3,1,1]],txt:'洞穴蠕龍林德蟲盤在礦坑窄道裡，只有短刃施展得開。牠是龍，短刃必須帶有「剋龍」。'},
- {name:'狂風高原',who:'遠征軍・長槍陣',cat:'polearm',req:600,sec:6600,gold:2000,danger:.19,tag:'giant',drops:[['thunderiron',.45,1,1],['giantbone',.45,1,1]],txt:'風之巨人一吐氣就是暴風雪，長槍陣要能刺穿巨人的長柄武器。'},
- {name:'烏特加德城',who:'遠征軍・王家騎士',cat:'sword',req:720,sec:7200,gold:2300,danger:.2,tag:'giant',drops:[['elderroot',.25,1,1],['icecore',.25,1,1]],txt:'幻術巨人王烏特加德洛基坐在烏特加德城的王座大廳，騎士們要最鋒利的劍。'},
- {name:'熔岩裂口',who:'遠征軍・攻城隊',cat:'hammer',req:900,sec:7200,gold:2600,danger:.2,tag:'giant',drops:[['elderroot',.3,1,1],['fireheart',.2,1,1],['thunderiron',.45,1,1]],txt:'泥巨人莫庫卡爾菲越過熔岩裂口，攻城隊要砸得碎它的戰錘。'},
- {name:'索列姆海姆',who:'遠征軍・總指揮',cat:'bow',req:1000,sec:7200,gold:3000,danger:.2,tag:'god',need:'holy',drops:[['elderroot',.35,1,1],['giantbone',.5,1,2],['rune',.4,1,1],['srelic',.2,1,1]],txt:'雪山女神斯卡蒂是踩著雪板的弓箭女獵神，奉奧丁之命在父親留下的雪山宮殿等你。凡鐵傷不了神，弓必須帶有「神聖」。'}
+ {name:'狂風高原',who:'遠征軍・長槍陣',cat:'polearm',req:600,sec:6600,gold:2000,danger:.19,tag:'giant',drops:[['thunderiron',.45,1,1],['giantbone',.45,1,1]],txt:'風之巨人卡瑞一吐氣就是暴風雪，擋住通往烏特加德城的路，長槍陣要能刺穿巨人的長柄武器。'},
+ {name:'烏特加德城',who:'遠征軍・王家騎士',cat:'sword',req:720,sec:7200,gold:2300,danger:.2,tag:'giant',drops:[['elderroot',.25,1,1],['icecore',.25,1,1]],txt:'幻術巨人王烏特加德洛基坐在王座大廳，說只要贏得過牠的幻術，就肯聽凡人說話。騎士們要最鋒利的劍。'},
+ {name:'石籬原',who:'遠征軍・攻城隊',cat:'axe',req:900,sec:7200,gold:2600,danger:.2,tag:'giant',drops:[['elderroot',.3,1,1],['giantbone',.3,1,1],['thunderiron',.45,1,1]],txt:'巨人王認輸後說：最強的巨人赫朗格尼爾住在石籬原，只要牠點頭，全約頓海姆都會跟你走。攻城隊的斧要劈得開牠的石盾。'},
+ {name:'維莫爾河渡口',who:'遠征軍・總指揮',cat:'hammer',req:1000,sec:7200,gold:3000,danger:.2,tag:'god',need:'holy',drops:[['elderroot',.35,1,1],['giantbone',.5,1,2],['rune',.4,1,1],['srelic',.2,1,1]],txt:'巨人們終於願意和凡人結盟，雷神索爾卻駕著山羊戰車渡過維莫爾河，要親手拆散這個聯盟。凡鐵傷不了神，戰錘必須帶有「神聖」。'}
 ];
 const REALM_N=[['米德加德','人類之境','v4'],['約頓海姆','巨人之境','v20']];   // [名稱, 副標, 背景圖]
 const vRealm=i=>i<10?0:1,vNo=i=>(vRealm(i)+1)+'-'+(i%10+1);   // 關卡編號：0→1-1，10→2-1
@@ -296,7 +296,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.25';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.26';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -382,7 +382,7 @@ const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 /* ---------- v3.88 世界聊天＋玩家名片：全部經過伺服器函式（chat_send 檢查冷卻、禁言、等級、髒話）；聊天開著每 4 秒、關著每 30 秒拿新訊息 ---------- */
 const CHAT={rows:[],last:0,g:[],glast:0,gunread:0,sys:[],sysLast:0,unread:0,sysUnread:0,t:0,busy:false,cd:0,draft:'',err:'',tab:'w',sending:false,mockN:0};
 // v3.89 稱號（條件要和 SQL chat_titles 一致；屠龍者、人氣鐵匠只有伺服器算得出來）
-const TITLES=[{k:'smith12',n:'百鍛名匠',d:'把武器強化到 +12'},{k:'legend',n:'傳說鍛造師',d:'鍛造出傳說品質的武器'},{k:'guard',n:'九界守護者',d:'收復 10 座村莊'},{k:'giant',n:'巨人剋星',d:'收復約頓海姆 2-1'},{k:'dragon',n:'屠龍者',d:'首領週排名前 3 名'},{k:'pop',n:'人氣鐵匠',d:'累積 30 個讚'},{k:'watcher',n:'守望者',d:'霍夫德之劍強化到 +15'},{k:'skadi',n:'雪山之主',d:'斯卡蒂之弓強化到 +15'}];
+const TITLES=[{k:'smith12',n:'百鍛名匠',d:'把武器強化到 +12'},{k:'legend',n:'傳說鍛造師',d:'鍛造出傳說品質的武器'},{k:'guard',n:'九界守護者',d:'收復 10 座村莊'},{k:'giant',n:'巨人剋星',d:'收復約頓海姆 2-1'},{k:'dragon',n:'屠龍者',d:'首領週排名前 3 名'},{k:'pop',n:'人氣鐵匠',d:'累積 30 個讚'},{k:'watcher',n:'守望者',d:'霍夫德之劍強化到 +15'},{k:'skadi',n:'雷霆之主',d:'索爾之錘強化到 +15'}];
 const titleLocal=k=>k==='smith12'?S.stats.maxLv>=12:k==='legend'?(S.stats.forged[4]||0)>0:k==='guard'?cleared()>=10:k==='giant'?!!(S.villages[10]&&S.villages[10].status==='cleared'):GOD_T[k]?S.weapons.some(w=>!w.test&&bpId(w.b)===GOD_T[k]&&w.lv>=15):false;
 const GOD_T={watcher:'g_hofund',skadi:'g_skadi'};   // v4.15 神格完全覺醒稱號：持有 +15 的那把神明武器（SQL chat_titles 同步）
 const titleOn=k=>!!k&&(titleLocal(k)||(PC.mine||[]).includes(k));
@@ -1116,6 +1116,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.26',d:'10/24',t:'第一、二界的故事串起來了',b:['20 關的說明和怪物傳說改寫成一條主線：諸神打開九界的門讓怪物湧進人間，打敗海姆達爾後去約頓海姆拉攏巨人','2-10 換成<b>雷神索爾</b>（維莫爾河渡口），要<b>戰錘＋神聖</b>；神明武器斯卡蒂之弓改成<b>索爾之錘</b>（天生雷霆），遺物改成雷神錘柄','1-8 和 2-9 對調：1-8 泥巨人莫庫卡爾菲、2-9 赫朗格尼爾（改名<b>石籬原</b>，要斧，掉巨人骨）','已經打好的斯卡蒂之弓和弓臂會自動變成索爾之錘和雷神錘柄，強化等級不變'],g:['god','hp']},
  {v:'4.25',d:'10/24',t:'1-2～1-4 怪物全身圖重新繪製',b:['1-2 賽赫利姆尼爾：身上多了英靈殿每晚被宰殺留下的傷疤','1-3 哈提：披著符文鎖鏈馬具的巨狼','1-4 斯庫爾：背上的冰刺更完整，撲擊動作更有力'],g:['hit']},
  {v:'4.23',d:'10/24',t:'第一界 10 隻怪物都有全身圖了',b:['1-5 瓦爾拉文（戰場鴉魔）：半鴉半狼，爪子抓著撕破的戰旗','1-6 克拉肯（深海巨怪）、1-7 山怪特羅爾（披著龍鱗的石皮巨魔）','1-8 石心巨人赫朗格尼爾（扛著磨刀石巨棒）、1-9 穆斯貝爾騎兵（騎著火鬃戰馬）、1-10 守望之神海姆達爾','點怪物小圖展開戰鬥畫面，就能看到待機和攻擊的動作'],g:['hit']},
  {v:'4.22',d:'10/24',t:'戰鬥畫面新增 3 隻全身怪物',b:['1-2 賽赫利姆尼爾（不死野豬）、1-3 哈提（追月之狼）、1-4 斯庫爾（追日之狼）換成全身圖','點怪物小圖展開戰鬥畫面，就會看到牠們待機和撲上來攻擊的動作'],g:['hit']},
@@ -1156,13 +1157,13 @@ const GUIDE=[
   {k:'qual',ic:'tr_sharp',n:'品質與先天特性',s:'普通到傳說，攻擊力最多 2.3 倍',v:'3.77',h:'品質：普通 ×1、精良 ×1.2、稀有 ×1.45、史詩 ×1.8、傳說 ×2.3。鐵砧等級越高，好品質機率越高。<br>霜銀以上有保底：連續 9 把低於稀有，第 10 把必定稀有。<br>鍛造時會隨機帶<b>先天特性</b>（鋒利、堅固、輕巧、尋寶、巨人獵手、符文親和），品質越高特性越多、數值越高。'},
   {k:'enh',ic:'it_bless',n:'強化',s:'+1～+6 安定，+7 起有機率爆裝',v:'4.00',h:'所有材質的安定值都是 <b>+6</b>：+1～+6 失敗只扣金幣，不會爆裝。<br>+7 起是危險區，成功率依序 45／35／25／18／12／8／5／3／2%（+7～+15）。失敗時爆裝機率 50% 起，每級 +5%，最高 90%。<br><b>防爆卷</b>：爆裝時保住武器。<b>祝福石</b>：成功率 +10%。<br>爆裝會留下殘渣，可以換材料。'},
   {k:'ench',ic:'mat_shard',n:'附魔',s:'符文碎片隨機出 12 種詞條',v:'4.14',h:'用 1 個符文碎片＋金幣隨機附魔一種詞條，重新附魔會蓋掉那一格。<br><b>攻擊力</b>：烈焰、霜寒、雷霆、劇毒、神聖。凡鐵傷不了神，打神（1-10、2-10）一定要<b>神聖</b>。<br><b>狩獵</b>：迅捷、掠奪、貪婪、尋珍、豐收。<br><b>剋制</b>：剋巨人（1-8 巨人足跡一定要有）、剋龍（2-6 蠕龍礦坑一定要有、打尼德霍格）。1-9 灰燼要塞要<b>霜寒</b>。<br>附魔欄：鐵砧 Lv1 開 2 格、Lv3 第 3 格、Lv5 第 4 格。'},
-  {k:'god',ic:'g_hofund_disp',n:'神明武器與神格覺醒',s:'用神的遺物鍛造，強化越高覺醒越多',v:'4.15',h:'每一界最後一關是神。駐守神的關卡狩獵，每輪有 20% 機率掉<b>神的遺物</b>（1-10 霍夫德劍柄、2-10 斯卡蒂弓臂）。<br>收集 6 個遺物加材料，就能在鐵匠鋪鍛造<b>霍夫德之劍</b>（熔爐 Lv5）或<b>斯卡蒂之弓</b>（熔爐 Lv6）。它們是那一界最強的武器，但比不上下一界的新材質。<br><b>神格覺醒</b>：強化到 +7、+9、+11、+13、+15 會逐段覺醒，效果只算在這把武器身上（狩獵時間、稀有素材或材料、攻擊力 +10%、首領傷害 +15%）。+15 完全覺醒有專屬稱號、全服公告和金色光環。<br>強化規則和一般武器一樣，+7 以上失敗還是可能爆裝，記得用防爆卷。'},
+  {k:'god',ic:'g_hofund_disp',n:'神明武器與神格覺醒',s:'用神的遺物鍛造，強化越高覺醒越多',v:'4.26',h:'每一界最後一關是神。駐守神的關卡狩獵，每輪有 20% 機率掉<b>神的遺物</b>（1-10 霍夫德劍柄、2-10 雷神錘柄）。<br>收集 6 個遺物加材料，就能在鐵匠鋪鍛造<b>霍夫德之劍</b>（熔爐 Lv5）或<b>索爾之錘</b>（熔爐 Lv6）。它們是那一界最強的武器，但比不上下一界的新材質。<br><b>神格覺醒</b>：強化到 +7、+9、+11、+13、+15 會逐段覺醒，效果只算在這把武器身上（狩獵時間、稀有素材或材料、攻擊力 +10%、首領傷害 +15%）。+15 完全覺醒有專屬稱號、全服公告和金色光環。<br>強化規則和一般武器一樣，+7 以上失敗還是可能爆裝，記得用防爆卷。'},
   {k:'melt',ic:'mat_iron',n:'熔解回收',s:'不要的武器換回金幣和材料',v:'3.71',h:'熔解退回一半鍛造金幣、三成材料，25% 機率多得符文碎片。<br>收藏（上鎖）的武器不會被熔解。<br>爆裝留下的殘渣可以在熔解回收頁換鐵礦、霜銀、符文碎片。'},
   {k:'ws',ic:'nav_forge',n:'工坊升級',s:'熔爐開材質、鐵砧提品質',v:'3.90',h:'<b>熔爐</b>解鎖高階材質；<b>鐵砧</b>提高好品質機率、開附魔欄。<br>升級前要先收復足夠的村莊：熔爐 Lv2～Lv6 需要 3／5／6／7／10 座，鐵砧 Lv2～Lv5 需要 2／4／7／10 座。<br>已經升上去的等級會保留。'},
   {k:'tal',ic:'ic_star',n:'鐵匠天賦',s:'累積聲望、點天賦，沒有等級上限',v:'3.76',h:'收成、鍛造、強化成功、收復村莊、熔解都會累積聲望。<br>每升 1 級得 1 天賦點和聲望寶箱，等級沒有上限。<br>天賦：商隊議價（收成金幣）、拾荒專家（一般材料）、尋寶直覺（稀有素材）、巨匠之手（好品質）、熔解大師（熔解回收）。'}]],
  ['村莊與戰鬥',[
   {k:'vil',ic:'nav_village',n:'村莊委託與收成',s:'交武器收復村莊、自動狩獵收成',v:'4.14',h:'把類別符合、攻擊力達標的武器交給村莊就能收復，解鎖下一座村莊和新圖紙，第一次收復有金幣獎勵。<br>村莊詳情的「需要的武器」列出所有符合類別的圖紙，點一下直接去鍛造。<br>交付後武器會駐守狩獵，自動帶回金幣和材料，<b>離線最多累積 12 小時</b>。換上更強的武器狩獵更快。<br>「全部收成」只收目前在看的這一界；另一界可以收成時，地圖圖示會亮紅點。<br>狩獵策略：一般、素材追獵（材料多、金幣少）、稀有追蹤（稀有素材多、時間長）。<br><b>需求越往後越高</b>：每一界剛開始時普通品質大約要強化到 +6，越後面越需要好品質和 +7 以上的強化，第 9、10 關最難。'},
-  {k:'hp',ic:'mon_1',n:'怪物血條',s:'打中才扣血，扣多少＝傷害',v:'4.14',h:'村莊卡上的怪物有血條，武器打中才會扣血，扣多少就是造成的傷害。<br>還沒交付或沒有駐守武器的村莊，點開詳情上方有怪物大圖，按 ‹ › 翻看這一界 10 隻（還沒解鎖的只顯示黑影）。<br>怪物被打倒就完成一輪狩獵，換下一隻。<br>點村莊看詳情，血條同步顯示，下方還有這隻北歐神話怪物的稱號和傳說。每一界的最後一關都是神，每一關的名稱、條件、掉落都跟那隻怪物或神的故事有關：打神要神聖、打龍要剋龍、火要霜寒。'},
+  {k:'hp',ic:'mon_1',n:'怪物血條',s:'打中才扣血，扣多少＝傷害',v:'4.26',h:'村莊卡上的怪物有血條，武器打中才會扣血，扣多少就是造成的傷害。<br>還沒交付或沒有駐守武器的村莊，點開詳情上方有怪物大圖，按 ‹ › 翻看這一界 10 隻（還沒解鎖的只顯示黑影）。<br>怪物被打倒就完成一輪狩獵，換下一隻。<br>點村莊看詳情，血條同步顯示，下方還有這隻北歐神話怪物的稱號和傳說。每一界的最後一關都是神，每一關的名稱、條件、掉落都跟那隻怪物或神的故事有關：打神要神聖、打龍要剋龍、火要霜寒。'},
   {k:'hit',ic:'cat_sword',n:'武器打法',s:'攻速不同、強化越高越常觸發附加效果',v:'4.21',h:'點村莊卡片上的怪物小圖，會展開戰鬥畫面（一次一個，再點一下收起）：騎士拿著駐守的武器打怪物，打中時怪物閃一下、停頓後被打退，跳出的數字就是傷害。<br>攻速：<b>劍</b> 1.0 秒、<b>斧</b> 1.3 秒（兩連斬）、<b>錘</b> 1.8 秒、<b>短刃</b> 0.6 秒、<b>長柄</b> 1.2 秒、<b>弓</b> 1.1 秒、<b>弩</b> 1.6 秒。<br>強化越高越常觸發附加效果（+1～+6 每級 2%，+7 起 16%～40%）：劍<b>會心</b>、斧<b>流血</b>、錘<b>震碎</b>、短刃<b>中毒</b>、長柄<b>貫穿</b>、弓<b>穿心</b>、弩<b>破甲</b>。<br><b>盾</b>：越打越痛，打倒後重算。狩獵時間和收成不受影響。'},
   {k:'boss',ic:'boss_nidhogg',n:'每週首領',s:'派 3 把武器駐守，週日結算',v:'3.87',h:'全服一起打同一隻首領，整週開打，<b>每週日 00:00</b> 結算換下一隻。<br>最多派 3 把武器駐守，每小時傷害＝攻擊力，打中弱點 ×1.5，離線也會繼續打；結算後武器留著繼續打下一隻。<br>全服血量打到 25／50／75／100% 都有獎勵，上週個人傷害排名也有獎勵。<br>駐守首領的武器不能同時打村莊、強化、附魔、熔解、上架。'},
   {k:'realm',ic:'realm_2',n:'第二界 約頓海姆',s:'收復 1-10 後開放',v:'3.76',h:'收復 1-10 彩虹橋頭、打倒海姆達爾後開放第二界，用上方地圖列切換。<br>10 座新村莊、4 種新材料（巨人骨、永凍霜晶、雷鳴鐵、世界樹古根），第五階巨人武器要熔爐 Lv6。<br><b>巨人體重鍊</b>：龍鱗以上的武器可以用第二界材料重鍊，提高攻擊力。'},
@@ -1959,10 +1960,10 @@ function vState(i){const st=S.villages[i];if(st.status==='locked')return['locked
 /* v3.73 村莊怪物血條：狩獵一輪＝打倒一隻怪物（純畫面效果，狩獵時間與收成都不變） */
 // v4.05 每一界第 10 關都是神（Mochi 選）：1-10 海姆達爾、2-10 斯卡蒂、烏特加德洛基移到 2-8；尼德霍格只當每週首領
 // v4.04 神話怪物（Mochi 選 B）：MONS＝血條上的短名（6 字內），MON_T＝稱號，MON_LORE＝村莊詳情頁的傳說小字
-const MONS=['斯寇格拉','賽赫利姆尼爾','哈提','斯庫爾','瓦爾拉文','克拉肯','山怪特羅爾','赫朗格尼爾','穆斯貝爾騎兵','海姆達爾','斯里瓦爾迪','鐵森林狼王','赫拉斯瓦爾格','德勞格','諾克','林德蟲','卡瑞','烏特加德洛基','莫庫卡爾菲','斯卡蒂'];
-const MON_T=['林中魅妖','不死野豬','追月之狼','追日之狼','戰場鴉魔','深海巨怪','石皮巨魔','石心巨人','火焰騎兵','守望之神','九頭巨人','狼群首領','吞屍巨鷹','巨人屍鬼','冰湖水妖','洞穴蠕龍','風之巨人','幻術巨人王','泥巨人','雪山女神'];
-const MON_LORE=['前面是美女，背後卻是空心的樹幹，專騙伐木工走進深林。','英靈殿每晚殺來吃、隔天又復活的野豬，這次逃到了人間。','斯庫爾的兄弟，永遠追趕月亮；月圓的夜裡在狼嚎谷對月長嚎，獵人不敢出門。','永遠追趕太陽的巨狼，一口咬住太陽，霜溪鎮整天不見日光，溪水全結成冰。','吃了戰死者心臟的渡鴉，半鳥半狼，成群俯衝城牆。','大到水手誤以為是島，觸手一捲就拖沉整艘長船。','皮硬得像岩石，還把尼德霍格蛻下的龍鱗披在身上；只怕陽光，照到就會變成石頭。','心臟、頭顱都是石頭，曾單挑雷神索爾，如今他的族人走下了山。','火之國的前鋒，戰馬披著龍鱗馬鎧；身上的火要等諸神黃昏才會燃盡，只有霜寒壓得住。','看得見九界一切的守望之神，守在通往神界的彩虹橋頭；他第一個發現你鍛出了能傷神的武器，要親自試試它。',
- '九顆頭輪流睡覺，所以哨站永遠有人醒著。','鐵森林的巨人女巫養大的狼群首領，芬里爾的遠親。','坐在世界盡頭的巨人化身成鷹，拍一下翅膀，九界就起風。','守著陪葬寶物不肯死去的屍鬼，越打越大。','用琴聲把人引到冰面上，再從冰洞裡伸手把人拖下去。','沒有翅膀的毒龍，盤在礦脈裡守著霜晶，蛻下的龍鱗散落在礦道裡，只有短刃鑽得進去。','北風的化身，他一吐氣，高原上就颳三天暴風雪。','曾讓索爾喝不乾的牛角杯，其實杯底連著大海；如今坐鎮烏特加德城的王座大廳。','巨人們用熔岩黏土捏出來幫赫朗格尼爾的戰士，胸口裝著一顆母馬的心，膽子很小。','巨人出身、嫁進神族的弓箭女獵神，住在父親留下的雪山宮殿索列姆海姆；海姆達爾敗後，奧丁派她來試探你這個凡人鐵匠。'];
+const MONS=['斯寇格拉','賽赫利姆尼爾','哈提','斯庫爾','瓦爾拉文','克拉肯','山怪特羅爾','莫庫卡爾菲','穆斯貝爾騎兵','海姆達爾','斯里瓦爾迪','鐵森林狼王','赫拉斯瓦爾格','德勞格','諾克','林德蟲','卡瑞','烏特加德洛基','赫朗格尼爾','索爾'];
+const MON_T=['林中魅妖','不死野豬','追月之狼','追日之狼','戰場鴉魔','深海巨怪','石皮巨魔','泥巨人','火焰騎兵','守望之神','九頭巨人','狼群首領','吞屍巨鷹','巨人屍鬼','冰湖水妖','洞穴蠕龍','風之巨人','幻術巨人王','石心巨人','雷神'];
+const MON_LORE=['前面是美女，背後卻是空心的樹幹，專騙伐木工走進深林。','英靈殿每晚殺來吃、隔天又復活的野豬，這次逃到了人間。','斯庫爾的兄弟，永遠追趕月亮；月圓的夜裡在狼嚎谷對月長嚎，獵人不敢出門。','永遠追趕太陽的巨狼，一口咬住太陽，霜溪鎮整天不見日光，溪水全結成冰。','吃了戰死者心臟的渡鴉，半鳥半狼，成群俯衝城牆。','大到水手誤以為是島，觸手一捲就拖沉整艘長船。','皮硬得像岩石，還把尼德霍格蛻下的龍鱗披在身上；只怕陽光，照到就會變成石頭。','約頓海姆的巨人為赫朗格尼爾捏出的黏土戰士，高得頭碰得到雲，胸口卻只裝著一顆母馬的心，膽子很小；打輸了會哭著逃回約頓海姆。','火之國的前鋒，戰馬披著龍鱗馬鎧；身上的火要等諸神黃昏才會燃盡，只有霜寒壓得住。','看得見九界一切的守望之神，守在通往神界的彩虹橋頭；祂第一個發現你鍛出了能傷神的武器，要親自試試它。落敗前，祂吹響加拉爾號角，封住了彩虹橋。',
+ '九顆頭輪流睡覺，所以哨站永遠有人醒著；九顆頭最恨的都是索爾。','鐵森林的巨人女巫養大的狼群首領，芬里爾的遠親。','坐在世界盡頭的巨人化身成鷹，拍一下翅膀，九界就起風；牠在崖頂看著，想知道凡人有多少本事。','守著陪葬寶物不肯死去的屍鬼，越打越大。','用琴聲把人引到冰面上，再從冰洞裡伸手把人拖下去。','沒有翅膀的毒龍，盤在礦脈裡守著霜晶，蛻下的龍鱗散落在礦道裡，只有短刃鑽得進去。','北風的化身，牠一吐氣，高原上就颳三天暴風雪。','曾讓索爾喝不乾的牛角杯，其實杯底連著大海；牠捉弄過雷神，現在要捉弄你。','心臟、頭顱都是石頭，手拿磨刀石、背著石盾，是約頓海姆最強的巨人；牠一直想跟雷神索爾單挑。','奧丁之子、九界最強的神。祂的雷神之錘是矮人兄弟鍛的，錘柄卻因為洛基搗蛋短了一截；祂想看看凡人鐵匠鍛出的錘，接不接得住雷霆。'];
 const monLore=i=>MON_LORE[i]?`<div class="mon-lore"><b>${MON_T[i]}・${MONS[i]}</b><span>${MON_LORE[i]}</span></div>`:'';
 const MON_ART=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19];   // 已有 AI 怪物圖的關卡（0 起算，圖在 art/mon_N.webp）；沒圖的先用村莊圖
 const MONFX={kills:{},next:{},hp:{}};
@@ -1971,7 +1972,7 @@ const hpBar=i=>`<div class="ui-prog prog hpbar"><i class="hp-g"></i><i data-vhp=
 function monDex(i){const r0=Math.floor(i/10)*10,sm=ui.sheet&&ui.sheet.m,m=sm!=null&&sm>=r0&&sm<r0+10?sm:i,lk=S.villages[m].status==='locked',v=VILLAGES[m],go=k=>r0+(k-r0+10)%10;
   return `<div class="mon-dex"><div class="md-stage"><button class="md-arr" data-act="mondex" data-k="${go(m-1)}" aria-label="上一隻">${ic('arrow-left')}</button>${img('mon_'+(m+1),'md-big'+(lk?' lk':''),lk?'':MONS[m])}<button class="md-arr" data-act="mondex" data-k="${go(m+1)}" aria-label="下一隻">${ic('arrow-right')}</button></div>
    <div class="md-nm">${lk?'？？？':MON_T[m]+'・'+MONS[m]}</div><div class="md-sub">${vNo(m)} ${lk?'未解鎖的村莊':v.name}${m===i?'・本村要打的怪物':''}</div>
-   ${lk?`<div class="md-req">完成 ${vNo(m-1)} ${VILLAGES[m-1].name} 後解鎖</div>`:`<div class="md-req">要打牠：<b>${CATS[v.cat]}</b>・攻擊力 ${v.req}${v.need?`＋<b class="t-danger">${AFFIX[v.need].n}</b>`:''}</div><div class="md-lore">${MON_LORE[m]}</div>`}
+   ${lk?`<div class="md-req">完成 ${vNo(m-1)} ${VILLAGES[m-1].name} 後解鎖</div>`:`<div class="md-req">要打${/神/.test(MON_T[m])?"祂":"牠"}：<b>${CATS[v.cat]}</b>・攻擊力 ${v.req}${v.need?`＋<b class="t-danger">${AFFIX[v.need].n}</b>`:''}</div><div class="md-lore">${MON_LORE[m]}</div>`}
    <div class="md-strip">${Array.from({length:10},(_,k)=>{const j=r0+k,l=S.villages[j].status==='locked';return `<button class="${j===m?'on':''} ${l?'lk':''}" data-act="mondex" data-k="${j}" aria-label="${vNo(j)}">${img('mon_'+(j+1))}</button>`}).join('')}</div></div>`}
 function vMon(i,k,bs){const art=MON_ART.includes(i);return `<div class="vmon ${k} ${art?'has-art':''} ${bs?'bs-tap':''}" data-mon="${i}" ${bs?`data-act="bsopen" data-i="${i}" role="button" aria-label="展開戰鬥畫面"`:''}>${art?img('mon_'+(i+1),'vthumb vmon-m',MONS[i]):img('v'+(i+1),'vthumb vmon-bg')}</div>`}
 function monPop(el,kind,txt,dx){if(!(el.classList.contains('bs-mon')&&/bleed|poison/.test(kind))){el.classList.remove('hit','kill');void el.offsetWidth;el.classList.add(kind==='kill'?'kill':'hit')}   // v4.20 戰鬥條：流血／中毒的小傷害不播受擊
@@ -2004,7 +2005,7 @@ const hitOf=w=>HIT[bpOf(w).cat]||HIT.sword;
 // 強化越高越常觸發附加效果（每次都是額外約 1.5 擊）：劍會心、斧流血、錘震碎、雙刀中毒、長柄貫穿、弓穿心、弩破甲
 const KN={sword:{k:'sw',K:1000,ph:450,n:3},axe:{k:'ax',K:1300,ph:100,n:2},hammer:{k:'hm',K:1800,ph:910,n:2,hv:1},dagger:{k:'dg',K:600,ph:240,n:4},
   polearm:{k:'sp',K:1200,ph:680,n:2},bow:{k:'bw',K:1100,ph:600,n:3},crossbow:{k:'cb',K:1600,ph:800,n:2}};
-const KN_FULL=[0,1,2,3,4,5,6,7,8,9];   // 已有全身怪物圖（art/mon_N_idle／mon_N_atk）的關卡；其他關卡先用怪物頭像
+const KN_FULL=[0,1,2,3,4,5,6,8,9,18];   // v4.24 赫朗格尼爾的全身圖跟著搬到 2-9（mon_19），1-8 莫庫卡爾菲還沒有   // 已有全身怪物圖（art/mon_N_idle／mon_N_atk）的關卡；其他關卡先用怪物頭像
 const knProc=lv=>ui.bsProc?1:lv<=0?0:lv<=6?lv*.02:[.16,.2,.25,.3,.35,.4][Math.min(5,lv-7)];
 const KHIT={};
 function knHit(w){const c=bpOf(w).cat,kn=KN[c];if(!kn)return null;const p=knProc(w.lv),key=c+p;if(KHIT[key])return KHIT[key];
@@ -2270,7 +2271,7 @@ function sheetDev(){
      <div class="label">v3.71 鐵匠聲望／天賦</div><div class="devgrid">${B('rep1','聲望升 1 級')}${B('rep10','聲望升 10 級')}${B('represet','天賦點全部退回')}${B('repzero','聲望歸零（Lv.1）')}${B('repopen','打開鐵匠天賦')}</div>
      <div class="label">v3.87 首領討伐（整週・週日結算・目前：${evtNow().boss.n}）</div><div class="devgrid">${B('evtnext','模擬換週（下一隻首領）')}${B('evtfast','首領駐守時間 −10 小時')}${B('evtdmg','我的傷害 +5,000（只改顯示）')}${B('evtreset','本週首領進度清空')}${B('evtgdead','模擬全服打倒首領')}${B('evtgalive','模擬全服血量剩 45%＋排名武器')}${B('evtgrank','模擬上週排名第 2')}</div>
      <div class="label">v3.76 第二界約頓海姆／巨人體重鍊（目前：${rfOpen()?'已開放':'未開放'}・收復 ${cleared()}/${VILLAGES.length}）</div><div class="devgrid">${B('r2open','開放第二界（收復 1-1～1-10）')}${B('r2mats','第二界材料各 +30、金幣 +20 萬')}${B('r2wpn','送史詩神器斧＋剋巨人（開重鍊頁）')}${B('r2all','第二界全部收復')}${B('r2lock','第二界改回未開放')}${B('r2fur','熔爐升到 Lv6（可鍛造巨人武器）')}${B('r2t4','顯示 8 把巨人武器（測試）')}</div>
-     <div class="label">v4.15 神明武器／神格覺醒</div><div class="devgrid">${B('gwmats','兩種遺物各 6＋鍛造材料＋開放圖紙（去鍛造頁）')}${B('gwhof','送史詩霍夫德之劍 +6（開強化頁）')}${B('gwskadi','送史詩斯卡蒂之弓 +12（3 段覺醒）')}${B('gwmax','送傳說霍夫德之劍 +15（完全覺醒＋光環＋稱號）')}${B('gwnews','播放覺醒公告（+11、+15）')}${B('gwdrop','1-10、2-10 各模擬收成 30 輪（看遺物掉落）')}${B('gwcheck','數值檢查：滿加成也弱於下一界')}</div>
+     <div class="label">v4.15 神明武器／神格覺醒</div><div class="devgrid">${B('gwmats','兩種遺物各 6＋鍛造材料＋開放圖紙（去鍛造頁）')}${B('gwhof','送史詩霍夫德之劍 +6（開強化頁）')}${B('gwskadi','送史詩索爾之錘 +12（3 段覺醒）')}${B('gwstory','v4.24 看 1-8、2-9、2-10 新故事（開村莊詳情）')}${B('gwmax','送傳說霍夫德之劍 +15（完全覺醒＋光環＋稱號）')}${B('gwnews','播放覺醒公告（+11、+15）')}${B('gwdrop','1-10、2-10 各模擬收成 30 輪（看遺物掉落）')}${B('gwcheck','數值檢查：滿加成也弱於下一界')}</div>
      <div class="label">v3.95 另一界可收成紅點（地圖列圖示）</div><div class="devgrid">${B('rdot1','米德加德 1-1 可收成，切到約頓海姆看（全部收成應該不能按）')}${B('rdot2','約頓海姆 2-1 可收成，切到米德加德看（全部收成應該不能按）')}</div>
      <div class="label">全部武器顯示測試（測試武器：不扣資源、不能交付村莊）</div>
      <div class="small muted">品質</div><div class="row">${[[-1,'輪替'],[0,'普通'],[1,'精良'],[2,'稀有'],[3,'史詩'],[4,'傳說']].map(([v,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${(ui.devAllQ??-1)===v?'on':''}" data-act="devset" data-k="devAllQ" data-v="${v}">${n}</button>`).join('')}</div>
@@ -2455,8 +2456,9 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='mondex'){const n=Math.max(0,S.villages.findIndex(v=>v.status==='open'));ui.tab='village';ui.sheet={t:'v',i:n};render();return toast(`${vNo(n)} 上方是怪物大圖，按 ‹ › 或小圖翻看這一界 10 隻`)}   // v4.12
   if(k.startsWith('gw')){   // v4.15 神明武器
     const gift=(b,q,lv,m)=>{const w=makeWeapon(b,q,lv,[]);ui.sheet={t:'w',id:w.id,m};save();render();return w};
-    if(k==='gwmats'){S.villages.forEach(st=>{st.status='cleared'});S.furnace=Math.max(S.furnace,6);giveRw({hrelic:6,srelic:6,scale:5,rune:5,permafrost:6,icecore:3,gold:100000});ui.sheet=null;ui.tab='forge';ui.ftab='bp';ui.cat='all';ui.bp='g_hofund';save();render();return toast('已給遺物和材料、收復全部村莊、熔爐 Lv6：鍛造頁可以打霍夫德之劍和斯卡蒂之弓','ok')}
+    if(k==='gwmats'){S.villages.forEach(st=>{st.status='cleared'});S.furnace=Math.max(S.furnace,6);giveRw({hrelic:6,srelic:6,scale:5,rune:5,permafrost:6,icecore:3,gold:100000});ui.sheet=null;ui.tab='forge';ui.ftab='bp';ui.cat='all';ui.bp='g_hofund';save();render();return toast('已給遺物和材料、收復全部村莊、熔爐 Lv6：鍛造頁可以打霍夫德之劍和索爾之錘','ok')}
     if(k==='gwhof'){gift('g_hofund',3,6,'enh');return toast('強化頁下方會提示「強化到 +7 覺醒守望之眼」','ok')}
+    if(k==='gwstory'){S.villages.forEach((v,i)=>{if(i<20&&v.status==='locked')v.status='open'});ui.tab='village';ui.sheet={t:'v',i:19};save();render();return toast('2-10 索爾詳情：用 ‹ › 翻到 2-9 赫朗格尼爾；1-8 莫庫卡爾菲在第一界','ok')}
     if(k==='gwskadi'){gift('g_skadi',3,12,'main');return toast('武器詳情：神格覺醒亮 3 段','ok')}
     if(k==='gwmax'){gift('g_hofund',4,15,'main');return toast('完全覺醒：5 段全亮、武器後面有光環；名片稱號可以戴「守望者」','ok')}
     if(k==='gwnews'){ui.sheet=null;render();newsShow({nick:S.nick||'測試鐵匠',bp:'g_skadi',lv:11,ok:true});newsShow({nick:S.nick||'測試鐵匠',bp:'g_hofund',lv:15,ok:true});return}

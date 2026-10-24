@@ -473,8 +473,13 @@ function dexTests(){const sv=ui.sheet,bad=VILLAGES.map((v,i)=>i).filter(i=>{ui.s
 function godReqTests(){const v=VILLAGES[9],u=VILLAGES[19],mk=e=>({id:-1,b:'t3_halberd',q:3,lv:15,traits:[],ench:[e,null,null,null]});
   const gods=VILLAGES.map((x,i)=>i).filter(i=>/神/.test(MON_T[i])),badGod=gods.filter(i=>VILLAGES[i].need!=='holy'),old=VILLAGES.filter(x=>/世界樹根穴|烏特加德城$|鐵爐村|鹿角堡|渡鴉灣|雪峰營地|冰川裂谷|雷鳴峽谷|霜晶礦坑|冰巨人王庭/.test(x.name)&&x!==VILLAGES[17]);
   const drag=VILLAGES[15],noScale=VILLAGES.filter((x,i)=>[7,9,12].includes(i)&&x.drops.some(d=>d[0]==='scale'));
-  const ok=v.name==='彩虹橋頭'&&u.name==='索列姆海姆'&&u.cat==='bow'&&!badGod.length&&!old.length&&VILLAGES[17].name==='烏特加德城'&&VILLAGES[8].need==='frost'&&drag.need==='dragon'&&drag.drops.some(d=>d[0]==='scale')&&!noScale.length&&v.drops.some(d=>d[0]==='rainbow')&&MATS.rainbow&&eligible(9,mk({k:'holy',v:15}))&&!eligible(9,mk({k:'dragon',v:40}))&&TAGN[v.tag]&&TAGN[drag.tag];
-  return[T('H 關卡跟故事一致：神的關卡都要神聖、2-10 要弓、1-9 要霜寒、2-6 蠕龍要剋龍且掉龍鱗、舊名稱都換掉、1-10 掉虹橋碎晶',!!ok,`沒要神聖的神：${badGod.map(vNo).join('、')||'無'}；舊名稱：${old.map(x=>x.name).join('、')||'無'}；不該掉龍鱗：${noScale.map(x=>x.name).join('、')||'無'}`)]}
+  const ok=v.name==='彩虹橋頭'&&u.name==='維莫爾河渡口'&&u.cat==='hammer'&&!badGod.length&&!old.length&&VILLAGES[17].name==='烏特加德城'&&VILLAGES[8].need==='frost'&&drag.need==='dragon'&&drag.drops.some(d=>d[0]==='scale')&&!noScale.length&&v.drops.some(d=>d[0]==='rainbow')&&MATS.rainbow&&eligible(9,mk({k:'holy',v:15}))&&!eligible(9,mk({k:'dragon',v:40}))&&TAGN[v.tag]&&TAGN[drag.tag];
+  return[T('H 關卡跟故事一致：神的關卡都要神聖、2-10 要戰錘、1-9 要霜寒、2-6 蠕龍要剋龍且掉龍鱗、舊名稱都換掉、1-10 掉虹橋碎晶',!!ok,`沒要神聖的神：${badGod.map(vNo).join('、')||'無'}；舊名稱：${old.map(x=>x.name).join('、')||'無'}；不該掉龍鱗：${noScale.map(x=>x.name).join('、')||'無'}`)]}
+// v4.24 第一、二界故事主線：1-8／2-9 對調、2-10 索爾、代名詞（神＝祂，怪物＝牠，不用他／她／它）
+function storyTests(){const pr=[...MON_LORE,...VILLAGES.map(v=>v.txt)].map((t,i)=>[i,t]).filter(([i,t])=>/[他它]|(?<!巨人女巫放話：先打贏)她/.test(t.replace(/其他|試試它/g,'')));
+  const ok=MONS[7]==='莫庫卡爾菲'&&MONS[18]==='赫朗格尼爾'&&MONS[19]==='索爾'&&MON_T[19]==='雷神'&&VILLAGES[18].name==='石籬原'&&!VILLAGES[18].drops.some(d=>d[0]==='fireheart')&&KN_FULL.includes(18)&&!KN_FULL.includes(7)&&BP.g_skadi.n==='索爾之錘'&&BP.g_skadi.cat==='hammer'&&BP.g_skadi.inn[0]==='thunder'&&GOD.g_skadi.god==='索爾'&&MATS.srelic==='雷神錘柄';
+  return[T('H 故事主線：1-8 泥巨人、2-9 石籬原赫朗格尼爾（全身圖跟著搬）、2-10 雷神索爾＋索爾之錘',!!ok,`1-8 ${MONS[7]}、2-9 ${VILLAGES[18].name} ${MONS[18]}、2-10 ${MONS[19]}`),
+    T('H 代名詞：怪物傳說和關卡說明不用他／她／它（指武器的「它」除外）',!pr.length,pr.length?'還有：'+pr.map(x=>x[0]).join('、'):'都改好了')]}
 // v4.14 村莊需求：每座村莊的需求面板都列得出同類圖紙
 function vNeedTests(){const bad=VILLAGES.map((v,i)=>i).filter(i=>{const h=vNeedPanel(i);return !/data-act="vforge"/.test(h)||/data-act="bp"/.test(h)});
   return[T('H 村莊需求：每座村莊都列出可點的同類圖紙（點了跳到鍛造頁）',!bad.length,bad.length?'沒有圖紙：'+bad.map(vNo).join('、'):VILLAGES.length+' 座都有')]}
@@ -513,11 +518,11 @@ function gwTests(){const ck=godCheck(),bad=ck.filter(x=>!x.ok);
   w.lv=7;const tr=timeReduction(9,w);w.lv=13;const n13=awkN(w);const t0=titleLocal('watcher');w.lv=15;const t1=titleLocal('watcher');S=S0;
   return[T('GW1 神明武器滿加成弱於下一界的新材質',!bad.length,ck.map(x=>x.n+' ×'+x.max.toFixed(1)+'＜×'+x.next).join('；')),
     T('GW2 遺物只在 1-10、2-10 掉，鍛造要 6 個',relOk&&BP.g_hofund.r.hrelic===6&&BP.g_skadi.r.srelic===6,rel.map(x=>vNo(x[0])+' '+x[1]).join('、')),
-    T('GW3 圖紙解鎖：收復 1-10 才能打霍夫德、斯卡蒂要 2-10',lk0&&lk1,`收復前鎖 ${lk0}；收復 1-10 後 ${lk1}`),
+    T('GW3 圖紙解鎖：收復 1-10 才能打霍夫德、索爾之錘要 2-10',lk0&&lk1,`收復前鎖 ${lk0}；收復 1-10 後 ${lk1}`),
     T('GW4 覺醒：+6 沒有、+7 狩獵 −3%、+11 攻擊力 ×1.1、+13 四段、+15 稱號',n6===0&&Math.abs(tr-.03)<1e-9&&p10===b10&&p11===b11&&n13===4&&!t0&&t1,`+6 段數 ${n6}；+7 縮短 ${tr}；+10 ${p10}/${b10}；+11 ${p11}/${b11}；+13 段數 ${n13}；稱號 ${t0}→${t1}`)]}
 function runTests(mode){
   if(mode==='econ')return econHtml(12)+econHtml(8);
-  const r=runAll({N:100000});r.res.push(...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...curveTests(),...vNeedTests(),...hitTests(),...enchTests(),...wsTests(),...gwTests());const pass=r.res.filter(x=>x.pass).length;
+  const r=runAll({N:100000});r.res.push(...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...storyTests(),...curveTests(),...vNeedTests(),...hitTests(),...enchTests(),...wsTests(),...gwTests());const pass=r.res.filter(x=>x.pass).length;
   return `<div><b>${pass}/${r.res.length} 通過</b>（${r.ms} 毫秒）</div>`+resHtml(r.res);
 }
 if(typeof module!=='undefined')module.exports={runAll,econReport,simulate,levelCheck};
