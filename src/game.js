@@ -1572,14 +1572,16 @@ function playFx(danger,w,next,res){
   document.querySelectorAll('.sheet [data-act="enhance"]').forEach(b=>{b.disabled=true;b.textContent='強化中…'});
   fxState={res,w,anims:[],raf:0,done:false,timer:0};ui.fxDone=finishFx;
   if(matchMedia('(prefers-reduced-motion: reduce)').matches)return finishFx();
-  {const fl=FLV(next);stage.classList.toggle('tier',!!danger);stage.style.setProperty('--tf',TIER_FLT[fl]);res.hue=danger?TIER_HUE[fl]:0}   // v4.58 危險區整塊石碑的燈光用外框顏色（+7～+8 藍、+9 紅…）
+  {const fl=FLV(next);stage.classList.toggle('tier',!!danger);stage.style.setProperty('--tf',TIER_FLT[fl]);res.hue=danger?TIER_HUE[fl]:0;
+   const own=danger&&(fl===6?RUNE_FX.boltGold:fl===5?RUNE_FX.boltDia:null);stage.classList.toggle('ownbolt',!!own);   // v4.61 金、鑽石：成功時那道主閃電也換成專屬圖
+   document.querySelectorAll('#enhStage [data-seq="light"] img').forEach((im,i)=>{const src=(own||RUNE_FX.light)[i];if(im.getAttribute('src')!==src)im.src=src})}   // v4.58 危險區整塊石碑的燈光用外框顏色（+7～+8 藍、+9 紅…）
   const tm=runRune(res.k,!!danger);if(danger)enhBolts(next,res.k,tm);if(res.k==='ok')enhExtra(!!danger,next,tm,res.id);
 }
 /* v4.58 強化演出加強（Mochi 選 B）：疊在符文動畫上面的額外圖層，不改符文時間軸、不改任何數值
    +1～+6 單按不播動畫；+7～+12 整場石碑燈光用外框顏色，成功時：光效換成新外框顏色，進到新顏色時跳「升階」；一鍵強化：逐級連擊播放 */
 const TIER_RGB=['200,200,200','120,220,120','110,170,255','255,70,60','190,110,255','170,235,255','255,205,90'];   // 依 FLV：灰、綠、藍、紅、紫、鑽石、金
-const TIER_HUE=[0,75,180,-40,235,150,0];   // TIER_FLT 裡的色相旋轉，下一道符文的紅色警告要轉回來
-const TIER_FLT=['grayscale(1)','hue-rotate(75deg) saturate(1.7) brightness(1.3)','hue-rotate(180deg) saturate(1.5)','hue-rotate(-40deg) saturate(2.4)','hue-rotate(235deg) saturate(1.6)','hue-rotate(150deg) saturate(.55) brightness(1.4)','saturate(1.3) brightness(1.1)'];   // 現有金色特效圖換色
+const TIER_HUE=[0,75,180,-40,235,173,5];   // TIER_FLT 裡的色相旋轉，下一道符文的紅色警告要轉回來
+const TIER_FLT=['grayscale(1)','hue-rotate(75deg) saturate(1.7) brightness(1.3)','hue-rotate(180deg) saturate(1.5)','hue-rotate(-40deg) saturate(2.4)','hue-rotate(235deg) saturate(1.6)','hue-rotate(173deg) saturate(.35) brightness(1.5)','hue-rotate(5deg) saturate(1.05) brightness(1.3)'];   // v4.61 金、鑽石對齊新閃電圖的顏色（Mochi：燈光要跟閃電同色）   // 現有金色特效圖換色
 const exNum=(t,cls='',st='')=>{const e=document.createElement('div');e.className='ex-num '+cls;e.innerHTML=t;if(st)e.style.cssText=st;return e};
 const POP=(s=1)=>({transform:`translate(-50%,-50%) scale(${s})`});
 function exOv(){const st=document.getElementById('enhStage');if(!st)return null;st.querySelectorAll('.ex-ov').forEach(e=>e.remove());const ov=document.createElement('div');ov.className='ex-ov';st.appendChild(ov);return ov}

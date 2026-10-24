@@ -1884,4 +1884,5 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .ms-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ms-buy{display:inline-flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap}.ms-buy img{width:18px;height:18px}
 /* v4.61 強化動畫時石碑固定不動（Mochi）：鏡頭推近、震動都關掉，光效、閃電、武器照常 */
 .enh-stage.rune,.enh-stage .stage-sq,.enh-stage .stage-sq .rn-cam{transform:none!important}
+.enh-stage.tier.ownbolt .stage-sq .rn-light{filter:none} /* v4.61 金、鑽石主閃電用專屬圖，不換色 */
 </style>
