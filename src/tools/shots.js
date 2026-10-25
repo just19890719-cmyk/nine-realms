@@ -23,15 +23,15 @@ async function serve(dir,port){const s=cp.spawn('python3',['-m','http.server',St
 // 同樣的亂數（每頁從同一個種子開始）、同樣的時間：遊戲時鐘、計時器、動畫影格都由測試控制（從 2026-10-25 12:00 UTC 開始，只在我們推進時才走）
 const SEED=()=>{let a=20261025;Math.random=()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}};
 async function openAt(browser,port,w){const ctx=await browser.newContext({viewport:{width:w,height:H},deviceScaleFactor:1,hasTouch:true});
-  await ctx.clock.install({time:new Date('2026-10-25T12:00:00Z')});await ctx.addInitScript(SEED);
+  await ctx.clock.install({time:new Date('2026-10-25T12:00:00Z')});await ctx.clock.pauseAt(new Date('2026-10-25T12:00:01Z'));   // install 之後時間還會照真實時間走，要 pauseAt 才會停await ctx.addInitScript(SEED);
   await ctx.route(u=>!/^http:\/\/localhost[:/]/.test(u.href),r=>r.abort());   // 擋掉雲端（伺服器時間校正、聊天）和外部字型：兩邊都只用本機檔案，結果才會一樣
   const p=await ctx.newPage();p.errs=[];p.on('pageerror',e=>p.errs.push(e.message));
   await p.goto(`http://localhost:${port}/index.html`);await p.clock.runFor(1000);await p.waitForFunction(()=>typeof S!=='undefined'&&typeof ui!=='undefined'&&document.getElementById('view'));
   await p.evaluate(()=>{ui.signAuto=true;try{localStorage.setItem(DEV_KEY,'1')}catch(e){}devBps&&devBps()});await p.clock.runFor(500);
   await p.addStyleTag({content:'#toasts{display:none!important}'});   // 頂端通知是暫時的（例如開局的歡迎提示），不算畫面的一部分
   return p}
-// 即時數值（怪物血條、倒數秒數）每次都不一樣，蓋成同一個顏色再比（跟 run_tests.js 第 5 層排除的範圍相同）
-const LIVE='.ui-prog,[data-vtime],[data-vpend]',SHOT=p=>({fullPage:true,mask:[p.locator(LIVE)],maskColor:'#5a2a5a'});
+// 即時數值（怪物血條、倒數秒數）和村莊卡上的即時戰鬥（怪物被打的特效）每次都不一樣，蓋成同一個顏色再比（跟 run_tests.js 第 5 層排除的範圍相同）
+const LIVE='.ui-prog,[data-vtime],[data-vpend],.vmon',SHOT=p=>({fullPage:true,mask:[p.locator(LIVE)],maskColor:'#5a2a5a'});
 // 動畫停在同一格：有限次的（彈出、轉場）直接播完，循環的停在第 0 毫秒
 const FREEZE=()=>{for(const a of document.getAnimations()){try{const t=a.effect.getComputedTiming();if(t.iterations===Infinity){a.pause();a.currentTime=0}else a.finish()}catch(e){}}};
 const STYLES=([parts,props])=>{const out={},org=location.origin;for(const [n,sel] of Object.entries(parts)){let i=0;
