@@ -26,7 +26,7 @@ const {chromium}=require('playwright');
   const qtab=await p.evaluate(()=>ui.ftab);R(qtab==='queue','鍛造後顯示佇列分頁');
   await p.evaluate(()=>devdo('forge'));await p.waitForTimeout(150);
   await p.click('[data-act=tab][data-k=armory]');await ov('武器庫');
-  await p.click('.wgrid [data-act=wopen]');await p.waitForTimeout(150);await ov('武器詳情');
+  await p.click('.b2-grid [data-act=wopen]');await p.waitForTimeout(150);await ov('武器詳情');
   const hasSec=await p.evaluate(()=>!!document.querySelector('.sheet.wpop')&&['攻速','附加效果','相剋','屬性'].every(t=>document.querySelector('.sheet').textContent.includes(t)));R(hasSec,'點武器跳出小卡，有攻速／附加效果／相剋／屬性（v4.40）');
   await p.click('[data-act=wmode][data-m=give]');await p.click('[data-act=deliver]');await p.waitForTimeout(100);
   R(await p.evaluate(()=>S.villages[0].status==='cleared'),'交付 1-1');
