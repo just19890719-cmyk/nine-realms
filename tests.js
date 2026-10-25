@@ -573,13 +573,13 @@ function wpnTests(){if(typeof CSPD==='undefined')return[];const cats=Object.keys
   const qOk=ws.every(w=>power(w)===power({...w,q:0}));
   const hit=ws.every(w=>Math.abs(hitDmg(w)-power(w)*CSPD[bpOf(w).cat]/procE(6))<=1);
   const pr=[0,1,6,7,9,12].map(procP).map(x=>Math.round(x*100)).join('/');
-  const rc=['man','beast','giant','fly'].every(r=>Object.values(CAT_RACE).includes(r))&&MON_RACE.length===VILLAGES.length;
+  const rc=['man','beast','giant','undead'].every(r=>Object.values(CAT_RACE).includes(r))&&MON_RACE.length===VILLAGES.length;
   const sw=ws.find(w=>bpOf(w).cat==='sword'),hm=ws.find(w=>bpOf(w).cat==='hammer');
-  const rm=sw&&hm?[raceMult(sw,0),raceMult(sw,6),raceMult(hm,6),raceMult({...hm,lv:15},6),raceMult({...hm,lv:0},6)].join('/'):'';
+  const rm=sw&&hm?[raceMult(sw,0),raceMult(sw,6),raceMult(hm,4),raceMult({...hm,lv:15},4),raceMult({...hm,lv:0},4),raceMult(hm,6)].join('/'):'';
   return[T('WP1 攻擊力不看品質（暫時沒有稀有度）',qOk,ws.length+' 類'),T('WP2 單擊＝每秒傷害×攻速÷附加效果平均',hit,ws.map(w=>CATS[bpOf(w).cat]+hitDmg(w)).join(' ')),
     T('WP3 附加效果機率 +0/+1/+6/+7/+9/+12＝0/2/12/16/25/40%',pr==='0/2/12/16/25/40',pr),
-    T('WP4 相剋：四種形態都有武器剋、20 關都有形態',rc,MON_RACE.join(',')),
-    T('WP5 劍打人形 +6 ×1.06、錘打巨型 +6 ×1.06、+15 封頂 ×1.12、+0 沒有加成',rm==='1.06/1/1.06/1.12/1',rm)]}
+    T('WP4 相剋：四種形態（人形／野獸／巨型／亡靈）都有武器剋、20 關都有形態',rc,MON_RACE.join(',')),
+    T('WP5 劍打人形 +6 ×1.06、錘打亡靈（1-5）+6 ×1.06、+15 封頂 ×1.12、+0 沒有加成、錘打巨型沒加成（v4.78）',rm==='1.06/1/1.06/1.12/1/1',rm)]}
 if(typeof module!=='undefined')module.exports={runAll,econReport,simulate,levelCheck};
 
 // v4.51 新武器 17 把（武器系統定案第 9 節）：開局 7 把、兩界一階數值、解鎖關卡、偏難需求、金幣配方、暫代圖
