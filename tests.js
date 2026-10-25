@@ -483,8 +483,9 @@ function godWordTests(){const bad=VILLAGES.map((v,i)=>i).filter(i=>/神/.test(MO
 // v4.38 駐守村莊不開詳情：點武器只出小卡（收回／換武器），沒有狩獵策略、沒有排行榜
 // v4.39 卡片箭頭：駐守卡片有往下箭頭，展開後有戰鬥畫面、每輪掉落、已打到
 function bsTglTests(){const S0=S,o=ui.bsOpen;S=fresh();const w=makeWeapon('t1_woodaxe',0,0,[]);const st=S.villages[0];st.status='cleared';st.weaponId=w.id;st.cycleStart=NOW();st.bank={cycles:3,gold:30,mats:{},events:0};   // v4.43 舊材料刪除，只剩金幣
-  ui.tab='village';ui.realm=0;ui.bsOpen=null;const c=viewVillage();ui.bsOpen=0;const op=viewVillage();S=S0;ui.bsOpen=o;
-  const ok=/class="bs-tgl "[^>]*data-act="bsopen"/.test(c)&&!/bs-more/.test(c)&&/class="bs-tgl up"[^>]*data-act="bsclose"/.test(op)&&/class="bs /.test(op)&&/bs-drops/.test(op)&&(op.match(/class="bs-d[ "]/g)||[]).length===VILLAGES[0].drops.length&&!/新的掉落設計中/.test(op)&&/bs-got/.test(op)&&/×30/.test(op);
+  ui.tab='village';ui.realm=0;ui.bsOpen=null;const c=viewVillage();ui.bsOpen=0;const op=viewVillage(),nD=VILLAGES[0].drops.length+7+wDrops(0).length;S=S0;ui.bsOpen=o;   // v4.70 金幣＋強化石＋附魔石＋4 遺物＋武器
+
+  const ok=/class="bs-tgl "[^>]*data-act="bsopen"/.test(c)&&!/bs-more/.test(c)&&/class="bs-tgl up"[^>]*data-act="bsclose"/.test(op)&&/class="bs /.test(op)&&/bs-drops/.test(op)&&(op.match(/class="bs-d[ "]/g)||[]).length===nD&&!/新的掉落設計中/.test(op)&&/bs-got/.test(op)&&/×30/.test(op);
   return[T('H 村莊卡片箭頭：收起時往下、展開有戰鬥畫面＋每輪掉落＋已打到、再點收起',!!ok,ok?'正常':'內容不對')]}
 function vPickTests(){const S0=S,sv=ui.sheet;S=fresh();const w=makeWeapon('t1_woodaxe',0,0,[]);const st=S.villages[0];st.status='cleared';st.weaponId=w.id;st.cycleStart=NOW();
   const h=sheetVillage(0),card=(()=>{ui.tab='village';ui.realm=0;return typeof viewVillage==='function'?viewVillage():''})();S=S0;ui.sheet=sv;

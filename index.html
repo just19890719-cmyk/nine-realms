@@ -1912,7 +1912,6 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 /* v4.66 收成裡直接掉的武器圖 */
 .hico .wart{width:48px;height:48px;border-radius:4px}.hico .wart img{border-radius:0}
 .hm .wart{width:20px;height:20px;border-radius:3px}.hm .wart img{border-radius:0}
-.vx-wd span{white-space:nowrap}
 /* v4.67 附魔小卡：名稱帶屬性、18 種機率表（6 屬性 × 3 級） */
 .ec-pop .ec-nm{display:block;font-size:16px;line-height:1.3}
 .ec-18{display:grid;grid-template-columns:44px repeat(3,1fr);gap:5px;align-items:stretch}
@@ -1923,6 +1922,9 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .ec-c18.t2{border-color:color-mix(in srgb,var(--ec) 75%,transparent)}
 .ec-c18.t3{border-color:var(--ec);box-shadow:inset 0 0 10px color-mix(in srgb,var(--ec) 40%,transparent)}
 .ec-c18.on{background:color-mix(in srgb,var(--ec) 22%,rgba(0,0,0,.35));outline:2px solid var(--ec);outline-offset:-1px}
+.matbox .wart.mb-w{width:40px;height:40px}
+.mats.vx-mats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.vx-mats .matbox{width:auto;min-width:0;justify-content:flex-start}.vx-mats .matbox .mb-n{word-break:keep-all}
+.bs-d .wart.bs-w{width:26px;height:26px}
 </style>
 <div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div><div class="news" id="news" aria-live="polite" data-act="chatsys"></div></div>
 <main class="wrap" id="view"></main>
@@ -2386,7 +2388,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.69';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.70';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -3329,6 +3331,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.70',d:'10/25',t:'村莊掉落一眼看完',b:['村莊詳情「每打倒一隻可能掉」：金幣、強化石、附魔石、四種遺物和武器，都跟材料一樣用格子顯示圖和機率','點強化石、附魔石、遺物的格子可以看說明'],g:['vil']},
  {v:'4.69',d:'10/25',t:'1-6 以後每隻金幣調高',b:['1-6 以後每打倒一隻的金幣改成範圍隨機，接著 1-5 慢慢往上：1-6 20～50、1-10 35～65 金幣','第二界 2-1 35～75 金幣，到 2-10 60～120 金幣'],g:['vil']},
  {v:'4.67',d:'10/24',t:'附魔小卡更清楚',b:['附魔結果直接顯示在<b>武器名稱</b>裡（例如 +6 雷神之怒 霜溪鋼劍），不再另外放「目前屬性」欄','隨機屬性池直接列出<b>18 種</b>（6 屬性 × 3 級）各自的機率：一級 11.67%、二級 4.17%、三級 0.83%','道具欄的武器名稱，屬性和名稱中間加了空格'],g:['ench']},
  {v:'4.66',d:'10/24',t:'打怪會直接掉武器',b:['村莊每打倒一隻都有機會直接掉武器：第一界開局武器 0.2%、這一界已解鎖的一般武器每種 0.15%','怪物專屬武器（1-7、2-8）0.3%、Boss 武器（1-10、2-10）0.1%，只在牠那一關掉','1-1～1-5 每隻金幣改成範圍隨機（例如 1-1 20～70 金幣）','掉落機率都寫在村莊詳情最下面'],g:['vil']},
@@ -4329,8 +4332,11 @@ function knHit(w){const c=bpOf(w).cat,kn=KN[c];if(!kn)return null;const p=knProc
 const knOn=w=>!!(w&&KN[bpOf(w).cat]);
 const knNext=(hs,t)=>{let n=t-t%hs.iv+hs.ph;if(n<t)n+=hs.iv;return n};
 // v4.39 戰鬥畫面展開時的下半部：這隻怪物每輪會掉什麼、已經打到還沒收成的東西
+// v4.70 戰鬥畫面展開的掉落也一樣：強化石、附魔石、遺物、武器跟材料同一種格子
+const bsExtra=i=>{const o=relicOdds(i);return [[STONE,stoneE(i)],[ENSTONE,enchE(i)],...RELICS.map(k=>[k,RELIC_P*o[k]/100])].map(([k,p])=>`<button class="bs-d" data-act="iteminfo" data-k="${k}">${itemIco(k)}<span>${RELICS.includes(k)?ITEMS[k][3]+'遺物':itemName(k)}</span><b>${pctS(p)}</b></button>`).join('')
+  +wDrops(i).map(([k,p])=>`<div class="bs-d">${wArt(k==='_w0'?'w0_sword':k,{cls:'bs-w'})}<span>${k==='_w0'?'鐵爐村武器':BP[k].n}</span><b>${pctS(p)}</b></div>`).join('')};
 function bsMore(i,w){const v=VILLAGES[i],bk=S.villages[i].bank;
-  return `<div class="bs-more"><div class="bs-k">每打倒一隻</div>${v.drops.length?'':'<div class="small muted">目前只掉金幣，新的掉落設計中。</div>'}<div class="bs-drops">${v.drops.map(d=>`<button class="bs-d ${d[1]<RARE_P?'rare':''}" data-act="matinfo" data-k="${d[0]}" data-v="${pct(dropChance(i,w,d,'normal'))}">${img(MATART[d[0]])}<span>${MATS[d[0]]}</span><b>${pct(dropChance(i,w,d,'normal'))}</b></button>`).join('')}</div>
+  return `<div class="bs-more"><div class="bs-k">每打倒一隻</div><div class="bs-drops"><div class="bs-d">${img('it_gold')}<span>金幣</span><b>${killGoldTxt(i)}</b></div>${v.drops.map(d=>`<button class="bs-d ${d[1]<RARE_P?'rare':''}" data-act="matinfo" data-k="${d[0]}" data-v="${pct(dropChance(i,w,d,'normal'))}">${img(MATART[d[0]])}<span>${MATS[d[0]]}</span><b>${pct(dropChance(i,w,d,'normal'))}</b></button>`).join('')}${bsExtra(i)}</div>
    <div class="bs-k">已經打到${bk.cycles?`（${bk.cycles} 輪，還沒收成）`:''}</div>${bk.cycles?`<div class="bs-got">${harvestIcons({gold:bk.gold,...bk.mats})}</div>`:'<div class="small muted">這輪打完就會有收穫。</div>'}</div>`}
 function vStrip(i,w){const kn=KN[bpOf(w).cat],t=performance.now(),full=KN_FULL.includes(i),m='mon_'+(i+1);
   return `<div class="bs c-${kn.k}" data-act="bsclose" role="button" aria-label="收起戰鬥畫面" style="--n:${kn.n};--d:-${Math.round(t%kn.K)}ms;--dp:-${Math.round(t%(kn.K*kn.n))}ms">${img('v'+(i+1),'bs-bg'+(BS_BGP[i]?' bgp-'+BS_BGP[i]:''))}<i class="bs-gd"></i>
@@ -4433,7 +4439,7 @@ function sheetVillage(i){
   const head=`<div class="sheet-head"><span style="width:44px"></span><h2>${vNo(i)} ${v.name}</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>
    <div class="banner" style="background-image:url(${A('v'+(i+1))})"><span class="small">${v.who}</span><span>${v.txt}</span></div>${monDex(i)}
 `;
-  const drops=s=>`<div class="mats">${v.drops.map(d=>`<button class="matbox mb-tap" data-act="matinfo" data-k="${d[0]}" data-v="${pct(dropChance(i,w||null,d,s))}">${img(MATART[d[0]])}<span class="mb-n">${MATS[d[0]]}${d[1]<RARE_P?' <span class="ui-badge badge">稀有</span>':''}</span><span class="mb-c">${pct(dropChance(i,w||null,d,s))}</span></button>`).join('')}</div>`;
+  const drops=s=>`<div class="mats vx-mats">${dropGold(i)}${v.drops.map(d=>`<button class="matbox mb-tap" data-act="matinfo" data-k="${d[0]}" data-v="${pct(dropChance(i,w||null,d,s))}">${img(MATART[d[0]])}<span class="mb-n">${MATS[d[0]]}${d[1]<RARE_P?' <span class="ui-badge badge">稀有</span>':''}</span><span class="mb-c">${pct(dropChance(i,w||null,d,s))}</span></button>`).join('')}${dropBoxes(i)}</div>`;
   const bank=bk.cycles?`<div class="ui-panel panel">${ptitle(`已累積 ${bk.cycles} 輪${bk.events?`（受襲 ${bk.events} 次）`:''}`)}<div class="mats">${harvestIcons({gold:bk.gold,...bk.mats})}</div>${btn('收成','collect',{cls:'btn-primary big',attrs:`data-i="${i}"`})}</div>`:'';
   // v4.38 駐守中的村莊不再開詳情（Mochi）：掉落看卡片，點卡片上的武器只跳出這張小卡（看武器、換武器、收回武器）
   if(w)return `<div class="sheet-head"><span style="width:44px"></span><h2>${vNo(i)} ${v.name}</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>
@@ -4443,11 +4449,16 @@ function sheetVillage(i){
   const open=st.status==='open',ok=S.weapons.filter(x=>eligible(i,x)&&(open||where(x)<0)).sort((a,b)=>vPow(i,b)-vPow(i,a)),wk=vWeak(i);
   const tile=x=>{const sec=vSec(i,x);return `<div class="ch-pick">${wTile(x,`data-act="${open?'chgo':'deliver'}" data-i="${i}" data-id="${x.id}"`)}<div class="small ${!open||sec<=CH_SEC?'t-ok':'t-danger'}">${open?`預估 ${Math.round(sec)} 秒`:`${fmt(kph(i,x))} 隻／小時`}</div></div>`};
   return head+`<div class="ui-panel panel"><div class="kvgrid">${kv('怪物',MONS[i])}${kv('血量',fmt(VHP(i)))}${open?kv('時間限制',CH_SEC+' 秒'):kv('每隻金幣',killGoldTxt(i))}${kv('弱點',wk?`<span class="elc-${wk}">${ELEM[wk].n}</span>`:'—')}${FIRST_GOLD[i]?kv('首次收復獎勵',st.status==='cleared'?'<span class="muted">已領取</span>':'<span class="t-gold">'+fmt(FIRST_GOLD[i])+' 金幣</span>').replace('class="kv"','class="kv kv-wide"'):''}</div></div>
-   ${v.drops.length?`<div class="ui-panel panel">${ptitle('每打倒一隻可能掉')}${drops('normal')}<div class="small muted vx-drop">另外：強化石 ${r1(stoneE(i)*100)}%・附魔石 ${r1(enchE(i)*100)}%・英靈・遺物 ${RELIC_P*100}%</div>${wDropTxt(i)}</div>`:''}${bank}
+   ${v.drops.length?`<div class="ui-panel panel">${ptitle('每打倒一隻可能掉')}${drops('normal')}</div>`:''}${bank}
    <div class="ui-panel panel">${ptitle(open?'選一把武器挑戰':'指派駐守武器')}${ok.length?`<div class="wgrid">${ok.map(tile).join('')}</div><div class="small muted">${open?`${CH_SEC} 秒內打倒就收復，輸了可以馬上再試，沒有任何懲罰。`:'點武器即可駐守，每打倒一隻就收成一次。'}</div>`:`<div class="empty">道具欄沒有${open?'':'閒置的'}武器，先到鐵匠鋪鍛造一把。</div>`}</div>`;
 }
 // v4.38 「需要的武器」整段拿掉（Mochi：不限武器了就多餘）
-const wDropTxt=i=>{const L=wDrops(i);return L.length?`<div class="small muted vx-drop vx-wd">武器：${L.map(([k,p])=>`<span>${k==='_w0'?'鐵爐村武器（隨機一把）':BP[k].n} ${+(p*100).toFixed(2)}%</span>`).join('・')}</div>`:''};   // v4.66
+// v4.70 Mochi：金幣、強化石、附魔石、遺物、武器都跟材料一樣用格子顯示（圖＋名稱＋機率）
+const dropGold=i=>`<div class="matbox">${img('it_gold')}<span class="mb-n">金幣</span><span class="mb-c">${killGoldTxt(i)}</span></div>`;
+const pctS=x=>+(x*100).toFixed(x<.01?2:1)+'%';
+function dropBoxes(i){const o=relicOdds(i),box=(ico,n,c,act='')=>`<${act?'button':'div'} class="matbox ${act?'mb-tap':''}" ${act}>${ico}<span class="mb-n">${n}</span><span class="mb-c">${c}</span></${act?'button':'div'}>`;
+  return [[STONE,stoneE(i)],[ENSTONE,enchE(i)],...RELICS.map(k=>[k,RELIC_P*o[k]/100])].map(([k,p])=>box(itemIco(k),RELICS.includes(k)?ITEMS[k][3]+'遺物':itemName(k),pctS(p),`data-act="iteminfo" data-k="${k}"`)).join('')
+   +wDrops(i).map(([k,p])=>box(wArt(k==='_w0'?'w0_sword':k,{cls:'mb-w'}),k==='_w0'?'鐵爐村武器<br><span class="small">隨機一把</span>':BP[k].n,pctS(p))).join('')}
 const gph=(i,w)=>{const v=VILLAGES[i],st=S.villages[i],gs=goldMul(i,w);return Math.round(3600000/gameDur(i,w)*vKillGold(i)*STRATS[st.strat].gold*gs*(1+(tal('gold')+gdGold())/100))};
 const kph=(i,w)=>Math.round(3600000/gameDur(i,w));   // v4.52 每小時擊殺數
 const harvestMini=g=>Object.entries(g).filter(([k,n])=>n).slice(0,4).map(([k,n])=>`<span class="hm">${itemIco(k)}${fmt(n)}</span>`).join('');
@@ -4574,6 +4585,7 @@ function viewShop(){
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'4.70',t:'村莊詳情掉落全部改成格子',b:[['dropbox7','打開 1-7 詳情（有怪物武器）'],['dropbox20','打開 2-10 詳情（有 Boss 武器）']]},
  {v:'4.69',t:'1-6 以後每隻金幣調高（B 溫和）',b:[['goldtab','列出 1-1～2-10 每隻金幣範圍和平均時薪']]},
  {v:'4.67',t:'附魔小卡：結果顯示在武器名稱、列出 18 種機率',b:[['ec18','打開附魔小卡（名稱前面是雷神之怒，18 格裡那格有框）'],['affopen','屬性附魔機率：模擬 6000 次']]},
  {v:'4.66',t:'打怪直接掉武器、1-1～1-5 金幣範圍',b:[['wdropsim','模擬 1-1／1-7／1-10／2-10 各打倒 10,000 隻，看掉幾把武器和金幣'],['wdrop1','1-1 駐守中的村莊塞 3 把掉落武器（按收成看）']]},
@@ -4877,6 +4889,8 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
    testw:()=>{const bp=['dev_sword','dev_sword','dev_sword','dev_sword'][ui.devTier??0];const w=makeWeapon(bp,ui.devTier===3?3:2,ui.devLv??0,[]);w.test=true;ui.enhLast=null;ui.riskArm=ui.riskOk=null;ui.sheet={t:'w',id:w.id,m:'enh'};toast('已送出測試武器')},
    stone50:()=>S.items[STONE]=stones()+50,stone0:()=>S.items[STONE]=0,
    stonereal:()=>{const bp=BPS.find(x=>x.cat==='sword');if(!bp)return toast('沒有劍的圖紙（開發者模式才有測試圖紙）','bad');const w=makeWeapon(bp.id,0,6,[]);S.items[STONE]=Math.max(stones(),20);ui.sheet={t:'w',id:w.id,m:'enh'};toast('真的 +6 劍：強化會用掉強化石，+7 起失敗就爆裝','ok')},
+   dropbox7:()=>{S.villages.forEach((v,i)=>{if(i<7&&v.status==='locked')v.status='open'});ui.tab='village';ui.realm=0;ui.sheet={t:'v',i:6};render()},
+   dropbox20:()=>{S.villages.forEach((v,i)=>{if(i<20&&v.status==='locked')v.status='open'});ui.tab='village';ui.realm=1;ui.sheet={t:'v',i:19};render()},
    goldtab:()=>{ui.testOut='<b>每隻金幣（每小時約 75 隻）</b><br>'+VILLAGES.map((v,i)=>`${vNo(i)} ${killGoldTxt(i)}・平均 ${vKillGold(i)}・約 ${fmt(vKillGold(i)*75)}／小時`).join('<br>')},
    wdropsim:()=>{const out=[0,6,9,19].map(i=>{const st={strat:'normal',bank:{cycles:0,gold:0,mats:{},events:0}};for(let c=0;c<10000;c++)rollCycle(i,null,st,NOW());const ws=Object.entries(st.bank.mats).filter(([k])=>k.startsWith('w:')).map(([k,n])=>itemName(k)+' '+n).join('、')||'沒有';return `<b>${vNo(i)}</b> 每隻金幣 ${killGoldTxt(i)}（平均 ${fmt(Math.round(st.bank.gold/10000))}）・武器：${ws}`});ui.testOut='<div><b>打倒 10,000 隻</b>（約 133 小時）</div>'+out.join('<br>')},
    wdrop1:()=>{const st=S.villages[0];st.bank.cycles=Math.max(1,st.bank.cycles);['w:w0_axe','w:w0_bow','w:'+(BP.w1_spear?'w1_spear':'w0_sword')].forEach(k=>st.bank.mats[k]=(st.bank.mats[k]||0)+1);toast('1-1 收成裡多了 3 把武器，按「全部收成」看');ui.tab='village';ui.realm=0},
