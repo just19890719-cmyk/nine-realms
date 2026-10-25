@@ -332,7 +332,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.84';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.85';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1312,6 +1312,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.85',d:'10/25',t:'奧丁之咒武器不會再藏起來',b:['中了<b>奧丁之咒</b>的武器，在道具欄會<b>自己一格</b>，不會再跟同款武器疊在一起看不到','武器圖下方會標紅色「奧丁之咒」，一眼就認得出來'],g:['ench']},
  {v:'4.84',d:'10/25',t:'屬性顏色調整',b:['<b>雷屬性</b>改成閃電<b>亮黃色</b>（原本紫色，跟暗屬性太像）','<b>聖屬性</b>改成<b>白金色</b>，六種屬性一眼就能分開'],g:['ench']},
  {v:'4.83',d:'10/25',t:'奧丁之咒與矮人解咒石',b:['附魔有 <b>5%</b> 會中<b>奧丁之咒</b>（跟全部三級加起來一樣），原本的屬性消失','中咒的武器<b>完全不能使用</b>：不能駐守、挑戰、強化、上架、登錄圖鑑','新道具<b>矮人解咒石</b>：破除奧丁之咒（變回無屬性，要再附魔）；打倒怪物有機率掉，商城也能用金幣或鑽石買','商城新增<b>道具</b>區：強化石、附魔石、矮人解咒石','附魔小卡右上角多了一本<b>故事書</b>：矮人兄弟為什麼要偷奧丁的附魔石；<b>第一次翻開送 10 顆附魔石和 2 顆矮人解咒石</b>'],g:['ench','shop']},
  {v:'4.82',d:'10/25',t:'附魔防誤點加強',b:['武器已經是<b>三級屬性</b>時再按附魔，會在畫面中間跳出<b>確認小卡</b>，按「確定重抽」才會重抽；點外面或「取消」就不抽'],g:['ench']},
@@ -1962,7 +1963,7 @@ const btn=(label,act,{cls='btn-sec',attrs='',dis=false}={})=>`<button class="ui-
 const ptitle=t=>`<div class="ui-title ptitle"><span>${t}</span></div>`;
 const kv=(k,v)=>`<div class="kv"><span>${k}</span><b>${v}</b></div>`;
 // v4.55 同款武器疊一格（Mochi）：同圖紙、同強化等級、同屬性、同收藏／測試狀態，而且閒置中才疊；駐守中的一把一格
-const wKey=w=>[w.b,w.lv|0,(e=>e?e.k+e.t:'')(wElem(w)),w.lock?1:0,w.test?1:0].join('|');
+const wKey=w=>[w.b,w.lv|0,isBroken(w)?'brk':(e=>e?e.k+e.t:'')(wElem(w)),w.lock?1:0,w.test?1:0].join('|');
 const wStackable=w=>where(w)<0&&bossSlotOf(w)<0;
 function wStacks(ws){const m=new Map(),out=[];ws.forEach(w=>{if(!wStackable(w))return out.push({w,n:1,nw:wNew(w)});const k=wKey(w);let g=m.get(k);if(!g){g={w,n:0,nw:false};m.set(k,g);out.push(g)}g.n++;g.nw=g.nw||wNew(w)});return out}
 // v4.60 一鍵安定值後：小卡留在同款那一格（換成下一把還沒強化的同款），動畫播完才換
@@ -1972,7 +1973,7 @@ function stkFollow(){const n=ui.stkNext,s=ui.sheet;if(!n||ui.busy)return;ui.stkN
 const wSame=w=>wStackable(w)?S.weapons.filter(x=>wStackable(x)&&wKey(x)===wKey(w)).length:1;
 function wTile(w,act,dot,n=1,nw=wNew(w)){const b=bpOf(w),i=where(w);
   return `<button class="wt ${lc(w)}b ${i>=0?'posted':''} ${w.lock?'locked-fav':''}" ${act}>${dot?'<i class="dot give-dot" title="可以交付村莊"></i>':''}<span class="wt-art">${wArt(b.id,{frame:fq(w)})}
-   ${i>=0?`<span class="wt-post">駐守 ${vNo(i)}</span>`:bossSlotOf(w)>=0?'<span class="wt-post boss">討伐首領</span>':''}${nw?'<span class="new-tag">NEW</span>':''}${n>1?`<i class="ib-x wt-x">×${fmt(n)}</i>`:''}</span>
+   ${i>=0?`<span class="wt-post">駐守 ${vNo(i)}</span>`:bossSlotOf(w)>=0?'<span class="wt-post boss">討伐首領</span>':isBroken(w)?'<span class="wt-post boss">奧丁之咒</span>':''}${nw?'<span class="new-tag">NEW</span>':''}${n>1?`<i class="ib-x wt-x">×${fmt(n)}</i>`:''}</span>
    <span class="wt-name ${lc(w)}"><span class="wt-lv">+${w.lv}</span>${(e=>e?`<span class="wn-el e-${e.k} t${e.t}">${e.tn}</span> `:'')(wElem(w))}${b.n}${w.lock?img('ic_lock','wt-lk','已鎖定'):''}</span></button>`}
 function bpTile(b,on){const l=bpLock(b);return `<button class="wt bp ${on?'on':''} ${l?'locked':''}" data-act="bp" data-k="${b.id}"><span class="wt-art">${wArt(b.id,{frame:'bp'})}${l?`<span class="wt-lock">${img('ic_lock')}</span>`:''}${bpNew(b)?'<span class="new-tag">NEW</span>':''}</span><span class="wt-name">${b.n}</span>${l?`<span class="wt-pow wt-lockline">${l}</span>`:`<span class="wt-pow">${kindN(b)}・${CATS[b.cat]}</span>`}</button>`}
 const matBox=(k,need)=>need==null?`<button class="matbox mb-tap" data-act="matinfo" data-k="${k}">${img(MATART[k])}<span class="mb-n">${MATS[k]}</span><span class="mb-c">${fmt(S.mats[k])}</span></button>`
@@ -2643,6 +2644,7 @@ function viewShop(){
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'4.85',t:'奧丁之咒武器在道具欄自己一格（不跟同款疊在一起）',b:[['brkstk','給 3 把同款 +6 劍，其中 1 把中咒（看道具欄）']]},
  {v:'4.84',t:'雷屬性改亮黃、聖屬性改白金',b:[['elall','給 6 把不同屬性的武器（看名稱顏色）'],['res77','打開附魔表看 18 格顏色']]},
  {v:'4.83',t:'附魔 5% 奧丁之咒＋矮人解咒石、商城賣強化石／附魔石、附魔故事書',b:[['lore83','打開附魔故事書「矮人盜石」（第一次送 10 附魔石＋2 解咒石）'],['lore83r','重置故事書已讀（可以再領一次測試）'],['brk83','給 1 把中咒測試劍＋3 顆解咒石，打開武器小卡'],['brk83f','下一次附魔一定中奧丁之咒（給三級火屬性劍＋附魔石）'],['brk83s','打開商城看矮人解咒石']]},
  {v:'4.82',t:'三級屬性重抽跳置中確認小卡',b:[['ench81','給 1 把三級火屬性測試劍＋附魔石，打開附魔（按附魔會跳確認小卡）']]},
@@ -2883,6 +2885,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='race78'){S.villages.forEach((v,i)=>{if(i<4)v.status='cleared'});if(S.villages[4].status==='locked')S.villages[4].status='open';ui.testOut='<b>v4.78 武器剋制</b><br>'+Object.entries(CAT_RACE).map(([c,r])=>CATS[c]+'→'+RACE_N[r]).join('、')+'<br><b>20 關型態</b><br>'+MON_RACE.map((r,i)=>vNo(i)+' '+RACE_N[r]).join('、');ui.sheet={t:'v',i:4};render();return toast('1-5 戰場鴉魔應該是亡靈')}
   if(k==='race79'){ui.testOut='<b>v4.79 相剋加成</b><br>'+RACE_PCT.map((p,l)=>'+'+l+' '+p+'%').join('、');const w=makeWeapon('dev_sword',2,9,[]);save();ui.sheet={t:'w',id:w.id,m:'main'};render();return toast('+9 相剋應為 12%，下一級 +10 為 15%')}
   if(k==='elpop'){const w=makeWeapon('dev_sword',2,6,[],[{k:'bolt',v:3},null,null,null]);save();ui.sheet={t:'w',id:w.id,m:'ench'};ui.result=Object.assign({t:'info'},affInfo('bolt'));render();return}
+  if(k==='brkstk'){[0,1,2].forEach(j=>makeWeapon('dev_sword',2,6,[],[j?null:{k:'broken',v:1},null,null,null]));save();ui.sheet=null;ui.tab='armory';ui.atab='w';render();return toast('已給 3 把 +6 測試劍：2 把疊成 ×2、1 把奧丁之咒自己一格','ok')}
   if(k==='elall'){const ks=Object.keys(ELEM);ks.forEach((x,j)=>makeWeapon('dev_sword',2,6,[],[{k:x,v:1+j%3},null,null,null]));save();ui.sheet=null;ui.tab='armory';render();return toast('已給 6 把 +6 測試劍：火屬性一級、冰屬性二級、雷屬性三級、毒屬性一級、聖屬性二級、暗屬性三級。拿去駐守看卡片的弱點提示會不會變綠','ok')}
   if(k==='ec18'){const w=S.weapons.find(x=>where(x)<0)||S.weapons[0];if(!w)return toast('道具欄沒有武器','bad');w.ench=[{k:'bolt',v:3},null,null,null];ui.sheet={t:'w',id:w.id,m:'ench'};save();render();return toast('名稱前面應該是「雷神之怒」，下面 18 格裡雷神之怒那格有框','ok')}   // v4.67
   if(k==='elforce'){DEV.elForce=[Object.keys(ELEM)[rnd(0,5)],3];return toast(`下一次附魔必定三級：${ELEM[DEV.elForce[0]].tn[2]}`,'ok')}
