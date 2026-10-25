@@ -213,9 +213,9 @@ function saveTests(){
       `6000 次（破損 ${brk}）：${Object.keys(ELEM).map(k=>ELEM[k].n+' '+(cnt[k]||0)).join('、')}；等級 ${tc[1]}／${tc[2]}／${tc[3]}；第 2 格「${e2.err||'可用(錯)'}」；攻擊力 ${p0}→${power(x)}`));
     // v4.83 奧丁之咒：不能駐守／挑戰／強化／上架／登錄圖鑑／再附魔，解咒石解咒變無屬性，載入不會被清掉
     {S=fresh();S.gold=1e6;S.items.enstone=5;const b=makeWeapon('t2_wolfaxe',2,3,[],[{k:'broken',v:1},null,null,null]),c={...b,ench:[{k:'broken',v:1},null,null,null]};elemCleanW(c);
-     const el=eligible(0,b),sell=mkSellable(b),eh=enhanceCore(b.id,{}),en=enchantCore(b.id,0),r0=repairCore(b.id);S.items.repair=1;const r1x=repairCore(b.id);
-     res.push(T('E12 奧丁之咒與矮人解咒石',!el&&!sell&&!!eh.err&&!!en.err&&!!r0.err&&r1x.ok&&!b.ench[0]&&isBroken(c)&&(S.items.repair|0)===0&&eligible(0,b)&&!elemOf(c),
-      `駐守 ${el}、上架 ${sell}、強化「${eh.err}」、附魔「${en.err}」、沒石頭修「${r0.err}」、解咒後 ${JSON.stringify(b.ench[0])}、載入保留 ${isBroken(c)}`))}
+     const d=makeWeapon('t2_wolfaxe',2,3,[]),stkOk=wKey(b)!==wKey(d)&&wSame(b)===1;const el=eligible(0,b),sell=mkSellable(b),eh=enhanceCore(b.id,{}),en=enchantCore(b.id,0),r0=repairCore(b.id);S.items.repair=1;const r1x=repairCore(b.id);
+     res.push(T('E12 奧丁之咒與矮人解咒石',!el&&!sell&&!!eh.err&&!!en.err&&!!r0.err&&r1x.ok&&!b.ench[0]&&isBroken(c)&&(S.items.repair|0)===0&&eligible(0,b)&&!elemOf(c)&&stkOk,
+      `駐守 ${el}、上架 ${sell}、強化「${eh.err}」、附魔「${en.err}」、沒石頭修「${r0.err}」、解咒後 ${JSON.stringify(b.ench[0])}、載入保留 ${isBroken(c)}、跟同款分開疊 ${stkOk}`))}
     // v4.44 舊附魔載入時清空、弱點倍率
     {const w={id:1,b:'t1_woodaxe',q:0,lv:0,ench:[{k:'flame',v:10},{k:'giant',v:30},{k:'fire',v:2},null]},w2={id:2,b:'t1_woodaxe',q:0,lv:0,ench:[{k:'ice',v:3},null,null,null]},w3={id:3,b:'t1_woodaxe',q:0,lv:0,ench:[{k:'bolt',v:9},null,null,null]};elemCleanW(w);elemCleanW(w2);elemCleanW(w3);
      const m9=weakMul(8,w2),m9f=weakMul(8,{ench:[{k:'fire',v:3}]}),m0=weakMul(0,w2),m19=weakMul(19,{ench:[{k:'toxic',v:1}]}),m19b=weakMul(19,{ench:[{k:'bolt',v:2}]}),m1d=weakMul(0,{ench:[{k:'dark',v:3}]}),mn=weakMul(8,{ench:[null]});
