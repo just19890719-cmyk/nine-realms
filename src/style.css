@@ -1794,6 +1794,7 @@ html.scrimmed .cbar{display:none}
 .wn-brk,.wn-brk.wn-brk{color:#ff5a4a;font-weight:700}   /* v4.83 奧丁之咒 */
 .ec-brk{display:flex;align-items:center;gap:8px;margin:6px 0 0;padding:7px 10px;border:1px solid rgba(255,90,74,.45);border-radius:8px;background:rgba(255,90,74,.08);font-size:13px}
 .ec-brk span:nth-child(2){flex:1;color:var(--muted,#b9ad9a)}.ec-brk b{color:#ff8a7a}
+.ec-brk{position:relative;overflow:hidden;isolation:isolate}.ec-brk::before{content:'';position:absolute;inset:0;z-index:-1;background:url(art/elbg_curse.webp) center bottom/cover no-repeat;opacity:.85;pointer-events:none}.ec-brk span,.ec-brk b{text-shadow:0 1px 3px #000,0 0 6px rgba(0,0,0,.9)}   /* v4.87 奧丁之咒底紋（AI 生圖） */
 .sh-2{display:flex;align-items:center;gap:4px}   /* v4.83 附魔小卡標題：左右各兩格，標題維持置中 */
 .lore-btn .lore-ic{width:40px;height:40px}.lore-btn .ph-ico.lore-ic{font-size:9px}
 .lore-art{margin:0 auto 10px;max-width:360px}.lore-art img,.lore-art .lore-img{display:block;width:100%;aspect-ratio:3/2;height:auto;border-radius:8px}.lore-art .ph-ico.lore-img{display:flex;font-size:14px}
