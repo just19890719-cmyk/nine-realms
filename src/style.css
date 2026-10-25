@@ -2003,4 +2003,18 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .info-btn:not(#_){border-color:transparent;background:url(art/ui/ui491_info.webp) center/100% 100% no-repeat;box-shadow:none;font-size:0;color:transparent}   /* v4.91 專屬圖示（跟叉叉鈕同一套），原本的 ⓘ 字型藏起來 */
 .wp-g>*:not(#_){padding:9px 13px}
 .ui-panel.panel .ui-card.sel-head.sel-head:not(#_){border-image:none;border-color:transparent;background:none}   /* 面板裡的已選擇區塊不要再套一層框 */
+/* v4.92 剩下的程式框也換成同一套（Mochi 選「繼續換剩下的程式框」）：獨立方塊用 fr，清單列用沒有尖刺的 fl，小標籤用膠囊，空格子用灰框 */
+.dq-box:not(#_),.mon-dex:not(#_),.cx-sum:not(#_),.powbox:not(#_),.toast:not(#_),.cx-card:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fr.webp) 40 / 10px stretch;box-shadow:none}
+.dq-row:not(#_),.lb-rw:not(#_),.st-row:not(#_),.cx-row:not(#_),.gr-c:not(#_),.mk-art:not(#_),.dq-sum:not(#_),.lb-me:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fl.webp) 38 / 9px stretch;box-shadow:none}
+.dq-row.done:not(#_){border-image-source:url(art/ui/ui491_fl_on.webp)}
+.cx-s:not(.done):not(#_){border-style:solid;border-color:transparent;border-image:url(art/ui/ui491_fr_off.webp) 40 / 8px stretch}
+.lb-tab:not(#_),.cx-tab:not(#_),.cx-sub>button:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fr.webp) 40 / 10px stretch;box-shadow:none}
+.lb-tab.on:not(#_),.cx-tab.on:not(#_),.cx-sub>button.on:not(#_){border-image-source:url(art/ui/ui491_fr_on.webp)}
+.lb-tab.lk:not(#_),.cx-tab.lk:not(#_){border-image-source:url(art/ui/ui491_fr_off.webp)}
+.hf-rib:not(#_),.cbar-ch:not(#_),.dq-mk:not(#_){border-color:transparent;border-image:url(art/ui/ui491_cap.webp) 55 / 30px stretch;box-shadow:none}
+.enh-stage .enh-zone:not(#_){border-color:transparent;border-image:url(art/ui/ui491_cap_red.webp) 55 / 30px stretch}
+.md-arr:not(#_),.mk-ref:not(#_){border-color:transparent;background:url(art/ui/ui491_ring.webp) center/100% 100% no-repeat;box-shadow:none}
+.mon-dex button.on:not(#_){outline:none;border:1px solid transparent;border-image:url(art/ui/ui491_fr_on.webp) 40 / 8px stretch}
+.lb-list:not(:has(*)){display:none}   /* 排行榜沒有資料時不顯示空框 */
+.lore-gift:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fl_on.webp) 38 / 9px stretch}
 </style>
