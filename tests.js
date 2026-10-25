@@ -699,8 +699,11 @@ function k2Tests(){const S0=S,sh0=ui.sheet,r0=ui.result;S=JSON.parse(JSON.string
   try{const b=BPS.find(x=>!x.dev)||BPS[0],w=makeWeapon(b.id,0,10),out=[];
     for(const m of ['main','enh','ench']){ui.sheet={t:'w',id:w.id,m};ui.result=null;renderLayer();const sc=document.querySelector('#layer .sheet');
       const bi=sc?getComputedStyle(sc).borderImageSource:'',old=sc?[...sc.querySelectorAll('*')].filter(e=>/ui491_/.test(getComputedStyle(e).borderImageSource)).length:-1;
-      const bt=sc?[...sc.querySelectorAll('.ui-btn.btn')].filter(e=>!/bag2_btn/.test(getComputedStyle(e).borderImageSource)).length:-1;
+      const bt=sc?[...sc.querySelectorAll('.ui-btn.btn:not(.ui-btn--icon)')].filter(e=>!/bag2_btn/.test(getComputedStyle(e).borderImageSource)).length:-1;
       out.push(T('K2-'+m+' 小卡用道具欄外框、按鈕，沒有舊框',!!sc&&sc.classList.contains('k2')&&/bag2_main_frame/.test(bi)&&old===0&&bt===0,`外框 ${/bag2_main_frame/.test(bi)?'bag2':bi.slice(-30)}；舊框 ${old} 個；非 bag2 按鈕 ${bt} 個`))
+      // 返回／說明／X 這類圓形圖示鈕維持原本的圓形圖，不能被套上道具欄按鈕框（v5.10 X 變成八角形）
+      const ib=sc?[...sc.querySelectorAll('.ui-btn--icon,.ui-iconbtn')].filter(e=>getComputedStyle(e).borderImageSource!=='none').length:-1;
+      out.push(T('K2-'+m+' 圖示鈕維持原本圓形，沒有被加外框',ib===0,`被加外框 ${ib} 個`))
       // 標題列的返回／說明／X 按鈕要完整在外框裡、不壓到標題（v5.10 375 寬 X 被擠出去）
       const sr=sc?sc.getBoundingClientRect():null,hd=sc?[...sc.querySelectorAll('.sheet-head .icon-btn,.wp-top .icon-btn')].map(e=>e.getBoundingClientRect()).filter(r=>r.width):[],tt=sc&&sc.querySelector('.sheet-head h2'),tr=tt&&tt.getBoundingClientRect();
       const outB=hd.filter(r=>r.right>sr.right-12||r.left<sr.left+12).length,hit=tr?hd.filter(r=>r.left<tr.right&&r.right>tr.left&&r.top<tr.bottom&&r.bottom>tr.top).length:0;
