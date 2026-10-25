@@ -143,7 +143,7 @@ body{color:var(--bone);font-family:var(--body);line-height:1.5;padding-left:max(
 .gear img{width:40px;height:40px}
 .plus{margin-left:2px;border-radius:4px;color:var(--gold-hi);font-size:14px;line-height:1;display:grid;place-items:center;padding:0;border:0;background:none;width:26px;height:26px}
 .plus img{width:26px;height:26px}
-.bar{top:env(safe-area-inset-top,0px);z-index:20;margin:0 calc(-1 * max(12px,env(safe-area-inset-left,0px)));padding:6px max(12px,env(safe-area-inset-right,0px)) 6px max(12px,env(safe-area-inset-left,0px));background:linear-gradient(#1b1511,rgba(18,14,11,.96));border-bottom:1px solid var(--line);position:sticky}
+.bar{top:env(safe-area-inset-top,0px);z-index:20;margin:0 calc(-1 * max(12px,env(safe-area-inset-left,0px)));padding:6px max(12px,env(safe-area-inset-right,0px)) 6px max(12px,env(safe-area-inset-left,0px));background:linear-gradient(#1b1511,#120e0b);border-bottom:1px solid var(--line);position:sticky}
 .res .gear{margin-left:2px}
 .mute{background:none;border:0;font-size:18px;width:44px;height:44px;padding:0;margin:0 -4px;opacity:.85;cursor:pointer;flex:none}
 /* 頂部資源列窄螢幕（v3.12 修正）：名字放不下時改成徽章上的等級標記，320px 以下資源改到第二行；不縮小文字 */
@@ -2041,13 +2041,14 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 
 /* ===== v4.96 道具欄新外觀（背包樣板 proto/bag2，Mochi 10/25 確認）：煤黑古銅；美術 art/ui/bag2/，全部只在 .b2 底下 ===== */
 .b2{--b2br:1.5;--b2-gold:#b88f4a;--b2-gold-hi:#f0cf86;--b2-text:#e7e2d8;--b2-mute:#8d96a3;--b2-dim:#5d6672;--b2-num:#f4e2b8;--b2-danger:#e0594b;
-  position:relative;isolation:isolate;container-type:inline-size;margin:8px -4px 10px;padding:18px 16px 16px;background:#0b0d10;color:var(--b2-text)}
+  position:relative;isolation:isolate;container-type:inline-size;margin:0 -4px 10px;padding:18px 16px 16px;background:#0b0d10;color:var(--b2-text)}
 .b2::before{content:"";position:absolute;left:0;right:0;top:0;height:150cqw;max-height:100%;z-index:-1;filter:brightness(var(--b2br));background:url(art/ui/bag2/bag2_main_tex.webp) center top/100% auto no-repeat;
   -webkit-mask-image:linear-gradient(#000 72%,transparent);mask-image:linear-gradient(#000 72%,transparent);pointer-events:none}
 .b2::after{content:"";position:absolute;inset:0;z-index:3;border:1px solid transparent;border-image:url(art/ui/bag2/bag2_main_frame.webp) 150 / 30px stretch round;pointer-events:none}
 .b2 button{color:inherit;-webkit-tap-highlight-color:transparent}
 /* v4.98 上方（標題、頁籤、分類、排序）往下捲時固定在資源列下面，只有格子在捲（Mochi） */
-.b2-top{position:sticky;top:calc(var(--barh,52px) + env(safe-area-inset-top,0px));z-index:2;margin:-18px -16px 0;padding:18px 16px 6px}
+.b2-top{position:sticky;top:calc(var(--barh,52px) + env(safe-area-inset-top,0px));z-index:4;margin:-18px -16px 0;padding:18px 16px 6px}
+.b2-topfr{position:absolute;inset:0;z-index:1;border:0 solid transparent;border-image:url(art/ui/bag2/bag2_main_frame.webp) 150 150 1284 150 / 30px 30px 0 30px stretch;pointer-events:none}   /* v5.07 固定區自帶上框：從頂端就貼在資源列下面，捲動時完全不動 */
 .b2-top::after{content:'';position:absolute;left:4px;right:4px;bottom:-22px;height:28px;pointer-events:none;background:url(art/ui/bag2/bag2_rule_mid.webp) center top/auto 12px no-repeat,url(art/ui/bag2/bag2_rule_line.webp) center top/100% 12px no-repeat,linear-gradient(rgba(6,7,9,.9),rgba(6,7,9,0)) 0 6px/100% 16px no-repeat}   /* v5.02 固定區下緣飾線＋淡出 */
 .b2-top::before{content:"";position:absolute;inset:0;z-index:-1;background:#0b0d10 url(art/ui/bag2/bag2_main_tex.webp) center top/100% auto no-repeat;filter:brightness(var(--b2br))}
 /* 標題列：名稱置中、容量在右 */
@@ -2112,6 +2113,10 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .b2 .empty-state{margin:0}
 @media (max-width:340px){.b2-cat{border-image-width:7px;font-size:10px}.b2-top{margin:-14px -12px 0;padding:14px 12px 6px}.b2-cat img{width:24px;height:24px}.b2{padding:14px 12px 12px}.b2-cap{padding-right:10px}.b2-head h2::before,.b2-head h2::after{width:40px}}
 body{margin-top:0}   /* v5.05 拿掉瀏覽器預設的上方 8px：捲動時上方資源列不再往上跳一下 */
+.sheet>.sheet-head:first-child{margin-top:-8px}   /* v5.07 彈窗標題列從一開始就貼在最上面，捲動時不再往上移 8px */
+html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不再讓整個畫面左右跳 */
+.wp-notes{min-height:calc(3 * 1.5em + 8px);padding-top:8px;box-sizing:border-box}.wp-notes .wp-note:first-child{margin-top:0}   /* v5.07 小卡下面固定預留 3 行提示，按熔解不會變大 */
+.armnote{min-height:3em}   /* v5.07 危險區強化確認提示預留 2 行 */
 </style>
 <div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div><div class="news" id="news" aria-live="polite" data-act="chatsys"></div></div>
 <main class="wrap" id="view"></main>
@@ -2619,7 +2624,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='5.06';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='5.07';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -3599,6 +3604,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'5.07',d:'10/25',t:'捲動、開關小卡時畫面完全不跳',b:['道具欄上方固定區從一開始就貼在資源列下面，往下捲時標題、頁籤、分類完全不動','所有彈窗的標題列捲動時也不再往上移','開關小卡時整個畫面不再左右跳一下（電腦版捲軸）','熔解、危險區強化的「再按一次確認」改回顯示在小卡下方，小卡固定預留提示空間，按下去不會變大，也不再從上方跳通知','上方資源列改成不透明，捲動時不會透出底下的東西'],g:['bag']},
  {v:'5.06',d:'10/25',t:'按確認時小卡不再變大',b:['熔解、危險區強化要「再按一次確認」時，提示改成跳出通知，小卡不會再多一行字、整個框跟著變大'],g:['bag']},
  {v:'5.05',d:'10/25',t:'捲動時上方資源列不再跳一下',b:['在最上面開始往下捲時，上方資源列和道具欄標題不會再先往上跳一小段'],g:['bag']},
  {v:'5.04',d:'10/25',t:'道具欄固定區下緣飾線對齊',b:['往下捲時，上方固定區的底紋剛好收在青銅飾線上，飾線下面直接淡出，不再有一截斷層'],g:['bag']},
@@ -3797,7 +3803,7 @@ function enhance(id){
   const useSc=false,useBl=false;   // v4.43 防爆卷、祝福石刪除
   const next=w.lv+1,danger=next>stable(w),guarded=danger&&useSc;
   // 沒有防爆卷保護的危險強化：同一次進入強化頁只需要確認一次
-  if(danger&&!guarded&&!w.test&&ui.riskOk!==id){if(ui.riskArm===id){ui.riskOk=id}else{ui.riskArm=id;toast('危險區強化：再按一次確認，這次進入強化頁之後不會再問','bad');renderLayer();return}}
+  if(danger&&!guarded&&!w.test&&ui.riskOk!==id){if(ui.riskArm===id){ui.riskOk=id}else{ui.riskArm=id;renderLayer();return}}
   const force=w.test?DEV.force:null;
   const r=enhanceCore(id,{bless:useBl,scroll:useSc,force});if(r.err){toast(r.err,'bad');return renderLayer()}
   if(force)DEV.force=null;ui.busy=true;ui.enhLast=null;
@@ -4326,7 +4332,7 @@ function cxAsk(k,j){const b=BP[k],L=CX_LV[j];if(!b)return;
     acts:btn('登錄','cxdo',{cls:'btn-primary big',attrs:`data-k="${k}" data-j="${j}"`}),ok:'取消'};render()}
 
 function viewBag(){const mk=Object.keys(MATS),ik=Object.keys(ITEMS);
-  return `<section class="b2"><div class="b2-top">${b2Head()}</div><div class="b2-well"><div class="b2-sec">道具<span>${ik.length} 種・同一種疊一格，沒有上限</span></div><div class="b2-grid">${ik.map(itemBox).join('')}</div>
+  return `<section class="b2"><div class="b2-top"><i class="b2-topfr"></i>${b2Head()}</div><div class="b2-well"><div class="b2-sec">道具<span>${ik.length} 種・同一種疊一格，沒有上限</span></div><div class="b2-grid">${ik.map(itemBox).join('')}</div>
    <div class="b2-sec b2-sec2">材料<span>${mk.length} 種・點一下看說明</span></div>${mk.length?`<div class="b2-grid">${mk.map(k=>`<button class="b2-slot it" data-act="matinfo" data-k="${k}" aria-label="${MATS[k]}"><span class="rim"></span>${img(MATART[k],'ic')}${S.mats[k]?`<span class="x">${fmt(S.mats[k])}</span>`:''}</button>`).join('')}</div>`:'<div class="small muted">新的材料設計中。</div>'}</div></section>`}
 const itemBox=k=>{const gc=ITEMS[k][4],r=B2_RIM[gc];return `<button class="b2-slot it" data-act="iteminfo" data-k="${k}" ${r?`style="--rim:url(art/ui/bag2/bag2_rim_l${r}.webp)"`:''} aria-label="${ITEMS[k][0]}"><span class="rim"></span>${itemIco(k,'ic')}${S.items[k]?`<span class="x">${fmt(S.items[k])}</span>`:''}${ITEMS[k][3]?`<span class="glow" style="color:${gc}">${ITEMS[k][3]}</span>`:''}</button>`};
 function itemInfo(k){const n=S.items[k]|0;
@@ -4503,7 +4509,7 @@ function viewArmory(){
   const ws=S.weapons.filter(w=>(ui.acat==='all'||bpOf(w).cat===ui.acat)&&(aq==='all'||FLV(w.lv)===+aq)&&stOk(w)).sort((SORTS[ui.asort]||SORTS.power)[1]);
   const filtered=ui.acat!=='all'||aq!=='all'||ast!=='all';
   const sts=[['all','全部'],['idle','閒置'],['post','駐守'],['lock','鎖定'],...(ast==='test'||S.weapons.some(w=>w.test)?[['test','測試']]:[])];   // 「測試」只在有測試武器時出現
-  return `<section class="b2"><div class="b2-top">${b2Head()}
+  return `<section class="b2"><div class="b2-top"><i class="b2-topfr"></i>${b2Head()}
   <div class="b2-cats catbar">${['all',...Object.keys(CATS).filter(k=>BPS.some(b=>b.cat===k)||S.weapons.some(w=>bpOf(w).cat===k))].map(k=>`<button class="b2-cat ${ui.acat===k?'on':''}" data-act="acat" data-k="${k}">${B2_CAT[k]?b2Img(B2_CAT[k]):img(CAT_ICON[k])}<span>${k==='all'?'全部':CATS[k]}</span></button>`).join('')}</div>
   <div class="b2-fil"><label class="b2-sel"><select id="asort" aria-label="排序">${Object.entries(SORTS).map(([k,[n]])=>`<option value="${k}" ${ui.asort===k?'selected':''}>排序：${n}</option>`).join('')}</select></label>
    <label class="b2-sel"><select id="ast" aria-label="狀態">${sts.map(([k,n])=>`<option value="${k}" ${ast===k?'selected':''}>狀態：${n}</option>`).join('')}</select></label>
@@ -4556,7 +4562,7 @@ function sheetWeapon(id,mode){
      <div class="wp-a">${btn('強化','wmode',{cls:'btn-primary',attrs:`data-m="enh" data-id="${id}"`,dis:busy||isBroken(w)})}${btn(w.lv>=stable(w)?`已 +${stable(w)}`:'一鍵安定值','autoEnh',{cls:'btn-primary',attrs:`data-id="${id}"`,dis:busy||isBroken(w)||w.lv>=stable(w)||(!w.test&&stones()<enhCost(w))})}${btn(isBroken(w)?'解咒':'附魔','wmode',{cls:'btn-primary',attrs:`data-m="ench" data-id="${id}"`,dis:busy})}
       ${i>=0?btn('收回','recall',{attrs:`data-i="${i}"`}):bs>=0?btn('收回','bossout',{attrs:`data-s="${bs}"`}):btn('駐守'+(canGive(w)?'<i class="dot give-dot"></i>':''),'wmode',{attrs:`data-m="give" data-id="${id}"`,dis:isBroken(w)})}
       ${btn('上架','mksellw',{attrs:`data-id="${id}"`,dis:w.test||!mkSellable(w)})}${btn(ui.meltArm===id?'確認':'熔解','melt',{cls:'btn-danger',attrs:`data-id="${id}"`,dis:busy||w.lock})}</div>
-     ${(n=>n>1?`<div class="small muted center wp-note wp-stk">同款共 ${n} 把，強化、附魔、駐守、上架、熔解只會動這一把</div>`:'')(wSame(w))}${isBroken(w)?'<div class="small t-danger center wp-note">奧丁之咒：不能強化、駐守、挑戰、上架。按「解咒」用矮人解咒石破除（變回無屬性）。</div>':busy?'<div class="small muted center wp-note">駐守中的武器要先收回，才能強化、附魔或熔解。</div>':w.lv<stable(w)?`<div class="small muted center wp-note">一鍵安定值 +${stable(w)}：${w.test?'測試武器免費':'要 '+fmt(autoEnhCost(w))+' 顆強化石・持有 '+fmt(stones())}，不會爆裝</div>`:''}</div>`;
+     <div class="wp-notes">${(n=>n>1?`<div class="small muted center wp-note wp-stk">同款共 ${n} 把，強化、附魔、駐守、上架、熔解只會動這一把</div>`:'')(wSame(w))}${ui.meltArm===id?'<div class="small t-danger center wp-note">再按一次「確認」熔解，熔解後無法復原。</div>':isBroken(w)?'<div class="small t-danger center wp-note">奧丁之咒：不能強化、駐守、挑戰、上架。按「解咒」用矮人解咒石破除（變回無屬性）。</div>':busy?'<div class="small muted center wp-note">駐守中的武器要先收回，才能強化、附魔或熔解。</div>':w.lv<stable(w)?`<div class="small muted center wp-note">一鍵安定值 +${stable(w)}：${w.test?'測試武器免費':'要 '+fmt(autoEnhCost(w))+' 顆強化石・持有 '+fmt(stones())}，不會爆裝</div>`:''}</div></div>`;
   }
   if(bs>=0)return head+showcase()+`<div class="goal">這把武器正在討伐首領，要先收回。</div>${btn('從首領收回','bossout',{cls:'btn-primary big',attrs:`data-s="${bs}"`})}`;
   if(i>=0&&mode!=='give')return head+showcase()+`<div class="goal">這把武器正在 ${VILLAGES[i].name} 駐守，要先收回。</div>${btn('從村莊收回','recall',{cls:'btn-primary big',attrs:`data-i="${i}"`})}`;
@@ -4582,7 +4588,8 @@ function sheetWeapon(id,mode){
       const lack=lackGold?`<div class="lack-line">強化石用完了：村莊收成（越後面的關卡掉越多）、熔解武器可以拿到。</div>`:lackScroll||lackBless?`<div class="lack-line">${lackScroll?'防爆卷用完了。':'祝福石用完了。'}${btn(lackScroll?'取消防爆卷':'取消祝福石','noItem',{cls:'btn-sec sm',attrs:`data-k="${lackScroll?'useScroll':'useBless'}"`})}${btn('去商城','tab',{cls:'btn-sec sm',attrs:'data-k="shop"'})}</div>`:'';
       const lab=ui.busy?'強化中…':lackGold?'強化石不足':lackBless?'祝福石不足':lackScroll?'防爆卷不足':armed?`確認強化（${pct(total)} 爆裝）`:`${last?'再次強化':'強化'} +${w.lv}→+${next}`;
       const bar=`<div class="ev-bar ${canAuto?'two':''}"><button class="ui-btn ${unguarded?'ui-btn--danger':'ui-btn--primary'} btn ${unguarded?'btn-risk':'btn-primary'} big" data-act="enhance" data-id="${id}" ${ui.busy||lackGold||lackBless||lackScroll?'disabled':''}>${lab}</button>
-        ${canAuto?`<button class="ui-btn ui-btn--accent btn wd-auto ev-auto" data-act="autoEnh" data-id="${id}" ${ui.busy||lackGold?'disabled':''}><span>${lackGold?'強化石不足':'一鍵到 <b>+'+stable(w)+'</b>'}</span><span class="small">${free?'測試免費':'要 '+fmt(autoEnhCost(w))+' 顆強化石'}</span></button>`:''}</div>`;
+        ${canAuto?`<button class="ui-btn ui-btn--accent btn wd-auto ev-auto" data-act="autoEnh" data-id="${id}" ${ui.busy||lackGold?'disabled':''}><span>${lackGold?'強化石不足':'一鍵到 <b>+'+stable(w)+'</b>'}</span><span class="small">${free?'測試免費':'要 '+fmt(autoEnhCost(w))+' 顆強化石'}</span></button>`:''}</div>
+        ${unguarded&&!w.test?`<div class="small t-danger center armnote">${armed?'危險區強化，再按一次確認。':''}</div>`:''}`;
       const info=`<details class="enh-more ev-more"><summary>ⓘ 規則與攻擊力明細</summary><div class="kvgrid">${kv('安定值','+'+stable(w)+'（'+kindN(b)+'）')}${kv('失敗後爆裝率',danger?pct(bc):'0%')}${kv('基礎成功率',pct(RATE[next]))}${kv('失敗率',pct(1-r))}</div>
         <div class="small"><b>規則</b>：每次強化用 1 顆強化石，成功或失敗都會用掉。失敗不會降級。+1～+6 一定成功；+7～+9 失敗就爆裝；+10～+12 成功 1%，失敗時 1/3 維持原樣、2/3 爆裝。最高 +${MAX_LV}。</div></details>`;
       if(ev==='1')return head+`<div class="ev ev1">`+nameRow+stage+stats('row4')+tg+warn+lack+info+bar+`</div>`;
@@ -4599,6 +4606,7 @@ function sheetWeapon(id,mode){
      <button class="ui-btn ${unguarded?'ui-btn--danger':'ui-btn--primary'} btn ${unguarded?'btn-risk':'btn-primary'} big" data-act="enhance" data-id="${id}" ${ui.busy||lackGold||lackBless||lackScroll?'disabled':''}>${label}</button>
      ${!danger&&w.lv<stable(w)?`<button class="ui-btn ui-btn--accent btn wd-auto" data-act="autoEnh" data-id="${id}" ${ui.busy||lackGold?'disabled':''}><span>${lackGold?'強化石不足，無法一鍵強化':'一鍵強化到安定值 <b>+'+stable(w)+'</b>'}</span><span class="small">${free?'測試武器免費':'要 '+fmt(autoEnhCost(w))+' 顆強化石・持有 '+fmt(stones())}${lackGold?'':'・不會爆裝'}</span></button>`:''}
      ${lackScroll||lackBless?`<div class="lack-line">${lackScroll?'勾選了防爆卷，但已經用完。':'勾選了祝福石，但已經用完。'}${btn(lackScroll?'取消防爆卷':'取消祝福石','noItem',{cls:'btn-sec sm',attrs:`data-k="${lackScroll?'useScroll':'useBless'}"`})}${btn('去商城補充','tab',{cls:'btn-sec sm',attrs:'data-k="shop"'})}</div>`:''}
+     ${unguarded&&!w.test?`<div class="small t-danger center armnote">${armed?'危險區強化。再按一次確認，本次進入強化頁之後不會再問。':''}</div>`:''}
      <details class="enh-more"><summary>詳細說明</summary>
       <div class="kvgrid">${kv('安定值','+'+stable(w)+'（'+kindN(b)+'）')}${kv('失敗後爆裝率',danger?pct(bc):'0%')}${kv('基礎成功率',pct(RATE[next]))}${kv('失敗率',pct(1-r))}</div>
       <div class="small"><b>攻擊力組成</b>：基礎 ${b.base} × 材質 ${TIERS[b.t].mult} × 品質 ${QUAL[w.q].m} × 強化 ${enhMult(w.lv).toFixed(2)}${el?` × 元素 ${(1+el/100).toFixed(3)}`:''} ＝ ${fmt(power(w))}</div>
@@ -4966,7 +4974,7 @@ function viewShop(){
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
- {v:'5.06',t:'確認提示改成通知，小卡不再變大（熔解、危險區強化）',b:[['bag96','產生 +0～+12 武器並打開道具欄（點一把按熔解，小卡大小不變）']]},
+ {v:'5.07',t:'捲動／開關小卡不跳：固定區貼齊、彈窗標題不上移、捲軸預留、確認提示預留空間',b:[['bag98','產生 60 把武器並打開道具欄（從最上面往下捲，上方完全不動）'],['bag96','產生 +0～+12 武器（點一把按熔解，小卡大小不變、背景不跳）']]},
  {v:'5.05',t:'拿掉頁面頂端 8px 空隙（捲動時上方不再跳）',b:[['bag98','產生 60 把武器並打開道具欄（從最上面往下捲，資源列不動）']]},
  {v:'5.04',t:'固定區飾線對齊底紋邊緣（不再有斷層）',b:[['bag98','產生 60 把武器並打開道具欄（往下捲看上方固定區下緣）']]},
  {v:'5.03',t:'裂縫呼吸燈不重置、+數字內移',b:[['bag96','產生 +0～+12 武器並打開道具欄（看 +9 以上呼吸燈連續、數字不碰框）']]},
@@ -5457,7 +5465,7 @@ document.addEventListener('click',e=>{
    wopen:()=>{ui.sheet={t:'w',id:+d.id,m:'main'};render()},wmode:()=>{if(ui.busy)return;ui.enhLast=null;ui.riskArm=null;ui.riskOk=null;ui.sheet={t:'w',id:+d.id,m:d.m};render()},vopen:()=>{ui.sheet={t:'v',i:+d.i};render()},chmode:()=>{ui.sheet={t:'v',i:+d.i,ch:1};render()},chgo:()=>chStart(+d.i,+d.id),chstay:()=>{ui.sheet=null;ui.chr=null;deliver(+d.i,+d.id)},bsopen:()=>{ui.bsOpen=+d.i;render()},bsclose:()=>{ui.bsOpen=null;render()},vswap:()=>{ui.pickV=+d.i;ui.sheet=null;ui.tab='armory';render();scrollTo(0,0)},vpick:()=>{const i=+d.i;ui.pickV=null;ui.tab='village';deliver(i,+d.id)},vpickx:()=>{const i=ui.pickV;ui.pickV=null;ui.tab='village';ui.sheet=i!=null?{t:'v',i}:null;render()},
    lock:()=>{const w=W(+d.id);if(w){w.lock=!w.lock;save();toast(w.lock?'已鎖定，這把武器不會被熔解，也不會被登錄圖鑑。':'已取消鎖定。')}render()},eslot:()=>{ui.enchSlot=+d.k;render()},
    collect:()=>{tick();collect(+d.i);render()},collectAll,deliver:()=>deliver(+d.i,+d.id),recall:()=>recall(+d.i),strat:()=>{if(setStrategy(+d.i,d.k))toast('已切換為「'+STRATS[d.k].n+'」');render()},
-   melt:()=>{const id=+d.id;if(ui.meltArm!==id){ui.meltArm=id;toast('再按一次「確認」熔解，熔解後無法復原','bad');return render()}ui.meltArm=null;const g=meltCore(id);if(g){snd('melt');toast('熔解完成：'+gotText(g),'ok');ui.sheet=null}render()},meltCheap,
+   melt:()=>{const id=+d.id;if(ui.meltArm!==id){ui.meltArm=id;return render()}ui.meltArm=null;const g=meltCore(id);if(g){snd('melt');toast('熔解完成：'+gotText(g),'ok');ui.sheet=null}render()},meltCheap,
    enhance:()=>enhance(+d.id),achv:()=>{ui.achV=d.k;render()},lbw:()=>{ui.sheet={t:'lbw',i:+d.i,k:+d.k};render()},fkopen:()=>{ui.sheet={t:'fk',i:+d.i};render();const L=document.querySelector('.lb-tab.on');if(L)L.scrollIntoView({block:'nearest',inline:'center'})},realm:()=>{const k=+d.k;if(k<0||k>1)return;if(k===1&&!rfOpen())return toast(`收復 ${vNo(9)} ${VILLAGES[9].name}後開放約頓海姆`);ui.realm=k;render();scrollTo(0,0)},lbopen:()=>{if(LB_OFF)return;ui.sheet={t:'lb',i:+(d.i??S.villages.findIndex(v=>v.status!=='cleared')-1)};render()},achtab:()=>{ui.achTab=d.k;render()},qtab:()=>{ui.qTab=d.k;render()},qbox:()=>{const r=claimBox(+d.i);if(r){snd('coin');toast('活躍度寶箱：'+rwText(r),'ok')}render()},qsign:()=>{const r=claimSign();if(r){snd('coin');toast('簽到獎勵：'+rwText(r),'ok')}render()},achAll:claimAllAch,autoEnh:()=>autoEnhance(+d.id),enchant:()=>{const w=W(+d.id),e=w&&elemOf(w);if(e&&e.t>=3){snd('enh_warn');ui.result={t:'info',title:'確定要重抽嗎？',html:`<div class="center">這把已經是三級「<b class="elc-${e.k}">${e.tn}</b>」<br>重抽會蓋掉，<b class="t-danger">不能復原</b>。</div>`,acts:btn('確定重抽','enchok',{cls:'btn-danger big',attrs:`data-id="${w.id}" data-s="${+d.s||0}"`}),ok:'取消'};return render()}enchant(+d.id,+d.s)},enchok:()=>{ui.result=null;enchant(+d.id,+d.s)},repair:()=>repair(+d.id),lore:()=>loreOpen(d.k),   // v4.82 Mochi：三級重抽跳置中小卡確認（連點時點到外面只會關掉，不會重抽）
    ach:()=>{if(claimAch(d.k))toast('成就獎勵已領取','ok');render()},rclose:()=>{ui.result=null;render()},
    fxskip:()=>{ui.fxDone&&ui.fxDone()},fxclose:()=>{ui.busy=false;render()},backArmory:()=>{ui.sheet=null;ui.enhLast=null;ui.tab='armory';render()},
