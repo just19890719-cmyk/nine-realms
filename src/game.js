@@ -333,7 +333,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='5.11';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='5.12';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1314,7 +1314,6 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
  {v:'5.12',d:'10/25',t:'小卡和頁面不再跳動、不再左右多出一截',b:['同款武器有好幾把時，按「熔解」小卡也不會變矮（窄手機也一樣）','手機很窄時，交易所的篩選列和村莊的「預估秒數」不會再把頁面撐寬、可以左右滑','武器小卡「下一級」說明換行時不會把「攻擊力」拆成兩半'],g:['bag']},
- {v:'5.12',d:'10/25',t:'小卡和頁面不再跳動、不再左右多出一截',b:['同款武器有好幾把時，按「熔解」小卡也不會變矮（窄手機也一樣）','手機很窄時，交易所的篩選列和村莊的「預估秒數」不會再把頁面撐寬、可以左右滑'],g:['bag']},
  {v:'5.11',d:'10/25',t:'強化、附魔頁的叉叉改回原本圓形',b:['強化頁、附魔頁上方的返回、說明、叉叉按鈕，改回原本的圓形圖示（v5.10 誤變成八角形）'],g:['enh','ench']},
  {v:'5.10',d:'10/25',t:'武器小卡換上道具欄同款外觀',b:['點武器跳出的小卡、強化頁、附魔頁，外框、底紋、數值格、按鈕都改成跟道具欄同一套煤黑古銅','小卡裡的武器大圖改用道具欄的格子與品階框（+9 以上一樣有裂痕呼吸燈）'],g:['bag']},
  {v:'5.07',d:'10/25',t:'捲動、開關小卡時畫面完全不跳',b:['道具欄上方固定區從一開始就貼在資源列下面，往下捲時標題、頁籤、分類完全不動','所有彈窗的標題列捲動時也不再往上移','開關小卡時整個畫面不再左右跳一下（電腦版捲軸）','熔解、危險區強化的「再按一次確認」改回顯示在小卡下方，小卡固定預留提示空間，按下去不會變大，也不再從上方跳通知','上方資源列改成不透明，捲動時不會透出底下的東西'],g:['bag']},
