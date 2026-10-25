@@ -2031,7 +2031,8 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .b2::after{content:"";position:absolute;inset:0;z-index:3;border:1px solid transparent;border-image:url(art/ui/bag2/bag2_main_frame.webp) 150 / 30px stretch round;pointer-events:none}
 .b2 button{color:inherit;-webkit-tap-highlight-color:transparent}
 /* v4.98 上方（標題、頁籤、分類、排序）往下捲時固定在資源列下面，只有格子在捲（Mochi） */
-.b2-top{position:sticky;top:calc(var(--barh,52px) + env(safe-area-inset-top,0px));z-index:2;margin:-18px -16px 0;padding:18px 16px 6px;box-shadow:0 8px 10px -6px rgba(0,0,0,.85)}
+.b2-top{position:sticky;top:calc(var(--barh,52px) + env(safe-area-inset-top,0px));z-index:2;margin:-18px -16px 0;padding:18px 16px 6px}
+.b2-top::after{content:'';position:absolute;left:12px;right:12px;bottom:-6px;height:22px;pointer-events:none;background:url(art/ui/bag2/bag2_rule_mid.webp) center top/auto 12px no-repeat,url(art/ui/bag2/bag2_rule_line.webp) center top/100% 12px no-repeat,linear-gradient(rgba(6,7,9,.9),rgba(6,7,9,0)) 0 6px/100% 16px no-repeat}   /* v5.02 固定區下緣飾線＋淡出 */
 .b2-top::before{content:"";position:absolute;inset:0;z-index:-1;background:#0b0d10 url(art/ui/bag2/bag2_main_tex.webp) center top/100% auto no-repeat;filter:brightness(var(--b2br))}
 /* 標題列：名稱置中、容量在右 */
 .b2-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:8px;padding:0 2px 6px}

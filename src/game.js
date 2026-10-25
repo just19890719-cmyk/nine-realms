@@ -333,7 +333,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='5.01';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='5.02';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1313,6 +1313,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'5.02',d:'10/25',t:'道具欄往下捲時上方區塊接得更順',b:['往下捲時，上方固定的頁籤和分類下緣多一條青銅飾線，格子會淡入它底下，不再被硬切一刀'],g:['bag']},
  {v:'5.01',d:'10/25',t:'中了奧丁之咒的武器改成鎖鏈纏繞',b:['道具欄裡中咒的武器不再顯示「咒」字和紅框，改成武器變暗、被兩條十字鎖鏈纏住，外框照樣是強化品階的顏色','+9 以上的格框換成有裂痕的封印框（+9 紅、+10 金、+11 紫、+12 鑽石），裂縫會慢慢透出光再暗下'],g:['bag']},
  {v:'5.00',d:'10/25',t:'拿掉 +9 以上的發光特效',b:['道具欄 +9 以上的格子不再發光，只看格框顏色分辨強化品階'],g:['bag']},
  {v:'4.99',d:'10/25',t:'+9 以上換上新的發光框',b:['道具欄 <b>+9 以上</b>的武器格換上新的發光框：+9 血紅、+10 神鑄金、+11 星魂紫、+12 永恆白，會慢慢亮暗'],g:['bag']},
@@ -2677,6 +2678,7 @@ function viewShop(){
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'5.02',t:'道具欄固定區下緣加飾線＋淡出',b:[['bag98','產生 60 把武器並打開道具欄（往下捲看上方固定區下緣）']]},
  {v:'5.01',t:'奧丁之咒改成鎖鏈纏繞；+9 以上換裂痕框＋裂縫呼吸燈',b:[['bag96','產生 +0～+12 武器並打開道具欄（+7 那把中咒，看鎖鏈）'],['brkstk','給 3 把同款 +6 劍，其中 1 把中咒（看道具欄）']]},
  {v:'4.98',t:'道具欄上方往下捲時固定、底紋與格子底調亮一階、數量拿掉×',b:[['bag98','產生 60 把武器並打開道具欄（往下捲看上方固定）']]},
  {v:'4.97',t:'道具欄強化等級右下、只有 +0 疊格、拿掉綠色交付寶石',b:[['bag96','產生 +0～+12 武器並打開道具欄（看右下等級、+0 疊格）']]},
