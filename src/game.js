@@ -2009,7 +2009,7 @@ const b2Head=()=>{const n=S.weapons.length,full=n>=CAP_WEAPONS;
 // 武器圖照 wArt 的安全距離（WFIT），只是不疊等級框，改用格子的品階框
 const b2W=id=>{const k=(WFIT[ART_WAIT[id]||id]||.65)*100,o=(100-k)/2;return `<img class="w" src="${A(id+'_disp')}" alt="" style="left:${o}%;top:${o}%;width:${k}%;height:${k}%">`};
 function b2Slot(w,act,dot,n=1,nw=wNew(w)){const b=bpOf(w),i=where(w),bs=bossSlotOf(w),brk=isBroken(w),on=ui.sheet&&ui.sheet.t==='w'&&ui.sheet.id===w.id;
-  return `<button class="b2-slot ${on?'sel':''} ${brk?'brk':''} ${i>=0||bs>=0?'posted':''}" style="--rim:url(art/ui/bag2/bag2_rim_${brk?'curse':'l'+FLV(w.lv)}.webp)" ${act} aria-label="${b.n} +${w.lv}"><span class="rim"></span>${!brk&&FLV(w.lv)>=3?(d=>`<span class="cg" style="animation-delay:${d}ms"><img src="art/ui/bag2/bag2_glow_l${FLV(w.lv)}.webp" alt=""></span>`)(-Math.round(performance.now()%4800)):''}${b2W(b.id)}
+  return `<button class="b2-slot ${on?'sel':''} ${brk?'brk':''} ${i>=0||bs>=0?'posted':''}" style="--rim:url(art/ui/bag2/bag2_rim_${brk?'curse':'l'+FLV(w.lv)}.webp)" ${act} aria-label="${b.n} +${w.lv}"><span class="rim"></span>${!brk&&FLV(w.lv)>=3?(d=>`<span class="cg" style="animation-delay:${d}ms"><img src="art/ui/bag2/bag2_glow_l${FLV(w.lv)}.webp" alt=""><img class="h" src="art/ui/bag2/bag2_glow_l${FLV(w.lv)}.webp" alt=""></span>`)(-Math.round(performance.now()%4800)):''}${b2W(b.id)}
    ${i>=0?`<span class="post">駐 ${vNo(i)}</span>`:bs>=0?'<span class="post">首領</span>':brk?'<span class="curse">咒</span>':''}${w.lock?b2Img('ic_lock','lk','已鎖定'):nw?'<i class="nw"></i>':''}
    ${w.lv?`<span class="lv">+${w.lv}</span>`:n>1?`<span class="x">${fmt(n)}</span>`:''}</button>`}
 const b2Fill=(n,cols=5)=>'<span class="b2-slot empty"></span>'.repeat((cols-n%cols)%cols+cols);
