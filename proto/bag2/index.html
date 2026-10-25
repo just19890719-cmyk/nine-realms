@@ -185,6 +185,64 @@ img{max-width:100%}
 .b2-toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);max-width:340px;padding:8px 14px;background:#0b111a;border:1px solid var(--b2-gold);font-size:var(--fs-s);opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
 .b2-toast.show{opacity:1}
 @media (prefers-reduced-motion:reduce){.b2-toast{transition:none}}
+/* =====================================================================
+ * 正式美術（art/ui/bag2/，Mochi 10/25 生圖）：.b2-app.art 時套用，蓋掉上面的暫代外觀
+ * 切片數字＝原圖像素；顯示寬度＝原圖 × 縮放（標在每一行）
+ * ===================================================================== */
+.art .b2{border:1px solid transparent;padding:14px 14px 14px;background:#0b111a var(--a-main_tex) center top/cover;
+  border-image:var(--a-main_frame) 72 / 24px stretch}   /* 主框 556 寬，角 72 → 24px；中間不畫，露出底紋 */
+.art .b2-head h2{display:flex;align-items:center;gap:6px;text-shadow:0 1px 0 #000,0 0 8px rgba(0,0,0,.8)}
+.art .b2-head h2::before,.art .b2-head h2::after{content:"";width:44px;height:16px;background:var(--a-title_l) center/contain no-repeat}
+.art .b2-head h2::after{background-image:var(--a-title_r)}
+.art .b2-cap i{height:6px;background:none;border:1px solid transparent;border-image:var(--a-cap_track) 0 30 fill / 0 4px stretch}
+.art .b2-cap i::after{inset:-1px auto -1px -1px;background:none;border-image:var(--a-cap_fill) 0 30 fill / 0 4px stretch}
+.art .b2-rule{height:12px;margin:0;background:var(--a-rule_mid) center/auto 12px no-repeat,var(--a-rule_line) center/100% 12px no-repeat}
+.art .b2-tab{border:1px solid transparent;background:none;border-image:var(--a-tab) 0 48 fill / 0 15px stretch;text-shadow:0 1px 0 #000}   /* 439×131，高 40 → 端 15px */
+.art .b2-tab.on{border-image-source:var(--a-tab_on);color:var(--b2-gold-hi)}
+.art .b2-tab:disabled{border-image-source:var(--a-tab_off)}
+.art .b2-cat{border:1px solid transparent;background:none;border-image:var(--a-cat) 44 fill / 11px stretch}   /* 178×176 */
+.art .b2-cat.on{border-image-source:var(--a-cat_on)}
+.art .b2-cat img{filter:none;opacity:.72}.art .b2-cat.on img{opacity:1}
+.art .b2-sel select{border:1px solid transparent;background:none;border-image:var(--a-field) 0 50 fill / 0 12px stretch}   /* 614×138，高 34 */
+.art .b2-sel::after{width:10px;height:10px;right:10px;border:0;transform:translateY(-50%);background:var(--a-ic_chev) center/contain no-repeat}
+.art .b2-cnt button{border:1px solid transparent;background:none;border-image:var(--a-btn_sec) 0 72 fill / 0 15px stretch;color:var(--b2-text)}
+.art .b2-well{border:1px solid transparent;background:none;padding:10px;border-image:var(--a-sub) 44 fill / 14px stretch}   /* 462×449 */
+.art .b2-sec{align-items:center;min-height:24px;margin:2px -2px 8px;padding:0 6px 0 24px;border:1px solid transparent;border-image:var(--a-sec) 0 170 0 64 fill / 0 62px 0 24px stretch}   /* 463×59，高 24 */
+.art .b2-slot{border:0;box-shadow:none;background:var(--a-slot) 0 0/100% 100%}
+.art .b2-slot.empty{background-image:var(--a-slot_empty)}
+.art .b2-slot .rim{inset:0;border:0;background:var(--rim,none) 0 0/100% 100%}
+.art .b2-slot.sel{box-shadow:none}
+.art .b2-slot.sel::after{content:"";position:absolute;inset:-4.6% -4.6%;background:var(--a-sel) 0 0/100% 100%;pointer-events:none}   /* 選取框比格子大 9% */
+.art .b2-slot.brk .rim{border:0}
+.art .b2-slot .post,.art .b2-slot .curse{left:0;top:3px;height:15px;padding:0 9px 0 3px;line-height:15px;background:none;border-radius:0;border:1px solid transparent;text-shadow:0 1px 1px #000;
+  border-image:var(--a-tag_post) 0 60 0 20 fill / 0 9px 0 3px stretch}   /* 261×92，高 15 */
+.art .b2-slot .curse{border-image-source:var(--a-tag_curse)}
+.art .b2-slot .x{border:1px solid transparent;border-radius:0;background:none;line-height:14px;padding:0 4px;border-image:var(--a-badge) 0 30 fill / 0 5px stretch}   /* 223×81，高 16 */
+.art .b2-slot .nw{width:11px;height:11px;border-radius:0;background:var(--a-new) center/contain no-repeat;box-shadow:none}
+.art .b2-slot .ph{border:0}
+.art .b2-dock{border:1px solid transparent;background:none;border-image:var(--a-sub) 44 fill / 14px stretch;padding:12px}
+.art .b2-show{border:0;box-shadow:none;background:var(--a-show) 0 0/100% 100%}
+.art .b2-st{border-bottom-color:rgba(74,90,112,.25)}
+.art .b2-tgl{top:-16px;width:46px;height:25px;border:0;background:var(--a-tgl) center/100% 100% no-repeat}
+.art .b2-tgl::after{width:10px;height:10px;top:auto;bottom:3px;border:0;background:var(--a-ic_chev) center/contain no-repeat;transform:translateX(-50%) rotate(180deg)}
+.art .b2-dock.open .b2-tgl::after{top:auto;transform:translateX(-50%)}
+.art .b2-btn{border:1px solid transparent;background:none;text-shadow:0 1px 1px #000,0 0 4px rgba(0,0,0,.7);
+  border-image:var(--a-btn_sec) 0 72 fill / 0 23px stretch}   /* 610×137，高 44 → 端 23px */
+.art .b2-btn.pri{border-image-source:var(--a-btn_pri);color:#ffe7b0}
+.art .b2-btn.dan{border-image:var(--a-btn_dan) 0 72 fill / 0 23px stretch;color:#ffd0c8}
+.art .b2-btn:active:not(:disabled){transform:none;filter:none;border-image-source:var(--a-btn_sec_p)}
+.art .b2-btn.pri:active:not(:disabled){border-image-source:var(--a-btn_pri_p)}
+.art .b2-btn.dan:active:not(:disabled){border-image-source:var(--a-btn_dan_p)}
+.art .b2-btn:disabled{border-image:var(--a-btn_off) 0 72 fill / 0 23px stretch;color:#4a525d}
+.art .b2-toast{border:1px solid transparent;border-image:var(--a-sub) 44 fill / 12px stretch;background:none}
+.art .b2-tab .dot{width:12px;height:12px;border-radius:0;background:var(--a-new) center/contain no-repeat}
+.art .b2-slot .glow{left:15%;top:3px}   /* 讓開左上角品質寶石 */
+@media (max-height:720px){
+  .art .b2{padding:10px 10px 10px}.art .b2-tab{border-image-width:0 13px}
+  .art .b2-well{padding:8px}.art .b2-dock{padding:9px 10px}.art .b2-head{padding-top:0}
+  .art .b2-tabs{margin:4px 0 4px}.art .b2-tab{min-height:34px}.art .b2-cat{height:38px}
+  .art .b2-acts{margin-top:6px}.art .b2-btn{min-height:40px}
+}
 </style>
 </head>
 <body>
@@ -202,22 +260,15 @@ const ROOT=location.pathname.includes('/proto/bag2')?'../..':'.';
 const P=s=>ROOT+'/'+s;
 document.querySelectorAll('img[data-src]').forEach(i=>i.src=P(i.dataset.src));
 
-/* 美術槽位：新素材交付後填路徑（art/ui/bag2/…），null＝暫代外觀。尺寸與提示詞見「素材需求」 */
-const B2_ART={
-  main:null,     // 主面板 9-slice（含深藍黑金屬底、四角斜切小尖刺）
-  tex:null,      // 主面板低對比紋理（可選，鋪在 main 下面）
-  sub:null,      // 次面板／物品區 9-slice（更深一階、細框）
-  dock:null,     // 詳情區 9-slice
-  show:null,     // 詳情區武器展示框
-  rule:null,     // 分隔線
-  tab:null, 'tab-on':null, 'tab-off':null,
-  cat:null, 'cat-on':null, field:null,
-  slot:null, 'slot-sel':null, 'slot-empty':null, rim:null,   // rim：白色細框，CSS 依品階上色
-  btn1:null, 'btn1-p':null, btn2:null, btn3:null, 'btn-off':null
-};
-(function applyArt(){const r=document.documentElement.style;for(const [k,v] of Object.entries(B2_ART))if(v)r.setProperty('--art-'+k,`url("${P(v)}")`);
-  if(B2_ART.tex)document.getElementById('bag').classList.add('has-tex');
-  if(Object.values(B2_ART).some(Boolean))document.getElementById('note').hidden=true})();
+/* 美術：art/ui/bag2/bag2_<名稱>.webp（Mochi 10/25 生圖、去背切片）。ART=false 會退回暫代外觀 */
+const ART=!/noart/.test(location.search+location.hash);
+const ART_KEYS='main_frame main_tex title_l title_r rule_line rule_mid sub sec cap_track cap_fill tab tab_on tab_off cat cat_on field tgl badge tag_post tag_curse new slot slot_empty show sel rim_l0 rim_l1 rim_l2 rim_l3 rim_l4 rim_l5 rim_l6 rim_curse btn_pri btn_pri_p btn_sec btn_sec_p btn_dan btn_dan_p btn_off ic_chev'.split(' ');
+const A=k=>P('art/ui/bag2/bag2_'+k+'.webp');
+const CAT_IC={all:'ic_all',axe:'ic_axe',sword:'ic_sword',dagger:'ic_dual',polearm:'ic_polearm',hammer:'ic_hammer',bow:'ic_bow',crossbow:'ic_xbow'};
+const RIM_IT={'#5fd36a':1,'#4fa3ff':2,'#ff5a4a':3,'#ffc940':6};   // 寶箱光色 → 品質框
+const LOCK=on=>ART?A(on?'ic_lock':'ic_unlock'):P(on?'art/ic_lock.webp':'art/ic_unlock.webp');
+(function applyArt(){if(!ART)return;const r=document.documentElement.style;for(const k of ART_KEYS)r.setProperty('--a-'+k,`url("${A(k)}")`);
+  document.querySelector('.b2-app').classList.add('art');document.getElementById('note').hidden=true})();
 
 const D=BAG_DATA,LVC=D.lvc,ELC={fire:'#ff8a4c',ice:'#8fe3ff',bolt:'#ffe23a',toxic:'#8ed865',light:'#f0c560',dark:'#a99bc9'};
 const ui={tab:'w',cat:'all',sort:'power',st:'all',sel:null,isel:null,open:false};
@@ -229,12 +280,12 @@ const wNameH=w=>`<span class="lvt">+${w.lv}</span> ${w.brk?'<span style="color:v
 function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('show'),1600)}
 
 function slotW(w){const tc=w.brk?'#e0594b':LVC[w.f];
-  return `<button class="b2-slot ${ui.sel===w.id?'sel':''} ${w.brk?'brk':''}" style="--tc:${tc}" data-w="${w.id}" aria-label="${esc(w.n)} +${w.lv}">
+  return `<button class="b2-slot ${ui.sel===w.id?'sel':''} ${w.brk?'brk':''}" style="--tc:${tc};--rim:var(--a-rim_${w.brk?'curse':'l'+w.f})" data-w="${w.id}" aria-label="${esc(w.n)} +${w.lv}">
     <span class="rim"></span><img class="w" src="${P(w.art)}" alt="">
-    ${w.post?`<span class="post">駐 ${w.post}</span>`:w.brk?'<span class="curse">咒</span>':''}${w.lock?`<img class="lk" src="${P('art/ic_lock.webp')}" alt="已鎖定">`:w.nw?'<i class="nw"></i>':''}
+    ${w.post?`<span class="post">駐 ${w.post}</span>`:w.brk?'<span class="curse">咒</span>':''}${w.lock?`<img class="lk" src="${LOCK(1)}" alt="已鎖定">`:w.nw?'<i class="nw"></i>':''}
     <span class="lv">+${w.lv}</span>${w.cnt>1?`<span class="x">×${w.cnt}</span>`:''}</button>`}
 function slotI(it,kind){const on=ui.isel===kind+it.k;
-  return `<button class="b2-slot ${on?'sel':''}" style="--tc:${it.glc||'#4a5a70'}" data-i="${kind+it.k}"><span class="rim"></span>
+  return `<button class="b2-slot ${on?'sel':''}" style="--tc:${it.glc||'#4a5a70'}${RIM_IT[it.glc]?';--rim:var(--a-rim_l'+RIM_IT[it.glc]+')':''}" data-i="${kind+it.k}"><span class="rim"></span>
     ${it.art?`<img class="ic" src="${P(it.art)}" alt="">`:'<span class="ph">待生圖</span>'}${it.c?`<span class="x">×${fmt(it.c)}</span>`:''}${it.gl?`<span class="glow" style="color:${it.glc}">${it.gl}</span>`:''}</button>`}
 const fill=(n,cols=5)=>Array.from({length:(cols-n%cols)%cols+cols},()=>'<span class="b2-slot empty"></span>').join('');
 
@@ -244,7 +295,7 @@ function list(){const ok=w=>(ui.cat==='all'||w.cat===ui.cat)&&(ui.st==='all'||(u
 function dockW(w){if(!w)return `<div class="b2-dock"><div class="b2-desc" style="margin:0;text-align:center">點一格武器，詳情會顯示在這裡</div></div>`;
   const tc=w.brk?'#e0594b':LVC[w.f],busy=!!w.post,max=w.lv>=12,auto=w.lv<w.stable;
   return `<div class="b2-dock ${ui.open?'open':''}"><button class="b2-tgl" data-act="tgl" aria-label="${ui.open?'收起詳情':'展開詳情'}"></button>
-   <button class="b2-lock" data-act="lock" aria-label="${w.lock?'取消鎖定':'鎖定'}"><img src="${P(w.lock?'art/ic_lock.webp':'art/ic_unlock.webp')}" alt=""></button>
+   <button class="b2-lock" data-act="lock" aria-label="${w.lock?'取消鎖定':'鎖定'}"><img src="${LOCK(w.lock)}" alt=""></button>
    <div class="b2-dk-top"><div class="b2-show" style="--tc:${tc}"><img src="${P(w.art)}" alt=""></div>
     <div style="min-width:0"><div class="b2-nm">${wNameH(w)}</div>
      <div class="b2-sub"><span class="tier" style="color:${tc}">${w.brk?'奧丁之咒':w.tier}</span><span>${w.catN}・${w.kind}</span>${w.post?`<span class="ok">駐守 ${w.post}</span>`:''}${w.cnt>1?`<span>同款 ${w.cnt} 把</span>`:''}</div>
@@ -285,7 +336,7 @@ function render(){const B=document.getElementById('bag'),keep=B.querySelector('.
   <div class="b2-rule"></div>
   <div class="b2-tabs" role="tablist">${[['w','武器'],['m','材料'],['c','圖鑑']].map(([k,n])=>`<button class="b2-tab ${ui.tab===k?'on':''}" role="tab" aria-selected="${ui.tab===k}" data-tab="${k}">${n}${k==='c'?'<i class="dot"></i>':''}</button>`).join('')}</div>`;
   if(ui.tab==='w'){const ws=list(),filt=ui.cat!=='all'||ui.st!=='all',sel=D.stacks.find(w=>w.id===ui.sel);
-    h+=`<div class="b2-cats">${D.cats.map(c=>`<button class="b2-cat ${ui.cat===c.k?'on':''}" data-cat="${c.k}"><img src="${P(c.ic)}" alt="">${c.n}</button>`).join('')}</div>
+    h+=`<div class="b2-cats">${D.cats.map(c=>`<button class="b2-cat ${ui.cat===c.k?'on':''}" data-cat="${c.k}"><img src="${ART?A(CAT_IC[c.k]):P(c.ic)}" alt="">${c.n}</button>`).join('')}</div>
     <div class="b2-fil"><label class="b2-sel"><select id="sort" aria-label="排序">${Object.entries(SORTS).map(([k,[n]])=>`<option value="${k}" ${ui.sort===k?'selected':''}>排序：${n}</option>`).join('')}</select></label>
      <label class="b2-sel"><select id="st" aria-label="狀態">${STS.map(([k,n])=>`<option value="${k}" ${ui.st===k?'selected':''}>狀態：${n}</option>`).join('')}</select></label>
      <span class="b2-cnt">${filt?`${ws.reduce((a,w)=>a+w.cnt,0)}／${D.total} 把<button data-act="clr">清除</button>`:''}</span></div>
