@@ -237,10 +237,21 @@ img{max-width:100%}
 .art .b2-toast{border:1px solid transparent;border-image:var(--a-sub) 44 fill / 12px stretch;background:none}
 .art .b2-tab .dot{width:12px;height:12px;border-radius:0;background:var(--a-new) center/contain no-repeat}
 .art .b2-slot .glow{left:15%;top:3px}   /* 讓開左上角品質寶石 */
+/* 10/25 14:17 Mochi 修正示意圖：①未選頁籤、分類圖示與文字提亮（只提亮字和圖，底紋不動）②格內標記各自讓位 ③底部按鈕字放大 */
+.art .b2-tab{color:#d2d6dc}
+.art .b2-cat{color:#c3c8cf}.art .b2-cat img{opacity:1;filter:brightness(1.85) contrast(1.15)}.art .b2-cat.on img{filter:brightness(1.5) contrast(1.1)}
+.art .b2-slot .post,.art .b2-slot .curse{left:15%;top:6%}                       /* 讓開左上角品質寶石 */
+.art .b2-slot .lk{right:7%;top:7%;width:16px;height:16px;filter:brightness(2.3) contrast(1.15) drop-shadow(0 0 2px #000)}
+.art .b2-slot .nw{right:7%;top:7%}
+.art .b2-slot .lv{left:9%;bottom:6%}                                            /* 縮進框內，不壓到左下框角 */
+.art .b2-slot .x{right:8%;bottom:8%}
+.art .b2-lock img{filter:brightness(2.1) contrast(1.15)}
+@media (max-width:360px){.art .b2-cap{padding-right:12px}}
+.art .b2-btn{font-size:clamp(16px,4.4vw,19px);white-space:nowrap;letter-spacing:.04em;display:flex;align-items:center;justify-content:center;padding:0 2px}
 @media (max-height:720px){
   .art .b2{padding:10px 10px 10px}.art .b2-tab{border-image-width:0 14px}
   .art .b2-well{padding:8px}.art .b2-dock{padding:9px 10px}.art .b2-head{padding-top:0}
-  .art .b2-tabs{margin:4px 0 4px}.art .b2-tab{min-height:34px}.art .b2-cat{height:38px}
+  .art .b2-tabs{margin:4px 0 4px}.art .b2-tab{min-height:34px}.art .b2-cat{height:42px;font-size:10px}.art .b2-cat img{width:22px;height:22px}
   .art .b2-acts{margin-top:6px}.art .b2-btn{min-height:40px}
 }
 </style>

@@ -611,7 +611,7 @@ const r1x=x=>Math.round(x*10)/10;
 function stackTests(){return withSandbox(()=>{const S0=S;S=fresh();const b=(BPS.find(x=>!x.dev)||BPS[0]).id,ek=Object.keys(ELEM)[0];
   for(let n=0;n<6;n++)makeWeapon(b,0,0);makeWeapon(b,0,3);const e=makeWeapon(b,0,0);e.ench[0]={k:ek,v:1};const lk=makeWeapon(b,0,0);lk.lock=true;
   const g=wStacks(S.weapons),six=g.find(x=>x.n===6),one=S.weapons[0];ui.tab='armory';ui.atab='w';ui.acat='all';ui.aq='all';ui.ast='all';
-  const h=viewArmory(),tiles=(h.match(/data-act="wopen"/g)||[]).length,badge=/wt-x">×6</.test(h);
+  const h=viewArmory(),tiles=(h.match(/data-act="wopen"/g)||[]).length,badge=/class="x">×6</.test(h);
   ui.sheet={t:'w',id:one.id,m:'main'};const sh=sheetWeapon(one.id,'main');one.lv=1;const g2=wStacks(S.weapons);
   const two=S.weapons[1];one.lv=0;ui.sheet={t:'w',id:two.id,m:'main'};one.test=two.test=false;const k0=wKey(two);ui.stkNext={id:two.id,k:k0};two.lv=6;stkFollow();const fol=ui.sheet.id!==two.id&&wKey(W(ui.sheet.id))===k0;two.lv=0;ui.sheet=null;S=S0;
   return[T('ST1 同圖紙同等級同屬性才疊一格：6 把 +0 一格，+3、附魔、收藏各自一格',g.length===4&&!!six&&tiles===4&&badge,`${g.length} 格・畫面 ${tiles} 格`),
