@@ -2024,7 +2024,8 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 :is(.sheet,.modal-card) .panel,.panel .panel{background:rgba(0,0,0,.28)}
 
 /* ===== v4.96 道具欄新外觀（背包樣板 proto/bag2，Mochi 10/25 確認）：煤黑古銅；美術 art/ui/bag2/，全部只在 .b2 底下 ===== */
-.b2{--b2br:1.5;--b2-gold:#b88f4a;--b2-gold-hi:#f0cf86;--b2-text:#e7e2d8;--b2-mute:#8d96a3;--b2-dim:#5d6672;--b2-num:#f4e2b8;--b2-danger:#e0594b;
+.b2{--b2br:1.5;   /* v5.10 色票 --b2-* 改放 :root（全遊戲共用，見檔案最後） */
+ 
   position:relative;isolation:isolate;container-type:inline-size;margin:0 -4px 10px;padding:18px 16px 16px;background:#0b0d10;color:var(--b2-text)}
 .b2::before{content:"";position:absolute;left:0;right:0;top:0;height:150cqw;max-height:100%;z-index:-1;filter:brightness(var(--b2br));background:url(art/ui/bag2/bag2_main_tex.webp) center top/100% auto no-repeat;
   -webkit-mask-image:linear-gradient(#000 72%,transparent);mask-image:linear-gradient(#000 72%,transparent);pointer-events:none}
@@ -2063,7 +2064,7 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .b2-sel select option{background:#0b0d10;color:var(--b2-text)}
 .b2-sel::after{content:"";position:absolute;right:10px;top:50%;width:10px;height:10px;transform:translateY(-50%);background:url(art/ui/bag2/bag2_ic_chev.webp) center/contain no-repeat;pointer-events:none}
 .b2-cnt{margin-left:auto;font-size:12px;color:var(--b2-mute);white-space:nowrap;font-variant-numeric:tabular-nums}
-.b2-cnt button{margin-left:6px;height:30px;padding:0 10px;border:1px solid transparent;background:none;border-image:url(art/ui/bag2/bag2_btn_sec.webp) 0 55 fill / 0 12px stretch;color:var(--b2-text);font-size:12px}
+.b2-cnt button{margin-left:6px;height:30px;padding:0 10px;border:1px solid transparent;background:none;border-image:url(art/ui/bag2/bag2_btn_sec2.webp) 0 70 fill / 0 19px stretch;color:var(--b2-text);font-size:12px}
 /* 物品區（次面板） */
 .b2-well{position:relative;isolation:isolate;margin-top:8px;padding:10px}
 .b2-well::before{content:"";position:absolute;inset:0;z-index:-1;border:14px solid transparent;border-image:url(art/ui/bag2/bag2_sub.webp) 44 fill / 14px stretch;filter:brightness(var(--b2br));pointer-events:none}
@@ -2101,4 +2102,49 @@ body{margin-top:0}   /* v5.05 拿掉瀏覽器預設的上方 8px：捲動時上�
 html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不再讓整個畫面左右跳 */
 .wp-notes{min-height:calc(3 * 1.5em + 8px);padding-top:8px;box-sizing:border-box}.wp-notes .wp-note:first-child{margin-top:0}   /* v5.07 小卡下面固定預留 3 行提示，按熔解不會變大 */
 .armnote{min-height:3em}   /* v5.07 危險區強化確認提示預留 2 行 */
+/* ===== v5.10 UI 母版延伸（UI 延伸規範 v1 第 1 步）：道具欄的色票改成全遊戲共用；武器小卡／強化／附魔（.k2）改用 bag2 素材 ===== */
+:root{--b2-gold:#b88f4a;--b2-gold-hi:#f0cf86;--b2-text:#e7e2d8;--b2-mute:#8d96a3;--b2-dim:#5d6672;--b2-num:#f4e2b8;--b2-danger:#e0594b}
+/* 彈窗外框：主面板外框＋鍛鐵底紋（color-dodge 灰層＝亮度 1.5 倍，跟道具欄一樣；不用 ::before，彈窗內捲動時底紋不會跑掉） */
+.sheet.wpop.k2:not(#_){border:1px solid transparent;border-radius:0;border-image:url(art/ui/bag2/bag2_main_frame.webp) 150 / 24px stretch;
+  background:linear-gradient(#555,#555),url(art/ui/bag2/bag2_main_tex.webp) center top/cover no-repeat,#0b0d10;background-blend-mode:color-dodge,normal,normal;
+  padding:22px 20px 16px;box-shadow:0 12px 40px rgba(0,0,0,.8);color:var(--b2-text)}
+.k2 .sheet-head:not(#_){background:transparent;box-shadow:none;border:0}
+.k2 .sheet-head h2{display:flex;align-items:center;gap:6px;font-size:20px;letter-spacing:.12em;white-space:nowrap;color:var(--b2-gold-hi)}
+.k2 .sheet-head h2::before,.k2 .sheet-head h2::after{content:"";width:30px;height:9px;background:url(art/ui/bag2/bag2_title_l.webp) center/contain no-repeat}
+.k2 .sheet-head h2::after{background-image:url(art/ui/bag2/bag2_title_r.webp)}
+/* 武器大圖：道具欄格子＋品階框（b2Show） */
+.wp-top>.b2-show{width:88px;height:88px;flex:none}
+.b2-show{display:block}
+.k2 .wp-nm{font-family:var(--display);font-weight:900}
+.k2 .wp-pow b{color:var(--b2-gold-hi)}
+/* 數值格：凹槽 */
+.k2 .wp-g{gap:4px}
+.k2 .wp-g>div:not(#_){border:14px solid transparent;border-image:url(art/ui/bag2/bag2_sub.webp) 44 fill / 14px stretch;background:none;border-radius:0;padding:0 2px}
+.k2 .wp-g span,.k2 .ev-st span{color:var(--b2-mute)}
+/* 強化進度條：直角小段，品階色 */
+.k2 .wp-lv .wp-bar i{border-radius:0;background:#15110c;outline:1px solid #3b2610;outline-offset:-1px}
+.k2 .wp-lv .wp-bar i.on{background:var(--c);outline-color:rgba(0,0,0,.5);filter:saturate(.75) brightness(.9)}
+/* 按鈕：bag2 主／次／危險／停用（只能橫向伸縮的 3 切片） */
+.sheet.wpop.k2 .ui-btn.btn:not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_btn_sec2.webp) 0 70 fill / 0 28px stretch;
+  color:var(--b2-text);font-family:var(--display);font-weight:900;font-size:17px;letter-spacing:.04em;min-height:44px;padding:0 4px;text-shadow:0 1px 2px #000}
+.sheet.wpop.k2 .ui-btn.btn:active:not(:disabled):not(#_){border-image-source:url(art/ui/bag2/bag2_btn_sec2_p.webp)}
+.sheet.wpop.k2 .ui-btn--primary.btn:not(#_){border-image:url(art/ui/bag2/bag2_btn_pri.webp) 0 55 fill / 0 16px stretch;color:#ffe7b0}
+.sheet.wpop.k2 .ui-btn--primary.btn:active:not(:disabled):not(#_){border-image-source:url(art/ui/bag2/bag2_btn_pri_p.webp)}
+.sheet.wpop.k2 .ui-btn--danger.btn:not(#_){border-image:url(art/ui/bag2/bag2_btn_dan.webp) 0 55 fill / 0 16px stretch;color:#ffd0c8}
+.sheet.wpop.k2 .ui-btn--danger.btn:active:not(:disabled):not(#_){border-image-source:url(art/ui/bag2/bag2_btn_dan_p.webp)}
+.sheet.wpop.k2 .ui-btn.btn:disabled:not(#_){border-image:url(art/ui/bag2/bag2_btn_off2.webp) 0 70 fill / 0 28px stretch;color:var(--b2-dim);opacity:1;filter:none}
+.sheet.k2 .ui-iconbtn:not(#_){border:0;border-image:none;background:none}
+/* 強化頁：數值格凹槽、危險提示、規則列 */
+.k2 .enh-name b{font-family:var(--display);font-weight:900}
+.k2 .enh-stage:not(#_){border:1px solid #3b2610;border-image:none;border-radius:0}
+.k2 .enh-stage .enh-zone:not(#_){border:1px solid transparent;border-image:url(art/ui/bag2/bag2_badge.webp) 0 32 fill / 0 8px stretch;background:none;color:#ff7466;border-radius:0}
+.k2 .enh-more:not(#_){border:1px solid transparent;border-image:url(art/ui/bag2/bag2_field.webp) 0 55 fill / 0 13px stretch;background:none;border-radius:0}
+.k2 .ev-st:not(#_){border:10px solid transparent;border-image:url(art/ui/bag2/bag2_sub.webp) 44 fill / 10px stretch;background:none;border-radius:0;padding:0}
+.k2 .ev-stats.over .ev-st{background:none;backdrop-filter:none}
+.k2 .ev-st.risk,.k2 .ev-st.guard{background:none}
+.k2 .ev-warn:not(#_){border:1px solid transparent;border-image:url(art/ui/bag2/bag2_field.webp) 0 55 fill / 0 13px stretch;background:none;border-radius:0;padding:7px 12px;font-size:12.5px}
+.k2 .ev-warn.risk{color:#f1b3aa}.k2 .ev-warn.risk b{color:#ff7466}
+.k2 .ev-bar{background:transparent;border:0;box-shadow:none}
+@media (max-width:400px){.k2 .sheet-head h2::before,.k2 .sheet-head h2::after{display:none}}   /* 375 寬標題兩側花紋會把 X 擠出去 */
+@media (max-width:360px){.sheet.wpop.k2:not(#_){padding:18px 16px 12px;border-image-width:18px}.k2 .sheet-head h2{font-size:18px}}
 </style>

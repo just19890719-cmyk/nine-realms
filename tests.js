@@ -525,7 +525,7 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.44 舊武器刪除：要在放回測試資料前檢查
-  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
+  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
     T('BD2 神明材質階、神格覺醒拿掉',TIERS.length===5&&typeof GOD==='undefined'&&typeof awkN==='undefined',`材質 ${TIERS.length} 階`)];
   return withTestBps(()=>runTests0(mode,bd))}
 // v4.44 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
@@ -693,3 +693,18 @@ function fkTests(){const S0=S;S=JSON.parse(JSON.stringify(S0));const mk0=FK.mock
       T('FK3 秒殺榜有名次、秒數、評級、我的名次；村莊詳情有我的最快和全服最快',h.includes('霜狼')&&h.includes('9.2')&&h.includes('lb-row me')&&h.includes('gr-')&&row.includes('18.0 秒')&&row.includes('第 2 名')&&row.includes('9.2')),
       T('FK4 公告文字：首殺、刷新紀錄都有怪物名字和秒數',t1.includes(MONS[9])&&t1.includes('12.4')&&t2.includes(MONS[19])&&t2.includes('+12')&&t2.includes('8.9'))]}
   catch(e){return[T('FK 秒殺榜測試',false,e.message)]}finally{S=S0;FK.mock=mk0}}
+
+// v5.10 UI 母版延伸：武器小卡／強化／附魔都用道具欄素材（外框、格子品階框、按鈕），裡面不能再出現舊的 ui491 框
+function k2Tests(){const S0=S,sh0=ui.sheet,r0=ui.result;S=JSON.parse(JSON.stringify(S0));
+  try{const b=BPS.find(x=>!x.dev)||BPS[0],w=makeWeapon(b.id,0,10),out=[];
+    for(const m of ['main','enh','ench']){ui.sheet={t:'w',id:w.id,m};ui.result=null;renderLayer();const sc=document.querySelector('#layer .sheet');
+      const bi=sc?getComputedStyle(sc).borderImageSource:'',old=sc?[...sc.querySelectorAll('*')].filter(e=>/ui491_/.test(getComputedStyle(e).borderImageSource)).length:-1;
+      const bt=sc?[...sc.querySelectorAll('.ui-btn.btn')].filter(e=>!/bag2_btn/.test(getComputedStyle(e).borderImageSource)).length:-1;
+      out.push(T('K2-'+m+' 小卡用道具欄外框、按鈕，沒有舊框',!!sc&&sc.classList.contains('k2')&&/bag2_main_frame/.test(bi)&&old===0&&bt===0,`外框 ${/bag2_main_frame/.test(bi)?'bag2':bi.slice(-30)}；舊框 ${old} 個；非 bag2 按鈕 ${bt} 個`))
+      // 標題列的返回／說明／X 按鈕要完整在外框裡、不壓到標題（v5.10 375 寬 X 被擠出去）
+      const sr=sc?sc.getBoundingClientRect():null,hd=sc?[...sc.querySelectorAll('.sheet-head .icon-btn,.wp-top .icon-btn')].map(e=>e.getBoundingClientRect()).filter(r=>r.width):[],tt=sc&&sc.querySelector('.sheet-head h2'),tr=tt&&tt.getBoundingClientRect();
+      const outB=hd.filter(r=>r.right>sr.right-12||r.left<sr.left+12).length,hit=tr?hd.filter(r=>r.left<tr.right&&r.right>tr.left&&r.top<tr.bottom&&r.bottom>tr.top).length:0;
+      out.push(T('K2-'+m+' 標題列按鈕完整、不壓標題',!!sc&&hd.length>0&&outB===0&&hit===0,`寬 ${innerWidth}：按鈕 ${hd.length} 個，超出外框 ${outB}，壓到標題 ${hit}`))}
+    const h=b2Show(w);out.push(T('K2-show 武器大圖用格子＋品階框，+9 以上有裂痕',h.includes('b2-slot')&&h.includes('bag2_rim9_l6')&&h.includes('bag2_crk_l6')&&b2Show({...w,lv:6}).includes('bag2_rim_l1')));
+    return out}
+  catch(e){return[T('K2 UI 母版延伸測試',false,e.message)]}finally{S=S0;ui.sheet=sh0;ui.result=r0;renderLayer()}}
