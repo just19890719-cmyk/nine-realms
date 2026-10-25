@@ -1927,4 +1927,29 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .ch-g{margin-right:10px;display:inline-flex;align-items:center;white-space:nowrap}
 .ch-g .gr{margin-left:4px}
 .gr-go{width:100%;margin-top:8px}
+
+/* v4.72 武器圖鑑 */
+.cx-sum{background:linear-gradient(180deg,#2a1d12,#16110c);border:1px solid var(--line2);border-radius:12px;padding:10px 12px;margin:0 0 10px;display:flex;align-items:center;gap:10px}
+.cx-sum>img{width:84px;height:84px;object-fit:contain;flex:none}
+.cx-big{display:block;font:700 26px var(--display);color:var(--gold-hi);line-height:1.2}
+.cx-bar{height:6px;border-radius:3px;background:#2a2219;overflow:hidden;margin-top:5px}.cx-bar i{display:block;height:100%;background:linear-gradient(90deg,#b8862f,#ffd98e)}
+.cx-sub{display:flex;gap:6px;margin:0 0 8px}.cx-sub button{flex:1;min-height:38px;border-radius:8px;border:1px solid var(--line);background:#17120d;color:var(--ash);font-size:14px}.cx-sub button.on{color:var(--gold-hi);border-color:var(--gold);background:#2a1d12}
+.cx-grp{font:700 15px var(--display);color:var(--gold);margin:12px 2px 6px;display:flex;justify-content:space-between;align-items:baseline}.cx-grp span{font:13px system-ui,sans-serif;color:var(--ash)}
+.cx-row{display:flex;align-items:center;gap:8px;background:#15100c;border:1px solid var(--line);border-radius:10px;padding:6px 8px;margin-bottom:6px}
+.cx-row .wart{width:56px;height:56px;flex:none}
+.cx-nm{flex:1;min-width:0;font-size:14px;color:var(--bone);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cx-sl{display:flex;gap:5px;flex:none}
+.cx-s{width:54px;height:46px;padding:0;border-radius:8px;border:1px dashed #4a3d2d;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;color:#6e6252;line-height:1.25;position:relative;white-space:nowrap}
+.cx-s b{font-size:14px}
+.cx-s.done{border:1px solid var(--qc);background:color-mix(in srgb,var(--qc) 16%,#120d09);color:var(--qc)}
+.cx-s.can{border:1.5px solid var(--gold-hi);color:var(--gold-hi);background:#2b1f10;box-shadow:0 0 10px rgba(255,200,90,.45)}
+.cx-s.can:after{content:'';position:absolute;top:-4px;right:-4px;width:9px;height:9px;border-radius:50%;background:#e2402f}
+.cx-set{background:#15100c;border:1px solid var(--line);border-radius:10px;padding:9px 10px;margin-bottom:8px}
+.cx-set.ok{border-color:var(--gold);background:linear-gradient(180deg,#2a1d12,#15100c)}
+.cx-set h4{margin:0 0 3px;font:700 15px var(--display);color:var(--bone);display:flex;justify-content:space-between;gap:8px}.cx-set h4 span{color:var(--gold-hi);font:600 14px system-ui,sans-serif;white-space:nowrap}
+.cx-mem{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.cx-mem .m{width:44px;text-align:center;font-size:11px;color:#6e6252}.cx-mem .m .wart{width:44px;height:44px}.cx-mem .m.no .wart{opacity:.28;filter:grayscale(1)}
+.cx-pw .wart{width:110px;height:110px;margin:0 auto 6px}
+.cx-pn{text-align:center;font-size:17px;margin-bottom:6px}.cx-pick{text-align:center;margin-bottom:8px}
+.cx-gain{display:flex;justify-content:space-between;gap:8px;background:#120d09;border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-bottom:6px;font-size:14px;text-align:left}.cx-gain b{color:var(--gold-hi);white-space:nowrap}
+.cx-warn{color:var(--danger-hi);font-size:13px;margin:8px 0 10px}
 </style>
