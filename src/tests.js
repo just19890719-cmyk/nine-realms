@@ -500,7 +500,7 @@ function hitTests(){const cats=[...new Set(BPS.map(b=>b.cat))],miss=cats.filter(
   return[T('H 武器打法：每種武器類別都有打法，連擊在下一輪前打完、平均倍率和設定相符',!miss.length&&!bad.length,miss.length?'缺：'+miss.join('、'):bad.length?'不符：'+bad.map(x=>x[0]).join('、'):cats.length+' 種都有')]}
 // v4.44 屬性附魔：三組互剋、弱點讓狩獵變快、村莊卡片有弱點標籤、首領弱點也用屬性
 function enchTests(){let lv0=0;const mk=(e)=>({id:-1,b:'t3_greataxe',q:0,lv:lv0,traits:[],ench:[e||null,null,null,null]});while(lv0<15&&power(mk())<VILLAGES[8].req)lv0++;   // 攻擊力剛好過需求，弱點才看得出差別（狩獵時間最多縮到 60%）
-  const pairOk=Object.entries(ELEM_OPP).every(([a,b])=>ELEM_OPP[b]===a)&&Object.keys(ELEM).length===6&&Object.values(ELEM).every(x=>x.tn.length===3&&x.tn[2].length<=4&&(x.tn[2].includes(x.n[0])||x.tn[2].includes(x.n[1])));
+  const pairOk=Object.entries(ELEM_OPP).every(([a,b])=>ELEM_OPP[b]===a)&&Object.keys(ELEM).length===6&&Object.entries(ELEM).every(([k,x])=>x.tn.length===3&&x.tn[2].length<=4&&x.n.length===3&&[...({fire:'焰火',ice:'霜冰',bolt:'雷',toxic:'毒',light:'聖光',dark:'影暗'}[k])].some(c=>x.tn[2].includes(c)));
   const i=8,d0=gameDur(i,mk(),'normal'),d1=gameDur(i,mk({k:'ice',v:3}),'normal'),d2=gameDur(i,mk({k:'fire',v:3}),'normal');
   const S0=S;S=fresh();const w=makeWeapon('t1_woodaxe',0,0,[],[{k:'fire',v:2},null,null,null]);const st=S.villages[0];st.status='cleared';st.weaponId=w.id;st.cycleStart=NOW();ui.tab='village';ui.realm=0;const h=viewVillage(),sv=ui.sheet;S.villages[1].status='open';const hs=sheetVillage(1);ui.sheet=sv;S=S0;
   const bOk=EVT_BOSS.every(b=>b.weak&&ELEM[b.weak.el])&&bossWeak(mk({k:'ice',v:3}),EVT_BOSS[2])===1.6&&!bossWeak(mk({k:'fire',v:3}),EVT_BOSS[2]);
