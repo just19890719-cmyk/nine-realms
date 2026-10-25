@@ -402,9 +402,9 @@ function evtTests0(){const res=[];
     // v3.87 整週首領：台灣時間週日 00:00 換週；取消雙倍收成
     const sun=Date.UTC(2026,9,25,0,0)-TZ8,sat=sun-60e3,mon=sun+DAY,nsun=sun+7*DAY;
     res.push(T('J1 台灣時間週日 00:00 換週、首領整週開打',evtWeek(sat)+1===evtWeek(sun)&&evtWeek(mon)===evtWeek(sun)&&evtWeek(nsun)===evtWeek(sun)+1&&evtStart(evtWeek(sun))===sun&&evtNow().k==='boss',`週六 23:59＝${evtWeek(sat)}、週日 0 點＝${evtWeek(sun)}、週一＝${evtWeek(mon)}`));
-    S=fresh();S.villages[5].strat='normal';const st=S.villages[5];rollCycle(5,null,st,mon);const g1=st.bank.gold;st.bank={cycles:0,gold:0,mats:{},events:0};rollCycle(5,null,st,mon+4*DAY);   // v4.66 1-1～1-5 金幣改範圍隨機，改用 1-6
+    S=fresh();S.villages[5].strat='normal';const st=S.villages[5];const MR=Math.random;Math.random=()=>.5;rollCycle(5,null,st,mon);const g1=st.bank.gold;st.bank={cycles:0,gold:0,mats:{},events:0};rollCycle(5,null,st,mon+4*DAY);Math.random=MR;   // v4.69 每關金幣都是範圍隨機：固定亂數比較   // v4.66 1-1～1-5 金幣改範圍隨機，改用 1-6
    const g2=st.bank.gold;
-    res.push(T('J2 取消雙倍收成：週一和週五收成金幣一樣',g1===g2&&g2===vKillGold(5),`週一 ${g1}、週五 ${g2}`));
+    res.push(T('J2 取消雙倍收成：週一和週五收成金幣一樣',g1===g2&&g2===KILL_GOLD[5][0]+Math.floor(.5*(KILL_GOLD[5][1]-KILL_GOLD[5][0]+1)),`週一 ${g1}、週五 ${g2}`));
     S=fresh();S.gold=0;const w=makeWeapon('t3_greatsword',3,8,[]);const b=evtNow().boss,d0=bossDmgOf(w,b);
     // v3.85 駐守首領：最多 3 把、按時間累積、駐守中不能打村莊／強化／熔解、收回會結算；v3.87 換週武器留著、傷害歸零
     const w2=makeWeapon('t3_greatsword',2,5,[]),w3=makeWeapon('t2_longsword',1,3,[]),w4=makeWeapon('t2_longsword',1,2,[]);
