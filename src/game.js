@@ -333,7 +333,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.92';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.93';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1313,6 +1313,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.93',d:'10/25',t:'格子和面板換上暗鐵底',b:['道具欄、武器小卡、村莊、圖鑑、排行榜裡的武器格子，換成同一種<b>暗鐵展示台</b>底，中間淡淡打光','大面板和彈出小卡改成同材質、再暗一階，不再有的有底、有的全黑','鐵匠鋪的武器圖紙維持羊皮紙'],g:[]},
  {v:'4.92',d:'10/25',t:'故事書禮物加碼・剩下的框也換新',b:['強化故事書「倒懸九夜」第一次翻開改送 <b>100 顆強化石</b>','附魔故事書「矮人盜石」第一次翻開改送 <b>50 顆附魔石＋5 顆矮人解咒石</b>（已經翻過的不會再送）','圖鑑、任務、排行榜、聊天、設定、提示訊息、委託條等剩下的框，也換成同一套斜切角金屬框'],g:['enh','ench']},
  {v:'4.91',d:'10/25',t:'介面換上手工細線框・強化故事書',b:['面板、格子、分頁、按鈕、選單、膠囊標籤換成<b>手工雕刻的細金屬框</b>：暗銅是一般、金色是選中、紅色是危險、灰色是鎖住，四個角的小雕花全遊戲一樣大','強化小卡右上角多了故事書<b>「倒懸九夜」</b>：奧丁倒吊世界樹換來符文、符文石碑與強化石的由來，第一次翻開送 10 顆強化石','從武器小卡點「強化」不會再重播一次彈出動畫','小卡內容比較長時，旁邊不再顯示捲動條（一樣可以滑）'],g:['enh']},
  {v:'4.90',d:'10/25',t:'跑框特效不再重來',b:['+9 以上武器框的<b>電流繞框</b>特效，連按附魔、強化或畫面更新時不會再跳回起點重跑，所有地方都一樣'],g:['ench']},
@@ -2658,8 +2659,8 @@ function viewShop(){
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'4.93',t:'武器格子與面板換暗鐵底（鍛造圖紙保留羊皮紙）',b:[['iron93','給測試武器並打開道具欄（看格子底）'],['skin91','打開武器小卡（看面板底）']]},
  {v:'4.92',t:'故事書禮物 100 強化石／50 附魔石＋5 解咒石、剩下的程式框換新',b:[['lore91','打開強化故事書（第一次送 100 顆強化石）'],['lore83','打開附魔故事書（第一次送 50 附魔石＋5 解咒石）'],['lore83r','重置故事書已讀（可以再領一次測試）'],['cx92','打開圖鑑分頁（看新框）'],['dq92','打開任務（看新框）']]},
- {v:'4.91',t:'AI 細線框與按鈕、強化故事書「倒懸九夜」、強化不重播彈出',b:[['skin91','給測試武器並打開武器小卡（看框、按鈕；再按「強化」看會不會重播彈出）']]},
  {v:'4.90',t:'+9 以上跑框特效：畫面重畫時接著跑，不再重置',b:[['run90','給 +9 測試劍並打開附魔，每 0.3 秒重畫一次（看跑框會不會跳）']]},
  {v:'4.89',t:'道具欄格子外框統一銅色（強化等級只看內框）',b:[['flvtest','給各強化等級的武器（看道具欄外框）']]},
  {v:'4.88',t:'道具欄格子：奧丁之咒改顯示在武器名稱前面',b:[['brkstk','給 3 把同款 +6 劍，其中 1 把中咒（看道具欄）']]},
@@ -2894,6 +2895,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='affopen'){const c={},t=[0,0,0,0];for(let i=0;i<6000;i++){const x=Object.keys(ELEM)[rnd(0,5)],v=weighted([1,2,3],y=>ELEM_TW[y]);c[x]=(c[x]||0)+1;t[v]++}   // v4.44 屬性附魔
     return toast(`附魔 6000 次：${Object.entries(c).map(([x,n])=>ELEM[x].n+' '+n).join('、')}<br>等級：一級 ${t[1]}、二級 ${t[2]}、三級 ${t[3]}（應約 4200／1500／300）`,'ok')}
   if(k==='res77'){const wi=makeWeapon('dev_sword',2,6,[],[{k:'ice',v:3},null,null,null]),wf=makeWeapon('dev_sword',2,6,[],[{k:'fire',v:3},null,null,null]);save();ui.sheet={t:'w',id:wf.id,m:'ench'};render();return toast(`1-9 火焰騎兵：永凍之霜 ×${weakMul(8,wi)}（應 1.1）、滅世之焰 ×${weakMul(8,wf)}（應 0.9）`)}
+  if(k==='iron93'){S.weapons=S.weapons||[];devdo('flvtest');ui.tab='armory';ui.atab='w';ui.sheet=null;render();return}
   if(k==='skin91'){S.weapons=S.weapons||[];devdo('flvtest');const w=S.weapons.find(x=>x.test&&x.lv===8)||S.weapons[0];ui.tab='armory';ui.atab='w';ui.sheet=w?{t:'w',id:w.id,m:'main'}:null;render();return}
   if(k==='lore91'){const w=makeWeapon('dev_sword',2,8,[]);save();ui.sheet={t:'w',id:w.id,m:'enh'};loreOpen('enh');return}
   if(k==='cx92'){ui.sheet=null;ui.tab='armory';ui.atab='c';render();return}

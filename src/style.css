@@ -2017,4 +2017,9 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .mon-dex button.on:not(#_){outline:none;border:1px solid transparent;border-image:url(art/ui/ui491_fr_on.webp) 40 / 8px stretch}
 .lb-list:not(:has(*)){display:none}   /* 排行榜沒有資料時不顯示空框 */
 .lore-gift:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fl_on.webp) 38 / 9px stretch}
+/* v4.93 暗鐵展示台：武器格子與面板統一同一種暗鐵底（Mochi 選 A；鍛造頁的圖紙縮圖保留羊皮紙） */
+.wt-art,.wd-art,.wp-top>.wart,.qimg.wart,.fb-img.wart,.wmini.wart,.cx-row .wart,.lb-me .wart,.vv-w .wart,.matbox .wart.mb-w,.cx-pw .wart,.hico .wart{background:#080605 url(art/ui/ui493_slot.webp) center/cover no-repeat}
+.wt{background:#0b0807}
+.panel,.sheet,.modal-card{background:#0a0806 url(art/ui/ui493_panel.webp) center top/cover no-repeat}
+:is(.sheet,.modal-card) .panel,.panel .panel{background:rgba(0,0,0,.28)}
 </style>
