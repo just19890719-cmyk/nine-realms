@@ -333,7 +333,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.90';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.91';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1313,6 +1313,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.91',d:'10/25',t:'介面換上手工細線框・強化故事書',b:['面板、格子、分頁、按鈕、選單、膠囊標籤換成<b>手工雕刻的細金屬框</b>：暗銅是一般、金色是選中、紅色是危險、灰色是鎖住，四個角的小雕花全遊戲一樣大','強化小卡右上角多了故事書<b>「倒懸九夜」</b>：奧丁倒吊世界樹換來符文、符文石碑與強化石的由來，第一次翻開送 10 顆強化石','從武器小卡點「強化」不會再重播一次彈出動畫','小卡內容比較長時，旁邊不再顯示捲動條（一樣可以滑）'],g:['enh']},
  {v:'4.90',d:'10/25',t:'跑框特效不再重來',b:['+9 以上武器框的<b>電流繞框</b>特效，連按附魔、強化或畫面更新時不會再跳回起點重跑，所有地方都一樣'],g:['ench']},
  {v:'4.89',d:'10/25',t:'道具欄外框統一',b:['道具欄每一格的<b>外框統一成銅色</b>，不會再出現裡面藍框、外面綠框的情況；強化等級看裡面的武器框顏色'],g:['bag']},
  {v:'4.88',d:'10/25',t:'奧丁之咒顯示在武器名稱前面',b:['道具欄格子裡，中了奧丁之咒的武器名稱前面會顯示紅色「<b>奧丁之咒</b>」，跟屬性名稱一樣的位置'],g:['ench']},
@@ -1410,7 +1411,7 @@ const GUIDE=[
  ['基礎',[
   {k:'forge',ic:'t1_ironhammer_disp',n:'鍛造',s:'選圖紙、付金幣和材料，5 秒打好一批',v:'4.54',h:'在鐵匠鋪「圖紙」選一張圖紙，金幣和材料夠就能按「開始鍛造」。開局 7 把只花金幣；之後的武器要用打怪掉的材料：第一界用<b>中庭鐵礦、松林硬木</b>，第二界用<b>約頓霜鐵、約頓巨木</b>，怪物主題武器另外要怪物部位（1-7 巨魔石皮、2-8 幻術巨人王骨），Boss 武器要 Boss 素材（1-10 彩虹橋碎晶、2-10 索爾雷晶）。<br>開局就有 7 種武器的圖紙；收復第一界 1-2、1-4、1-6、1-7、1-10，第二界 2-1、2-3、2-5、2-8、2-10 會解鎖新圖紙。第 7／8 關是<b>怪物主題武器</b>（攻擊力多 10%），第 10 關是 <b>Boss 武器</b>（帶專屬特效）。兩界為一階，同一階的武器一樣強，想變強就要強化。<br>一次一批（最多 10 把），不管幾把都是 <b>5 秒</b>完成，進度條就在「開始鍛造」下方，可以取消（金幣全退）。'},
   {k:'wpn',ic:'cat_sword',n:'武器數值與相剋',s:'攻速、附加效果、相剋，點武器看小卡',v:'4.79',h:'點武器會跳出小卡。<b>攻擊力＝每秒傷害</b>，已經算進附加效果的平均。<br>七類武器攻速：雙刀 0.6 秒、劍 1.0、弓 1.1、長柄 1.2、斧 1.3、弩 1.6、錘 1.8 秒；每秒傷害都差不多，攻速慢的單擊比較重。<br><b>附加效果</b>：劍會心、斧流血、錘震碎、雙刀中毒、長柄貫穿、弓穿心、弩破甲；+1～+6 每級觸發率 2%，+7 起 16／20／25／30／35／40%。<br><b>相剋</b>：怪物分人形、野獸、巨型、亡靈。劍、雙刀剋人形，長柄、斧剋野獸，弩、弓剋巨型，錘剋亡靈；打被剋的怪物傷害會增加，強化越高加越多：+1～+6 每級 +1%、+7～+9 每級 +2%、+10～+12 每級 +3%（+6 為 6%、+9 為 12%、+12 為 21%），跟屬性弱點一起算。<br>武器名稱是「+7 寒霜 鐵劍」：強化等級、附魔、武器名。'},
-  {k:'enh',ic:'it_bless',n:'強化',s:'每次 1 顆強化石，最高 +12',v:'4.65',h:'每次強化用 <b>1 顆強化石</b>，不花金幣，成功或失敗都會用掉。強化石從村莊收成拿（越後面的關卡掉越多），熔解武器也會退 1 顆。<br>+1～+6 一定成功。+7 起是危險區：+7 35%、+8 32.5%、+9 30%，失敗就爆裝；+10～+12 每級 1%，失敗時 1/3 維持原樣、2/3 爆裝。最高 <b>+12</b>。<br>攻擊倍率：+6 ×1.6、+7 ×1.9、+8 ×2.25、+9 ×2.65、+10 ×3.3、+11 ×4、+12 ×4.8。<br>武器的框色看強化等級：+0 灰、+1～+6 綠、+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石，+9 以上的框有電流繞著跑。<br>+1～+6 按強化直接出結果；+7 起符文石碑的燈光和武器光暈就是那一級外框的顏色。「一鍵強化」會一級一級連擊播放，點畫面可以略過。'},
+  {k:'enh',ic:'it_bless',n:'強化',s:'每次 1 顆強化石，最高 +12',v:'4.91',h:'每次強化用 <b>1 顆強化石</b>，不花金幣，成功或失敗都會用掉。強化石從村莊收成拿（越後面的關卡掉越多），熔解武器也會退 1 顆。<br>+1～+6 一定成功。+7 起是危險區：+7 35%、+8 32.5%、+9 30%，失敗就爆裝；+10～+12 每級 1%，失敗時 1/3 維持原樣、2/3 爆裝。最高 <b>+12</b>。<br>攻擊倍率：+6 ×1.6、+7 ×1.9、+8 ×2.25、+9 ×2.65、+10 ×3.3、+11 ×4、+12 ×4.8。<br>武器的框色看強化等級：+0 灰、+1～+6 綠、+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石，+9 以上的框有電流繞著跑。<br>+1～+6 按強化直接出結果；+7 起符文石碑的燈光和武器光暈就是那一級外框的顏色。「一鍵強化」會一級一級連擊播放，點畫面可以略過。<br>強化小卡右上角的故事書「倒懸九夜」講符文石碑和強化石的由來，第一次翻開送 10 顆強化石。'},
   {k:'ench',ic:'mat_shard',n:'屬性附魔',s:'6 種屬性三對互剋，打中弱點加傷害、同屬性扣傷害',v:'4.84',h:'鍛造出來的武器一律<b>無屬性</b>。每次附魔花 <b>1 顆附魔石</b>加金幣，隨機附魔，得到 1 種屬性（每把武器只有 1 欄，重抽會蓋掉舊的；已經是三級時會跳確認小卡，按「確定重抽」才會重抽）。<br>屬性 6 種：<b>火屬性、冰屬性、雷屬性、毒屬性、聖屬性、暗屬性</b>，機率一樣。等級越高越難抽：一級 66.5%、二級 23.75%、三級 4.75%。<br><b>奧丁之咒（5%）</b>：符文之主奧丁不許凡人動祂的符文，降下詛咒。原本的屬性消失，武器<b>完全不能使用</b>（不能駐守、挑戰、強化、上架、登錄圖鑑），要用 1 顆<b>矮人解咒石</b>解咒，解咒後變回無屬性。解咒石打倒怪物有機率掉，商城也買得到。<br>名稱：火屬性 餘燼／烈焰／滅世之焰；冰屬性 寒霜／冰封／永凍之霜；雷屬性 雷光／雷鳴／雷神之怒；毒屬性 蝕毒／蛇毒／巨蟒之毒；聖屬性 微光／聖光／光神聖輝；暗屬性 幽影／暗夜／盲神之影。<br><b>相剋（三對宿敵）</b>：火屬性⇄冰屬性、雷屬性⇄毒屬性、聖屬性⇄暗屬性。每隻怪物都有屬性，弱點就是對手屬性。<br>打中弱點：一級 +3%、二級 +6%、三級 +10%，狩獵更快、收成更多。<br><b>同屬性抗性</b>：拿跟怪物一樣屬性的武器（例如火屬性打火屬性的怪物）：一級 −3%、二級 −6%、三級 −10%。等級越高加越多、也扣越多，附魔前先看清楚怪物屬性。<br>其他屬性或無屬性都是正常傷害。屬性不加攻擊力。'},
   {k:'bag',ic:'nav_forge',n:'道具欄',s:'同一種道具疊一格，沒有上限',v:'4.72',h:'下方導覽的「<b>道具欄</b>」（原本的武器庫）分「武器／材料／圖鑑」三頁，道具在「材料」頁。<br>武器頁：一模一樣的武器（同一把、同強化等級、同屬性）疊在同一格，右下角是數量；點進去的操作只動其中一把；按「一鍵安定值」後小卡會換到下一把同款，可以一直按。上限 200 把照算每一把。同一種道具放在同一格，右下角顯示數量，沒有上限。<br>道具：<b>強化石</b>（強化用）、<b>附魔石</b>（附魔用）、<b>英靈・遺物</b>（綠光、藍光、紅光、金光四種，光芒越亮內容越好）。三種都是打倒怪物有機率掉，越後面的關卡掉越多、好遺物越多。<br>點遺物可以看開出機率，按「打開 1 個」或「全部打開」：可能開到金幣、材料、強化石、附魔石、Boss 素材或武器。<br>材料：每一界 2 種一般材料，加上怪物部位和 Boss 素材，點一下看哪裡掉、哪把武器會用到。'},
   {k:'codex',ic:'nav_armory',n:'武器圖鑑',s:'登錄武器換全帳號攻擊力，武器會消失',v:'4.72',h:'道具欄的「<b>圖鑑</b>」分頁。每把武器有 3 格：<b>+0</b>（+0.2%）、<b>+6</b>（+0.6%）、<b>+9</b>（+1.5%），道具欄有強化到那個等級以上的同款武器就能登錄（格子會發亮），自動挑等級最低、沒駐守、沒鎖定的那把。<br><b>登錄後那把武器會消失</b>，換到所有武器攻擊力的永久加成。<br>「套裝」分頁：6 個套裝湊齊再加 +2%～+5%。兩界全部收滿最多 +57.1%。'},
@@ -1508,16 +1509,22 @@ function enhance(id){
   playFx(r.danger,r.before,r.next,res)}
 function enchant(id,slot){const r=enchantCore(id,slot);if(r.err)return toast(r.err,'bad');if(r.k==='broken'){snd('enh_break');ui.result={t:'info',title:'奧丁之咒！',html:'<div class="center">符文之主奧丁不許凡人動祂的符文，降下了詛咒。<br>這把武器<b class="t-danger">完全不能使用</b>，<br>要用<b>矮人解咒石</b>破除，解咒後變回無屬性。</div>',ok:'知道了'};return render()}snd(r.v>=3?'enh_ok':'enchant');render()}
 // v4.83 故事書（Mochi：附魔系統旁邊放一本書，裡面一張圖＋故事，讓遊戲有劇情）。圖 art/ic_lore、art/story_ench 還沒到時先放待生圖框
-const LORE_ART={ic_lore:true,story_ench:true};   // v4.83 Mochi AI 生圖已到
+const LORE_ART={ic_lore:true,story_ench:true,story_enh:true};   // v4.83 Mochi AI 生圖已到
 const loreArt=(n,cls)=>LORE_ART[n]?img(n,cls):`<span class="ph-ico ${cls}">待生圖</span>`;
 const loreNew=k=>!(S.loreSeen||{})[k];   // v4.83 Mochi：第一次翻開送 10 顆附魔石＋2 顆矮人解咒石，只能領一次（存檔 S.loreSeen）
 const loreBtn=k=>`<button class="ui-iconbtn icon-btn img lore-btn" data-act="lore" data-k="${k}" aria-label="故事">${loreArt('ic_lore','lore-ic')}${loreNew(k)?'<i class="dot give-dot"></i>':''}</button>`;
 const LORE={ench:{t:'矮人盜石',art:'story_ench',p:['奧丁為了諸神黃昏，命令九界交出所有武器。不肯交的村莊，一夜之間化成焦土。',
   '住在地底的矮人兄弟<b>布洛克與艾特里</b>，替諸神鍛過雷神之錘，最清楚諸神的手段。他們看不慣奧丁濫殺平民，趁祂離開王座、到密米爾之泉喝水的時候，從寶庫偷走一袋刻著盧恩的<b>附魔石</b>，連夜送到人類最後的鐵匠手上。',
   '奧丁是符文之主，偷來的符文逃不過祂的眼睛。祂在每一顆附魔石上都留下詛咒：每次附魔，都有機會被<b class="t-danger">奧丁之咒</b>反噬，武器從此不能使用。',
-  '矮人兄弟只好在地底日夜鍛造<b>矮人解咒石</b>，偷偷送到鐵匠鋪。「這些石頭是我們拿命換來的，鐵匠，讓凡人也有對抗諸神的力量吧。」']}};
+  '矮人兄弟只好在地底日夜鍛造<b>矮人解咒石</b>，偷偷送到鐵匠鋪。「這些石頭是我們拿命換來的，鐵匠，讓凡人也有對抗諸神的力量吧。」']},
+ enh:{t:'倒懸九夜',art:'story_enh',p:['為了看清命運，奧丁把自己倒吊在世界樹<b>尤克特拉希爾</b>上，用長矛刺穿身體，不吃不喝九天九夜。第九夜，盧恩符文從樹根下的深淵浮上來，被祂一把抓住。',
+  '奧丁把符文刻進一塊黑色巨岩，立在阿斯嘉的鍛造場。諸神的武器只要放上這座<b>符文石碑</b>，就會吸進符文的力量，一次比一次鋒利。',
+  '諸神黃昏前夕，一道雷霆劈碎了石碑，碎片散落人間，就是村莊怪物身上偶爾掉出的<b>強化石</b>。矮人兄弟把最大的一塊殘碑扛到鐵匠鋪，拼回一座缺角的石碑。',
+  '符文的力量從來不是白給的：奧丁為了它倒吊九夜，為了智慧還付出一隻眼睛。武器強化到 <b>+7</b> 以上，石碑就會向武器討代價；賭輸了，整把武器會被符文吞掉，<b class="t-danger">永遠消失</b>。'],
+  gift:()=>{S.items[STONE]=stones()+10;return`<div class="lore-gift">${itemIco(STONE)}<span>矮人兄弟在殘碑底下壓了 <b>10 顆強化石</b>送你（只有第一次翻開會有）</span></div>`}}};   // v4.91 Mochi：符文石碑也要有故事
 function loreOpen(k){const L=LORE[k];if(!L)return;let gift='';
-  if(loreNew(k)){S.loreSeen=S.loreSeen||{};S.loreSeen[k]=1;S.items[ENSTONE]=enStones()+10;S.items[REPAIR]=(S.items[REPAIR]|0)+2;save();snd('coin');gift=`<div class="lore-gift">${itemIco(ENSTONE)}${itemIco(REPAIR)}<span>矮人兄弟在書裡夾了 <b>10 顆附魔石</b>和 <b>2 顆矮人解咒石</b>送你（只有第一次翻開會有）</span></div>`}else snd('ui_open');
+  if(loreNew(k)&&L.gift){S.loreSeen=S.loreSeen||{};S.loreSeen[k]=1;gift=L.gift();save();snd('coin')}
+  else if(loreNew(k)){S.loreSeen=S.loreSeen||{};S.loreSeen[k]=1;S.items[ENSTONE]=enStones()+10;S.items[REPAIR]=(S.items[REPAIR]|0)+2;save();snd('coin');gift=`<div class="lore-gift">${itemIco(ENSTONE)}${itemIco(REPAIR)}<span>矮人兄弟在書裡夾了 <b>10 顆附魔石</b>和 <b>2 顆矮人解咒石</b>送你（只有第一次翻開會有）</span></div>`}else snd('ui_open');
   ui.result={t:'info',k:'lore',title:L.t,html:`<div class="lore-art">${loreArt(L.art,'lore-img')}</div>${gift}<div class="lore-txt">${L.p.map(x=>`<p>${x}</p>`).join('')}</div>`,ok:'闔上書本'};render()}
 function repair(id){const r=repairCore(id);if(r.err)return toast(r.err,'bad');snd('upgrade');toast('詛咒破除了，武器變回無屬性，可以再附魔。','ok');render()}   // v4.81 Mochi：不跳「附魔結果」提示，結果直接看武器名稱
 const furnaceMax=()=>rfOpen()?6:5;   // v3.76 熔爐 Lv6（巨人武器）在第二界開放後才能升
@@ -1891,7 +1898,7 @@ function skinCss(){if(typeof UI_SKIN==='undefined')return'';const out=[];
     // width：只設定圖框的繪製寬度（border-image-width），不改元件原本的邊框寬度，所以版面尺寸完全不變。
     //   上下寬度相加 ≥ 元件高度時，瀏覽器會把四邊等比例縮小 → 只能橫向伸縮的素材（3-slice）用這個方式，四角不會變形。
     if(base.width){const sl=(base.slice||[24,24,24,24]).join(' '),iw=base.width.map(v=>typeof v==='number'?v+'px':v).join(' ');
-      out.push(`${sel}{border-color:transparent;border-image:url("${cfg.src}") ${sl}${base.fill===false?'':' fill'} / ${iw} / ${base.outset||0} ${base.repeat||'stretch'};background:none${ex}}`);
+      out.push(`${sel}{border-color:transparent;border-image:url("${cfg.src}") ${sl}${base.fill===false?'':' fill'} / ${iw} / ${base.outset||0} ${base.repeat||'stretch'}${base.bg?'':';background:none'}${ex}}`);   // v4.91 bg:true＝保留元件原本的底色（框中間是空的）
       // overlay：不能被拉伸的中央裝飾（例如導航列中間的鑽飾）另外疊一層，固定比例置中，不跟著元件寬度變形
       if(base.overlay){const ov=base.overlay;out.push(`${sel.split(',').map(x=>x+'::before').join(',')}{content:"";position:absolute;left:50%;top:0;height:100%;aspect-ratio:${ov.ratio};transform:translateX(-50%);background:url("${ov.src}") center/100% 100% no-repeat;pointer-events:none}`)}
       continue}
@@ -2216,7 +2223,7 @@ function sheetWeapon(id,mode){
   const b=bpOf(w),i=where(w),bs=bossSlotOf(w),busy=i>=0||bs>=0,highValue=w.lock||w.q>=2||w.lv>=3||b.t>=2;
   const title={main:'武器詳情',enh:'強化',ench:'附魔',give:'交給村莊'}[mode];
   const xb=btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'}),bk=mode==='main'?'<span style="width:44px"></span>':btn(img('ic_back'),'wmode',{cls:'icon-btn img',attrs:`data-m="main" data-id="${id}" aria-label="返回"`});
-  const head=mode==='ench'?`<div class="sheet-head"><span class="sh-2">${bk}<span style="width:44px"></span></span><h2>${title}</h2><span class="sh-2">${loreBtn('ench')}${xb}</span></div>`   // v4.83 附魔小卡叉叉旁邊放故事書（Mochi）
+  const head=mode==='ench'||mode==='enh'?`<div class="sheet-head"><span class="sh-2">${bk}<span style="width:44px"></span></span><h2>${title}</h2><span class="sh-2">${loreBtn(mode)}${xb}</span></div>`   // v4.91 強化小卡也放故事書「倒懸九夜」   // v4.83 附魔小卡叉叉旁邊放故事書（Mochi）
     :`<div class="sheet-head">${bk}<h2>${title}</h2>${xb}</div>`;
   const showcase=(extra='')=>`<div class="ui-card ui-card--feature showcase ${lc(w)}b ${extra}">
    <div class="sc-top"><div><h2 class="${lc(w)}">${b.n} <span class="lvt">+${w.lv}</span></h2></div>
@@ -2650,6 +2657,7 @@ function viewShop(){
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'4.91',t:'AI 細線框與按鈕、強化故事書「倒懸九夜」、強化不重播彈出',b:[['skin91','給測試武器並打開武器小卡（看框、按鈕；再按「強化」看會不會重播彈出）'],['lore91','打開強化故事書「倒懸九夜」（第一次送 10 顆強化石）'],['lore83r','重置故事書已讀（可以再領一次測試）']]},
  {v:'4.90',t:'+9 以上跑框特效：畫面重畫時接著跑，不再重置',b:[['run90','給 +9 測試劍並打開附魔，每 0.3 秒重畫一次（看跑框會不會跳）']]},
  {v:'4.89',t:'道具欄格子外框統一銅色（強化等級只看內框）',b:[['flvtest','給各強化等級的武器（看道具欄外框）']]},
  {v:'4.88',t:'道具欄格子：奧丁之咒改顯示在武器名稱前面',b:[['brkstk','給 3 把同款 +6 劍，其中 1 把中咒（看道具欄）']]},
@@ -2884,6 +2892,8 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='affopen'){const c={},t=[0,0,0,0];for(let i=0;i<6000;i++){const x=Object.keys(ELEM)[rnd(0,5)],v=weighted([1,2,3],y=>ELEM_TW[y]);c[x]=(c[x]||0)+1;t[v]++}   // v4.44 屬性附魔
     return toast(`附魔 6000 次：${Object.entries(c).map(([x,n])=>ELEM[x].n+' '+n).join('、')}<br>等級：一級 ${t[1]}、二級 ${t[2]}、三級 ${t[3]}（應約 4200／1500／300）`,'ok')}
   if(k==='res77'){const wi=makeWeapon('dev_sword',2,6,[],[{k:'ice',v:3},null,null,null]),wf=makeWeapon('dev_sword',2,6,[],[{k:'fire',v:3},null,null,null]);save();ui.sheet={t:'w',id:wf.id,m:'ench'};render();return toast(`1-9 火焰騎兵：永凍之霜 ×${weakMul(8,wi)}（應 1.1）、滅世之焰 ×${weakMul(8,wf)}（應 0.9）`)}
+  if(k==='skin91'){S.weapons=S.weapons||[];devdo('flvtest');const w=S.weapons.find(x=>x.test&&x.lv===8)||S.weapons[0];ui.tab='armory';ui.atab='w';ui.sheet=w?{t:'w',id:w.id,m:'main'}:null;render();return}
+  if(k==='lore91'){const w=makeWeapon('dev_sword',2,8,[]);save();ui.sheet={t:'w',id:w.id,m:'enh'};loreOpen('enh');return}
   if(k==='lore83r'){S.loreSeen={};save();render();return toast('故事書已讀已重置','ok')}
   if(k==='lore83'){const w=makeWeapon('dev_sword',2,6,[]);save();ui.sheet={t:'w',id:w.id,m:'ench'};loreOpen('ench');return}
   if(k==='brk83'){const w=makeWeapon('dev_sword',2,6,[],[{k:'broken',v:1},null,null,null]);S.items[REPAIR]=(S.items[REPAIR]|0)+3;save();ui.sheet={t:'w',id:w.id,m:'main'};render();return}
@@ -3048,14 +3058,14 @@ function fitNames(){const els=[...document.querySelectorAll('.wt-name')];if(!els
 if(typeof window!=='undefined')window.addEventListener('resize',()=>fitNames());
 function renderLayer(){stkFollow();
   const L=document.getElementById('layer');const s=ui.sheet;let h='';
-  const sc=document.querySelector('.sheet'),st=sc?sc.scrollTop:0,same=sc&&ui._lastSheet===JSON.stringify(s);
-  if(s){const pop=s.t==='w'&&((s.m==='main'||s.m==='ench')&&!!W(s.id)||s.m==='enh'),full=!pop&&(s.t==='w'||s.t==='fxt');h+=`<div class="scrim ${pop?'wpopc':''} ${same?'still':''}" data-act="scrim"><div class="ui-sheet sheet ${full?'full':''} ${pop?'wpop':''} ${s.t==='chat'?'cx-sheet':''} ${same?'still':''}">${s.t==='w'?sheetWeapon(s.id,s.m):s.t==='v'?sheetVillage(s.i):s.t==='ch'&&ui.ch?sheetCh():s.t==='chr'&&ui.chr?sheetChr():s.t==='a'?sheetAch():s.t==='fk'?sheetFk(s.i):s.t==='lb'?sheetLb(s.i):s.t==='lbw'?sheetLbW(s.i,s.k):s.t==='ws'?sheetWorkshop(s.k):s.t==='evt'?sheetEvt():s.t==='chat'?sheetChat():s.t==='gd'?sheetGuild():s.t==='fr'?sheetFriend():s.t==='bw'?sheetBossW(s.r,s.j):s.t==='fxt'?sheetFxTest(s):s.t==='set'?sheetSet(s.k):/^mk/.test(s.t)?sheetMk(s):sheetDev()}</div></div>`}
+  const sc=document.querySelector('.sheet'),st=sc?sc.scrollTop:0,same=sc&&ui._lastSheet===JSON.stringify(s),keep=same||sc&&s&&s.t==='w'&&ui._lastSheetW===s.id;   // v4.91 同一把武器的小卡切換（武器⇄強化⇄附魔）不重播彈出動畫
+  if(s){const pop=s.t==='w'&&((s.m==='main'||s.m==='ench')&&!!W(s.id)||s.m==='enh'),full=!pop&&(s.t==='w'||s.t==='fxt');h+=`<div class="scrim ${pop?'wpopc':''} ${keep?'still':''}" data-act="scrim"><div class="ui-sheet sheet ${full?'full':''} ${pop?'wpop':''} ${s.t==='chat'?'cx-sheet':''} ${keep?'still':''}">${s.t==='w'?sheetWeapon(s.id,s.m):s.t==='v'?sheetVillage(s.i):s.t==='ch'&&ui.ch?sheetCh():s.t==='chr'&&ui.chr?sheetChr():s.t==='a'?sheetAch():s.t==='fk'?sheetFk(s.i):s.t==='lb'?sheetLb(s.i):s.t==='lbw'?sheetLbW(s.i,s.k):s.t==='ws'?sheetWorkshop(s.k):s.t==='evt'?sheetEvt():s.t==='chat'?sheetChat():s.t==='gd'?sheetGuild():s.t==='fr'?sheetFriend():s.t==='bw'?sheetBossW(s.r,s.j):s.t==='fxt'?sheetFxTest(s):s.t==='set'?sheetSet(s.k):/^mk/.test(s.t)?sheetMk(s):sheetDev()}</div></div>`}
   const r=ui.result;
   if(r&&r.t==='h')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card">${ptitle(r.title)}${r.ev?`<div class="small t-danger center">其中 ${r.ev} 輪受襲：沒有材料、金幣減半</div>`:''}<div class="hgrid">${harvestIcons(r.got)}</div>${btn('確定','rclose',{cls:'btn-primary big'})}</div></div>`;
   if(r&&r.t==='info')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card">${r.ico?`<div class="info-ico">${r.ico}</div>`:r.icon?`<div class="info-ico">${img(r.icon)}</div>`:''}${ptitle(r.title)}<div class="info-body">${r.html}</div>${r.acts||''}${btn(r.ok||'知道了','rclose',{cls:r.ok?'btn-sec big':'btn-primary big'})}</div></div>`;
   {const rk=r?JSON.stringify([r.t,r.title,r.html]):'';if(r&&rk===ui._lastRes)h=h.replace('<div class="ui-modal modal-card">','<div class="ui-modal modal-card still">');ui._lastRes=rk}   // v4.74 小卡內容沒變就不重播彈出動畫（每 250ms 的 render 會讓小卡像一直重新打開）
   const fa=document.activeElement,fid=fa&&fa.id&&L.contains(fa)?fa.id:null,cxl=document.getElementById('cxList'),cxs=cxl?cxl.scrollTop:null;   // v3.88 重畫時保留聊天輸入框焦點與訊息捲動位置
-  L.innerHTML=h;ui._lastSheet=JSON.stringify(s);{const n=fid&&document.getElementById(fid);if(n)n.focus({preventScroll:true});const c=document.getElementById('cxList');if(c)c.scrollTop=cxs==null?c.scrollHeight:cxs}document.documentElement.classList.toggle('scrimmed',!!s);
+  L.innerHTML=h;ui._lastSheet=JSON.stringify(s);ui._lastSheetW=s&&s.t==='w'?s.id:null;{const n=fid&&document.getElementById(fid);if(n)n.focus({preventScroll:true});const c=document.getElementById('cxList');if(c)c.scrollTop=cxs==null?c.scrollHeight:cxs}document.documentElement.classList.toggle('scrimmed',!!s);
   if(same){const n=document.querySelector('.sheet');if(n)n.scrollTop=st};fitNames()
 }
 function updateLive(){
