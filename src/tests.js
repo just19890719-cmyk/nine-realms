@@ -213,8 +213,8 @@ function saveTests(){
       `6000 次：${Object.keys(ELEM).map(k=>ELEM[k].n+' '+(cnt[k]||0)).join('、')}；等級 ${tc[1]}／${tc[2]}／${tc[3]}；第 2 格「${e2.err||'可用(錯)'}」；攻擊力 ${p0}→${power(x)}`));
     // v4.44 舊附魔載入時清空、弱點倍率
     {const w={id:1,b:'t1_woodaxe',q:0,lv:0,ench:[{k:'flame',v:10},{k:'giant',v:30},{k:'fire',v:2},null]},w2={id:2,b:'t1_woodaxe',q:0,lv:0,ench:[{k:'ice',v:3},null,null,null]},w3={id:3,b:'t1_woodaxe',q:0,lv:0,ench:[{k:'bolt',v:9},null,null,null]};elemCleanW(w);elemCleanW(w2);elemCleanW(w3);
-     const m9=weakMul(8,w2),m0=weakMul(0,w2),m19=weakMul(19,{ench:[{k:'toxic',v:1}]}),mn=weakMul(8,{ench:[null]});
-     res.push(T('E11 舊附魔清空、怪物弱點：火焰騎兵（1-9）×1.6 怕永凍之霜、索爾（2-10）×1.2 怕蝕毒、沒打中 ×1',!w.ench.some(Boolean)&&w2.ench[0].v===3&&!w3.ench[0]&&m9===1.6&&m0===1&&m19===1.2&&mn===1&&MON_EL.length===VILLAGES.length&&MON_EL.every(k=>ELEM[k]),`舊武器剩 ${w.ench.filter(Boolean).length} 個；1-9 ×${m9}、1-1 ×${m0}、2-10 ×${m19}`))}
+     const m9=weakMul(8,w2),m9f=weakMul(8,{ench:[{k:'fire',v:3}]}),m0=weakMul(0,w2),m19=weakMul(19,{ench:[{k:'toxic',v:1}]}),m19b=weakMul(19,{ench:[{k:'bolt',v:2}]}),m1d=weakMul(0,{ench:[{k:'dark',v:3}]}),mn=weakMul(8,{ench:[null]});
+     res.push(T('E11 舊附魔清空、v4.77 弱點與同屬性抗性：火焰騎兵（1-9）怕永凍之霜 ×1.3、滅世之焰抗性 ×0.7；索爾（2-10）怕蝕毒 ×1.1、雷鳴抗性 ×0.8；1-1 冰怪拿永凍之霜 ×0.7、拿暗屬性 ×1',!w.ench.some(Boolean)&&w2.ench[0].v===3&&!w3.ench[0]&&m9===1.3&&m9f===.7&&m0===.7&&m19===1.1&&m19b===.8&&m1d===1&&mn===1&&MON_EL.length===VILLAGES.length&&MON_EL.every(k=>ELEM[k]),`舊武器剩 ${w.ench.filter(Boolean).length} 個；1-9 冰×${m9} 火×${m9f}、1-1 冰×${m0} 暗×${m1d}、2-10 毒×${m19} 雷×${m19b}`))}
     // v4.43 祈願、旅行商人、殘渣兌換、舊道具與材料全部刪除
     const gone=['pullCore','slagTrade','buyMat','sellMat','buyItem'].filter(f=>typeof globalThis[f]==='function'||(()=>{try{return typeof eval(f)==='function'}catch(e){return false}})());
     res.push(T('E12 祈願、商人、殘渣兌換已刪除',!gone.length,gone.length?'還在：'+gone.join('、'):'都已拿掉'));
@@ -501,11 +501,11 @@ function hitTests(){const cats=[...new Set(BPS.map(b=>b.cat))],miss=cats.filter(
 // v4.44 屬性附魔：三組互剋、弱點讓狩獵變快、村莊卡片有弱點標籤、首領弱點也用屬性
 function enchTests(){let lv0=0;const mk=(e)=>({id:-1,b:'t3_greataxe',q:0,lv:lv0,traits:[],ench:[e||null,null,null,null]});while(lv0<15&&power(mk())<VILLAGES[8].req)lv0++;   // 攻擊力剛好過需求，弱點才看得出差別（狩獵時間最多縮到 60%）
   const pairOk=Object.entries(ELEM_OPP).every(([a,b])=>ELEM_OPP[b]===a)&&Object.keys(ELEM).length===6&&Object.entries(ELEM).every(([k,x])=>x.tn.length===3&&x.tn[2].length<=4&&x.n.length===3&&[...({fire:'焰火',ice:'霜冰',bolt:'雷',toxic:'毒',light:'聖光',dark:'影暗'}[k])].some(c=>x.tn[2].includes(c)));
-  const i=8,d0=gameDur(i,mk(),'normal'),d1=gameDur(i,mk({k:'ice',v:3}),'normal'),d2=gameDur(i,mk({k:'fire',v:3}),'normal');
+  const i=8,d0=gameDur(i,mk(),'normal'),d1=gameDur(i,mk({k:'ice',v:3}),'normal'),d2=gameDur(i,mk({k:'fire',v:3}),'normal'),d3=gameDur(i,mk({k:'bolt',v:3}),'normal');
   const S0=S;S=fresh();const w=makeWeapon('t1_woodaxe',0,0,[],[{k:'fire',v:2},null,null,null]);const st=S.villages[0];st.status='cleared';st.weaponId=w.id;st.cycleStart=NOW();ui.tab='village';ui.realm=0;const h=viewVillage(),sv=ui.sheet;S.villages[1].status='open';const hs=sheetVillage(1);ui.sheet=sv;S=S0;
-  const bOk=EVT_BOSS.every(b=>b.weak&&ELEM[b.weak.el])&&bossWeak(mk({k:'ice',v:3}),EVT_BOSS[2])===1.6&&!bossWeak(mk({k:'fire',v:3}),EVT_BOSS[2]);
-  const ok=pairOk&&d1<d0&&d2===d0&&!/vweak|限時挑戰/.test(h)&&/弱點/.test(hs)&&bOk&&typeof AFFIX==='undefined';
-  return[T('I 屬性附魔：6 種三組互剋、三級名稱 4 字內、打中弱點打得更快、弱點只在詳情顯示（卡片不顯示）、首領弱點用屬性、舊附魔表已刪',!!ok,`1-9 狩獵時間：無屬性 ${fmtT(d0)}、永凍之霜 ${fmtT(d1)}、滅世之焰 ${fmtT(d2)}；互剋 ${pairOk}；首領 ${bOk}`)]}
+  const bOk=EVT_BOSS.every(b=>b.weak&&ELEM[b.weak.el])&&bossWeak(mk({k:'ice',v:3}),EVT_BOSS[2])===1.3&&!bossWeak(mk({k:'fire',v:3}),EVT_BOSS[2])&&bossRes(mk({k:'fire',v:3}),EVT_BOSS[2])===.7&&!bossRes(mk({k:'ice',v:3}),EVT_BOSS[2]);
+  const ok=pairOk&&d1<d0&&d2>d0&&d3===d0&&!/vweak|限時挑戰/.test(h)&&/弱點/.test(hs)&&bOk&&typeof AFFIX==='undefined';
+  return[T('I 屬性附魔：6 種三組互剋、三級名稱 4 字內、打中弱點打得更快、同屬性打得更慢、弱點只在詳情顯示（卡片不顯示）、首領弱點用屬性、舊附魔表已刪',!!ok,`1-9 狩獵時間：無屬性 ${fmtT(d0)}、永凍之霜 ${fmtT(d1)}、滅世之焰 ${fmtT(d2)}、雷神之怒 ${fmtT(d3)}；互剋 ${pairOk}；首領 ${bOk}`)]}
 // v3.90 工坊升級依關卡進度解鎖：沒收復到就不能升、扣不到錢；已經升上去的等級保留
 function wsTests(){const S0=S;S=fresh();S.gold=1e6;const at=n=>S.villages.forEach((v,i)=>{if(i<n)v.status='cleared'});
   upgradeCore('anvil');upgradeCore('furnace');const a0=S.anvil===1&&S.furnace===1&&S.gold===1e6;
