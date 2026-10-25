@@ -1689,6 +1689,7 @@ html.scrimmed .cbar{display:none}
 .l0{color:var(--l0)}.l1{color:var(--l1)}.l2{color:var(--l2)}.l3{color:var(--l3)}.l4{color:var(--l4)}.l5{color:var(--l5);text-shadow:0 0 6px rgba(150,210,255,.55)}.l6{color:var(--l6)}
 .l0b{--qc:var(--l0)}.l1b{--qc:var(--l1)}.l2b{--qc:var(--l2)}.l3b{--qc:var(--l3)}.l4b{--qc:var(--l4)}.l5b{--qc:var(--l5)}.l6b{--qc:var(--l6)}
 .fpv .wt.l0b:not(#_){--f:url(art/ui/fp_gray_plain.webp)}.fpv .wt.l1b:not(#_){--f:var(--fN)}.fpv .wt.l2b:not(#_){--f:var(--fU)}.fpv .wt.l3b:not(#_){--f:var(--fR)}.fpv .wt.l4b:not(#_){--f:url(art/ui/fp_purple_plain.webp)}.fpv .wt.l5b:not(#_){--f:var(--fI)}.fpv .wt.l6b:not(#_){--f:var(--fG)}
+.wt:is(.l0b,.l1b,.l2b,.l3b,.l4b,.l5b,.l6b),.wt.posted{border-color:color-mix(in srgb,var(--line2) 75%,#000);box-shadow:none}   /* v4.89 Mochi：道具欄格子外框統一銅色（駐守中也一樣），強化等級只看裡面的武器框 */
 /* +9 以上：一道電流繞著框跑。外層放大 1.42 倍（轉 45° 也蓋得住四角）帶著亮的扇形遮罩轉圈，內層反轉讓框圖不動；只動 transform */
 .wart .wart-run{position:absolute;inset:-21%;z-index:3;pointer-events:none;mix-blend-mode:screen;-webkit-mask-image:conic-gradient(transparent 0 62%,rgba(0,0,0,.35) 82%,#000 96%,transparent 100%);mask-image:conic-gradient(transparent 0 62%,rgba(0,0,0,.35) 82%,#000 96%,transparent 100%);animation:frun 2.2s linear infinite;will-change:transform}
 .wart .wart-run img{position:absolute;filter:brightness(2.3) saturate(1.2);inset:14.79%;width:70.42%;height:70.42%;animation:frun 2.2s linear infinite reverse;will-change:transform}

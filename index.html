@@ -1705,6 +1705,7 @@ html.scrimmed .cbar{display:none}
 .l0{color:var(--l0)}.l1{color:var(--l1)}.l2{color:var(--l2)}.l3{color:var(--l3)}.l4{color:var(--l4)}.l5{color:var(--l5);text-shadow:0 0 6px rgba(150,210,255,.55)}.l6{color:var(--l6)}
 .l0b{--qc:var(--l0)}.l1b{--qc:var(--l1)}.l2b{--qc:var(--l2)}.l3b{--qc:var(--l3)}.l4b{--qc:var(--l4)}.l5b{--qc:var(--l5)}.l6b{--qc:var(--l6)}
 .fpv .wt.l0b:not(#_){--f:url(art/ui/fp_gray_plain.webp)}.fpv .wt.l1b:not(#_){--f:var(--fN)}.fpv .wt.l2b:not(#_){--f:var(--fU)}.fpv .wt.l3b:not(#_){--f:var(--fR)}.fpv .wt.l4b:not(#_){--f:url(art/ui/fp_purple_plain.webp)}.fpv .wt.l5b:not(#_){--f:var(--fI)}.fpv .wt.l6b:not(#_){--f:var(--fG)}
+.wt:is(.l0b,.l1b,.l2b,.l3b,.l4b,.l5b,.l6b),.wt.posted{border-color:color-mix(in srgb,var(--line2) 75%,#000);box-shadow:none}   /* v4.89 Mochi：道具欄格子外框統一銅色（駐守中也一樣），強化等級只看裡面的武器框 */
 /* +9 以上：一道電流繞著框跑。外層放大 1.42 倍（轉 45° 也蓋得住四角）帶著亮的扇形遮罩轉圈，內層反轉讓框圖不動；只動 transform */
 .wart .wart-run{position:absolute;inset:-21%;z-index:3;pointer-events:none;mix-blend-mode:screen;-webkit-mask-image:conic-gradient(transparent 0 62%,rgba(0,0,0,.35) 82%,#000 96%,transparent 100%);mask-image:conic-gradient(transparent 0 62%,rgba(0,0,0,.35) 82%,#000 96%,transparent 100%);animation:frun 2.2s linear infinite;will-change:transform}
 .wart .wart-run img{position:absolute;filter:brightness(2.3) saturate(1.2);inset:14.79%;width:70.42%;height:70.42%;animation:frun 2.2s linear infinite reverse;will-change:transform}
@@ -2509,7 +2510,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.88';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.89';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -3489,6 +3490,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.89',d:'10/25',t:'道具欄外框統一',b:['道具欄每一格的<b>外框統一成銅色</b>，不會再出現裡面藍框、外面綠框的情況；強化等級看裡面的武器框顏色'],g:['bag']},
  {v:'4.88',d:'10/25',t:'奧丁之咒顯示在武器名稱前面',b:['道具欄格子裡，中了奧丁之咒的武器名稱前面會顯示紅色「<b>奧丁之咒</b>」，跟屬性名稱一樣的位置'],g:['ench']},
  {v:'4.87',d:'10/25',t:'屬性底紋與小圖示・聖屬性金光・雷神新圖',b:['附魔表 18 格加上<b>屬性底紋</b>（火焰、冰霜、雷電、毒霧、聖光、暗影），一級淡、三級最明顯；「奧丁之咒」那一列也有紅色詛咒底紋','屬性名稱前面加上<b>屬性小圖示</b>：附魔表、武器名稱、村莊屬性和弱點都看得到','<b>聖屬性</b>改成白字配<b>金色光暈</b>和金框，不會再像一般白字；雷屬性還是亮黃字，兩個分得開','<b>索爾雷晶</b>和<b>索爾之錘</b>換成黃色雷電的新圖，跟雷屬性顏色一致'],g:['ench']},
  {v:'4.86',d:'10/25',t:'吞屍巨鷹換新圖',b:['2-3 <b>吞屍巨鷹赫拉斯瓦爾格</b>換上新的頭像、待機和攻擊圖：黑羽配金邊、金色眼睛和亮黃雷電，跟雷屬性的新顏色一致'],g:['hp']},
@@ -4824,6 +4826,7 @@ function viewShop(){
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'4.89',t:'道具欄格子外框統一銅色（強化等級只看內框）',b:[['flvtest','給各強化等級的武器（看道具欄外框）']]},
  {v:'4.88',t:'道具欄格子：奧丁之咒改顯示在武器名稱前面',b:[['brkstk','給 3 把同款 +6 劍，其中 1 把中咒（看道具欄）']]},
  {v:'4.87',t:'屬性底紋＋小圖示；聖屬性改白字＋金色光暈、金框；索爾雷晶、索爾之錘換黃雷新圖',b:[['thor87','給 1 把 +6 索爾之錘＋10 個索爾雷晶（看新圖）'],['res77','打開附魔表看聖屬性'],['elall','給 6 把不同屬性的武器（看名稱）']]},
  {v:'4.86',t:'2-3 吞屍巨鷹換黃雷新圖（頭像、待機、攻擊）',b:[['eagle86','打開 2-3 村莊詳情看巨鷹新圖'],['eagle86b','2-3 駐守一把 +6 劍，展開戰鬥畫面看待機和攻擊']]},
