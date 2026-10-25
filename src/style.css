@@ -2151,4 +2151,6 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 .wp-alt{display:grid;margin-top:8px}.wp-notes .wp-alt:first-child{margin-top:0}.wp-alt>.wp-note{grid-area:1/1;margin-top:0}.wp-alt>.off,.armnote.off{visibility:hidden}
 /* v5.08 320 寬交易所篩選列不撐破畫面：格子項目可以縮、幣別／排序那排放不下就換行 */
 .mk-filter>*{min-width:0}.mk-chips.row{flex-wrap:wrap;row-gap:6px}
+/* v5.08 武器小卡按鈕字不換行（375 寬「一鍵安定值」會斷成兩行），窄螢幕字稍微縮小 */
+.wp-a .btn{white-space:nowrap;font-size:clamp(12px,3.7vw,14px)}
 </style>

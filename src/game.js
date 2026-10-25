@@ -2273,7 +2273,7 @@ function sheetWeapon(id,mode){
       <div class="wp-pow"><b>${fmt(power(w))}</b><span>攻擊力（每秒傷害）</span></div></div></div>
      ${wpGrid(w)}
      <div class="wp-lv"><div class="wp-bar">${Array.from({length:13},(_,k)=>`<i class="${k<=w.lv?'on':''} ${k===w.lv?'cur':''}" style="--c:var(--l${FLV(k)})"></i>`).join('')}</div>
-      <div class="rw"><span>+0</span><span>${max?'已達 +12':`下一級 +${nx}：${pr?pr[0]+' <b>'+pct(procP(nx))+'</b>・':''}${rc?'相剋 <b>+'+raceBonus(w,nx)+'%</b>・':''}攻擊力 <b>${fmt(power(w,nx))}</b>`}</span><span>+12</span></div></div>
+      <div class="rw"><span>+0</span><span>${max?'已達 +12':`下一級 +${nx}：${pr?'<span class="nobr">'+pr[0]+' <b>'+pct(procP(nx))+'</b>・</span>':''}${rc?'<span class="nobr">相剋 <b>+'+raceBonus(w,nx)+'%</b>・</span>':''}<span class="nobr">攻擊力 <b>${fmt(power(w,nx))}</b></span>`}</span><span>+12</span></div></div>
      <div class="wp-a">${btn('強化','wmode',{cls:'btn-primary',attrs:`data-m="enh" data-id="${id}"`,dis:busy||isBroken(w)})}${btn(w.lv>=stable(w)?`已 +${stable(w)}`:'一鍵安定值','autoEnh',{cls:'btn-primary',attrs:`data-id="${id}"`,dis:busy||isBroken(w)||w.lv>=stable(w)||(!w.test&&stones()<enhCost(w))})}${btn(isBroken(w)?'解咒':'附魔','wmode',{cls:'btn-primary',attrs:`data-m="ench" data-id="${id}"`,dis:busy})}
       ${i>=0?btn('收回','recall',{attrs:`data-i="${i}"`}):bs>=0?btn('收回','bossout',{attrs:`data-s="${bs}"`}):btn('駐守'+(canGive(w)?'<i class="dot give-dot"></i>':''),'wmode',{attrs:`data-m="give" data-id="${id}"`,dis:isBroken(w)})}
       ${btn('上架','mksellw',{attrs:`data-id="${id}"`,dis:w.test||!mkSellable(w)})}${btn(ui.meltArm===id?'確認':'熔解','melt',{cls:'btn-danger',attrs:`data-id="${id}"`,dis:busy||w.lock})}</div>
