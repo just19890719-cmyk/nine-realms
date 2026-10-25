@@ -2076,6 +2076,7 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .b2-slot::before{content:"";position:absolute;inset:0;z-index:-1;background:url(art/ui/bag2/bag2_slot.webp) 0 0/100% 100%;filter:brightness(var(--b2br));pointer-events:none}
 .b2-slot.empty::before{background-image:url(art/ui/bag2/bag2_slot_empty.webp)}
 .b2-slot .rim{position:absolute;inset:0;background:var(--rim,none) 0 0/100% 100%;pointer-events:none}
+.b2-slot .rim.crk::after{content:'';position:absolute;inset:0;background:var(--crk) 0 0/100% 100%;opacity:0;animation:b2crk 3s ease-in-out infinite alternate}@keyframes b2crk{to{opacity:1}}   /* v5.01 +9 以上裂縫呼吸燈 */
 .b2-slot .w{position:absolute;object-fit:contain;max-width:none}   /* 位置照 WFIT 安全距離，寫在 style 上 */
 .b2-slot .ic{position:absolute;left:14%;top:12%;width:72%;height:72%;object-fit:contain}
 .b2-slot .ph-ico.ic{display:grid;place-items:center;font-size:10px;color:var(--b2-dim)}
@@ -2083,12 +2084,12 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .b2-slot .x{position:absolute;right:8%;bottom:8%;min-width:20px;padding:0 4px;border:1px solid transparent;border-image:url(art/ui/bag2/bag2_badge.webp) 0 32 fill / 0 6px stretch;font-size:11px;line-height:14px;font-weight:700;color:var(--b2-num);font-variant-numeric:tabular-nums}
 .b2-slot .lk{position:absolute;right:7%;top:7%;width:16px;height:16px;filter:brightness(2.3) contrast(1.15) drop-shadow(0 0 2px #000)}
 .b2-slot .nw{position:absolute;right:7%;top:7%;width:11px;height:11px;background:url(art/ui/bag2/bag2_new.webp) center/contain no-repeat}
-.b2-slot .post,.b2-slot .curse{position:absolute;left:15%;top:6%;height:15px;padding:0 9px 0 3px;line-height:15px;font-size:11px;font-weight:700;color:#cdeed3;white-space:nowrap;text-shadow:0 1px 1px #000;
+.b2-slot .post{position:absolute;left:15%;top:6%;height:15px;padding:0 9px 0 3px;line-height:15px;font-size:11px;font-weight:700;color:#cdeed3;white-space:nowrap;text-shadow:0 1px 1px #000;
   border:1px solid transparent;border-image:url(art/ui/bag2/bag2_tag_post.webp) 0 58 0 18 fill / 0 9px 0 3px stretch}
-.b2-slot .curse{color:#fff;border-image-source:url(art/ui/bag2/bag2_tag_curse.webp)}
 .b2-slot .glow{position:absolute;left:15%;top:3px;font-size:11px;font-weight:700;text-shadow:0 0 2px #000,0 0 3px #000}
-.b2-slot .w,.b2-slot .ic,.b2-slot .lv,.b2-slot .x,.b2-slot .lk,.b2-slot .nw,.b2-slot .post,.b2-slot .curse,.b2-slot .glow{z-index:2}
-.b2-slot.brk .w{filter:grayscale(.6) brightness(.7) sepia(.3) hue-rotate(-20deg)}
+.b2-slot .w,.b2-slot .ic,.b2-slot .lv,.b2-slot .x,.b2-slot .lk,.b2-slot .nw,.b2-slot .post,.b2-slot .glow{z-index:2}
+.b2-slot.brk .w{filter:grayscale(.75) brightness(.55)}
+.b2-slot .chain{position:absolute;inset:9%;z-index:2;background:url(art/ui/bag2/bag2_chain.webp) center/contain no-repeat;filter:drop-shadow(0 1px 2px #000);pointer-events:none}   /* v5.01 奧丁之咒鎖鏈 */
 .b2-slot.sel::after{content:"";position:absolute;inset:-6% -7%;background:url(art/ui/bag2/bag2_sel.webp) 0 0/100% 100%;pointer-events:none}
 .b2-slot:active:not(.empty){transform:translateY(1px)}
 .b2 .empty-state{margin:0}
