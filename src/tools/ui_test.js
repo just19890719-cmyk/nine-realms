@@ -85,7 +85,7 @@ const {chromium}=require('playwright');
   await p.click('[data-act=lock]');await p.click('[data-act=melt]');R(await p.evaluate(id=>!!W(id),wl),'熔解第一次只要求確認');await p.click('[data-act=melt]');R(await p.evaluate(id=>!W(id),wl),'第二次才真正熔解');
   await closeAll();
   // 容量
-  await p.evaluate(()=>{devdo('fill');devdo('t1');QUIET=true;while(S.weapons.length<200)makeWeapon('t1_woodaxe',0,0,[]);QUIET=false;save()});await closeAll();await p.evaluate(()=>{ui.tab='forge';ui.ftab='bp';ui.bp='t1_woodaxe';ui.qty=10;render()});
+  await p.evaluate(()=>{devdo('fill');devdo('t1');QUIET=true;while(S.weapons.length<200)makeWeapon('t1_woodaxe',0,0,[]);QUIET=false;save()});await closeAll();await p.evaluate(()=>{ui.tab='forge';ui.ftab='bp';ui.bp='t1_woodaxe';ui.qty=10;ui.sheet={t:'bp'};render()});
   const ftxt=await p.$eval('.sel-bp',b=>b.textContent+'|'+b.querySelector('[data-act=forge]').classList.contains('is-disabled'));R(/已滿/.test(ftxt)&&/true$/.test(ftxt),'武器庫容量上限擋下鍛造（'+ftxt+'）');
   // 商店 & 工坊入口
   await p.click('[data-act=tab][data-k=shop]');await ov('商店');R(!(await p.evaluate(()=>document.getElementById('view').textContent.includes('升級熔爐'))),'工坊升級已移出商店');

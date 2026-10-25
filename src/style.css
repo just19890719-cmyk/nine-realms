@@ -2088,4 +2088,26 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .b2-slot:active:not(.empty){transform:translateY(1px)}
 .b2 .empty-state{margin:0}
 @media (max-width:340px){.b2-cat{border-image-width:7px;font-size:10px}.b2-cat img{width:24px;height:24px}.b2{padding:14px 12px 12px}.b2-cap{padding-right:10px}.b2-head h2::before,.b2-head h2::after{width:40px}}
+/* v4.97 鍛造小卡（點圖紙後跳出；Mochi 選 C：上面圖紙＋資訊，費用橫條，數量旁的按鈕撐滿） */
+.sheet .sel-bp{display:flex;flex-direction:column;gap:10px;padding:4px 4px 2px}
+.sheet .sel-bp .label{margin:0}
+.sheet .sel-bp>.mats{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+.sheet .sel-bp .matbox{width:auto;align-items:center;justify-content:flex-start;gap:0 8px;padding:6px 10px 6px 6px;text-align:left;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto auto}
+.sheet .sel-bp .matbox>img,.sheet .sel-bp .matbox>.wart{grid-row:1/span 3;width:40px;height:40px}
+.sheet .sel-bp .qtyrow .forge-go:not(#_){flex:1 1 auto;margin-left:8px}
+/* v4.97 全遊戲統一底紋：整個畫面鋪同一張暗鐵底，面板改半透明讓底紋連成一片；彈出小卡仍用同材質不透明 */
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:#0a0806 url(art/ui/ui493_panel.webp) center top/cover no-repeat}
+.panel:not(#_){background:rgba(6,4,3,.42)}
+/* v4.97 Mochi：彈出小卡裡面不放任何框，改用「顏色深淺」分層：小卡＝暗鐵底，裡面的格子＝更深一層，按鈕＝實心底色（只留小卡外框和叉叉／說明圓鈕） */
+:is(.sheet,.modal-card) *:not(.icon-btn):not(.info-btn):not(.ui-iconbtn):not(#_):not(#_){border-image:none!important}
+:is(.sheet,.modal-card) :is([class*="ui-card"],.matbox,.wp-g>*,.powbox,.ev-st,.enh-stage,.enh-more,select,.wt,.cx-row,.cx-s,.lb-rw,.dq-row,.st-row,.gr-c,.mk-art,.dq-box,.dq-sum,.mon-dex,.cx-sum,.cx-card,.lore-gift,.sg-day,.ach-rw,.cbar-in,.panel):not(#_):not(#_){border-color:transparent!important;background:rgba(0,0,0,.42)!important;box-shadow:none!important}
+:is(.sheet,.modal-card) :is([class*="ui-card"],.matbox,.wp-g>*,.powbox,.panel) :is([class*="ui-card"],.matbox,.powbox,.wt):not(#_):not(#_){background:rgba(255,235,200,.05)!important}
+:is(.sheet,.modal-card) :is([class*="ui-btn"],.ui-tab,.cx-tab,.lb-tab,.mon-dex button):not(#_):not(#_){border-color:transparent!important;box-shadow:inset 0 1px 0 rgba(255,220,160,.10),0 1px 3px rgba(0,0,0,.5)!important}
+:is(.sheet,.modal-card) :is(.ui-btn--primary,.ui-btn--accent):not(#_):not(#_){background:linear-gradient(180deg,#7a5230 0%,#553519 50%,#3a2412 100%)!important;color:var(--gold-hi);box-shadow:inset 0 1px 0 rgba(255,214,140,.35),0 2px 8px rgba(0,0,0,.5)!important}
+:is(.sheet,.modal-card) :is(.ui-btn--secondary,.ui-btn--chip,.ui-btn--toggle,.ui-tab,.cx-tab,.lb-tab,.mon-dex button):not(#_):not(#_){background:#2a221b!important}
+:is(.sheet,.modal-card) :is(.ui-btn--chip,.ui-btn--toggle,.ui-tab,.wt,.cx-tab,.lb-tab,.sg-day,.mon-dex button):is(.on,.today):not(#_):not(#_){background:#5a4022!important;color:var(--gold-hi)}
+:is(.sheet,.modal-card) .ui-btn--danger:not(#_):not(#_){background:linear-gradient(#6a1f19,#3c0f0c)!important}
+:is(.sheet,.modal-card) :is([class*="ui-btn"]):is(:disabled,.is-disabled):not(#_):not(#_){background:#1c1815!important;color:#7a6e5f}
+:is(.sheet,.modal-card) .dq-row.done:not(#_):not(#_){background:rgba(232,184,92,.12)!important}
+:is(.sheet,.modal-card) :is(.ev-st.risk,.enh-stage.danger,.ev-warn.risk):not(#_):not(#_){background:rgba(150,30,22,.28)!important}
 </style>
