@@ -1312,7 +1312,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
- {v:'4.83',d:'10/25',t:'奧丁之咒與矮人解咒石',b:['附魔有 <b>5%</b> 會中<b>奧丁之咒</b>（跟全部三級加起來一樣），原本的屬性消失','中咒的武器<b>完全不能使用</b>：不能駐守、挑戰、強化、上架、登錄圖鑑','新道具<b>矮人解咒石</b>：破除奧丁之咒（變回無屬性，要再附魔）；打倒怪物有機率掉，商城也能用金幣或鑽石買','商城新增<b>道具</b>區：強化石、附魔石、矮人解咒石','附魔小卡右上角多了一本<b>故事書</b>：矮人兄弟為什麼要偷奧丁的附魔石'],g:['ench','shop']},
+ {v:'4.83',d:'10/25',t:'奧丁之咒與矮人解咒石',b:['附魔有 <b>5%</b> 會中<b>奧丁之咒</b>（跟全部三級加起來一樣），原本的屬性消失','中咒的武器<b>完全不能使用</b>：不能駐守、挑戰、強化、上架、登錄圖鑑','新道具<b>矮人解咒石</b>：破除奧丁之咒（變回無屬性，要再附魔）；打倒怪物有機率掉，商城也能用金幣或鑽石買','商城新增<b>道具</b>區：強化石、附魔石、矮人解咒石','附魔小卡右上角多了一本<b>故事書</b>：矮人兄弟為什麼要偷奧丁的附魔石；<b>第一次翻開送 10 顆附魔石和 2 顆矮人解咒石</b>'],g:['ench','shop']},
  {v:'4.82',d:'10/25',t:'附魔防誤點加強',b:['武器已經是<b>三級屬性</b>時再按附魔，會在畫面中間跳出<b>確認小卡</b>，按「確定重抽」才會重抽；點外面或「取消」就不抽'],g:['ench']},
  {v:'4.81',d:'10/25',t:'附魔防誤點',b:['武器已經是<b>三級屬性</b>時再按附魔，按鈕會先變成紅色的「<b>確定重抽</b>」，再按一次才會重抽，避免一直按不小心蓋掉','附魔後不再跳「附魔結果」提示，結果直接顯示在武器名稱','附魔小卡的武器名稱往下移一些，不會貼著標題'],g:['ench']},
  {v:'4.80',d:'10/25',t:'屬性加成調整',b:['打中怪物弱點改為 <b>+3%／+6%／+10%</b>（看附魔等級）','同屬性抗性改為 <b>−3%／−6%／−10%</b>','三對互剋、每一關的弱點都不變'],g:['ench']},
@@ -1500,14 +1500,17 @@ function enhance(id){
   playFx(r.danger,r.before,r.next,res)}
 function enchant(id,slot){const r=enchantCore(id,slot);if(r.err)return toast(r.err,'bad');if(r.k==='broken'){snd('enh_break');ui.result={t:'info',title:'奧丁之咒！',html:'<div class="center">符文之主奧丁不許凡人動祂的符文，降下了詛咒。<br>這把武器<b class="t-danger">完全不能使用</b>，<br>要用<b>矮人解咒石</b>破除，解咒後變回無屬性。</div>',ok:'知道了'};return render()}snd(r.v>=3?'enh_ok':'enchant');render()}
 // v4.83 故事書（Mochi：附魔系統旁邊放一本書，裡面一張圖＋故事，讓遊戲有劇情）。圖 art/ic_lore、art/story_ench 還沒到時先放待生圖框
-const LORE_ART={ic_lore:false,story_ench:false};
+const LORE_ART={ic_lore:true,story_ench:true};   // v4.83 Mochi AI 生圖已到
 const loreArt=(n,cls)=>LORE_ART[n]?img(n,cls):`<span class="ph-ico ${cls}">待生圖</span>`;
-const loreBtn=k=>`<button class="ui-iconbtn icon-btn img lore-btn" data-act="lore" data-k="${k}" aria-label="故事">${loreArt('ic_lore','lore-ic')}</button>`;
+const loreNew=k=>!(S.loreSeen||{})[k];   // v4.83 Mochi：第一次翻開送 10 顆附魔石＋2 顆矮人解咒石，只能領一次（存檔 S.loreSeen）
+const loreBtn=k=>`<button class="ui-iconbtn icon-btn img lore-btn" data-act="lore" data-k="${k}" aria-label="故事">${loreArt('ic_lore','lore-ic')}${loreNew(k)?'<i class="dot give-dot"></i>':''}</button>`;
 const LORE={ench:{t:'矮人盜石',art:'story_ench',p:['奧丁為了諸神黃昏，命令九界交出所有武器。不肯交的村莊，一夜之間化成焦土。',
   '住在地底的矮人兄弟<b>布洛克與艾特里</b>，替諸神鍛過雷神之錘，最清楚諸神的手段。他們看不慣奧丁濫殺平民，趁祂離開王座、到密米爾之泉喝水的時候，從寶庫偷走一袋刻著盧恩的<b>附魔石</b>，連夜送到人類最後的鐵匠手上。',
   '奧丁是符文之主，偷來的符文逃不過祂的眼睛。祂在每一顆附魔石上都留下詛咒：每次附魔，都有機會被<b class="t-danger">奧丁之咒</b>反噬，武器從此不能使用。',
   '矮人兄弟只好在地底日夜鍛造<b>矮人解咒石</b>，偷偷送到鐵匠鋪。「這些石頭是我們拿命換來的，鐵匠，讓凡人也有對抗諸神的力量吧。」']}};
-function loreOpen(k){const L=LORE[k];if(!L)return;snd('ui_open');ui.result={t:'info',k:'lore',title:L.t,html:`<div class="lore-art">${loreArt(L.art,'lore-img')}</div><div class="lore-txt">${L.p.map(x=>`<p>${x}</p>`).join('')}</div>`,ok:'闔上書本'};render()}
+function loreOpen(k){const L=LORE[k];if(!L)return;let gift='';
+  if(loreNew(k)){S.loreSeen=S.loreSeen||{};S.loreSeen[k]=1;S.items[ENSTONE]=enStones()+10;S.items[REPAIR]=(S.items[REPAIR]|0)+2;save();snd('coin');gift=`<div class="lore-gift">${itemIco(ENSTONE)}${itemIco(REPAIR)}<span>矮人兄弟在書裡夾了 <b>10 顆附魔石</b>和 <b>2 顆矮人解咒石</b>送你（只有第一次翻開會有）</span></div>`}else snd('ui_open');
+  ui.result={t:'info',k:'lore',title:L.t,html:`<div class="lore-art">${loreArt(L.art,'lore-img')}</div>${gift}<div class="lore-txt">${L.p.map(x=>`<p>${x}</p>`).join('')}</div>`,ok:'闔上書本'};render()}
 function repair(id){const r=repairCore(id);if(r.err)return toast(r.err,'bad');snd('upgrade');toast('詛咒破除了，武器變回無屬性，可以再附魔。','ok');render()}   // v4.81 Mochi：不跳「附魔結果」提示，結果直接看武器名稱
 const furnaceMax=()=>rfOpen()?6:5;   // v3.76 熔爐 Lv6（巨人武器）在第二界開放後才能升
 const wsGate=k=>{const n=WS_GATE[k][S[k]+1]||0;return cleared()<n?'收復 '+vNo(n-1)+' 後開放':''};
@@ -2639,7 +2642,7 @@ function viewShop(){
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
- {v:'4.83',t:'附魔 5% 奧丁之咒＋矮人解咒石、商城賣強化石／附魔石、附魔故事書',b:[['lore83','打開附魔故事書「矮人盜石」'],['brk83','給 1 把中咒測試劍＋3 顆解咒石，打開武器小卡'],['brk83f','下一次附魔一定中奧丁之咒（給三級火屬性劍＋附魔石）'],['brk83s','打開商城看矮人解咒石']]},
+ {v:'4.83',t:'附魔 5% 奧丁之咒＋矮人解咒石、商城賣強化石／附魔石、附魔故事書',b:[['lore83','打開附魔故事書「矮人盜石」（第一次送 10 附魔石＋2 解咒石）'],['lore83r','重置故事書已讀（可以再領一次測試）'],['brk83','給 1 把中咒測試劍＋3 顆解咒石，打開武器小卡'],['brk83f','下一次附魔一定中奧丁之咒（給三級火屬性劍＋附魔石）'],['brk83s','打開商城看矮人解咒石']]},
  {v:'4.82',t:'三級屬性重抽跳置中確認小卡',b:[['ench81','給 1 把三級火屬性測試劍＋附魔石，打開附魔（按附魔會跳確認小卡）']]},
  {v:'4.80',t:'屬性加成 +3／6／10%、同屬性 −3／6／10%',b:[['res77','給 1-9 用的三級冰／火屬性武器（應 ×1.1／×0.9）、打開附魔表'],['res77i','開火屬性說明小卡（+3%～10%）']]},
  {v:'4.79',t:'型態相剋加成遞增（+12 為 21%）',b:[['race79','列出 +0～+12 相剋加成，並打開 +9 測試劍小卡（相剋應為 12%、下一級 15%）']]},
@@ -2868,6 +2871,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='affopen'){const c={},t=[0,0,0,0];for(let i=0;i<6000;i++){const x=Object.keys(ELEM)[rnd(0,5)],v=weighted([1,2,3],y=>ELEM_TW[y]);c[x]=(c[x]||0)+1;t[v]++}   // v4.44 屬性附魔
     return toast(`附魔 6000 次：${Object.entries(c).map(([x,n])=>ELEM[x].n+' '+n).join('、')}<br>等級：一級 ${t[1]}、二級 ${t[2]}、三級 ${t[3]}（應約 4200／1500／300）`,'ok')}
   if(k==='res77'){const wi=makeWeapon('dev_sword',2,6,[],[{k:'ice',v:3},null,null,null]),wf=makeWeapon('dev_sword',2,6,[],[{k:'fire',v:3},null,null,null]);save();ui.sheet={t:'w',id:wf.id,m:'ench'};render();return toast(`1-9 火焰騎兵：永凍之霜 ×${weakMul(8,wi)}（應 1.1）、滅世之焰 ×${weakMul(8,wf)}（應 0.9）`)}
+  if(k==='lore83r'){S.loreSeen={};save();render();return toast('故事書已讀已重置','ok')}
   if(k==='lore83'){const w=makeWeapon('dev_sword',2,6,[]);save();ui.sheet={t:'w',id:w.id,m:'ench'};loreOpen('ench');return}
   if(k==='brk83'){const w=makeWeapon('dev_sword',2,6,[],[{k:'broken',v:1},null,null,null]);S.items[REPAIR]=(S.items[REPAIR]|0)+3;save();ui.sheet={t:'w',id:w.id,m:'main'};render();return}
   if(k==='brk83f'){const w=makeWeapon('dev_sword',2,6,[],[{k:'fire',v:3},null,null,null]);S.items[ENSTONE]=(S.items[ENSTONE]|0)+5;S.gold+=5000;DEV.elForce=['broken',0];save();ui.sheet={t:'w',id:w.id,m:'ench'};render();return toast('下一次附魔一定中奧丁之咒')}
