@@ -1757,6 +1757,16 @@ html.scrimmed .cbar{display:none}
 /* v4.44 屬性一律文字標示（不用圖示）：每種屬性一個顏色 */
 .elc-fire{--ec:#ff8a4c}.elc-ice{--ec:#8fe3ff}.elc-bolt{--ec:#ffe23a}.elc-toxic{--ec:#8ed865}.elc-light{--ec:#fff1cf}.elc-dark{--ec:#a99bc9}   /* v4.84 Mochi：雷改亮黃、聖改白金（原本雷紫、聖黃） */
 [class*="elc-"]{color:var(--ec)}
+.elc-light.elc-light,.kvgrid .elc-light.elc-light{--ec:#f0c560;color:#fff8e4;text-shadow:0 0 6px rgba(255,200,90,.85),0 0 12px rgba(255,190,70,.4)}   /* v4.87 Mochi：聖屬性太像白色 → 白字＋金色光暈、金框（雷屬性是黃字） */
+.ec-c18.elc-light span{text-shadow:none}
+/* v4.87 Mochi 選 C：屬性底紋（附魔表格子，一級淡、三級最明顯）＋屬性小圖示（屬性名稱前面），圖都是 AI 生圖 */
+.elc-fire,.wn-el.e-fire{--ebg:url(art/elbg_fire.webp);--eic:url(art/elic_fire.webp)}.elc-ice,.wn-el.e-ice{--ebg:url(art/elbg_ice.webp);--eic:url(art/elic_ice.webp)}.elc-bolt,.wn-el.e-bolt{--ebg:url(art/elbg_bolt.webp);--eic:url(art/elic_bolt.webp)}.elc-toxic,.wn-el.e-toxic{--ebg:url(art/elbg_toxic.webp);--eic:url(art/elic_toxic.webp)}.elc-light,.wn-el.e-light{--ebg:url(art/elbg_light.webp);--eic:url(art/elic_light.webp)}.elc-dark,.wn-el.e-dark{--ebg:url(art/elbg_dark.webp);--eic:url(art/elic_dark.webp)}
+.ec-c18{position:relative;overflow:hidden;isolation:isolate}.ec-c18::before{content:'';position:absolute;inset:0;z-index:-1;background:var(--ebg) center bottom/cover no-repeat;opacity:.35;pointer-events:none}
+.ec-c18.t2::before{opacity:.6}.ec-c18.t3::before{opacity:.9}.ec-c18 b,.ec-c18 span{text-shadow:0 1px 3px #000,0 0 6px rgba(0,0,0,.9)}
+.ec-c18.elc-light b{text-shadow:0 1px 3px #000,0 0 6px rgba(0,0,0,.9),0 0 8px rgba(255,200,90,.7)}
+[class^="elc-"]::before,.ec-en::before,.wn-el::before{content:'';display:inline-block;width:1.05em;height:1.05em;margin-right:.12em;vertical-align:-.16em;background:var(--eic) center/contain no-repeat}
+.ec-en.ec-en{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;white-space:nowrap}.ec-en::before{width:22px;height:22px;margin:0}   /* 附魔表左邊屬性名：小圖示放上面，避免換行 */
+.wn-el::before,.wpop .el>b::before{display:none}   /* Mochi：武器名稱、武器小卡不放屬性小圖示（看起來很亂） */   /* 道具欄格子名稱太窄，不放小圖示 */
 .vweak.hit [class*="elc-"]{color:#cdf0c4}
 .el-box{flex:none;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:8px;border:1px solid var(--ec);background:rgba(0,0,0,.4);box-shadow:inset 0 0 8px color-mix(in srgb,var(--ec) 35%,transparent);font-size:14px;font-weight:700;letter-spacing:1px;line-height:1}
 .el-box.el-big{width:84px;height:84px;font-size:28px;border-radius:14px;margin:0 auto}
@@ -1780,10 +1790,11 @@ html.scrimmed .cbar{display:none}
 .wn-el.t2{text-shadow:0 0 6px rgba(var(--ec),.85),0 0 12px rgba(var(--ec),.5)}
 .wn-el.t3{text-shadow:0 0 4px rgba(var(--ec),1),0 0 10px rgba(var(--ec),.9),0 0 20px rgba(var(--ec),.6)}
 .wn-el.e-fire{--ec:255,120,40;color:#ffe2c8}.wn-el.e-ice{--ec:120,200,255;color:#e2f4ff}.wn-el.e-bolt{--ec:255,220,40;color:#fff7c2}
-.wn-el.e-toxic{--ec:110,230,90;color:#e2ffd8}.wn-el.e-light{--ec:255,240,200;color:#ffffff}.wn-el.e-dark{--ec:169,155,201;color:#ebe6f5}
+.wn-el.e-toxic{--ec:110,230,90;color:#e2ffd8}.wn-el.e-light{--ec:255,195,80;color:#fff8e4}.wn-el.e-dark{--ec:169,155,201;color:#ebe6f5}
 .wn-brk,.wn-brk.wn-brk{color:#ff5a4a;font-weight:700}   /* v4.83 奧丁之咒 */
 .ec-brk{display:flex;align-items:center;gap:8px;margin:6px 0 0;padding:7px 10px;border:1px solid rgba(255,90,74,.45);border-radius:8px;background:rgba(255,90,74,.08);font-size:13px}
 .ec-brk span:nth-child(2){flex:1;color:var(--muted,#b9ad9a)}.ec-brk b{color:#ff8a7a}
+.ec-brk{position:relative;overflow:hidden;isolation:isolate}.ec-brk::before{content:'';position:absolute;inset:0;z-index:-1;background:url(art/elbg_curse.webp) center bottom/cover no-repeat;opacity:.85;pointer-events:none}.ec-brk span,.ec-brk b{text-shadow:0 1px 3px #000,0 0 6px rgba(0,0,0,.9)}   /* v4.87 奧丁之咒底紋（AI 生圖） */
 .sh-2{display:flex;align-items:center;gap:4px}   /* v4.83 附魔小卡標題：左右各兩格，標題維持置中 */
 .lore-btn .lore-ic{width:40px;height:40px}.lore-btn .ph-ico.lore-ic{font-size:9px}
 .lore-art{margin:0 auto 10px;max-width:360px}.lore-art img,.lore-art .lore-img{display:block;width:100%;aspect-ratio:3/2;height:auto;border-radius:8px}.lore-art .ph-ico.lore-img{display:flex;font-size:14px}
