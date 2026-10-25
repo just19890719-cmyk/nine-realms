@@ -3459,7 +3459,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
- {v:'4.81',d:'10/25',t:'附魔防誤點',b:['武器已經是<b>三級屬性</b>時再按附魔，按鈕會先變成紅色的「<b>確定重抽</b>」，再按一次才會重抽，避免一直按不小心蓋掉'],g:['ench']},
+ {v:'4.81',d:'10/25',t:'附魔防誤點',b:['武器已經是<b>三級屬性</b>時再按附魔，按鈕會先變成紅色的「<b>確定重抽</b>」，再按一次才會重抽，避免一直按不小心蓋掉','附魔後不再跳「附魔結果」提示，結果直接顯示在武器名稱','附魔小卡的武器名稱往下移一些，不會貼著標題'],g:['ench']},
  {v:'4.80',d:'10/25',t:'屬性加成調整',b:['打中怪物弱點改為 <b>+3%／+6%／+10%</b>（看附魔等級）','同屬性抗性改為 <b>−3%／−6%／−10%</b>','三對互剋、每一關的弱點都不變'],g:['ench']},
  {v:'4.79',d:'10/25',t:'型態相剋加成遞增',b:['武器剋怪物型態的加成改成<b>遞增</b>：+1～+6 每級 +1%、+7～+9 每級 +2%、+10～+12 每級 +3%','+6 為 6%（不變）、+9 為 12%、+12 為 <b>21%</b>（原本 12%），越敢衝強化回報越大'],g:['wpn']},
  {v:'4.78',d:'10/25',t:'飛行改成亡靈',b:['怪物型態的「飛行」改成<b>亡靈</b>：人形、野獸、巨型、亡靈','<b>錘剋亡靈</b>（雷神之錘聖化亡者），<b>弓改剋巨型</b>（跟弩一起）；劍、雙刀剋人形，長柄、斧剋野獸不變','亡靈關卡：1-2 不死野豬、1-5 戰場鴉魔、2-4 巨人屍鬼；2-3 吞屍巨鷹是巨人化身，改成巨型；1-6 克拉肯是海中巨獸，改成野獸','前 20 關：人形 4、野獸 5、巨型 8、亡靈 3'],g:['wpn']},
@@ -3643,7 +3643,7 @@ function enhance(id){
   res.id=id;res.guarded=!!r.usedScroll;
   if(!r.danger){ui.busy=false;ui.lockUntil=Date.now()+150;ui.enhLast={id,k:res.k,t:res.t,d:res.d,test:false};snd(ENH_SND[res.k],1,.7);renderLayer();return greenFlash()}   // v4.58 +1～+6 不播動畫，直接出結果（Mochi）
   playFx(r.danger,r.before,r.next,res)}
-function enchant(id,slot){const r=enchantCore(id,slot);if(r.err)return toast(r.err,'bad');snd(r.v>=3?'enh_ok':'enchant');toast(`附魔結果：<b>${ELEM[r.k].tn[r.v-1]}</b>（${ELEM[r.k].n} ${['','一','二','三'][r.v]}級）${r.v>=3?'<br>最高等級！':''}`,r.v>=3?'good':'ok');render()}
+function enchant(id,slot){const r=enchantCore(id,slot);if(r.err)return toast(r.err,'bad');snd(r.v>=3?'enh_ok':'enchant');render()}   // v4.81 Mochi：不跳「附魔結果」提示，結果直接看武器名稱
 const furnaceMax=()=>rfOpen()?6:5;   // v3.76 熔爐 Lv6（巨人武器）在第二界開放後才能升
 const wsGate=k=>{const n=WS_GATE[k][S[k]+1]||0;return cleared()<n?'收復 '+vNo(n-1)+' 後開放':''};
 function upgradeCore(kind){const lv=S[kind],tbl=kind==='furnace'?FURNACE_COST:ANVIL_COST;if(lv>=(kind==='furnace'?furnaceMax():5))return'已滿級';const g=wsGate(kind);if(g)return(kind==='furnace'?'熔爐':'鐵砧')+' Lv'+(lv+1)+'：'+g;const c=tbl[lv];if(S.gold<c)return'金幣不夠。';
