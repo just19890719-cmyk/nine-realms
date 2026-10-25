@@ -1909,4 +1909,22 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .matbox .wart.mb-w{width:40px;height:40px}
 .mats.vx-mats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.vx-mats .matbox{width:auto;min-width:0;justify-content:flex-start}.vx-mats .matbox .mb-n{word-break:keep-all}
 .bs-d .wart.bs-w{width:26px;height:26px}
+/* v4.71 挑戰評級 SS/S/A/B/C */
+.gr{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:22px;padding:0 5px;border-radius:5px;font-weight:900;font-size:13px;line-height:1;letter-spacing:.02em;color:#1a1208;font-family:inherit;flex:none;box-shadow:inset 0 0 0 1px rgba(0,0,0,.35)}
+.gr.sm{min-width:22px;height:18px;font-size:11px;padding:0 4px;margin:0 6px 0 4px;vertical-align:middle}
+.gr.big{min-width:58px;height:58px;font-size:30px;border-radius:10px}
+.gr-SS{background:linear-gradient(135deg,#ffe58a,#ff8a3d 55%,#e8384f);color:#2a0905;text-shadow:0 1px 0 rgba(255,255,255,.35)}
+.gr-S{background:linear-gradient(180deg,#ffe27a,#d9a52b);}
+.gr-A{background:linear-gradient(180deg,#9cc8ff,#4f86d9);color:#071a33}
+.gr-B{background:linear-gradient(180deg,#9fe2a6,#4da35a);color:#08240c}
+.gr-C{background:linear-gradient(180deg,#c9c3b8,#8a8378);color:#1c1914}
+.gr-tab{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:6px 0 8px}
+.gr-c{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 2px;border-radius:8px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.06);text-align:center}
+.gr-c .small{font-size:11px;white-space:nowrap}
+.gr-c.on{border-color:var(--gold-hi);background:rgba(255,200,80,.12)}
+.ui-panel.gr-res{display:flex;flex-direction:row;align-items:center;gap:14px;text-align:left}
+.ui-panel.vw-pick .tilebox{width:auto}   /* v4.71 駐守小卡：武器格比 96px 寬，文字被蓋住 */
+.ch-g{margin-right:10px;display:inline-flex;align-items:center;white-space:nowrap}
+.ch-g .gr{margin-left:4px}
+.gr-go{width:100%;margin-top:8px}
 </style>

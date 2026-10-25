@@ -545,8 +545,8 @@ const TEST_BPS=[
  ['t4_hammer','熔岩巨錘','hammer',4,17],['t4_polearm','狂風巨戟','polearm',4,14],['t4_dagger','霜晶獠刃','dagger',4,11],['t4_shield','巨骨塔盾','shield',4,12]
 ].map(([id,n,cat,t,base,unlock,r])=>({id,n,cat,t,base,unlock:unlock??TIERS[t].unlock,r:r||undefined,test:true}))   // v4.45 天生詞條不讀
  .filter(b=>!['t1_handaxe','t1_shortspear','t2_daneaxe','t2_broadsword','t2_warspear','t2_seax','t3_doubleaxe','t3_saber','t3_spear','t3_scythe','t1_pickaxe','t1_sling','t2_throwaxe','t1_roundshield','t2_kiteshield','t3_shield','t4_shield'].includes(b.id));
-function withTestBps(f){const keep=BPS.slice(),add=TEST_BPS.filter(b=>!BP[b.id]),rq=VILLAGES.map(v=>v.req);BPS.length=0;BPS.push(...add,...keep.filter(b=>b.dev));add.forEach(b=>BP[b.id]=b);VILLAGES.forEach(v=>v.req=v.req0??v.req);   // v4.51 舊圖紙配舊需求
-  try{return f()}finally{BPS.length=0;BPS.push(...keep);VILLAGES.forEach((v,i)=>v.req=rq[i]);add.forEach(b=>delete BP[b.id]);S.weapons=S.weapons.filter(w=>BP[w.b]);S.jobs=S.jobs.filter(j=>BP[j.b])}}   // 測試留下的舊圖紙武器一起清掉
+function withTestBps(f){const keep=BPS.slice(),add=TEST_BPS.filter(b=>!BP[b.id]),rq=VILLAGES.map(v=>v.req);BPS.length=0;BPS.push(...add,...keep.filter(b=>b.dev));add.forEach(b=>BP[b.id]=b);VILLAGES.forEach(v=>v.req=v.req0??v.req);VHP_OLD=true;   // v4.51 舊圖紙配舊需求（v4.71 血量也用舊公式）
+  try{return f()}finally{VHP_OLD=false;BPS.length=0;BPS.push(...keep);VILLAGES.forEach((v,i)=>v.req=rq[i]);add.forEach(b=>delete BP[b.id]);S.weapons=S.weapons.filter(w=>BP[w.b]);S.jobs=S.jobs.filter(j=>BP[j.b])}}   // 測試留下的舊圖紙武器一起清掉
 function runTests0(mode,bd){
   if(mode==='econ')return econHtml(12)+econHtml(8);
   const r=runAll({N:100000});r.res.push(...bd,...frameLvTests(),...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...storyTests(),...curveTests(),...vNeedTests(),...vPickTests(),...bsTglTests(),...godWordTests(),...hitTests(),...enchTests(),...wsTests(),...wpnTests(),...stackTests());const pass=r.res.filter(x=>x.pass).length;
@@ -602,17 +602,23 @@ function stackTests(){return withSandbox(()=>{const S0=S;S=fresh();const b=(BPS.
    T('ST3 一鍵安定值後小卡換到下一把同款 +0，按鈕叫「一鍵安定值」',fol&&/一鍵安定值/.test(sh),fol?'有換':'沒換')]})}
 function chTests(){return withSandbox(chTests0)}
 function chTests0(){const mk=(id,lv)=>({id:-1,b:id,q:0,lv,ench:[null,null,null,null],traits:[]}),w0=mk('w0_sword',0);
-  const hpOk=VHP(0)===Math.round(VILLAGES[0].req*48)&&VHP(9)===VILLAGES[9].req*60&&VHP(18)===VILLAGES[18].req*60;
-  const sec=vSec(0,w0),durOk=Math.abs(sec-48)<.01&&Math.abs(gameDur(0,w0,'normal')-sec*1000*STRATS.normal.time)<1;
-  let win=0,lose=0;for(let n=0;n<100;n++){if(chPlan(0,w0).win!=null)win++;if(chPlan(9,w0).win!=null)lose++}
-  const p=chPlan(0,w0),tOk=p.win!=null&&p.win<=CH_SEC*1000&&p.ev.every((e,k)=>!k||e[0]>=p.ev[k-1][0])&&p.ev.reduce((a,e)=>a+e[1],0)>=p.hp;
+  const P6=b=>b*enhMult(6)*procE(6),hpOk=VHP(0)===Math.round(P6(12)*HP_SEC)&&VHP(1)===VHP(0)&&VHP(2)===Math.round(P6(15)*HP_SEC)&&VHP(9)===Math.round(P6(15)*HP_SEC*Math.pow(1.025,7))&&VHP(19)===Math.round(P6(15)*HP_SEC*Math.pow(1.025,17));
+  const w6=mk('w0_sword',6),sec=vSec(0,w6),durOk=Math.abs(sec-HP_SEC)<3&&Math.abs(gameDur(0,w6,'normal')-sec*1000*STRATS.normal.time)<1;
+  let win=0,lose=0,gA=0;for(let n=0;n<100;n++){const q=chPlan(0,w6);if(q.win!=null){win++;if(grOf(q.win/1000)<=2)gA++}if(chPlan(9,w0).win!=null)lose++}
+  const p=chPlan(0,w6),tOk=p.win!=null&&p.win<=CH_SEC*1000&&p.ev.every((e,k)=>!k||e[0]>=p.ev[k-1][0])&&p.ev.reduce((a,e)=>a+e[1],0)>=p.hp;
   const S0=S;S=fresh();S.villages[0].status='open';const g0=S.gold,r1=chWinCore(0),g1=S.gold,r2=chWinCore(0),g2=S.gold,once=r1.first&&!r2.first&&g1-g0===(FIRST_GOLD[0]||0)&&g2===g1&&S.villages[0].status==='cleared'&&S.villages[1].status==='open';
   S.villages[1].status='open';ui.tab='village';ui.realm=0;const h=viewVillage();S=S0;
   const cardOk=!/vweak|限時挑戰/.test(h)&&/data-act="vopen"/.test(h);
   const se=stoneE(0)===.002&&Math.abs(stoneE(89)-.002*1.89)<1e-12;
-  return[T('CH1 怪物血量＝需求 × 60 秒 × 0.8（第 9、10 關 ×1.0）',hpOk,`1-1 ${VHP(0)}、1-10 ${VHP(9)}、2-9 ${VHP(18)}`),
-   T('CH2 攻擊力剛好等於需求約 48 秒打倒，掛機一輪＝打倒一隻',durOk,`1-1 開局劍 ${sec.toFixed(1)} 秒`),
-   T('CH3 60 秒內打倒才收復：需求剛好幾乎都贏，差太多一定輸，傷害照時間排',win>=90&&lose===0&&tOk,`1-1 贏 ${win}/100、1-10 贏 ${lose}/100`),
+  // v4.71 評級：只記最好成績，首次收復獎勵 ×評級倍率，評級提升補差額；掛機金幣和掉落乘評級倍率
+  S=fresh();S.villages[0].status='open';const F=FIRST_GOLD[0],q0=S.gold,a1=chWinCore(0,40),q1=S.gold,a2=chWinCore(0,15),q2=S.gold,a3=chWinCore(0,55),q3=S.gold;
+  const grOk=a1.g===2&&q1-q0===F&&a2.better&&a2.g===0&&q2-q1===F*(GRADES[0].f-1)&&!a3.better&&q3===q2&&S.villages[0].gr===0&&grMul(0)===1.5&&grOf(18)===0&&grOf(18.1)===1&&grOf(60)===4&&grOf(60.1)==null;
+  const gsum=()=>{const sb={strat:'normal',bank:{cycles:0,gold:0,mats:{},events:0}};for(let c=0;c<3000;c++)rollCycle(0,null,sb,NOW());return sb.bank.gold};const gSS=gsum();S.villages[0].gr=4;const gC=gsum();const dOk=dropChance(0,null,VILLAGES[0].drops[0],'normal')<VILLAGES[0].drops[0][1]+1e-9;S=S0;
+  const ratio=gSS/gC,mulOk=Math.abs(ratio-1.5/.7)<.25&&dOk;
+  return[T('CH1 v4.71 怪物血量＝最好一般武器 +6 × 38 秒，1-3 起每關 +2.5%',hpOk,`1-1 ${VHP(0)}、1-3 ${VHP(2)}、1-10 ${VHP(9)}、2-10 ${VHP(19)}`),
+   T('CH2 +6 預估約 38 秒打倒（實際約 40 多秒，A），掛機一輪＝打倒一隻',durOk,`1-1 開局劍 +6 ${sec.toFixed(1)} 秒`),
+   T('CH3 60 秒內打倒才收復：+6 幾乎都拿 A 以上，+0 打 1-10 一定輸，傷害照時間排',win>=98&&gA>=95&&lose===0&&tOk,`1-1 +6 贏 ${win}/100（A 以上 ${gA}）、1-10 +0 贏 ${lose}/100`),
+   T('CH6 評級 SS/S/A/B/C：只記最好、首次獎勵 ×倍率、提升補差額；掛機收益 SS 比 C 多 1.5/0.7 倍',grOk&&mulOk,`補發 ${q2-q1}・SS/C 金幣比 ${ratio.toFixed(2)}`),
    T('CH4 收復獎勵只發一次、開下一關',!!once,`首次 ${r1&&r1.fg} 金幣、第二次 ${r2&&r2.first?'又發(錯誤)':'不再發'}`),
    T('CH5 村莊卡片不顯示弱點和「限時挑戰」，只有挑戰按鈕；強化石每隻 0.2% 往後遞增（v4.65 減半）',cardOk&&se,cardOk?'正常':'卡片還有弱點或限時挑戰')]}
 // v4.66 打怪直接掉武器、1-1～1-5 每隻金幣範圍
