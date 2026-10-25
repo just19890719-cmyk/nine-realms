@@ -1898,6 +1898,7 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .hm .wart{width:20px;height:20px;border-radius:3px}.hm .wart img{border-radius:0}
 /* v4.67 附魔小卡：名稱帶屬性、18 種機率表（6 屬性 × 3 級） */
 .ec-pop .ec-nm{display:block;font-size:16px;line-height:1.3}
+.ec-pop .nv-head{margin-top:12px}   /* v4.81 Mochi：武器名稱離標題列太近，往下移 */
 .ec-18{display:grid;grid-template-columns:44px repeat(3,1fr);gap:5px;align-items:stretch}
 .ec-th{text-align:center;font-size:11.5px;color:var(--ash);padding-bottom:1px}.ec-th b{color:var(--gold-hi)}
 .ec-en{display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;background:none;border:0;padding:0;min-height:44px}
