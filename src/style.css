@@ -2095,4 +2095,5 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .b2-slot:active:not(.empty){transform:translateY(1px)}
 .b2 .empty-state{margin:0}
 @media (max-width:340px){.b2-cat{border-image-width:7px;font-size:10px}.b2-top{margin:-14px -12px 0;padding:14px 12px 6px}.b2-cat img{width:24px;height:24px}.b2{padding:14px 12px 12px}.b2-cap{padding-right:10px}.b2-head h2::before,.b2-head h2::after{width:40px}}
+body{margin-top:0}   /* v5.05 拿掉瀏覽器預設的上方 8px：捲動時上方資源列不再往上跳一下 */
 </style>
