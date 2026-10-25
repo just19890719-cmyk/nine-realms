@@ -1968,6 +1968,17 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .cx-pn{text-align:center;font-size:17px;margin-bottom:6px}.cx-pick{text-align:center;margin-bottom:8px}
 .cx-gain{display:flex;justify-content:space-between;gap:8px;background:#120d09;border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-bottom:6px;font-size:14px;text-align:left}.cx-gain b{color:var(--gold-hi);white-space:nowrap}
 .cx-warn{color:var(--danger-hi);font-size:13px;margin:8px 0 10px}
+/* v4.73 秒殺榜 */
+.ui-panel.fk-res{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:10px;width:100%;text-align:left;color:inherit;font:inherit;cursor:pointer}
+.fk-res .grow{min-width:0}.fk-res b{color:var(--gold-hi)}
+.fk-res .go,.fk-row .go{flex:none;font-size:12.5px;color:var(--gold);border:1px solid var(--line2);border-radius:6px;padding:4px 8px;white-space:nowrap}
+.fk-row{display:flex;align-items:center;gap:8px;width:100%;margin-top:8px;padding:8px 10px;border-radius:8px;background:#120e0a;border:1px solid var(--line);color:inherit;font:inherit;text-align:left;cursor:pointer}
+.fk-row .grow{min-width:0}
+.fk-k{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 3px;border-radius:9px;display:grid;place-items:center;font-style:normal;font-size:10.5px;font-weight:700;background:#8a2a1c;color:#ffe9c8;border:1px solid #000}
+.fk-t{flex:none;display:flex;align-items:baseline;gap:2px;white-space:nowrap}.fk-t .gr.sm{margin-right:0;align-self:center}
+.lb-row .fk-who{background:none;border:0;padding:0;font-weight:700;color:var(--bone);font-size:14px;text-align:left;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.lb-row.me .fk-who{color:var(--gold-hi)}
+.fk-me .fk-s{font-size:20px;font-family:var(--display)}
 </style>
 <div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div><div class="news" id="news" aria-live="polite" data-act="chatsys"></div></div>
 <main class="wrap" id="view"></main>
@@ -2472,7 +2483,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.72';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.73';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -2544,7 +2555,7 @@ async function newsFetch(){if(!AUTH||!CLOUD.ready||document.hidden)return;NEWS.t
     for(const x of r){NEWS.last=Math.max(NEWS.last,+x.id||0);if(!x.mine)newsShow(x)}}catch(e){}}
 function newsText(n){const b=BP[bpId(n.bp)];if(!b)return'';const nm=esc(n.nick||'無名鐵匠'),w=`<b class="nw-w">${esc(b.n)}</b>`;
   return n.ok?`恭喜 <b>${nm}</b> 把 ${w} 強化到 <b class="nw-lv">+${n.lv}</b>！`:`<b>${nm}</b> 的 ${w} 衝 <b>+${n.lv}</b> 失敗，武器化為殘渣……`}
-function newsShow(n){const h=newsText(n);if(!h)return;NEWS.q.push({h,ok:n.ok});if(NEWS.q.length>5)NEWS.q.shift();if(!NEWS.on)newsNext()}
+function newsShow(n){const h=n.h||newsText(n);if(!h)return;NEWS.q.push({h,ok:n.ok});if(NEWS.q.length>5)NEWS.q.shift();if(!NEWS.on)newsNext()}
 function newsNext(){const el=typeof document!=='undefined'&&document.getElementById('news');if(!el)return;const n=NEWS.q.shift();
   if(!n){NEWS.on=false;el.classList.remove('on');return}NEWS.on=true;
   if(typeof tutOn==='function'&&tutOn()){NEWS.q.length=0;NEWS.on=false;el.classList.remove('on');return}   // 新手導覽中不打擾
@@ -2552,6 +2563,33 @@ function newsNext(){const el=typeof document!=='undefined'&&document.getElementB
   tx.style.setProperty('--nw-from',W+'px');tx.style.setProperty('--nw-to',-tx.offsetWidth+'px');tx.style.animationDuration=Math.max(6,dist/70)+'s';
   tx.addEventListener('animationend',()=>setTimeout(newsNext,400),{once:true})}
 if(typeof window!=='undefined')setInterval(()=>{if(Date.now()-NEWS.t>30000)newsFetch()},5000);
+/* ---------- v4.73 秒殺榜（Mochi 選：只做評價＋排行、20 關都有榜、稱號先不用）：60 秒挑戰打贏記最快秒數（0.1 秒）和當時的武器，
+   上傳 fk_submit（伺服器核對雲端存檔：這關已收復、武器在存檔裡），fk_board 讀前 50 名；4 隻王（每界第 9、10 關）首殺／刷新第 1 名上跑馬燈（20 SQL） ---------- */
+const FK={b:{},feed:0,t:0,busy:false,mock:null};
+const fkBoss=i=>i%10>=8;
+const fkSec=sec=>Math.max(1,Math.round(sec*10)/10);
+// 本機紀錄：只留最快那次（st.fk＝秒數、st.fkw＝當時的武器、st.fku＝已上傳的秒數）
+function fkRec(i,sec,w){const st=S.villages[i];if(!st||sec==null||!w)return null;const s=fkSec(sec),prev=st.fk??null,better=prev==null||s<prev;
+  if(better){st.fk=s;st.fkw={id:w.id,b:w.b,q:w.q|0,lv:w.lv|0,ench:w.ench||[]};save()}return{sec:s,prev,better}}
+const fkMine=i=>{const st=S.villages[i];return st&&st.fk!=null?{sec:st.fk,w:st.fkw}:null};
+const fkErr=r=>({login:'請先登入',session:'帳號已在別的裝置登入',nope:'雲端存檔還沒收復這一關，稍後會自動重傳',weapon:'這把武器還沒存到雲端，稍後會自動重傳',slow:'上傳太快，稍後會自動重傳',bad:'紀錄異常'}[r]||'上傳失敗');
+// 上傳沒傳過的紀錄：先把存檔推上雲端（伺服器用雲端存檔核對收復和武器），再一關一關傳
+async function fkSync(){if(!AUTH||!CLOUD.ready||FK.busy)return;const todo=S.villages.map((v,i)=>i).filter(i=>{const v=S.villages[i];return v.fk!=null&&v.fku!==v.fk&&v.fkw&&W(v.fkw.id)});if(!todo.length)return;
+  FK.busy=true;try{if(CLOUD.dirty||CLOUD.busy){await cloudPush(true);if(CLOUD.dirty)return}
+    for(const i of todo){const v=S.villages[i];let r;try{r=await sbRest('rpc/fk_submit',{method:'POST',body:JSON.stringify({p_sid:SID,p_village:i,p_sec:v.fk,p_wid:v.fkw.id})})}catch(e){FK.b[i]={...(FK.b[i]||{}),err:SB_ERR(e.message)};break}
+      if(r&&(r.r==='ok'||r.r==='kept')){v.fku=v.fk;save();FK.b[i]={...(FK.b[i]||{}),my:{rk:r.rank,n:r.n,top:+r.top},t:0,err:''};if(r.kind)fkAnn({nick:S.nick||'你',village:i,sec:v.fk,bp:v.fkw.b,lv:v.fkw.lv,kind:r.kind})}
+      else{FK.b[i]={...(FK.b[i]||{}),err:fkErr(r&&r.r)};if(r&&r.r==='bad'){v.fku=v.fk;save()}if(r&&r.r==='session')return cloudKicked();break}
+      if(todo.length>1)await new Promise(z=>setTimeout(z,3100))}}finally{FK.busy=false;if(ui.sheet&&/^(chr|fk|v)$/.test(ui.sheet.t))render()}}
+async function fkLoad(i,force){const c=FK.b[i]||{};if(FK.mock||!AUTH||c.loading||(!force&&c.t&&Date.now()-c.t<30000))return;FK.b[i]={...c,loading:true};
+  try{const r=await sbRest('rpc/fk_board',{method:'POST',body:JSON.stringify({p_village:i})});FK.b[i]={rows:(r&&r.rows)||[],n:(r&&r.n)|0,me:r&&r.me,my:r&&r.me?{rk:r.me.rk,n:r.n|0,top:r.rows&&r.rows[0]?+r.rows[0].sec:null}:c.my,t:Date.now(),err:''}}
+  catch(e){FK.b[i]={...c,loading:false,t:Date.now(),err:SB_ERR(e.message)}}if(ui.sheet&&/^(fk|v)$/.test(ui.sheet.t))render()}
+const fkBoard=i=>FK.mock?FK.mock(i):FK.b[i]||{};
+function fkAnnText(n){const i=+n.village,b=BP[bpId(n.bp)],nm=esc(n.nick||'無名鐵匠'),m=`<b class="nw-w">${esc(MONS[i]||'')}</b>`,s=`<b class="nw-lv">${(+n.sec).toFixed(1)} 秒</b>`;
+  return n.kind==='first'?`<b>${nm}</b> 成為全服第一個擊敗 ${m} 的鐵匠！（${s}）`:`<b>${nm}</b> 用 ${b?`<b class="nw-w">${esc(b.n)} +${n.lv|0}</b>`:'武器'} ${s} 擊敗 ${m}，刷新全服紀錄！`}
+function fkAnn(n){if(QUIET)return;newsShow({h:fkAnnText(n),ok:true})}
+async function fkFeed(){if(!AUTH||!CLOUD.ready||document.hidden)return;FK.t=Date.now();
+  try{const r=await sbRest('rpc/fk_feed_list',{method:'POST',body:JSON.stringify({p_after:FK.feed})});if(!Array.isArray(r))return;for(const x of r){FK.feed=Math.max(FK.feed,+x.id||0);if(!x.mine)fkAnn(x)}}catch(e){}}
+if(typeof window!=='undefined')setInterval(()=>{if(Date.now()-FK.t>30000)fkFeed();if(AUTH&&CLOUD.ready&&!document.hidden)fkSync()},5000);
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 /* ---------- v3.88 世界聊天＋玩家名片：全部經過伺服器函式（chat_send 檢查冷卻、禁言、等級、髒話）；聊天開著每 4 秒、關著每 30 秒拿新訊息 ---------- */
 const CHAT={rows:[],last:0,g:[],glast:0,gunread:0,sys:[],sysLast:0,unread:0,sysUnread:0,t:0,busy:false,cd:0,draft:'',err:'',tab:'w',sending:false,mockN:0};
@@ -3418,6 +3456,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.73',d:'10/25',t:'秒殺榜',b:['60 秒挑戰打倒怪物會記下<b>最快秒數</b>（到 0.1 秒）和當時用的武器，只留最快那一次','20 關都有<b>全服秒殺榜</b>：前 50 名的秒數、評級和武器，還有自己的名次','打完挑戰的結算畫面和村莊詳情的「挑戰評級」都會顯示我的最快和全服最快，點一下打開秒殺榜','每一界第 9、10 關的王（穆斯貝爾騎兵、海姆達爾、赫朗格尼爾、索爾）：全服首殺和刷新第 1 名會上<b>跑馬燈</b>'],g:['vil']},
  {v:'4.72',d:'10/25',t:'武器圖鑑',b:['道具欄新增「<b>圖鑑</b>」分頁：把武器登錄進圖鑑，<b>那把武器會消失</b>，換到全帳號<b>所有武器攻擊力</b>永久加成','每把武器 3 格：+0 格 +0.2%、+6 格 +0.6%、+9 格 +1.5%（強化到那個等級以上就能登錄，自動挑等級最低的那把）','6 個套裝湊齊再加 +2%～+5%，例如「諸神之器」：霍夫德之劍、索爾之錘都登錄 +9 再 +5%','駐守中、鎖定的武器不能登錄；原本的「收藏」改叫「<b>鎖定</b>」'],g:['codex','bag','melt']},
  {v:'4.71',d:'10/25',t:'限時挑戰加上評級',b:['60 秒挑戰照打倒秒數給<b>評級</b>：SS 18 秒內、S 30 秒內、A 45 秒內、B 52 秒內、C 60 秒內','評級連動那一關的<b>掛機收益</b>：SS ×1.5、S ×1.25、A ×1、B ×0.85、C ×0.7（金幣和強化石、附魔石、遺物、武器的掉落機率）','SS、S 首次收復獎勵 ×2／×1.5；收復後可以按「挑戰評級」再打，只記最好成績，評級提升會補發獎勵差額','怪物血量重新調整：該關能做的一般武器 +6 大約剛好拿 A，越後面的關卡血量越多（1-10 約要 +7、2-10 約要 +8 才拿得到 A）'],g:['vil','hp']},
  {v:'4.70',d:'10/25',t:'村莊掉落一眼看完',b:['村莊詳情「每打倒一隻可能掉」：金幣、強化石、附魔石、四種遺物和武器，都跟材料一樣用格子顯示圖和機率','點強化石、附魔石、遺物的格子可以看說明'],g:['vil']},
@@ -3503,7 +3542,7 @@ const GUIDE=[
   {k:'codex',ic:'nav_armory',n:'武器圖鑑',s:'登錄武器換全帳號攻擊力，武器會消失',v:'4.72',h:'道具欄的「<b>圖鑑</b>」分頁。每把武器有 3 格：<b>+0</b>（+0.2%）、<b>+6</b>（+0.6%）、<b>+9</b>（+1.5%），道具欄有強化到那個等級以上的同款武器就能登錄（格子會發亮），自動挑等級最低、沒駐守、沒鎖定的那把。<br><b>登錄後那把武器會消失</b>，換到所有武器攻擊力的永久加成。<br>「套裝」分頁：6 個套裝湊齊再加 +2%～+5%。兩界全部收滿最多 +57.1%。'},
   {k:'melt',ic:'mat_iron',n:'熔解',s:'不要的武器換回金幣',v:'4.72',h:'在武器詳情按「熔解」：退回一半鍛造金幣。<br>鎖定（上鎖）的武器不能熔解，也不能登錄圖鑑。'}]],
  ['村莊與戰鬥',[
-  {k:'vil',ic:'nav_village',n:'村莊委託與收成',s:'交武器收復村莊、自動狩獵收成',v:'4.71',h:'還沒收復的村莊要<b>限時挑戰</b>：任何武器都能上（駐守中的也可以），<b>60 秒內打倒怪物</b>就收復，解鎖下一座村莊和新圖紙，第一次收復有金幣獎勵。<br>打倒的秒數決定<b>評級</b>：SS 18 秒內、S 30 秒內、A 45 秒內、B 52 秒內、C 60 秒內。評級越高，這一關掛機的金幣和掉落機率越高（SS ×1.5、S ×1.25、A ×1、B ×0.85、C ×0.7），SS／S 的首次收復獎勵 ×2／×1.5。收復後在村莊詳情按「<b>挑戰評級</b>」可以再打，只記最好成績，評級提升會補發獎勵差額。整場戰鬥看得到血條和倒數，輸了馬上再試、沒有懲罰；選武器時會顯示預估秒數。<br>收復後可以讓武器駐守掛機，<b>每打倒一隻收成一次</b>，自動帶回金幣，<b>離線最多累積 12 小時</b>。每隻還有機會<b>直接掉武器</b>：第一界的開局武器、這一界已解鎖圖紙的一般武器，怪物專屬武器和 Boss 武器只在牠那一關掉（機率在村莊詳情最下面）；道具欄滿了會自動熔解成金幣和強化石。換上更強的武器打得更快。<br>每輪會掉什麼直接看村莊卡片右邊。<b>點卡片上的武器</b>會跳出小卡，可以看武器詳情、換武器或收回武器。<br>「全部收成」只收目前在看的這一界；另一界可以收成時，地圖圖示會亮紅點。'},
+  {k:'vil',ic:'nav_village',n:'村莊委託與收成',s:'交武器收復村莊、自動狩獵收成',v:'4.73',h:'還沒收復的村莊要<b>限時挑戰</b>：任何武器都能上（駐守中的也可以），<b>60 秒內打倒怪物</b>就收復，解鎖下一座村莊和新圖紙，第一次收復有金幣獎勵。<br>打倒的秒數決定<b>評級</b>：SS 18 秒內、S 30 秒內、A 45 秒內、B 52 秒內、C 60 秒內。評級越高，這一關掛機的金幣和掉落機率越高（SS ×1.5、S ×1.25、A ×1、B ×0.85、C ×0.7），SS／S 的首次收復獎勵 ×2／×1.5。收復後在村莊詳情按「<b>挑戰評級</b>」可以再打，只記最好成績，評級提升會補發獎勵差額。每一關也會記下<b>最快打倒秒數</b>，上傳到全服<b>秒殺榜</b>（前 50 名，只記每人最快一次），在結算畫面或村莊詳情點「秒殺榜」就能看；每一界第 9、10 關的王，全服首殺和刷新第 1 名會上跑馬燈。整場戰鬥看得到血條和倒數，輸了馬上再試、沒有懲罰；選武器時會顯示預估秒數。<br>收復後可以讓武器駐守掛機，<b>每打倒一隻收成一次</b>，自動帶回金幣，<b>離線最多累積 12 小時</b>。每隻還有機會<b>直接掉武器</b>：第一界的開局武器、這一界已解鎖圖紙的一般武器，怪物專屬武器和 Boss 武器只在牠那一關掉（機率在村莊詳情最下面）；道具欄滿了會自動熔解成金幣和強化石。換上更強的武器打得更快。<br>每輪會掉什麼直接看村莊卡片右邊。<b>點卡片上的武器</b>會跳出小卡，可以看武器詳情、換武器或收回武器。<br>「全部收成」只收目前在看的這一界；另一界可以收成時，地圖圖示會亮紅點。'},
   {k:'hp',ic:'mon_1',n:'怪物血條',s:'打中才扣血，扣多少＝傷害',v:'4.71',h:'村莊卡上的怪物有血條，武器打中才會扣血，扣多少就是造成的傷害。<br>還沒交付或沒有駐守武器的村莊，點開詳情上方有怪物大圖，按 ‹ › 翻看這一界 10 隻（還沒解鎖的只顯示黑影）。<br>怪物被打倒就完成一輪狩獵，換下一隻。<br>點村莊看詳情，血條同步顯示，下方還有這隻北歐神話怪物的稱號和傳說。每一界的最後一關都是神，每一關的名稱、掉落都跟那隻怪物或神的故事有關。<br>怪物血量＝這一關能做的最好一般武器 +6（沒附魔、沒相剋）大約 40 多秒打倒，穩穩拿到 A 評級；越後面的關卡每關血量多 2.5%，在村莊詳情裡看得到。<br>每隻怪物都有<b>屬性</b>，點開村莊詳情的「弱點」是牠怕的屬性（例如火焰騎兵怕霜寒、索爾死於蛇毒所以怕劇毒）；武器的屬性附魔打中弱點時，血條扣得更快。'},
   {k:'hit',ic:'cat_sword',n:'武器打法',s:'攻速不同、強化越高越常觸發附加效果',v:'4.39',h:'點村莊卡片下方的<b>往下箭頭</b>（或怪物小圖），會展開戰鬥畫面（一次一個，再點一下收起），下面還列出每輪掉落和已經打到、還沒收成的東西：騎士拿著駐守的武器打怪物，打中時怪物閃一下、停頓後被打退，跳出的數字就是傷害。戰鬥畫面收起時，卡片上的小怪物也是同樣的攻速和附加效果。<br>攻速：<b>劍</b> 1.0 秒、<b>斧</b> 1.3 秒（兩連斬）、<b>錘</b> 1.8 秒、<b>短刃</b> 0.6 秒、<b>長柄</b> 1.2 秒、<b>弓</b> 1.1 秒、<b>弩</b> 1.6 秒。<br>強化越高越常觸發附加效果（+1～+6 每級 2%，+7 起 16%～40%）：劍<b>會心</b>、斧<b>流血</b>、錘<b>震碎</b>、短刃<b>中毒</b>、長柄<b>貫穿</b>、弓<b>穿心</b>、弩<b>破甲</b>。狩獵時間和收成不受影響。'},
   {k:'realm',ic:'realm_2',n:'第二界 約頓海姆',s:'收復 1-10 後開放',v:'4.37',h:'收復 1-10 彩虹橋頭、打倒海姆達爾後開放第二界，用上方地圖列切換。<br>10 座新村莊、4 種新材料（巨人骨、永凍霜晶、雷鳴鐵、世界樹古根），第五階巨人武器要熔爐 Lv6。<br>v4.37 起巨人體重鍊已經拿掉，第二界材料用來鍛造巨人武器。'}]],
@@ -4522,7 +4561,8 @@ function chPaint(c,el=performance.now()-c.t0){const hp=c.cur/c.hp*100,left=Math.
   document.querySelectorAll('.ch-t').forEach(e=>{e.textContent=Math.ceil(c.done&&c.cur<=0?Math.max(0,CH_SEC-c.win/1000):left)+' 秒';e.classList.toggle('t-danger',left<=10)});
   const gs=(c.done&&c.cur<=0?c.win:el)/1000,g=GRADES[grOf(gs)],gn=g?g.n:'-';document.querySelectorAll('.ch-g').forEach(e=>{if(e.dataset.g!==gn){e.dataset.g=gn;e.innerHTML=g?'現在打倒 '+grChip(g):'<span class="t-danger">超過時間</span>'}});   // v4.71 現在打倒會拿到的評級
   document.querySelectorAll('.ch-tf').forEach(e=>e.style.width=(c.done&&c.cur<=0?Math.max(0,1-c.win/1000/CH_SEC):left/CH_SEC)*100+'%')}
-function chEnd(c,win){if(ui.ch!==c)return;const r=win?chWinCore(c.i,c.win/1000):null;ui.chr={i:c.i,id:c.id,win,sec:win?c.win/1000:null,left:c.cur/c.hp,r};ui.ch=null;ui.sheet={t:'chr'};snd(win?'unlock':'ui_error');render()}
+// v4.73 打贏同時記秒殺榜紀錄（fkRec），有新紀錄就上傳
+function chEnd(c,win){if(ui.ch!==c)return;const r=win?chWinCore(c.i,c.win/1000):null,fk=win?fkRec(c.i,c.win/1000,W(c.id)):null;ui.chr={i:c.i,id:c.id,win,sec:win?c.win/1000:null,left:c.cur/c.hp,r,fk};if(fk&&fk.better)setTimeout(fkSync,300);ui.ch=null;ui.sheet={t:'chr'};snd(win?'unlock':'ui_error');render()}
 const vClose=btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'});
 function sheetCh(){const c=ui.ch,i=c.i,v=VILLAGES[i],w=W(c.id);if(!w)return'';const el=weakMul(i,w)>1?elemOf(w):null;
   return `<div class="sheet-head"><span style="width:44px"></span><h2>${vNo(i)} ${v.name}・挑戰中</h2>${vClose}</div>
@@ -4533,12 +4573,29 @@ function sheetCh(){const c=ui.ch,i=c.i,v=VILLAGES[i],w=W(c.id);if(!w)return'';co
    <div class="vw-acts">${btn('放棄','close',{cls:'btn-sec big'})}</div>`}
 // 強化到幾級才能在 60 秒內打倒（時間到的建議用）
 const chNeedLv=(i,w)=>{for(let lv=w.lv+1;lv<=MAX_LV;lv++)if(chEst(i,{...w,lv})<=CH_SEC)return lv;return null};
+// v4.73 秒殺榜畫面：結算一行、村莊詳情評級區一行、秒殺榜（每關前 50 名）
+function fkResLine(i,f){if(!f)return'';const c=fkBoard(i),my=c.my,st=S.villages[i],up=st.fku!==st.fk;
+  const pos=!AUTH&&!FK.mock?'登入後會上傳到全服秒殺榜':up&&!c.err?'上傳秒殺榜中…':c.err&&up?'⚠ '+esc(c.err):my?`全服第 <b class="t-gold">${my.rk}</b> 名／${my.n} 人${my.top!=null?`・全服最快 ${(+my.top).toFixed(1)} 秒`:''}`:'';
+  return `<button class="ui-panel panel fk-res" data-act="fkopen" data-i="${i}"><div class="grow"><b>${f.better?(f.prev==null?'秒殺紀錄 ':'新紀錄！ ')+f.sec.toFixed(1)+' 秒':'這次 '+f.sec.toFixed(1)+' 秒・最快 '+st.fk.toFixed(1)+' 秒'}</b><div class="small muted">${pos}</div></div><span class="go">秒殺榜 ›</span></button>`}
+function fkRow(i){const m=fkMine(i);if(!m&&S.villages[i].status!=='cleared')return'';if(AUTH)setTimeout(()=>fkLoad(i),0);const c=fkBoard(i),my=c.my;
+  return `<button class="fk-row" data-act="fkopen" data-i="${i}"><span class="grow small">${m?`我的最快 <b class="t-gold">${m.sec.toFixed(1)} 秒</b>${my?`（第 ${my.rk} 名）`:''}`:'還沒有秒殺紀錄'}${my&&my.top!=null?`・全服最快 ${(+my.top).toFixed(1)} 秒`:''}</span><span class="go">秒殺榜 ›</span></button>`}
+function sheetFk(i){i=Math.max(0,Math.min(VILLAGES.length-1,i|0));if(AUTH)setTimeout(()=>fkLoad(i),0);const v=VILLAGES[i],c=fkBoard(i),m=fkMine(i),rows=c.rows||[];
+  const head=`<div class="sheet-head">${btn('‹','vopen',{cls:'icon-btn',attrs:`data-i="${i}" aria-label="回村莊"`})}<h2>秒殺榜</h2>${vClose}</div>`;
+  const tabs=`<div class="lb-tabs">${VILLAGES.map((x,k)=>{if(k>=10&&!rfOpen())return'';const lk=S.villages[k].status==='locked';return `<button class="lb-tab ${k===i?'on':''} ${lk?'lk':''}" data-act="fkopen" data-i="${k}" ${lk?'disabled':''}><img src="${A('v'+(k+1))}" alt=""><span>${vNo(k)}</span>${fkBoss(k)?'<i class="fk-k">王</i>':''}${lk?img('ic_lock','lb-lk'):''}</button>`}).join('')}</div>`;
+  const g=x=>grChip(GRADES[grOf(+x)],'sm');
+  const me=m?`<div class="lb-me fk-me">${wArt(m.w.b,{frame:fq(m.w)})}<div class="grow"><div class="small muted">我的最快</div><b class="t-gold fk-s">${m.sec.toFixed(1)} 秒</b> ${g(m.sec)}<div class="small ${lc(m.w)}">${BP[m.w.b]?BP[m.w.b].n:''} +${m.w.lv|0}</div></div><div class="lb-mypos"><span class="small muted">名次</span><b>${c.my?c.my.rk:'…'}</b><span class="small muted">／${c.my?c.my.n:'…'}</span></div></div>`
+    :`<div class="lb-me empty"><div class="grow"><b>還沒有秒殺紀錄</b><div class="small muted">${S.villages[i].status==='cleared'?'在村莊詳情按「挑戰評級」再打一次就會上榜':'60 秒挑戰打倒'+esc(MONS[i])+'就會上榜'}</div></div></div>`;
+  const row=x=>{const w=x.w||{},b=BP[bpId(w.b)];return `<div class="lb-row ${x.mine?'me':''}"><span class="lb-no r${Math.min(x.rk,4)}">${x.rk}</span>${b?wArt(b.id,{frame:fq(w),cls:'lb-art'}):''}<div class="grow"><button class="who fk-who" data-act="pcard" data-u="${esc(x.uid||'')}" data-n="${esc(x.nick||'')}">${esc(x.nick||'無名鐵匠')}</button><div class="small ${lc(w)}">${b?esc(b.n):'？'} +${w.lv|0}</div></div><span class="fk-t"><b class="lb-p">${(+x.sec).toFixed(1)}</b><span class="small muted">秒</span>${g(x.sec)}</span></div>`};
+  const note=!AUTH&&!FK.mock?'登入後才會顯示其他玩家':c.err?'⚠ '+esc(c.err):c.loading&&!c.t?'讀取中…':`共 ${c.n|0} 位鐵匠打倒過${esc(MONS[i])}・只記每人最快一次`;
+  return head+tabs+`<div class="lb-vh"><b>${vNo(i)} ${esc(MONS[i])}</b>${fkBoss(i)?' <span class="small t-gold">王關・刷新第 1 名會上跑馬燈</span>':''}</div>`+me
+    +(rows.length?`<div class="ui-panel panel lb-list">${rows.map(row).join('')}</div>`:'')+`<div class="small muted center">${note}</div>`}
 function sheetChr(){const r=ui.chr,i=r.i,v=VILLAGES[i],w=W(r.id);
   if(r.win){const nx=VILLAGES[i+1],st=S.villages[i],free=w&&where(w)!==i;
     const R=r.r||{},g=GRADES[R.g??2],up=R.g>0?GRADES[R.g-1]:null,best=st.gr!=null?GRADES[st.gr]:g;
     return `<div class="sheet-head"><span style="width:44px"></span><h2>${R.first?'收復成功！':'挑戰完成'}</h2>${vClose}</div>
      <div class="banner" style="background-image:url(${A('v'+(i+1))})"><span class="small">${vNo(i)} ${v.name}</span><span>用時 <b class="t-gold">${r.sec.toFixed(1)} 秒</b>（限時 ${CH_SEC} 秒）打倒${MONS[i]}</span></div>
      <div class="ui-panel panel gr-res">${grChip(g,'big')}<div class="grow"><b>${R.first?'評級 '+g.n:R.better?'新紀錄！評級 '+g.n:'這次 '+g.n+'・最好成績 '+best.n}</b><div class="small muted">掛機收益 ×${best.m}${up?`・再快 ${Math.max(.1,r.sec-up.t).toFixed(1)} 秒就是 ${up.n}`:''}</div></div></div>
+     ${fkResLine(i,r.fk)}
      ${R.first||R.fg?`<div class="ui-panel panel">${ptitle(R.first?'獎勵':'評級提升補發')}${r.r.fg?`<div class="mats">${harvestIcons({gold:r.r.fg})}</div>`:''}<div class="small t-ok">${R.first&&nx?`解鎖 ${vNo(i+1)} ${nx.name}`:''}${r.r.bps.length?`${nx?'・':''}新圖紙「${r.r.bps.map(b=>b.n).join('」「')}」`:''}</div></div>`:''}
      ${w&&st.weaponId==null?`<div class="ui-panel panel"><div class="small">要讓 ${bpOf(w).n} +${w.lv} 留下來掛機嗎？每小時約打倒 ${fmt(kph(i,w))} 隻，掉金幣和強化石。${where(w)>=0?`（會從 ${vNo(where(w))} 移過來）`:''}</div></div>
       <div class="vw-acts">${btn('留下來掛機','chstay',{cls:'btn-primary big',attrs:`data-i="${i}" data-id="${w.id}"`})}${btn('回村莊','close',{cls:'btn-sec big'})}</div>`:`<div class="vw-acts">${w&&up?btn('再挑戰','chgo',{cls:'btn-sec big',attrs:`data-i="${i}" data-id="${w.id}"`}):''}${btn('回村莊','close',{cls:'btn-primary big'})}</div>`}`}
@@ -4567,7 +4624,7 @@ function sheetVillage(i){
    <div class="ui-panel panel">${ptitle(chm?'選一把武器挑戰評級':open?'選一把武器挑戰':'指派駐守武器')}${ok.length?`<div class="wgrid">${ok.map(tile).join('')}</div><div class="small muted">${chm?'只記最好成績，打輸或評級比較低都不會變差。':open?`${CH_SEC} 秒內打倒就收復，輸了可以馬上再試，沒有任何懲罰。`:'點武器即可駐守，每打倒一隻就收成一次。'}</div>`:`<div class="empty">道具欄沒有${open?'':'閒置的'}武器，先到鐵匠鋪鍛造一把。</div>`}</div>`;
 }
 // v4.71 評級表：打倒秒數 → 評級 → 掛機收益倍率，目前的最好成績亮起來
-function grPanel(i,go){const cur=S.villages[i].gr;return `<div class="ui-panel panel">${ptitle('挑戰評級'+(cur!=null?`・最好成績 ${grChip(GRADES[cur])}`:''))}<div class="gr-tab">${GRADES.map((g,k)=>`<div class="gr-c ${k===cur?'on':''}">${grChip(g)}<span class="small">${g.t} 秒內</span><span class="small ${g.m>1?'t-ok':g.m<1?'t-danger':'muted'}">收益 ×${g.m}</span></div>`).join('')}</div><div class="small muted">評級越高，掛機每打倒一隻的金幣和各種掉落機率越高；SS、S 的首次收復獎勵 ×${GRADES[0].f}／×${GRADES[1].f}。收復後可以隨時再挑戰，只記最好成績。</div>${go?btn('挑戰評級','chmode',{cls:'btn-primary big gr-go',attrs:`data-i="${i}"`}):''}</div>`}
+function grPanel(i,go){const cur=S.villages[i].gr;return `<div class="ui-panel panel">${ptitle('挑戰評級'+(cur!=null?`・最好成績 ${grChip(GRADES[cur])}`:''))}<div class="gr-tab">${GRADES.map((g,k)=>`<div class="gr-c ${k===cur?'on':''}">${grChip(g)}<span class="small">${g.t} 秒內</span><span class="small ${g.m>1?'t-ok':g.m<1?'t-danger':'muted'}">收益 ×${g.m}</span></div>`).join('')}</div><div class="small muted">評級越高，掛機每打倒一隻的金幣和各種掉落機率越高；SS、S 的首次收復獎勵 ×${GRADES[0].f}／×${GRADES[1].f}。收復後可以隨時再挑戰，只記最好成績。</div>${fkRow(i)}${go?btn('挑戰評級','chmode',{cls:'btn-primary big gr-go',attrs:`data-i="${i}"`}):''}</div>`}
 // v4.38 「需要的武器」整段拿掉（Mochi：不限武器了就多餘）
 // v4.70 Mochi：金幣、強化石、附魔石、遺物、武器都跟材料一樣用格子顯示（圖＋名稱＋機率）
 const dropGold=i=>`<div class="matbox">${img('it_gold')}<span class="mb-n">金幣</span><span class="mb-c">${killGoldTxt(i)}${grMul(i)!==1?' ×'+grMul(i):''}</span></div>`;
@@ -4701,6 +4758,7 @@ function viewShop(){
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'4.73',t:'秒殺榜：20 關記最快秒數、全服前 50 名，王關首殺／刷新第 1 名上跑馬燈',b:[['fkfake','秒殺榜塞 20 筆假資料（含我）並打開'],['fkann','跑馬燈：王關首殺＋刷新紀錄各一則'],['fkwin','用 +12 最強武器挑戰最後一座開放的村莊（看結算的秒殺紀錄）'],['fkclr','清掉假資料和我的秒殺紀錄']]},
  {v:'4.72',t:'武器圖鑑：登錄武器（武器會消失）換全帳號攻擊力 %，每把 3 格＋6 個套裝',b:[['cxgive','17 種武器各給 +0／+6／+9 一把，打開圖鑑'],['cxmost','圖鑑登錄到快滿（每把留 +9 沒登），看套裝'],['cxreset','清空圖鑑']]},
  {v:'4.71',t:'60 秒挑戰評級 SS～C，評級連動掛機收益；怪物血量改成 +6 剛好 A、每關 +2.5%',b:[['grsim','評級模擬表（每關 +6 打 30 場的評級、各評級要強化到幾級）'],['grre','用 +8 一般武器重新挑戰第一座已收復村莊（看 S 和補發）'],['grcyc','第一座已收復村莊的評級 SS→S→A→B→C 輪換（看卡片和收益倍率）']]},
  {v:'4.70',t:'村莊詳情掉落全部改成格子',b:[['dropbox7','打開 1-7 詳情（有怪物武器）'],['dropbox20','打開 2-10 詳情（有 Boss 武器）']]},
@@ -4989,6 +5047,13 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
    grre:()=>{const i=S.villages.findIndex(v=>v.status==='cleared');if(i<0)return toast('還沒有收復的村莊，先按「解鎖全部村莊」或打一關','bad');const b=BPS.find(x=>!x.dev&&!x.k&&x.unlock&&x.unlock<=Math.max(2,i))||BP.w1_spear;const w=makeWeapon(b.id,0,8,[]);ui.tab='village';ui.realm=Math.floor(i/10);chStart(i,w.id)},
    grcyc:()=>{const i=S.villages.findIndex(v=>v.status==='cleared');if(i<0)return toast('還沒有收復的村莊','bad');const st=S.villages[i];st.gr=st.gr==null?0:(st.gr+1)%GRADES.length;save();ui.tab='village';ui.realm=Math.floor(i/10);ui.sheet=null;const w=st.weaponId!=null&&W(st.weaponId);toast(`${vNo(i)} 評級改成 ${GRADES[st.gr].n}：收益 ×${GRADES[st.gr].m}${w?`、每小時約 ${fmt(gph(i,w))} 金幣`:''}`,'ok')},
    chsim:()=>{const mk=b=>lv=>({id:-1,b:b.id,q:0,lv,ench:[null,null,null,null],traits:[]});ui.testOut='<b>v4.52 限時挑戰模擬（每關用當界一般武器，各打 50 場）</b><br>'+VILLAGES.map((v,i)=>{const b=BPS.find(x=>!x.dev&&!x.k&&x.unlock<=i&&x.unlock>(i<10?0:10))||BP.w0_sword;const r=[0,6,7,8].map(lv=>{const w=mk(b)(lv);let n=0;for(let k=0;k<50;k++)if(chPlan(i,w).win!=null)n++;return `+${lv} ${Math.round(vSec(i,w))}秒 ${n*2}%`});return `${vNo(i)} 血量 ${fmt(VHP(i))}・${b.n}：${r.join('／')}`}).join('<br>')},
+   fkfake:()=>{const i=Math.max(0,S.villages.map(v=>v.status).lastIndexOf('cleared'));const nm=['霜狼','北境小鐵','雷鳴','烏鴉','鐵爐之子','冰原獵人','灰燼','老鐵匠','矮人學徒','巨木'],bs=BPS.filter(b=>!b.dev);
+     FK.mock=k=>{const m=fkMine(k),rows=[];let t=Math.max(3,VHP(k)/40000);for(let n=0;n<20;n++){t+=.3+n*.4;rows.push({rk:0,uid:'mock-'+n,nick:nm[n%10]+(n>9?n:''),sec:Math.round(t*10)/10,w:{b:bs[n%bs.length].id,q:0,lv:12-Math.floor(n/3),ench:[]},mine:false})}
+       if(m)rows.push({rk:0,uid:'me',nick:S.nick||'我',sec:m.sec,w:m.w,mine:true});rows.sort((a,b)=>a.sec-b.sec).forEach((x,n)=>x.rk=n+1);const me=rows.find(x=>x.mine);return{rows:rows.slice(0,50),n:rows.length,me,my:me?{rk:me.rk,n:rows.length,top:rows[0].sec}:null,t:1}};
+     ui.sheet={t:'fk',i};render();toast('秒殺榜換成假資料（「清掉假資料」可以還原）')},
+   fkann:()=>{fkAnn({nick:'霜狼',village:9,sec:12.4,kind:'first'});fkAnn({nick:S.nick||'測試鐵匠',village:19,sec:8.9,bp:BPS.filter(b=>!b.dev).slice(-1)[0].id,lv:12,kind:'top'});toast('跑馬燈應該依序出現首殺和刷新紀錄')},
+   fkwin:()=>{const i=S.villages.map(v=>v.status).lastIndexOf('cleared');const j=i>=0?i:S.villages.findIndex(v=>v.status==='open');if(j<0)return toast('沒有可以挑戰的村莊','bad');const b=BPS.filter(x=>!x.dev).sort((x,y)=>y.base-x.base)[0];const w=makeWeapon(b.id,0,12,[]);ui.tab='village';ui.realm=Math.floor(j/10);chStart(j,w.id)},
+   fkclr:()=>{FK.mock=null;FK.b={};S.villages.forEach(v=>{delete v.fk;delete v.fkw;delete v.fku});save();if(ui.sheet&&ui.sheet.t==='fk')render();toast('秒殺紀錄已清除')},
    chwin:()=>{const i=S.villages.findIndex(v=>v.status==='open');if(i<0)return toast('沒有可以挑戰的村莊','bad');const b=BPS.filter(x=>!x.dev).sort((x,y)=>y.base-x.base)[0];const w=makeWeapon(b.id,0,12,[]);ui.tab='village';ui.realm=Math.floor(i/10);chStart(i,w.id)},
    chlose:()=>{const i=S.villages.findIndex(v=>v.status==='open');if(i<0)return toast('沒有可以挑戰的村莊','bad');const w=makeWeapon('w0_sword',0,0,[]);ui.tab='village';ui.realm=Math.floor(i/10);chStart(i,w.id)},
    nwtab:()=>{const P=(b,lv)=>power({id:-1,b:b.id,q:0,lv,ench:[null,null,null,null],traits:[]});ui.testOut='<b>v4.51 新武器（攻擊力＝每秒傷害：+0／+6／+7／+8）</b><br>'+BPS.filter(b=>!b.dev).map(b=>`${b.unlock?vNo(b.unlock-1):'開局'} ${b.n}（${kindN(b)}・${CATS[b.cat]}）：${[0,6,7,8].map(l=>P(b,l)).join('／')}・${fmt(goldOf(b))} 金幣`).join('<br>')+'<br><b>村莊需求（偏難）</b><br>'+VILLAGES.map((v,i)=>`${vNo(i)} ${v.name}：${v.req}`).join('、')},wm:()=>give('dev_polearm',3,0),curve:()=>{ui.testOut='<b>v4.07 難度曲線（中度）</b><br>各品質要強化到幾級（普通／精良／稀有／史詩／傳說），不算附魔<br>'+VILLAGES.map((v,i)=>{const d=diffRow(i);return `${vNo(i)} ${v.name}：需求 ${v.req}（曲線 ${d.curve}）・${d.b?d.b.n:'—'}・${d.need.map(n=>n==null?'✕':'+'+n).join('／')}`}).join('<br>')},odds:()=>{const w={b:'dev_sword'};ui.testOut='<b>v4.00 強化機率（安定值 +6）</b><br>'+[7,8,9,10,11,12,13,14,15].map(n=>{const r=RATE[n],b=breakChance(w,n);return `+${n}：成功 ${pct(r)}・失敗時爆裝 ${pct(b)}・單次爆裝 ${pct((1-r)*b)}`}).join('<br>')+'<br>2-3 雷鳴峽谷需求攻擊力 '+VILLAGES[12].req},wg6:()=>{give('dev_sword',2,6);toast('已給 +6 巨人王劍：下一次 +7 是危險區，前面 +1～+6 都不會爆裝','ok')},w8:()=>give('dev_polearm',3,8,[{k:'dragon',v:30},null,null,null]),wench:()=>{S.anvil=Math.max(S.anvil,5);give('dev_axe',3,6,[{k:'thunder',v:12},{k:'greed',v:15},{k:'harvest',v:25},{k:'giant',v:40}],[{k:'sturdy',v:20},{k:'runic',v:18},{k:'treasure',v:15}])},wench2:()=>{S.anvil=Math.max(S.anvil,5);give('dev_polearm',2,4,[{k:'holy',v:15},{k:'venom',v:12},{k:'seek',v:20},{k:'dragon',v:40}],[{k:'sharp',v:9}])},
@@ -5065,7 +5130,7 @@ if(typeof window!=='undefined')window.addEventListener('resize',()=>fitNames());
 function renderLayer(){stkFollow();
   const L=document.getElementById('layer');const s=ui.sheet;let h='';
   const sc=document.querySelector('.sheet'),st=sc?sc.scrollTop:0,same=sc&&ui._lastSheet===JSON.stringify(s);
-  if(s){const pop=s.t==='w'&&((s.m==='main'||s.m==='ench')&&!!W(s.id)||s.m==='enh'),full=!pop&&(s.t==='w'||s.t==='fxt');h+=`<div class="scrim ${pop?'wpopc':''} ${same?'still':''}" data-act="scrim"><div class="ui-sheet sheet ${full?'full':''} ${pop?'wpop':''} ${s.t==='chat'?'cx-sheet':''} ${same?'still':''}">${s.t==='w'?sheetWeapon(s.id,s.m):s.t==='v'?sheetVillage(s.i):s.t==='ch'&&ui.ch?sheetCh():s.t==='chr'&&ui.chr?sheetChr():s.t==='a'?sheetAch():s.t==='lb'?sheetLb(s.i):s.t==='lbw'?sheetLbW(s.i,s.k):s.t==='ws'?sheetWorkshop(s.k):s.t==='evt'?sheetEvt():s.t==='chat'?sheetChat():s.t==='gd'?sheetGuild():s.t==='fr'?sheetFriend():s.t==='bw'?sheetBossW(s.r,s.j):s.t==='fxt'?sheetFxTest(s):s.t==='set'?sheetSet(s.k):/^mk/.test(s.t)?sheetMk(s):sheetDev()}</div></div>`}
+  if(s){const pop=s.t==='w'&&((s.m==='main'||s.m==='ench')&&!!W(s.id)||s.m==='enh'),full=!pop&&(s.t==='w'||s.t==='fxt');h+=`<div class="scrim ${pop?'wpopc':''} ${same?'still':''}" data-act="scrim"><div class="ui-sheet sheet ${full?'full':''} ${pop?'wpop':''} ${s.t==='chat'?'cx-sheet':''} ${same?'still':''}">${s.t==='w'?sheetWeapon(s.id,s.m):s.t==='v'?sheetVillage(s.i):s.t==='ch'&&ui.ch?sheetCh():s.t==='chr'&&ui.chr?sheetChr():s.t==='a'?sheetAch():s.t==='fk'?sheetFk(s.i):s.t==='lb'?sheetLb(s.i):s.t==='lbw'?sheetLbW(s.i,s.k):s.t==='ws'?sheetWorkshop(s.k):s.t==='evt'?sheetEvt():s.t==='chat'?sheetChat():s.t==='gd'?sheetGuild():s.t==='fr'?sheetFriend():s.t==='bw'?sheetBossW(s.r,s.j):s.t==='fxt'?sheetFxTest(s):s.t==='set'?sheetSet(s.k):/^mk/.test(s.t)?sheetMk(s):sheetDev()}</div></div>`}
   const r=ui.result;
   if(r&&r.t==='h')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card">${ptitle(r.title)}${r.ev?`<div class="small t-danger center">其中 ${r.ev} 輪受襲：沒有材料、金幣減半</div>`:''}<div class="hgrid">${harvestIcons(r.got)}</div>${btn('確定','rclose',{cls:'btn-primary big'})}</div></div>`;
   if(r&&r.t==='info')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card">${r.ico?`<div class="info-ico">${r.ico}</div>`:r.icon?`<div class="info-ico">${img(r.icon)}</div>`:''}${ptitle(r.title)}<div class="info-body">${r.html}</div>${r.acts||''}${btn(r.ok||'知道了','rclose',{cls:r.ok?'btn-sec big':'btn-primary big'})}</div></div>`;
@@ -5138,7 +5203,7 @@ document.addEventListener('click',e=>{
    lock:()=>{const w=W(+d.id);if(w){w.lock=!w.lock;save();toast(w.lock?'已鎖定，這把武器不會被熔解，也不會被登錄圖鑑。':'已取消鎖定。')}render()},eslot:()=>{ui.enchSlot=+d.k;render()},
    collect:()=>{tick();collect(+d.i);render()},collectAll,deliver:()=>deliver(+d.i,+d.id),recall:()=>recall(+d.i),strat:()=>{if(setStrategy(+d.i,d.k))toast('已切換為「'+STRATS[d.k].n+'」');render()},
    melt:()=>{const id=+d.id;if(ui.meltArm!==id){ui.meltArm=id;return render()}ui.meltArm=null;const g=meltCore(id);if(g){snd('melt');toast('熔解完成：'+gotText(g),'ok');ui.sheet=null}render()},meltCheap,
-   enhance:()=>enhance(+d.id),achv:()=>{ui.achV=d.k;render()},lbw:()=>{ui.sheet={t:'lbw',i:+d.i,k:+d.k};render()},realm:()=>{const k=+d.k;if(k<0||k>1)return;if(k===1&&!rfOpen())return toast(`收復 ${vNo(9)} ${VILLAGES[9].name}後開放約頓海姆`);ui.realm=k;render();scrollTo(0,0)},lbopen:()=>{if(LB_OFF)return;ui.sheet={t:'lb',i:+(d.i??S.villages.findIndex(v=>v.status!=='cleared')-1)};render()},achtab:()=>{ui.achTab=d.k;render()},qtab:()=>{ui.qTab=d.k;render()},qbox:()=>{const r=claimBox(+d.i);if(r){snd('coin');toast('活躍度寶箱：'+rwText(r),'ok')}render()},qsign:()=>{const r=claimSign();if(r){snd('coin');toast('簽到獎勵：'+rwText(r),'ok')}render()},achAll:claimAllAch,autoEnh:()=>autoEnhance(+d.id),enchant:()=>enchant(+d.id,+d.s),
+   enhance:()=>enhance(+d.id),achv:()=>{ui.achV=d.k;render()},lbw:()=>{ui.sheet={t:'lbw',i:+d.i,k:+d.k};render()},fkopen:()=>{ui.sheet={t:'fk',i:+d.i};render();const L=document.querySelector('.lb-tab.on');if(L)L.scrollIntoView({block:'nearest',inline:'center'})},realm:()=>{const k=+d.k;if(k<0||k>1)return;if(k===1&&!rfOpen())return toast(`收復 ${vNo(9)} ${VILLAGES[9].name}後開放約頓海姆`);ui.realm=k;render();scrollTo(0,0)},lbopen:()=>{if(LB_OFF)return;ui.sheet={t:'lb',i:+(d.i??S.villages.findIndex(v=>v.status!=='cleared')-1)};render()},achtab:()=>{ui.achTab=d.k;render()},qtab:()=>{ui.qTab=d.k;render()},qbox:()=>{const r=claimBox(+d.i);if(r){snd('coin');toast('活躍度寶箱：'+rwText(r),'ok')}render()},qsign:()=>{const r=claimSign();if(r){snd('coin');toast('簽到獎勵：'+rwText(r),'ok')}render()},achAll:claimAllAch,autoEnh:()=>autoEnhance(+d.id),enchant:()=>enchant(+d.id,+d.s),
    ach:()=>{if(claimAch(d.k))toast('成就獎勵已領取','ok');render()},rclose:()=>{ui.result=null;render()},
    fxskip:()=>{ui.fxDone&&ui.fxDone()},fxclose:()=>{ui.busy=false;render()},backArmory:()=>{ui.sheet=null;ui.enhLast=null;ui.tab='armory';render()},
    uiskinp2:()=>p2Toggle(),

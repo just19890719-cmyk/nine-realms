@@ -520,7 +520,7 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.44 舊武器刪除：要在放回測試資料前檢查
-  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
+  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
     T('BD2 神明材質階、神格覺醒拿掉',TIERS.length===5&&typeof GOD==='undefined'&&typeof awkN==='undefined',`材質 ${TIERS.length} 階`)];
   return withTestBps(()=>runTests0(mode,bd))}
 // v4.44 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
@@ -674,3 +674,17 @@ function mkItemTests(){const r={id:-6,kind:'i',item:STONE,qty:30,left_qty:12,sel
     T('MKI2 上架道具頁有單價、數量、全部按鈕',sell.includes('mkiprice')&&sell.includes('mkiqty')&&sell.includes('mkiqall')),
     T('MKI3 買道具頁可以填數量',buy.includes('mkbq')&&buy.includes('mkbuyi')),
     T('MKI4 道具賣出算進待領取',n===MK.claim.length+1&&box.includes('855'),`待領取 ${n}`)]}
+
+// v4.73 秒殺榜：只留最快、四捨五入到 0.1 秒、王關＝每界第 9、10 關、榜和公告文字
+function fkTests(){const S0=S;S=JSON.parse(JSON.stringify(S0));const mk0=FK.mock;
+  try{const st=S.villages[0],w={id:-9,b:BPS.find(b=>!b.dev).id,q:0,lv:7,ench:[]};delete st.fk;
+    const a=fkRec(0,23.46,w),b=fkRec(0,30,w),c=fkRec(0,18.04,w);
+    const ok1=a.better&&a.sec===23.5&&!b.better&&st.fk===18&&c.prev===23.5&&st.fkw.lv===7;
+    const boss=VILLAGES.map((v,i)=>i).filter(fkBoss).join(',');
+    FK.mock=()=>({rows:[{rk:1,uid:'x',nick:'霜狼',sec:9.2,w:{b:w.b,q:0,lv:12,ench:[]}},{rk:2,uid:'me',nick:'我',sec:18,w:st.fkw,mine:true}],n:2,me:{rk:2},my:{rk:2,n:2,top:9.2},t:1});
+    const h=sheetFk(0),row=fkRow(0),t1=fkAnnText({nick:'A',village:9,sec:12.4,kind:'first'}),t2=fkAnnText({nick:'B',village:19,sec:8.9,bp:w.b,lv:12,kind:'top'});
+    return[T('FK1 秒殺紀錄只留最快一次、到 0.1 秒、記當時的武器',ok1,`最快 ${st.fk}`),
+      T('FK2 跑馬燈只給每界第 9、10 關的王',boss==='8,9,18,19',boss),
+      T('FK3 秒殺榜有名次、秒數、評級、我的名次；村莊詳情有我的最快和全服最快',h.includes('霜狼')&&h.includes('9.2')&&h.includes('lb-row me')&&h.includes('gr-')&&row.includes('18.0 秒')&&row.includes('第 2 名')&&row.includes('9.2')),
+      T('FK4 公告文字：首殺、刷新紀錄都有怪物名字和秒數',t1.includes(MONS[9])&&t1.includes('12.4')&&t2.includes(MONS[19])&&t2.includes('+12')&&t2.includes('8.9'))]}
+  catch(e){return[T('FK 秒殺榜測試',false,e.message)]}finally{S=S0;FK.mock=mk0}}
