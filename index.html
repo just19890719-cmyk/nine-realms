@@ -2338,7 +2338,7 @@ const killGoldTxt=i=>KILL_GOLD[i]?KILL_GOLD[i].map(fmt).join('～'):fmt(vKillGol
 const RELIC_DESC='英靈留在戰場上的遺物，光芒越亮，裡面的東西越好。打倒怪物有機率掉，越後面的關卡越容易掉到好的。';
 const ITEMS={relic_g:['英靈・遺物','it_relic_g',RELIC_DESC,'綠光','#5fd36a'],relic_b:['英靈・遺物','it_relic_b',RELIC_DESC,'藍光','#4fa3ff'],relic_r:['英靈・遺物','it_relic_r',RELIC_DESC,'紅光','#ff5a4a'],relic_y:['英靈・遺物','it_relic_y',RELIC_DESC,'金光','#ffc940'],estone:['強化石','it_estone','強化武器用，每次強化消耗 1 顆（成功或失敗都會用掉）。打怪收成、熔解武器可以拿到，越後面的關卡掉越多。','','']};   // v4.50 強化石（圖待 Mochi 生成）
 ITEMS.enstone=['附魔石','it_ench','附魔用，每次附魔消耗 1 顆加金幣（重抽也一樣）。打倒怪物有機率掉、英靈・遺物也開得到，越後面的關卡掉越多。','',''];   // v4.54 附魔石（Mochi 選：附魔花 1 顆＋金幣）
-ITEMS.repair=['矮人解咒石',null,'矮人兄弟布洛克與艾特里偷偷送來的解咒石，他們也受過諸神的氣。中了奧丁之咒的武器用 1 顆就能破除詛咒，變回無屬性（要再附魔）。打倒怪物有機率掉，商城也買得到。','',''];   // v4.83 圖待生成（art/it_repair）
+ITEMS.repair=['矮人解咒石','it_repair','矮人兄弟布洛克與艾特里偷偷送來的解咒石，他們也受過諸神的氣。中了奧丁之咒的武器用 1 顆就能破除詛咒，變回無屬性（要再附魔）。打倒怪物有機率掉，商城也買得到。','',''];   // v4.83 圖 art/it_repair.webp（Mochi AI 生圖）
 const RELICS=Object.keys(ITEMS).filter(k=>k.startsWith('relic_'));
 const ENSTONE='enstone',enStones=()=>S.items[ENSTONE]|0,REPAIR='repair',repairs=()=>S.items[REPAIR]|0;
 const RATE=[0,1,1,1,1,1,1,.35,.325,.3,.01,.01,.01];   // v4.50 武器系統定案第 3 節（Mochi 05:10 修訂）：+1～+6 必成功，+7～+9 35／32.5／30%，+10～+12 各 1%；上限 +12
