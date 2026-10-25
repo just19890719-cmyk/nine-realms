@@ -333,7 +333,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.90';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.91';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1515,9 +1515,15 @@ const loreBtn=k=>`<button class="ui-iconbtn icon-btn img lore-btn" data-act="lor
 const LORE={ench:{t:'矮人盜石',art:'story_ench',p:['奧丁為了諸神黃昏，命令九界交出所有武器。不肯交的村莊，一夜之間化成焦土。',
   '住在地底的矮人兄弟<b>布洛克與艾特里</b>，替諸神鍛過雷神之錘，最清楚諸神的手段。他們看不慣奧丁濫殺平民，趁祂離開王座、到密米爾之泉喝水的時候，從寶庫偷走一袋刻著盧恩的<b>附魔石</b>，連夜送到人類最後的鐵匠手上。',
   '奧丁是符文之主，偷來的符文逃不過祂的眼睛。祂在每一顆附魔石上都留下詛咒：每次附魔，都有機會被<b class="t-danger">奧丁之咒</b>反噬，武器從此不能使用。',
-  '矮人兄弟只好在地底日夜鍛造<b>矮人解咒石</b>，偷偷送到鐵匠鋪。「這些石頭是我們拿命換來的，鐵匠，讓凡人也有對抗諸神的力量吧。」']}};
+  '矮人兄弟只好在地底日夜鍛造<b>矮人解咒石</b>，偷偷送到鐵匠鋪。「這些石頭是我們拿命換來的，鐵匠，讓凡人也有對抗諸神的力量吧。」']},
+ enh:{t:'倒懸九夜',art:'story_enh',p:['為了看清命運，奧丁把自己倒吊在世界樹<b>尤克特拉希爾</b>上，用長矛刺穿身體，不吃不喝九天九夜。第九夜，盧恩符文從樹根下的深淵浮上來，被祂一把抓住。',
+  '奧丁把符文刻進一塊黑色巨岩，立在阿斯嘉的鍛造場。諸神的武器只要放上這座<b>符文石碑</b>，就會吸進符文的力量，一次比一次鋒利。',
+  '諸神黃昏前夕，一道雷霆劈碎了石碑，碎片散落人間，就是村莊怪物身上偶爾掉出的<b>強化石</b>。矮人兄弟把最大的一塊殘碑扛到鐵匠鋪，拼回一座缺角的石碑。',
+  '符文的力量從來不是白給的：奧丁為了它倒吊九夜，為了智慧還付出一隻眼睛。武器強化到 <b>+7</b> 以上，石碑就會向武器討代價；賭輸了，整把武器會被符文吞掉，<b class="t-danger">永遠消失</b>。'],
+  gift:()=>{S.items[STONE]=stones()+10;return`<div class="lore-gift">${itemIco(STONE)}<span>矮人兄弟在殘碑底下壓了 <b>10 顆強化石</b>送你（只有第一次翻開會有）</span></div>`}}};   // v4.91 Mochi：符文石碑也要有故事
 function loreOpen(k){const L=LORE[k];if(!L)return;let gift='';
-  if(loreNew(k)){S.loreSeen=S.loreSeen||{};S.loreSeen[k]=1;S.items[ENSTONE]=enStones()+10;S.items[REPAIR]=(S.items[REPAIR]|0)+2;save();snd('coin');gift=`<div class="lore-gift">${itemIco(ENSTONE)}${itemIco(REPAIR)}<span>矮人兄弟在書裡夾了 <b>10 顆附魔石</b>和 <b>2 顆矮人解咒石</b>送你（只有第一次翻開會有）</span></div>`}else snd('ui_open');
+  if(loreNew(k)&&L.gift){S.loreSeen=S.loreSeen||{};S.loreSeen[k]=1;gift=L.gift();save();snd('coin')}
+  else if(loreNew(k)){S.loreSeen=S.loreSeen||{};S.loreSeen[k]=1;S.items[ENSTONE]=enStones()+10;S.items[REPAIR]=(S.items[REPAIR]|0)+2;save();snd('coin');gift=`<div class="lore-gift">${itemIco(ENSTONE)}${itemIco(REPAIR)}<span>矮人兄弟在書裡夾了 <b>10 顆附魔石</b>和 <b>2 顆矮人解咒石</b>送你（只有第一次翻開會有）</span></div>`}else snd('ui_open');
   ui.result={t:'info',k:'lore',title:L.t,html:`<div class="lore-art">${loreArt(L.art,'lore-img')}</div>${gift}<div class="lore-txt">${L.p.map(x=>`<p>${x}</p>`).join('')}</div>`,ok:'闔上書本'};render()}
 function repair(id){const r=repairCore(id);if(r.err)return toast(r.err,'bad');snd('upgrade');toast('詛咒破除了，武器變回無屬性，可以再附魔。','ok');render()}   // v4.81 Mochi：不跳「附魔結果」提示，結果直接看武器名稱
 const furnaceMax=()=>rfOpen()?6:5;   // v3.76 熔爐 Lv6（巨人武器）在第二界開放後才能升
@@ -2216,7 +2222,7 @@ function sheetWeapon(id,mode){
   const b=bpOf(w),i=where(w),bs=bossSlotOf(w),busy=i>=0||bs>=0,highValue=w.lock||w.q>=2||w.lv>=3||b.t>=2;
   const title={main:'武器詳情',enh:'強化',ench:'附魔',give:'交給村莊'}[mode];
   const xb=btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'}),bk=mode==='main'?'<span style="width:44px"></span>':btn(img('ic_back'),'wmode',{cls:'icon-btn img',attrs:`data-m="main" data-id="${id}" aria-label="返回"`});
-  const head=mode==='ench'?`<div class="sheet-head"><span class="sh-2">${bk}<span style="width:44px"></span></span><h2>${title}</h2><span class="sh-2">${loreBtn('ench')}${xb}</span></div>`   // v4.83 附魔小卡叉叉旁邊放故事書（Mochi）
+  const head=mode==='ench'||mode==='enh'?`<div class="sheet-head"><span class="sh-2">${bk}<span style="width:44px"></span></span><h2>${title}</h2><span class="sh-2">${loreBtn(mode)}${xb}</span></div>`   // v4.91 強化小卡也放故事書「倒懸九夜」   // v4.83 附魔小卡叉叉旁邊放故事書（Mochi）
     :`<div class="sheet-head">${bk}<h2>${title}</h2>${xb}</div>`;
   const showcase=(extra='')=>`<div class="ui-card ui-card--feature showcase ${lc(w)}b ${extra}">
    <div class="sc-top"><div><h2 class="${lc(w)}">${b.n} <span class="lvt">+${w.lv}</span></h2></div>
@@ -3048,14 +3054,14 @@ function fitNames(){const els=[...document.querySelectorAll('.wt-name')];if(!els
 if(typeof window!=='undefined')window.addEventListener('resize',()=>fitNames());
 function renderLayer(){stkFollow();
   const L=document.getElementById('layer');const s=ui.sheet;let h='';
-  const sc=document.querySelector('.sheet'),st=sc?sc.scrollTop:0,same=sc&&ui._lastSheet===JSON.stringify(s);
-  if(s){const pop=s.t==='w'&&((s.m==='main'||s.m==='ench')&&!!W(s.id)||s.m==='enh'),full=!pop&&(s.t==='w'||s.t==='fxt');h+=`<div class="scrim ${pop?'wpopc':''} ${same?'still':''}" data-act="scrim"><div class="ui-sheet sheet ${full?'full':''} ${pop?'wpop':''} ${s.t==='chat'?'cx-sheet':''} ${same?'still':''}">${s.t==='w'?sheetWeapon(s.id,s.m):s.t==='v'?sheetVillage(s.i):s.t==='ch'&&ui.ch?sheetCh():s.t==='chr'&&ui.chr?sheetChr():s.t==='a'?sheetAch():s.t==='fk'?sheetFk(s.i):s.t==='lb'?sheetLb(s.i):s.t==='lbw'?sheetLbW(s.i,s.k):s.t==='ws'?sheetWorkshop(s.k):s.t==='evt'?sheetEvt():s.t==='chat'?sheetChat():s.t==='gd'?sheetGuild():s.t==='fr'?sheetFriend():s.t==='bw'?sheetBossW(s.r,s.j):s.t==='fxt'?sheetFxTest(s):s.t==='set'?sheetSet(s.k):/^mk/.test(s.t)?sheetMk(s):sheetDev()}</div></div>`}
+  const sc=document.querySelector('.sheet'),st=sc?sc.scrollTop:0,same=sc&&ui._lastSheet===JSON.stringify(s),keep=same||sc&&s&&s.t==='w'&&ui._lastSheetW===s.id;   // v4.91 同一把武器的小卡切換（武器⇄強化⇄附魔）不重播彈出動畫
+  if(s){const pop=s.t==='w'&&((s.m==='main'||s.m==='ench')&&!!W(s.id)||s.m==='enh'),full=!pop&&(s.t==='w'||s.t==='fxt');h+=`<div class="scrim ${pop?'wpopc':''} ${keep?'still':''}" data-act="scrim"><div class="ui-sheet sheet ${full?'full':''} ${pop?'wpop':''} ${s.t==='chat'?'cx-sheet':''} ${keep?'still':''}">${s.t==='w'?sheetWeapon(s.id,s.m):s.t==='v'?sheetVillage(s.i):s.t==='ch'&&ui.ch?sheetCh():s.t==='chr'&&ui.chr?sheetChr():s.t==='a'?sheetAch():s.t==='fk'?sheetFk(s.i):s.t==='lb'?sheetLb(s.i):s.t==='lbw'?sheetLbW(s.i,s.k):s.t==='ws'?sheetWorkshop(s.k):s.t==='evt'?sheetEvt():s.t==='chat'?sheetChat():s.t==='gd'?sheetGuild():s.t==='fr'?sheetFriend():s.t==='bw'?sheetBossW(s.r,s.j):s.t==='fxt'?sheetFxTest(s):s.t==='set'?sheetSet(s.k):/^mk/.test(s.t)?sheetMk(s):sheetDev()}</div></div>`}
   const r=ui.result;
   if(r&&r.t==='h')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card">${ptitle(r.title)}${r.ev?`<div class="small t-danger center">其中 ${r.ev} 輪受襲：沒有材料、金幣減半</div>`:''}<div class="hgrid">${harvestIcons(r.got)}</div>${btn('確定','rclose',{cls:'btn-primary big'})}</div></div>`;
   if(r&&r.t==='info')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card">${r.ico?`<div class="info-ico">${r.ico}</div>`:r.icon?`<div class="info-ico">${img(r.icon)}</div>`:''}${ptitle(r.title)}<div class="info-body">${r.html}</div>${r.acts||''}${btn(r.ok||'知道了','rclose',{cls:r.ok?'btn-sec big':'btn-primary big'})}</div></div>`;
   {const rk=r?JSON.stringify([r.t,r.title,r.html]):'';if(r&&rk===ui._lastRes)h=h.replace('<div class="ui-modal modal-card">','<div class="ui-modal modal-card still">');ui._lastRes=rk}   // v4.74 小卡內容沒變就不重播彈出動畫（每 250ms 的 render 會讓小卡像一直重新打開）
   const fa=document.activeElement,fid=fa&&fa.id&&L.contains(fa)?fa.id:null,cxl=document.getElementById('cxList'),cxs=cxl?cxl.scrollTop:null;   // v3.88 重畫時保留聊天輸入框焦點與訊息捲動位置
-  L.innerHTML=h;ui._lastSheet=JSON.stringify(s);{const n=fid&&document.getElementById(fid);if(n)n.focus({preventScroll:true});const c=document.getElementById('cxList');if(c)c.scrollTop=cxs==null?c.scrollHeight:cxs}document.documentElement.classList.toggle('scrimmed',!!s);
+  L.innerHTML=h;ui._lastSheet=JSON.stringify(s);ui._lastSheetW=s&&s.t==='w'?s.id:null;{const n=fid&&document.getElementById(fid);if(n)n.focus({preventScroll:true});const c=document.getElementById('cxList');if(c)c.scrollTop=cxs==null?c.scrollHeight:cxs}document.documentElement.classList.toggle('scrimmed',!!s);
   if(same){const n=document.querySelector('.sheet');if(n)n.scrollTop=st};fitNames()
 }
 function updateLive(){
