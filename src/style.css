@@ -2146,5 +2146,5 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 .k2 .ev-warn.risk{color:#f1b3aa}.k2 .ev-warn.risk b{color:#ff7466}
 .k2 .ev-bar{background:transparent;border:0;box-shadow:none}
 @media (max-width:400px){.k2 .sheet-head h2::before,.k2 .sheet-head h2::after{display:none}}   /* 375 寬標題兩側花紋會把 X 擠出去 */
-@media (max-width:360px){.sheet.wpop.k2:not(#_){padding:18px 14px 12px}.k2 .sheet-head h2{font-size:18px}}
+@media (max-width:360px){.sheet.wpop.k2:not(#_){padding:18px 16px 12px;border-image-width:18px}.k2 .sheet-head h2{font-size:18px}}
 </style>

@@ -700,7 +700,11 @@ function k2Tests(){const S0=S,sh0=ui.sheet,r0=ui.result;S=JSON.parse(JSON.string
     for(const m of ['main','enh','ench']){ui.sheet={t:'w',id:w.id,m};ui.result=null;renderLayer();const sc=document.querySelector('#layer .sheet');
       const bi=sc?getComputedStyle(sc).borderImageSource:'',old=sc?[...sc.querySelectorAll('*')].filter(e=>/ui491_/.test(getComputedStyle(e).borderImageSource)).length:-1;
       const bt=sc?[...sc.querySelectorAll('.ui-btn.btn')].filter(e=>!/bag2_btn/.test(getComputedStyle(e).borderImageSource)).length:-1;
-      out.push(T('K2-'+m+' 小卡用道具欄外框、按鈕，沒有舊框',!!sc&&sc.classList.contains('k2')&&/bag2_main_frame/.test(bi)&&old===0&&bt===0,`外框 ${/bag2_main_frame/.test(bi)?'bag2':bi.slice(-30)}；舊框 ${old} 個；非 bag2 按鈕 ${bt} 個`))}
+      out.push(T('K2-'+m+' 小卡用道具欄外框、按鈕，沒有舊框',!!sc&&sc.classList.contains('k2')&&/bag2_main_frame/.test(bi)&&old===0&&bt===0,`外框 ${/bag2_main_frame/.test(bi)?'bag2':bi.slice(-30)}；舊框 ${old} 個；非 bag2 按鈕 ${bt} 個`))
+      // 標題列的返回／說明／X 按鈕要完整在外框裡、不壓到標題（v5.10 375 寬 X 被擠出去）
+      const sr=sc?sc.getBoundingClientRect():null,hd=sc?[...sc.querySelectorAll('.sheet-head .icon-btn,.wp-top .icon-btn')].map(e=>e.getBoundingClientRect()).filter(r=>r.width):[],tt=sc&&sc.querySelector('.sheet-head h2'),tr=tt&&tt.getBoundingClientRect();
+      const outB=hd.filter(r=>r.right>sr.right-12||r.left<sr.left+12).length,hit=tr?hd.filter(r=>r.left<tr.right&&r.right>tr.left&&r.top<tr.bottom&&r.bottom>tr.top).length:0;
+      out.push(T('K2-'+m+' 標題列按鈕完整、不壓標題',!!sc&&hd.length>0&&outB===0&&hit===0,`寬 ${innerWidth}：按鈕 ${hd.length} 個，超出外框 ${outB}，壓到標題 ${hit}`))}
     const h=b2Show(w);out.push(T('K2-show 武器大圖用格子＋品階框，+9 以上有裂痕',h.includes('b2-slot')&&h.includes('bag2_rim9_l6')&&h.includes('bag2_crk_l6')&&b2Show({...w,lv:6}).includes('bag2_rim_l1')));
     return out}
   catch(e){return[T('K2 UI 母版延伸測試',false,e.message)]}finally{S=S0;ui.sheet=sh0;ui.result=r0;renderLayer()}}
