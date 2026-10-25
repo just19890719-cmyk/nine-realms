@@ -333,7 +333,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.96';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.97';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1313,6 +1313,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.97',d:'10/25',t:'道具欄 +9 以上電流繞框回來了',b:['新道具欄的格子補回 <b>+9 以上</b>的電流繞框','拿掉格子右上角的綠色寶石（可以交付村莊的提示）'],g:['bag']},
  {v:'4.96',d:'10/25',t:'道具欄換上新外觀',b:['道具欄換成<b>煤黑古銅</b>的新框，武器一排 5 格，格子外框顏色就是強化品階','未選的頁籤、分類圖示和文字調亮，比較好認','格子裡的品質寶石、駐守標牌、鎖頭、詛咒標籤和強化數值各自分開，不再互相蓋住','點武器還是打開原本的武器小卡，強化、附魔、駐守、上架、熔解、鎖定都照舊'],g:['bag']},
  {v:'4.93',d:'10/25',t:'格子和面板換上暗鐵底',b:['道具欄、武器小卡、村莊、圖鑑、排行榜裡的武器格子，換成同一種<b>暗鐵展示台</b>底，中間淡淡打光','大面板和彈出小卡改成同材質、再暗一階，不再有的有底、有的全黑','鐵匠鋪的武器圖紙維持羊皮紙'],g:[]},
  {v:'4.92',d:'10/25',t:'故事書禮物加碼・剩下的框也換新',b:['強化故事書「倒懸九夜」第一次翻開改送 <b>100 顆強化石</b>','附魔故事書「矮人盜石」第一次翻開改送 <b>50 顆附魔石＋5 顆矮人解咒石</b>（已經翻過的不會再送）','圖鑑、任務、排行榜、聊天、設定、提示訊息、委託條等剩下的框，也換成同一套斜切角金屬框'],g:['enh','ench']},
@@ -1416,7 +1417,7 @@ const GUIDE=[
   {k:'wpn',ic:'cat_sword',n:'武器數值與相剋',s:'攻速、附加效果、相剋，點武器看小卡',v:'4.79',h:'點武器會跳出小卡。<b>攻擊力＝每秒傷害</b>，已經算進附加效果的平均。<br>七類武器攻速：雙刀 0.6 秒、劍 1.0、弓 1.1、長柄 1.2、斧 1.3、弩 1.6、錘 1.8 秒；每秒傷害都差不多，攻速慢的單擊比較重。<br><b>附加效果</b>：劍會心、斧流血、錘震碎、雙刀中毒、長柄貫穿、弓穿心、弩破甲；+1～+6 每級觸發率 2%，+7 起 16／20／25／30／35／40%。<br><b>相剋</b>：怪物分人形、野獸、巨型、亡靈。劍、雙刀剋人形，長柄、斧剋野獸，弩、弓剋巨型，錘剋亡靈；打被剋的怪物傷害會增加，強化越高加越多：+1～+6 每級 +1%、+7～+9 每級 +2%、+10～+12 每級 +3%（+6 為 6%、+9 為 12%、+12 為 21%），跟屬性弱點一起算。<br>武器名稱是「+7 寒霜 鐵劍」：強化等級、附魔、武器名。'},
   {k:'enh',ic:'it_bless',n:'強化',s:'每次 1 顆強化石，最高 +12',v:'4.91',h:'每次強化用 <b>1 顆強化石</b>，不花金幣，成功或失敗都會用掉。強化石從村莊收成拿（越後面的關卡掉越多），熔解武器也會退 1 顆。<br>+1～+6 一定成功。+7 起是危險區：+7 35%、+8 32.5%、+9 30%，失敗就爆裝；+10～+12 每級 1%，失敗時 1/3 維持原樣、2/3 爆裝。最高 <b>+12</b>。<br>攻擊倍率：+6 ×1.6、+7 ×1.9、+8 ×2.25、+9 ×2.65、+10 ×3.3、+11 ×4、+12 ×4.8。<br>武器的框色看強化等級：+0 灰、+1～+6 綠、+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石，+9 以上的框有電流繞著跑。<br>+1～+6 按強化直接出結果；+7 起符文石碑的燈光和武器光暈就是那一級外框的顏色。「一鍵強化」會一級一級連擊播放，點畫面可以略過。<br>強化小卡右上角的故事書「倒懸九夜」講符文石碑和強化石的由來，第一次翻開送 100 顆強化石。'},
   {k:'ench',ic:'mat_shard',n:'屬性附魔',s:'6 種屬性三對互剋，打中弱點加傷害、同屬性扣傷害',v:'4.84',h:'鍛造出來的武器一律<b>無屬性</b>。每次附魔花 <b>1 顆附魔石</b>加金幣，隨機附魔，得到 1 種屬性（每把武器只有 1 欄，重抽會蓋掉舊的；已經是三級時會跳確認小卡，按「確定重抽」才會重抽）。<br>屬性 6 種：<b>火屬性、冰屬性、雷屬性、毒屬性、聖屬性、暗屬性</b>，機率一樣。等級越高越難抽：一級 66.5%、二級 23.75%、三級 4.75%。<br><b>奧丁之咒（5%）</b>：符文之主奧丁不許凡人動祂的符文，降下詛咒。原本的屬性消失，武器<b>完全不能使用</b>（不能駐守、挑戰、強化、上架、登錄圖鑑），要用 1 顆<b>矮人解咒石</b>解咒，解咒後變回無屬性。解咒石打倒怪物有機率掉，商城也買得到。<br>名稱：火屬性 餘燼／烈焰／滅世之焰；冰屬性 寒霜／冰封／永凍之霜；雷屬性 雷光／雷鳴／雷神之怒；毒屬性 蝕毒／蛇毒／巨蟒之毒；聖屬性 微光／聖光／光神聖輝；暗屬性 幽影／暗夜／盲神之影。<br><b>相剋（三對宿敵）</b>：火屬性⇄冰屬性、雷屬性⇄毒屬性、聖屬性⇄暗屬性。每隻怪物都有屬性，弱點就是對手屬性。<br>打中弱點：一級 +3%、二級 +6%、三級 +10%，狩獵更快、收成更多。<br><b>同屬性抗性</b>：拿跟怪物一樣屬性的武器（例如火屬性打火屬性的怪物）：一級 −3%、二級 −6%、三級 −10%。等級越高加越多、也扣越多，附魔前先看清楚怪物屬性。<br>其他屬性或無屬性都是正常傷害。屬性不加攻擊力。'},
-  {k:'bag',ic:'nav_forge',n:'道具欄',s:'同一種道具疊一格，沒有上限',v:'4.96',h:'下方導覽的「<b>道具欄</b>」（原本的武器庫）分「武器／材料／圖鑑」三頁，道具在「材料」頁。<br>武器頁一排 5 格，格子外框顏色是強化品階；左上角「駐」是駐守中的村莊、「咒」是中了奧丁之咒，右上角鎖頭是已鎖定、紅寶石是新拿到、綠寶石是可以交付村莊，左下角是強化等級。點一格打開武器小卡。<br>一模一樣的武器（同一把、同強化等級、同屬性）疊在同一格，右下角是數量；點進去的操作只動其中一把；按「一鍵安定值」後小卡會換到下一把同款，可以一直按。上限 200 把照算每一把。同一種道具放在同一格，右下角顯示數量，沒有上限。<br>道具：<b>強化石</b>（強化用）、<b>附魔石</b>（附魔用）、<b>英靈・遺物</b>（綠光、藍光、紅光、金光四種，光芒越亮內容越好）。三種都是打倒怪物有機率掉，越後面的關卡掉越多、好遺物越多。<br>點遺物可以看開出機率，按「打開 1 個」或「全部打開」：可能開到金幣、材料、強化石、附魔石、Boss 素材或武器。<br>材料：每一界 2 種一般材料，加上怪物部位和 Boss 素材，點一下看哪裡掉、哪把武器會用到。'},
+  {k:'bag',ic:'nav_forge',n:'道具欄',s:'同一種道具疊一格，沒有上限',v:'4.97',h:'下方導覽的「<b>道具欄</b>」（原本的武器庫）分「武器／材料／圖鑑」三頁，道具在「材料」頁。<br>武器頁一排 5 格，格子外框顏色是強化品階；左上角「駐」是駐守中的村莊、「咒」是中了奧丁之咒，右上角鎖頭是已鎖定、紅寶石是新拿到，左下角是強化等級；<b>+9 以上</b>的格框會有電流繞框。點一格打開武器小卡。<br>一模一樣的武器（同一把、同強化等級、同屬性）疊在同一格，右下角是數量；點進去的操作只動其中一把；按「一鍵安定值」後小卡會換到下一把同款，可以一直按。上限 200 把照算每一把。同一種道具放在同一格，右下角顯示數量，沒有上限。<br>道具：<b>強化石</b>（強化用）、<b>附魔石</b>（附魔用）、<b>英靈・遺物</b>（綠光、藍光、紅光、金光四種，光芒越亮內容越好）。三種都是打倒怪物有機率掉，越後面的關卡掉越多、好遺物越多。<br>點遺物可以看開出機率，按「打開 1 個」或「全部打開」：可能開到金幣、材料、強化石、附魔石、Boss 素材或武器。<br>材料：每一界 2 種一般材料，加上怪物部位和 Boss 素材，點一下看哪裡掉、哪把武器會用到。'},
   {k:'codex',ic:'nav_armory',n:'武器圖鑑',s:'登錄武器換全帳號攻擊力，武器會消失',v:'4.72',h:'道具欄的「<b>圖鑑</b>」分頁。每把武器有 3 格：<b>+0</b>（+0.2%）、<b>+6</b>（+0.6%）、<b>+9</b>（+1.5%），道具欄有強化到那個等級以上的同款武器就能登錄（格子會發亮），自動挑等級最低、沒駐守、沒鎖定的那把。<br><b>登錄後那把武器會消失</b>，換到所有武器攻擊力的永久加成。<br>「套裝」分頁：6 個套裝湊齊再加 +2%～+5%。兩界全部收滿最多 +57.1%。'},
   {k:'melt',ic:'mat_iron',n:'熔解',s:'不要的武器換回金幣',v:'4.72',h:'在武器詳情按「熔解」：退回一半鍛造金幣。<br>鎖定（上鎖）的武器不能熔解，也不能登錄圖鑑。'}]],
  ['村莊與戰鬥',[
@@ -2006,8 +2007,8 @@ const b2Head=()=>{const n=S.weapons.length,full=n>=CAP_WEAPONS;
 // 武器圖照 wArt 的安全距離（WFIT），只是不疊等級框，改用格子的品階框
 const b2W=id=>{const k=(WFIT[ART_WAIT[id]||id]||.65)*100,o=(100-k)/2;return `<img class="w" src="${A(id+'_disp')}" alt="" style="left:${o}%;top:${o}%;width:${k}%;height:${k}%">`};
 function b2Slot(w,act,dot,n=1,nw=wNew(w)){const b=bpOf(w),i=where(w),bs=bossSlotOf(w),brk=isBroken(w),on=ui.sheet&&ui.sheet.t==='w'&&ui.sheet.id===w.id;
-  return `<button class="b2-slot ${on?'sel':''} ${brk?'brk':''} ${i>=0||bs>=0?'posted':''}" style="--rim:url(art/ui/bag2/bag2_rim_${brk?'curse':'l'+FLV(w.lv)}.webp)" ${act} aria-label="${b.n} +${w.lv}"><span class="rim"></span>${b2W(b.id)}
-   ${i>=0?`<span class="post">駐 ${vNo(i)}</span>`:bs>=0?'<span class="post">首領</span>':brk?'<span class="curse">咒</span>':''}${w.lock?b2Img('ic_lock','lk','已鎖定'):nw?'<i class="nw"></i>':dot?'<i class="nw give" title="可以交付村莊"></i>':''}
+  return `<button class="b2-slot ${on?'sel':''} ${brk?'brk':''} ${i>=0||bs>=0?'posted':''}" style="--rim:url(art/ui/bag2/bag2_rim_${brk?'curse':'l'+FLV(w.lv)}.webp)" ${act} aria-label="${b.n} +${w.lv}"><span class="rim"></span>${!brk&&FLV(w.lv)>=3?(d=>`<span class="run" style="animation-delay:${d}ms"><img src="art/ui/bag2/bag2_rim_l${FLV(w.lv)}.webp" alt="" style="animation-delay:${d}ms"></span>`)(-Math.round(performance.now()%2200)):''}${b2W(b.id)}
+   ${i>=0?`<span class="post">駐 ${vNo(i)}</span>`:bs>=0?'<span class="post">首領</span>':brk?'<span class="curse">咒</span>':''}${w.lock?b2Img('ic_lock','lk','已鎖定'):nw?'<i class="nw"></i>':''}
    <span class="lv">+${w.lv}</span>${n>1?`<span class="x">×${fmt(n)}</span>`:''}</button>`}
 const b2Fill=(n,cols=5)=>'<span class="b2-slot empty"></span>'.repeat((cols-n%cols)%cols+cols);
 // v4.72 武器圖鑑頁：上方總加成，下面分「武器（每把 3 格）／套裝」
@@ -2672,6 +2673,7 @@ function viewShop(){
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'4.97',t:'道具欄格子 +9 以上電流繞框、拿掉綠色交付寶石',b:[['bag96','產生 +0～+12 武器並打開道具欄（看 +9 以上繞框）']]},
  {v:'4.96',t:'道具欄新外觀（煤黑古銅框、5 欄格子、格內標記不互相遮擋、頁籤與分類提亮）',b:[['bag96','產生各種狀態的武器並打開道具欄（鎖定／詛咒／疊數／NEW）'],['bag96m','打開材料頁（道具、材料格子）']]},
  {v:'4.93',t:'武器格子與面板換暗鐵底（鍛造圖紙保留羊皮紙）',b:[['iron93','給測試武器並打開道具欄（看格子底）'],['skin91','打開武器小卡（看面板底）']]},
  {v:'4.92',t:'故事書禮物 100 強化石／50 附魔石＋5 解咒石、剩下的程式框換新',b:[['lore91','打開強化故事書（第一次送 100 顆強化石）'],['lore83','打開附魔故事書（第一次送 50 附魔石＋5 解咒石）'],['lore83r','重置故事書已讀（可以再領一次測試）'],['cx92','打開圖鑑分頁（看新框）'],['dq92','打開任務（看新框）']]},
@@ -2909,7 +2911,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='affopen'){const c={},t=[0,0,0,0];for(let i=0;i<6000;i++){const x=Object.keys(ELEM)[rnd(0,5)],v=weighted([1,2,3],y=>ELEM_TW[y]);c[x]=(c[x]||0)+1;t[v]++}   // v4.44 屬性附魔
     return toast(`附魔 6000 次：${Object.entries(c).map(([x,n])=>ELEM[x].n+' '+n).join('、')}<br>等級：一級 ${t[1]}、二級 ${t[2]}、三級 ${t[3]}（應約 4200／1500／300）`,'ok')}
   if(k==='res77'){const wi=makeWeapon('dev_sword',2,6,[],[{k:'ice',v:3},null,null,null]),wf=makeWeapon('dev_sword',2,6,[],[{k:'fire',v:3},null,null,null]);save();ui.sheet={t:'w',id:wf.id,m:'ench'};render();return toast(`1-9 火焰騎兵：永凍之霜 ×${weakMul(8,wi)}（應 1.1）、滅世之焰 ×${weakMul(8,wf)}（應 0.9）`)}
-  if(k==='bag96'){S.weapons=S.weapons||[];devdo('flvtest');const ts=S.weapons.filter(x=>x.test);if(ts[1])ts[1].lock=true;if(ts[3])ts[3].ench=[{k:'broken',v:1},null,null,null];const b=(BPS.find(x=>!x.dev&&!x.unlock)||BPS[0]);if(b){const n0=S.nextId;for(let n=0;n<3;n++)makeWeapon(b.id,0,0);S.seenW=n0-1}ui.tab='armory';ui.atab='w';ui.acat='all';ui.ast='all';ui.aq='all';ui.sheet=null;save();render();return toast('左上：駐／咒；右上：鎖頭／NEW；左下：強化等級；右下：數量')}
+  if(k==='bag96'){S.weapons=S.weapons||[];devdo('flvtest');const ts=S.weapons.filter(x=>x.test);if(ts[1])ts[1].lock=true;{const c=ts.find(x=>x.lv===7);if(c)c.ench=[{k:'broken',v:1},null,null,null]}const b=(BPS.find(x=>!x.dev&&!x.unlock)||BPS[0]);if(b){const n0=S.nextId;for(let n=0;n<3;n++)makeWeapon(b.id,0,0);S.seenW=n0-1}ui.tab='armory';ui.atab='w';ui.acat='all';ui.ast='all';ui.aq='all';ui.sheet=null;save();render();return toast('左上：駐／咒；右上：鎖頭／NEW；左下：強化等級；右下：數量')}
   if(k==='bag96m'){ui.tab='armory';ui.atab='m';ui.sheet=null;render();scrollTo(0,0);return}
   if(k==='iron93'){S.weapons=S.weapons||[];devdo('flvtest');ui.tab='armory';ui.atab='w';ui.sheet=null;render();return}
   if(k==='skin91'){S.weapons=S.weapons||[];devdo('flvtest');const w=S.weapons.find(x=>x.test&&x.lv===8)||S.weapons[0];ui.tab='armory';ui.atab='w';ui.sheet=w?{t:'w',id:w.id,m:'main'}:null;render();return}
