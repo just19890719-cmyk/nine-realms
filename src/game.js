@@ -333,7 +333,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='5.02';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='5.03';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1313,6 +1313,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'5.03',d:'10/25',t:'裂縫呼吸燈不再中途重來、強化數字內移',b:['+9 以上裂縫呼吸燈不會再播到一半突然重來','格子右下角的強化數字往內移，不再碰到內框'],g:['bag']},
  {v:'5.02',d:'10/25',t:'道具欄往下捲時上方區塊接得更順',b:['往下捲時，上方固定的頁籤和分類下緣多一條青銅飾線，格子會淡入它底下，不再被硬切一刀'],g:['bag']},
  {v:'5.01',d:'10/25',t:'中了奧丁之咒的武器改成鎖鏈纏繞',b:['道具欄裡中咒的武器不再顯示「咒」字和紅框，改成武器變暗、被兩條十字鎖鏈纏住，外框照樣是強化品階的顏色','+9 以上的格框換成有裂痕的封印框（+9 紅、+10 金、+11 紫、+12 鑽石），裂縫會慢慢透出光再暗下'],g:['bag']},
  {v:'5.00',d:'10/25',t:'拿掉 +9 以上的發光特效',b:['道具欄 +9 以上的格子不再發光，只看格框顏色分辨強化品階'],g:['bag']},
@@ -2012,7 +2013,7 @@ const b2Head=()=>{const n=S.weapons.length,full=n>=CAP_WEAPONS;
 // 武器圖照 wArt 的安全距離（WFIT），只是不疊等級框，改用格子的品階框
 const b2W=id=>{const k=(WFIT[ART_WAIT[id]||id]||.65)*100,o=(100-k)/2;return `<img class="w" src="${A(id+'_disp')}" alt="" style="left:${o}%;top:${o}%;width:${k}%;height:${k}%">`};
 function b2Slot(w,act,dot,n=1,nw=wNew(w)){const b=bpOf(w),i=where(w),bs=bossSlotOf(w),brk=isBroken(w),on=ui.sheet&&ui.sheet.t==='w'&&ui.sheet.id===w.id;
-  return `<button class="b2-slot ${on?'sel':''} ${brk?'brk':''} ${i>=0||bs>=0?'posted':''}" style="--rim:url(art/ui/bag2/bag2_rim${w.lv>=9?'9':''}_l${FLV(w.lv)}.webp)${w.lv>=9?`;--crk:url(art/ui/bag2/bag2_crk_l${FLV(w.lv)}.webp)`:''}" ${act} aria-label="${b.n} +${w.lv}"><span class="rim${w.lv>=9?' crk':''}"></span>${b2W(b.id)}${brk?'<span class="chain"></span>':''}
+  return `<button class="b2-slot ${on?'sel':''} ${brk?'brk':''} ${i>=0||bs>=0?'posted':''}" style="--rim:url(art/ui/bag2/bag2_rim${w.lv>=9?'9':''}_l${FLV(w.lv)}.webp)${w.lv>=9?`;--crk:url(art/ui/bag2/bag2_crk_l${FLV(w.lv)}.webp)`:''}" ${act} aria-label="${b.n} +${w.lv}"><span class="rim${w.lv>=9?' crk':''}"${w.lv>=9?` style="--crkd:-${(Date.now()%6000)/1000}s"`:''}></span>${b2W(b.id)}${brk?'<span class="chain"></span>':''}
    ${i>=0?`<span class="post">駐 ${vNo(i)}</span>`:bs>=0?'<span class="post">首領</span>':''}${w.lock?b2Img('ic_lock','lk','已鎖定'):nw?'<i class="nw"></i>':''}
    ${w.lv?`<span class="lv">+${w.lv}</span>`:n>1?`<span class="x">${fmt(n)}</span>`:''}</button>`}
 const b2Fill=(n,cols=5)=>'<span class="b2-slot empty"></span>'.repeat((cols-n%cols)%cols+cols);
@@ -2678,6 +2679,7 @@ function viewShop(){
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'5.03',t:'裂縫呼吸燈不重置、+數字內移',b:[['bag96','產生 +0～+12 武器並打開道具欄（看 +9 以上呼吸燈連續、數字不碰框）']]},
  {v:'5.02',t:'道具欄固定區下緣加飾線＋淡出',b:[['bag98','產生 60 把武器並打開道具欄（往下捲看上方固定區下緣）']]},
  {v:'5.01',t:'奧丁之咒改成鎖鏈纏繞；+9 以上換裂痕框＋裂縫呼吸燈',b:[['bag96','產生 +0～+12 武器並打開道具欄（+7 那把中咒，看鎖鏈）'],['brkstk','給 3 把同款 +6 劍，其中 1 把中咒（看道具欄）']]},
  {v:'4.98',t:'道具欄上方往下捲時固定、底紋與格子底調亮一階、數量拿掉×',b:[['bag98','產生 60 把武器並打開道具欄（往下捲看上方固定）']]},
