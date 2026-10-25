@@ -1964,4 +1964,28 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .lb-row.me .fk-who{color:var(--gold-hi)}
 .fk-me .fk-s{font-size:20px;font-family:var(--display)}
 .kvgrid [class*="elc-"]{color:var(--ec)}   /* v4.76 村莊詳情的屬性、弱點用屬性顏色 */
+/* v4.79 第三、四界怪物依形態的動作（MON_MV）：只換 .bs-mon 的攻擊位移和 .bs-br 的待機；攻擊圖仍在 72%～91% 出現 */
+.bs-mon[class*="mv-"]{will-change:transform}
+.bs-mon.mv-float .bs-br,.bs-mon.mv-glide .bs-br,.bs-mon.mv-blink .bs-br{animation:mvFloat 2.6s ease-in-out infinite}
+.bs-mon.mv-dive .bs-br{animation:mvHover 1.8s ease-in-out infinite}
+.bs-mon.mv-crawl .bs-br{animation:mvSway 2.2s ease-in-out infinite}
+.bs-mon.mv-stomp .bs-br{animation:mvHeavy 2.8s ease-in-out infinite}
+.bs-mon.mv-float{animation-name:mvA_float}.bs-mon.mv-glide{animation-name:mvA_glide}.bs-mon.mv-leap{animation-name:mvA_leap}.bs-mon.mv-crawl{animation-name:mvA_crawl}
+.bs-mon.mv-burst{animation-name:mvA_burst}.bs-mon.mv-stomp{animation-name:mvA_stomp}.bs-mon.mv-shoot{animation-name:mvA_shoot}.bs-mon.mv-blink{animation-name:mvA_blink}
+.bs-mon.mv-charge{animation-name:mvA_charge}.bs-mon.mv-dive{animation-name:mvA_dive}.bs-mon.mv-cast{animation-name:mvA_cast}
+@keyframes mvFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4%)}}
+@keyframes mvHover{0%,100%{transform:translateY(0)}50%{transform:translateY(-6%)}}
+@keyframes mvSway{0%,100%{transform:rotate(-1.6deg)}50%{transform:rotate(1.6deg) scaleX(1.02)}}
+@keyframes mvHeavy{0%,100%{transform:none}50%{transform:scale(1.02,.975)}}
+@keyframes mvA_float{0%,72%{transform:none}76%,88%{transform:translate(6%,-4%)}93%,100%{transform:none}}
+@keyframes mvA_glide{0%,72%{transform:none}78%{transform:translateX(14%) scaleX(1.08)}88%{transform:translateX(16%)}93%,100%{transform:none}}
+@keyframes mvA_leap{0%,72%{transform:none}76%{transform:translate(5%,-14%)}84%{transform:translate(10%,-3%)}88%{transform:translateX(9%)}93%,100%{transform:none}}
+@keyframes mvA_crawl{0%,72%{transform:none}75%{transform:translateX(-4%)}78%{transform:translateX(14%) scaleX(1.06)}88%{transform:translateX(12%)}93%,100%{transform:none}}
+@keyframes mvA_burst{0%,70%{transform:translateY(7%)}76%{transform:translate(4%,-8%)}88%{transform:translate(4%,-3%)}93%,100%{transform:translateY(7%)}}
+@keyframes mvA_stomp{0%,72%{transform:none}75%{transform:translateY(-5%)}79%{transform:translate(6%,1%) scale(1.04,.96)}88%{transform:translateX(6%)}93%,100%{transform:none}}
+@keyframes mvA_shoot{0%,72%{transform:none}76%{transform:translateX(-4%)}84%{transform:translateX(-2%)}93%,100%{transform:none}}
+@keyframes mvA_blink{0%,72%{opacity:1;transform:none}73.5%{opacity:.1;transform:none}75%{opacity:.1;transform:translateX(13%)}77%,88%{opacity:1;transform:translateX(13%)}90%{opacity:.1;transform:translateX(13%)}92%{opacity:.1;transform:none}94%,100%{opacity:1;transform:none}}
+@keyframes mvA_charge{0%,72%{transform:none}74%{transform:translateX(-4%)}79%{transform:translateX(20%)}88%{transform:translateX(18%)}93%,100%{transform:none}}
+@keyframes mvA_dive{0%,72%{transform:translateY(-8%)}76%{transform:translate(4%,-14%)}80%{transform:translate(14%,2%)}88%{transform:translateX(12%)}93%,100%{transform:translateY(-8%)}}
+@keyframes mvA_cast{0%,72%{transform:none}76%,88%{transform:translateY(3%) scale(1.03)}93%,100%{transform:none}}
 </style>

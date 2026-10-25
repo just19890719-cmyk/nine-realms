@@ -4,11 +4,18 @@ const VERSION=3;
 const ART_V='?v=3';  // 武器顯示圖改過透明度：加版本號，避免瀏覽器沿用舊快取
 // v3.76 第二界的 AI 圖還沒到：先借第一界的圖顯示，圖到了刪掉對應那一項就好
 const ART_WAIT={};
+// v4.79 第三、四界的 AI 圖（怪物、村莊背景、材料、劇情）還沒到：第三界借第二界、第四界借第一界，材料借舊材料圖
+for(let n=21;n<=40;n++){const o=n<=30?n-10:n-30;ART_WAIT['v'+n]='v'+o;for(const x of['','_idle','_atk'])ART_WAIT['mon_'+n+x]='mon_'+o+x}
+Object.assign(ART_WAIT,{mat_rime:'mat_frost',mat_snake:'mat_serpent',mat_mistle:'mat_pine',mat_helfrost:'mat_icecore',mat_elfwood:'mat_gwood',mat_moonsilk:'mat_silver',mat_marahorn:'mat_fang',mat_bristle:'mat_fur',
+ story3_1:'login/op_1',story3_2:'login/op_2',story3_3:'login/op_4',story3_4:'login/op_5',story3_5:'login/op_6',story4_1:'login/op_3',story4_2:'login/op_1',story4_3:'login/op_6'});
 const ART_NEW=/^(mat_srelic)$/;   // v4.30 斯卡蒂之弓的舊圖換成索爾之錘、雷神錘柄：檔名沒變，加版本號避免沿用快取
 const A=n=>(n=ART_WAIT[n]||n,(typeof UI_ART!=='undefined'&&UI_ART[n])||'art/'+n+'.webp'+(n.endsWith('_disp')?ART_V:/^(mon|boss|bg)_|^v\d+$/.test(n)?'?m=4.30':'')+(ART_NEW.test(n)?(n.endsWith('_disp')?'&':'?')+'g=4.30':''));  // UI_ART（skin.js）可把既有圖示換成新素材路徑；預設空白＝不變
 // v4.54 新材料（Mochi 選：跟該界怪物故事有關、配方量加倍）：每一界 2 種一般材料（每打倒一隻 50%），怪物主題武器那關掉怪物部位（5%），第 10 關掉 Boss 素材（10%）
 const MAT_DEF=[['miron','中庭鐵礦','人類之境的鐵，鐵爐村鍛造的基本金屬。'],['pine','松林硬木','松林哨站一帶的硬木，做槍桿、弓身和握柄。'],['troll','巨魔石皮','山怪特羅爾照到陽光會變成石頭，這是牠半石化的外皮。'],['bifrost','彩虹橋碎晶','海姆達爾守護的彩虹橋碎片，霍夫德之劍的彩虹聖光就來自這裡。'],
- ['frost','約頓霜鐵','巨人國度永凍土層裡的冷鐵。'],['gwood','約頓巨木','巨人森林的古木，比人間的木頭大上十倍。'],['ubone','幻術巨人王骨','幻術巨人王烏特加德洛基的骨頭，摸起來會一直變形。'],['thor','索爾雷晶','雷神落雷打過的岩石結晶，裡面還有雷電在跑。']];
+ ['frost','約頓霜鐵','巨人國度永凍土層裡的冷鐵。'],['gwood','約頓巨木','巨人森林的古木，比人間的木頭大上十倍。'],['ubone','幻術巨人王骨','幻術巨人王烏特加德洛基的骨頭，摸起來會一直變形。'],['thor','索爾雷晶','雷神落雷打過的岩石結晶，裡面還有雷電在跑。'],
+ // v4.79 第三界尼福爾海姆、第四界亞爾夫海姆
+ ['rime','霧凇石','尼福爾海姆的霧結成的石頭，比冰還冷，敲不碎。'],['snake','冰蛇蛻','灰蛇泉一帶的蛇脫下的皮，又韌又滑，做握柄和弓弦。'],['mistle','槲寄生殘枝','射死巴德爾的那種槲寄生，霍德爾一直帶在身上。'],['helfrost','赫爾冥霜','冥后半面殿結的霜，摸起來一半溫、一半冷。'],
+ ['elfwood','精靈木','亞爾夫海姆的白木，輕得像羽毛，硬得像鐵。'],['moonsilk','月光絲','精靈在月光下紡的絲，做弓弦和刀柄的纏繩。'],['marahorn','夢魔之角','從瑪拉頭上折下來的角，拿在手裡會聽到別人的夢。'],['bristle','金鬃野豬鬃','弗雷的金鬃野豬古林博斯帝的鬃毛，黑夜裡也會發光。']];
 const MATS=Object.fromEntries(MAT_DEF.map(x=>[x[0],x[1]])),MAT_D=Object.fromEntries(MAT_DEF.map(x=>[x[0],x[2]]));
 const MATART=Object.fromEntries(MAT_DEF.map(x=>[x[0],x[0]==='miron'?'mat_miron':'mat_'+x[0]]));
 const CATS={axe:'斧',sword:'劍',dagger:'雙刀',polearm:'長柄',hammer:'錘',bow:'弓',crossbow:'弩',shield:'盾',throw:'投擲',tool:'工具'};
@@ -30,10 +37,18 @@ const BPS=[
  ['w1_troll','巨魔石皮錘','hammer',0,16.5,7,600,'m'],['g_hofund','霍夫德之劍','sword',0,17,10,2000,'b','彩虹聖光斬'],
  ['w2_axe','約頓巨木斧','axe',0,15,11,1500],['w2_bow','巨鷹崖風弓','bow',0,15,13,2000],['w2_dual','永凍雙刀','dagger',0,15,15,2500],
  ['w2_utgard','幻術巨人王骨戟','polearm',0,16.5,18,5000,'m'],['g_skadi','索爾之錘','hammer',0,17,20,10000,'b','雷神落雷'],
+ // v4.79 第二階（第三、四界）：一般 18、主題 ×1.1、Boss 20.4；第三界的主題武器在 3-9 霍德爾（神明主題，god:1）
+ ['w3_sword','霧凇鋼劍','sword',0,18,22,3000],['w3_xbow','尼福爾霜弩','crossbow',0,18,24,4000],['w3_hammer','霧凇石錘','hammer',0,18,26,5000],
+ ['w3_hodr','盲神槲寄生斧','axe',0,19.8,29,10000,'m'],['g_hel','赫爾冥鐮','polearm',0,20.4,30,20000,'b','亡者之握'],
+ ['w4_bow','精靈木長弓','bow',0,18,31,6000],['w4_dual','月光雙刀','dagger',0,18,33,7000],['w4_spear','亞爾夫銀矛','polearm',0,18,35,8000],
+ ['w4_mara','夢魔角劍','sword',0,19.8,37,15000,'m'],['g_frey','勝利之劍','sword',0,20.4,40,30000,'b','自行之劍'],
 ].map(([id,n,cat,t,base,unlock,gold,k,fx])=>({id,n,cat,t,base,unlock:unlock??TIERS[t].unlock,gold,k,fx}));
+BPS.find(b=>b.id==='w3_hodr').god=1;   // v4.79 主題是神（3-9 霍德爾），種類顯示「神明主題」
 // v4.54 配方材料（Mochi：量照草案正常就好，要顧及玩家大量衝裝的爽感）：一般武器約在解鎖那關掛機 30 分鐘；近戰金屬多、遠程木頭多；怪物部位 5、Boss 素材 10
 const BP_R={w1_spear:{miron:10,pine:15},w1_sword:{miron:18,pine:7},w1_xbow:{miron:10,pine:15},w1_troll:{miron:32,pine:18,troll:5},g_hofund:{miron:50,pine:25,bifrost:10},
- w2_axe:{frost:12,gwood:13},w2_bow:{frost:8,gwood:17},w2_dual:{frost:18,gwood:7},w2_utgard:{frost:20,gwood:30,ubone:5},g_skadi:{frost:50,gwood:25,thor:10}};
+ w2_axe:{frost:12,gwood:13},w2_bow:{frost:8,gwood:17},w2_dual:{frost:18,gwood:7},w2_utgard:{frost:20,gwood:30,ubone:5},g_skadi:{frost:50,gwood:25,thor:10},
+ w3_sword:{rime:18,snake:7,frost:5},w3_xbow:{rime:10,snake:15,gwood:5},w3_hammer:{rime:15,snake:10,frost:5},w3_hodr:{rime:25,snake:25,gwood:10,mistle:5},g_hel:{rime:50,snake:25,frost:10,helfrost:10},
+ w4_bow:{elfwood:17,moonsilk:8,rime:5},w4_dual:{elfwood:7,moonsilk:18,snake:5},w4_spear:{elfwood:15,moonsilk:10,rime:5},w4_mara:{elfwood:20,moonsilk:30,snake:10,marahorn:5},g_frey:{elfwood:50,moonsilk:25,rime:10,bristle:10}};
 for(const b of BPS)if(BP_R[b.id])b.r=BP_R[b.id];
 // v4.72 武器圖鑑（Mochi 選，像天堂W 的收藏）：把武器「登錄」進圖鑑，那把武器會消失，換全帳號所有武器攻擊力 %。
 // 每把武器 3 格（+0／+6／+9，強化等級達標就能登錄，自動挑最低等級、沒駐守、沒鎖定的那把），另外 6 個套裝湊齊再加。兩界全收最多 +57.1%
@@ -60,10 +75,11 @@ function cxRegCore(k,j){if(cxHas(k,j))return{err:'這格已經登錄過了'};con
   const before=CX_SETS.filter(cxSetOk);S.codex=S.codex||{};const r=S.codex[k]=S.codex[k]||[0,0,0];r[j]=1;CX_MEMO=null;S.weapons.splice(S.weapons.indexOf(w),1);save();
   return{w,sets:CX_SETS.filter(x=>cxSetOk(x)&&!before.includes(x))}}
 // v4.51 武器圖（Mochi 生 4 張合圖、切成 15 張）已放進 art/；之後還沒生圖的武器放這裡借舊圖：{id:'舊圖檔名'}
-const BP_TMP={};
+// v4.79 第三、四界武器圖還沒到，先借第一、二界同類的圖
+const BP_TMP={w3_sword:'w1_sword',w3_xbow:'w1_xbow',w3_hammer:'w0_hammer',w3_hodr:'w2_axe',g_hel:'w2_utgard',w4_bow:'w2_bow',w4_dual:'w2_dual',w4_spear:'w1_spear',w4_mara:'w1_sword',g_frey:'g_hofund'};
 for(const k in BP_TMP){ART_WAIT[k]=BP_TMP[k]+'_disp';ART_WAIT[k+'_disp']=BP_TMP[k]+'_disp'}
 const BOSS_FX={p:.2,m:.3},bossE=b=>b&&b.fx?1+BOSS_FX.p*BOSS_FX.m:1;   // Boss 專屬特效的平均加成（算進攻擊力）
-const kindN=b=>b.k==='b'?'Boss 專屬':b.k==='m'?'怪物主題':b.unlock?'一般':'開局';
+const kindN=b=>b.k==='b'?'Boss 專屬':b.k==='m'?(b.god?'神明主題':'怪物主題'):b.unlock?'一般':'開局';
 const BP=Object.fromEntries(BPS.map(b=>[b.id,b]));
 // v4.40 開發者模式的測試圖紙：每類一把、借舊武器圖顯示，只在開發者模式和快速測試時放進 BPS，正式玩家看不到
 const DEV_BPS=[['dev_axe','測試斧','axe',14,'t1_woodaxe'],['dev_sword','測試劍','sword',12,'t1_ironsword'],['dev_dagger','測試雙刀','dagger',9,'t1_huntknife'],['dev_polearm','測試長柄','polearm',11,'t1_farmspear'],
@@ -129,21 +145,44 @@ const VILLAGES=[
  {name:'狂風高原',who:'遠征軍・長槍陣',cat:'polearm',req:600,sec:6600,gold:2000,danger:.19,tag:'giant',drops:[['thunderiron',.45,1,1],['giantbone',.45,1,1]],txt:'風之巨人卡瑞一吐氣就是暴風雪，擋住通往烏特加德城的路，長槍陣要能刺穿巨人的長柄武器。'},
  {name:'烏特加德城',who:'遠征軍・王家騎士',cat:'sword',req:720,sec:7200,gold:2300,danger:.2,tag:'giant',drops:[['elderroot',.25,1,1],['icecore',.25,1,1]],txt:'幻術巨人王烏特加德洛基坐在王座大廳，說只要贏得過牠的幻術，就肯聽凡人說話。騎士們要最鋒利的劍。'},
  {name:'石籬原',who:'遠征軍・攻城隊',cat:'axe',req:900,sec:7200,gold:2600,danger:.2,tag:'giant',drops:[['elderroot',.3,1,1],['giantbone',.3,1,1],['thunderiron',.45,1,1]],txt:'巨人王認輸後說：最強的巨人赫朗格尼爾住在石籬原，只要牠點頭，全約頓海姆都會跟你走。攻城隊的斧要劈得開牠的石盾。'},
- {name:'維莫爾河渡口',who:'遠征軍・總指揮',cat:'hammer',req:1040,sec:7200,gold:3000,danger:.2,tag:'god',need:'holy',drops:[['elderroot',.35,1,1],['giantbone',.5,1,2],['rune',.4,1,1],['srelic',.2,1,1]],txt:'巨人們終於願意和凡人結盟，雷神索爾卻駕著山羊戰車渡過維莫爾河，要親手拆散這個聯盟。'}
+ {name:'維莫爾河渡口',who:'遠征軍・總指揮',cat:'hammer',req:1040,sec:7200,gold:3000,danger:.2,tag:'god',need:'holy',drops:[['elderroot',.35,1,1],['giantbone',.5,1,2],['rune',.4,1,1],['srelic',.2,1,1]],txt:'巨人們終於願意和凡人結盟，雷神索爾卻駕著山羊戰車渡過維莫爾河，要親手拆散這個聯盟。'},
+ // v4.79 第三界尼福爾海姆（收復 2-10 後開放）、第四界亞爾夫海姆（收復 3-10 後開放）；需求看 VREQ、掉落看 REALM_MAT
+ {name:'鬼火沼澤',who:'反抗軍・斥候',cat:'dagger',req:0,sec:7200,gold:3000,danger:.2,tag:'beast',drops:[],txt:'反抗軍跟著你逃進尼福爾海姆的濃霧。沼澤上飄著一盞藍色燈籠，提燈的老人笑著招手，跟過去的人再也沒有回來。'},
+ {name:'迷霧隘道',who:'反抗軍・嚮導',cat:'bow',req:0,sec:7200,gold:3000,danger:.2,tag:'beast',drops:[],txt:'霧裡的隘道，走一步就看不見上一步。死在霧中的旅人化成加斯特，抱著身子發抖，等著下一個迷路的人。'},
+ {name:'無名墓地',who:'反抗軍・掘墓人',cat:'hammer',req:0,sec:7200,gold:3000,danger:.2,tag:'beast',drops:[],txt:'被遺棄的孩子沒有名字，也沒有墳。米林在墓地哭了上百年，誰停下來安慰牠，牠就跳上誰的背，越背越重。'},
+ {name:'灰蛇泉',who:'反抗軍・汲水隊',cat:'polearm',req:0,sec:7200,gold:3000,danger:.2,tag:'beast',drops:[],txt:'世界樹的樹根垂進灰蛇泉，格拉巴克整天啃著樹根。反抗軍要在這裡取水，得先把牠趕走。'},
+ {name:'冰底墓穴',who:'反抗軍・盜墓者',cat:'crossbow',req:0,sec:7200,gold:3000,danger:.2,tag:'beast',drops:[],txt:'冰層底下埋著上古的死者，格拉夫維特尼爾在冰下吃屍體。冰面一裂，狼頭就竄出來。'},
+ {name:'漂流木箱灘',who:'反抗軍・船工',cat:'axe',req:0,sec:7200,gold:3000,danger:.2,tag:'giant',drops:[],txt:'伊米爾的血淹死了所有霜巨人，只有貝格爾米爾躲在木箱裡漂到這片灘上。牠恨諸神，更恨闖進來的凡人。'},
+ {name:'亡者之門',who:'反抗軍・先鋒',cat:'hammer',req:0,sec:7200,gold:3000,danger:.2,tag:'giant',drops:[],txt:'赫爾的國度有一道門，赫林格林尼爾坐在門口喝酒守夜。想見冥后，得先讓守門巨人倒下。'},
+ {name:'萬泉之源',who:'反抗軍・祭司',cat:'polearm',req:0,sec:7200,gold:3000,danger:.2,tag:'giant',drops:[],txt:'九界的河都從赫瓦格密爾泉流出去，戈因與莫因兩條蛇王纏在泉底啃世界樹。泉水一變毒，九界的河都會跟著變毒。'},
+ {name:'盲神流放地',who:'反抗軍・獵人',cat:'bow',req:0,sec:7200,gold:3000,danger:.2,tag:'god',need:'holy',drops:[],txt:'霍德爾被洛基騙著用槲寄生射死了兄弟巴德爾，從此被流放到冥界。祂看不見，卻聽得見你的腳步聲。'},
+ {name:'冥后半面殿',who:'反抗軍・總指揮',cat:'sword',req:0,sec:7200,gold:3000,danger:.2,tag:'god',need:'holy',drops:[],txt:'冥界女王赫爾一半是美女、一半是腐屍。奧丁把祂丟進尼福爾海姆，祂卻聽奧丁的命令來擋你：打贏祂，才走得出這片霧。'},
+ {name:'農舍穀倉',who:'亞爾夫海姆・農家',cat:'polearm',req:0,sec:7200,gold:3000,danger:.2,tag:'beast',drops:[],txt:'霧的另一頭是光精靈的國度。農家忘了給家精托姆特留聖誕粥，牠正在穀倉裡發脾氣，見人就叉。'},
+ {name:'牛尾林地',who:'亞爾夫海姆・牧人',cat:'dagger',req:0,sec:7200,gold:3000,danger:.2,tag:'beast',drops:[],txt:'林地裡的美女胡德拉總是背對著人笑。看到裙子下那條牛尾巴的時候，已經走不出林子了。'},
+ {name:'月光舞環',who:'亞爾夫海姆・旅人',cat:'sword',req:0,sec:7200,gold:3000,danger:.2,tag:'beast',drops:[],txt:'月光下的草地上有一圈精靈環。踏進去的凡人會被拉著跳舞，一直跳到斷氣為止。'},
+ {name:'世界樹枝梢',who:'反抗軍・攀樹隊',cat:'bow',req:0,sec:7200,gold:3000,danger:.2,tag:'beast',drops:[],txt:'世界樹的枝梢伸進亞爾夫海姆，四頭巨鹿在上面啃嫩葉。戴恩把樹枝啃禿了，反抗軍要從這裡爬過去。'},
+ {name:'露角河源',who:'反抗軍・渡河隊',cat:'polearm',req:0,sec:7200,gold:3000,danger:.2,tag:'beast',drops:[],txt:'杜拉索爾角上的露水流成九界的河。牠斷了一根角，是四頭巨鹿裡脾氣最壞的一頭。'},
+ {name:'聖林',who:'亞爾夫海姆・守林人',cat:'axe',req:0,sec:7200,gold:3000,danger:.2,tag:'giant',drops:[],txt:'聖林是維特的家，牠平常像一塊長滿青苔的石頭。有人砍樹，整片森林的根都會從地底打出來。'},
+ {name:'夢魘臥房',who:'反抗軍・傷兵營',cat:'dagger',req:0,sec:7200,gold:3000,danger:.2,tag:'beast',drops:[],txt:'傷兵一個個在睡夢中喘不過氣。夢魔瑪拉每晚坐在傷兵的胸口上，讓人醒不過來。'},
+ {name:'韋蘭德鍛爐',who:'反抗軍・鐵匠學徒',cat:'hammer',req:0,sec:7200,gold:3000,danger:.2,tag:'beast',drops:[],txt:'傳說中的精靈鐵匠韋蘭德被國王打斷了腿，自己鍛出一對翅膀逃走。同樣是鐵匠，牠想試試你的武器配不配得上反抗諸神。'},
+ {name:'金蘋果園',who:'反抗軍・先鋒',cat:'bow',req:0,sec:7200,gold:3000,danger:.2,tag:'god',need:'holy',drops:[],txt:'伊登的金蘋果讓諸神永遠不老。只要搶下一顆，諸神就會開始變老，祂當然不肯。'},
+ {name:'亞爾夫王宮',who:'反抗軍・總指揮',cat:'sword',req:0,sec:7200,gold:3000,danger:.2,tag:'god',need:'holy',drops:[],txt:'豐饒之神弗雷為了愛情送掉了會自己作戰的劍，現在拿鹿角當武器。祂說：「鐵匠，你的劍，我也收得走。」'}
 ];
-const REALM_N=[['米德加德','人類之境','v4'],['約頓海姆','巨人之境','v20']];   // [名稱, 副標, 背景圖]
-const vRealm=i=>i<10?0:1,vNo=i=>(vRealm(i)+1)+'-'+(i%10+1);   // 關卡編號：0→1-1，10→2-1
+const REALM_N=[['米德加德','人類之境','v4'],['約頓海姆','巨人之境','v20'],['尼福爾海姆','冰霧之國','v30'],['亞爾夫海姆','光精靈之國','v40']];   // [名稱, 副標, 背景圖]
+const vRealm=i=>Math.floor(i/10),vNo=i=>(vRealm(i)+1)+'-'+(i%10+1);   // 關卡編號：0→1-1，10→2-1
 // v4.37 巨人體重鍊刪除（武器系統定案）：舊武器的 rf 欄位留著（伺服器不准往下改），但不再計算、不顯示；rfOpen＝第二界已開放
 const rfOpen=()=>S.villages.length>10&&S.villages[10].status!=='locked';
+// v4.79 第 k 界（0 起算）已開放＝那一界第 1 關不是鎖住；realmTop＝目前開放到的最後一界
+const realmOpen=k=>k===0||!!(S.villages[k*10]&&S.villages[k*10].status!=='locked'),realmTop=()=>{let k=0;while(k+1<REALM_N.length&&realmOpen(k+1))k++;return k};
 const TAGN={labor:'勞務',beast:'野獸',giant:'巨人',dragon:'龍族',god:'神明'};
 const FURNACE_COST=[0,3000,6000,15000,40000,150000],ANVIL_COST=[0,2000,8000,25000,50000],SLOT_COST=[0,3000,15000,40000];
 // v3.90 工坊升級依關卡進度解鎖（Mochi 選方案 A）：要升到 Lv(i) 需要收復 WS_GATE[kind][i] 座村莊；已經升上去的等級保留
 const WS_GATE={furnace:[0,0,3,5,6,7,10],anvil:[0,0,2,4,7,10]};
 // v4.54 掉落（武器系統定案 9-2）：該界 2 種一般材料各 50%；怪物主題武器那關多掉怪物部位 5%；第 10 關多掉 Boss 素材 10%（強化石、附魔石、遺物另外算）
-const REALM_MAT=[['miron','pine'],['frost','gwood']],MAT_EXTRA={6:['troll',.05],9:['bifrost',.1],17:['ubone',.05],19:['thor',.1]};
+const REALM_MAT=[['miron','pine'],['frost','gwood'],['rime','snake'],['elfwood','moonsilk']],MAT_EXTRA={6:['troll',.05],9:['bifrost',.1],17:['ubone',.05],19:['thor',.1],28:['mistle',.05],29:['helfrost',.1],36:['marahorn',.05],39:['bristle',.1]};
 VILLAGES.forEach((v,i)=>{const rm=REALM_MAT[Math.floor(i/10)]||[];v.drops=rm.map(k=>[k,.5,1,1]);const x=MAT_EXTRA[i];if(x)v.drops.push([x[0],x[1],1,1])});
 // v4.51 村莊需求改成新武器的數值（Mochi 選「偏難」，武器系統定案 9-5）：需求每秒傷害＝該階武器 × 預期強化倍率，一界最後一關要 +7、二界 +8；舊需求留在 req0 給快速測試的舊圖紙用
-const VREQ=[12,14,15,17,19,22,25,28,31,35, 35,36,37,38,39,40,41,42,43,44];
+const VREQ=[12,14,15,17,19,22,25,28,31,35, 35,36,37,38,39,40,41,42,43,44, 44,45,46,47,49,50,51,52,53,55, 55,56,57,58,59,61,62,63,64,66];   // v4.79 第三、四界（第二階武器 18）
 VILLAGES.forEach((v,i)=>{v.req0=v.req;v.req=VREQ[i]??v.req});
 // v4.52 限時挑戰（武器系統定案第 6 節）：怪物血量＝需求每秒傷害 × 60 秒 × 0.8（第 9、10 關 ×1.0）；需求剛好的武器約 48 秒打倒（神明關 60 秒）
 // 收復後駐守掛機：每打倒一隻＝收成一輪（金幣、強化石機率）；每小時金幣跟以前差不多，武器越強殺越快、拿越多
@@ -169,7 +208,9 @@ const vSec=(i,w)=>VHP(i)/Math.max(1e-9,vPow(i,w));   // 預估幾秒打倒一隻
 // v4.66 Mochi 在「填寫：各關掉落」填的每隻金幣範圍（沒填的關照舊公式）；vKillGold 回傳平均值（時薪、遺物金幣用），rollCycle 每隻在範圍內隨機
 const KILL_GOLD={0:[20,70],1:[10,15],2:[10,30],3:[10,40],4:[20,50],
   5:[20,50],6:[25,50],7:[25,55],8:[30,60],9:[35,65],   // v4.69 Mochi 選 B 溫和：1-6 以後接著 1-5 慢慢往上（第一界後半平均 35～50、第二界 55～90）
-  10:[35,75],11:[40,75],12:[40,80],13:[45,85],14:[45,90],15:[50,90],16:[50,100],17:[55,105],18:[60,110],19:[60,120]};
+  10:[35,75],11:[40,75],12:[40,80],13:[45,85],14:[45,90],15:[50,90],16:[50,100],17:[55,105],18:[60,110],19:[60,120],
+  20:[65,120],21:[65,125],22:[70,130],23:[70,135],24:[75,140],25:[75,145],26:[80,150],27:[85,155],28:[90,160],29:[90,170],   // v4.79 第三、四界接著第二界往上
+  30:[95,175],31:[100,180],32:[100,185],33:[105,190],34:[110,195],35:[110,200],36:[115,210],37:[120,215],38:[125,220],39:[130,230]};
 const vKillGold=i=>KILL_GOLD[i]?Math.round((KILL_GOLD[i][0]+KILL_GOLD[i][1])/2):Math.max(1,Math.round(VILLAGES[i].gold*CH_SEC*VHP_K(i)/VILLAGES[i].sec));
 const killGoldTxt=i=>KILL_GOLD[i]?KILL_GOLD[i].map(fmt).join('～'):fmt(vKillGold(i));   // 每打倒一隻的金幣   // v4.43 舊材料刪除：村莊暫時只掉金幣（新的掉落等 Mochi 重新設計）
 // v4.43 舊道具（防爆卷、祝福石、傳說圖紙、殘渣）全部刪除。新道具：英靈・遺物（打開內容等 Mochi 設定，圖待生成）
@@ -329,7 +370,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.78';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.79';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1175,7 +1216,8 @@ function collectCore(i){const st=S.villages[i],b=st.bank;if(!b.cycles)return nul
   save();return{got,n,ev}}
 function setStrategy(i,k){const st=S.villages[i];if(!STRATS[k]||st.strat===k)return false;tick();st.strat=k;if(st.cycleStart!=null)st.cycleStart=NOW();save();return true}
 // v3.50 第一次收復村莊的金幣獎勵（伺服器存檔檢查有同一張表）
-const FIRST_GOLD=[300,500,800,1200,2000,3000,5000,8000,12000,0,15000,18000,21000,24000,27000,30000,35000,40000,45000,50000];
+const FIRST_GOLD=[300,500,800,1200,2000,3000,5000,8000,12000,0,15000,18000,21000,24000,27000,30000,35000,40000,45000,50000,
+ 55000,60000,65000,70000,75000,80000,90000,100000,110000,120000, 130000,140000,150000,160000,170000,180000,190000,200000,210000,220000];
 function deliverCore(i,id){
   const w=W(id);if(!w||!eligible(i,w)||S.villages[i].status==='locked')return null;
   const old=where(w);if(old>=0&&old!==i){tick();S.villages[old].weaponId=null;S.villages[old].cycleStart=null}
@@ -1196,7 +1238,7 @@ function chPlan(i,w,t0=0){const hs=knHit(w)||hitOf(w),b=bpOf(w),hp=VHP(i),unit=h
 // v4.71 sec＝打倒秒數，給評級；只記最好成績，首次收復獎勵 ×評級倍率，之後打到倍率更高的評級補差額（st.fgm＝已發的倍率）
 function chWinCore(i,sec){const st=S.villages[i];if(!st||st.status==='locked')return null;let first=false,fg=0;
   const g=sec==null?2:grOf(sec)??GRADES.length-1,prev=st.gr??null,better=prev==null||g<prev,fm=GRADES[g].f,F=FIRST_GOLD[i]||0;if(better)st.gr=g;
-  if(st.status!=='cleared'){st.status='cleared';first=true;fg=Math.round(F*fm);st.fgm=fm;repGain(REP_XP.first*(i+1));const nx=S.villages[i+1];if(nx&&nx.status==='locked')nx.status='open'}
+  if(st.status!=='cleared'){st.status='cleared';first=true;fg=Math.round(F*fm);st.fgm=fm;repGain(REP_XP.first*(i+1));const nx=S.villages[i+1];if(nx&&nx.status==='locked')nx.status='open';if(i%10===9&&REALM_STORY[vRealm(i)+1])S.rsPend=vRealm(i)+1}
   else if(fm>(st.fgm||1)){fg=Math.round(F*(fm-(st.fgm||1)));st.fgm=fm}
   S.gold+=fg;save();return{first,fg,g,prev,better,bps:first?BPS.filter(b=>!b.dev&&b.unlock===i+1):[]}}
 // 聲望經驗：升級時發天賦點（由等級推算）和聲望寶箱，升級提示延後顯示，避免被收成／鍛造的提示蓋掉
@@ -1302,6 +1344,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.79',d:'10/25',t:'第三界、第四界開放',b:['收復 2-10 打倒索爾後開放第三界<b>尼福爾海姆</b>（冰霧之國），收復 3-10 打倒赫爾後開放第四界<b>亞爾夫海姆</b>（光精靈之國），各 10 座新村莊','8 種新材料、10 把新武器，包含兩把 Boss 武器：赫爾冥鐮（亡者之握）、勝利之劍（自行之劍）','第一次進入新的一界時會播放劇情','第三、四界的怪物照形態有不同的動作：飄的、爬的、重踏的、閃現的','（封測）新怪物、背景和武器的圖還在畫，先借舊圖顯示'],g:['realm']},
  {v:'4.78',d:'10/25',t:'飛行改成亡靈',b:['怪物型態的「飛行」改成<b>亡靈</b>：人形、野獸、巨型、亡靈','<b>錘剋亡靈</b>（雷神之錘聖化亡者），<b>弓改剋巨型</b>（跟弩一起）；劍、雙刀剋人形，長柄、斧剋野獸不變','亡靈關卡：1-2 不死野豬、1-5 戰場鴉魔、2-4 巨人屍鬼；2-3 吞屍巨鷹是巨人化身，改成巨型；1-6 克拉肯是海中巨獸，改成野獸','前 20 關：人形 4、野獸 5、巨型 8、亡靈 3'],g:['wpn']},
  {v:'4.77',d:'10/25',t:'同屬性抗性',b:['打中弱點改為 <b>+10%／+20%／+30%</b>（看附魔等級）','新增<b>同屬性抗性</b>：拿跟怪物一樣屬性的武器去打，傷害 −10%／−20%／−30%，附魔等級越高扣越多（例如火屬性打火焰騎兵）','三對互剋和每一關的弱點都不變；村莊詳情、附魔說明會寫出哪些關卡有抗性'],g:['ench']},
  {v:'4.76',d:'10/25',t:'屬性名稱統一',b:['屬性名稱全部統一成<b>火屬性、冰屬性、雷屬性、毒屬性、聖屬性、暗屬性</b>：附魔表、說明小卡、武器、村莊和怪物的弱點、首領都一樣','屬性說明小卡上方的大方塊拿掉，只留文字','村莊詳情除了弱點，也顯示<b>怪物本身的屬性</b>和<b>型態</b>（人形／野獸／巨型／飛行，武器相剋看這個）','附魔名稱（例如雷神之怒）不變'],g:['ench','hp']},
@@ -1396,7 +1439,7 @@ const GUIDE=[
   {k:'vil',ic:'nav_village',n:'村莊委託與收成',s:'交武器收復村莊、自動狩獵收成',v:'4.73',h:'還沒收復的村莊要<b>限時挑戰</b>：任何武器都能上（駐守中的也可以），<b>60 秒內打倒怪物</b>就收復，解鎖下一座村莊和新圖紙，第一次收復有金幣獎勵。<br>打倒的秒數決定<b>評級</b>：SS 18 秒內、S 30 秒內、A 45 秒內、B 52 秒內、C 60 秒內。評級越高，這一關掛機的金幣和掉落機率越高（SS ×1.5、S ×1.25、A ×1、B ×0.85、C ×0.7），SS／S 的首次收復獎勵 ×2／×1.5。收復後在村莊詳情按「<b>挑戰評級</b>」可以再打，只記最好成績，評級提升會補發獎勵差額。每一關也會記下<b>最快打倒秒數</b>，上傳到全服<b>秒殺榜</b>（前 50 名，只記每人最快一次），在結算畫面或村莊詳情點「秒殺榜」就能看；每一界第 9、10 關的王，全服首殺和刷新第 1 名會上跑馬燈。整場戰鬥看得到血條和倒數，輸了馬上再試、沒有懲罰；選武器時會顯示預估秒數。<br>收復後可以讓武器駐守掛機，<b>每打倒一隻收成一次</b>，自動帶回金幣，<b>離線最多累積 12 小時</b>。每隻還有機會<b>直接掉武器</b>：第一界的開局武器、這一界已解鎖圖紙的一般武器，怪物專屬武器和 Boss 武器只在牠那一關掉（機率在村莊詳情最下面）；道具欄滿了會自動熔解成金幣和強化石。換上更強的武器打得更快。<br>每輪會掉什麼直接看村莊卡片右邊。<b>點卡片上的武器</b>會跳出小卡，可以看武器詳情、換武器或收回武器。<br>「全部收成」只收目前在看的這一界；另一界可以收成時，地圖圖示會亮紅點。'},
   {k:'hp',ic:'mon_1',n:'怪物血條',s:'打中才扣血，扣多少＝傷害',v:'4.76',h:'村莊卡上的怪物有血條，武器打中才會扣血，扣多少就是造成的傷害。<br>還沒交付或沒有駐守武器的村莊，點開詳情上方有怪物大圖，按 ‹ › 翻看這一界 10 隻（還沒解鎖的只顯示黑影）。<br>怪物被打倒就完成一輪狩獵，換下一隻。<br>點村莊看詳情，血條同步顯示，下方還有這隻北歐神話怪物的稱號和傳說。每一界的最後一關都是神，每一關的名稱、掉落都跟那隻怪物或神的故事有關。<br>怪物血量＝這一關能做的最好一般武器 +6（沒附魔、沒相剋）大約 40 多秒打倒，穩穩拿到 A 評級；越後面的關卡每關血量多 2.5%，在村莊詳情裡看得到。<br>每隻怪物都有<b>屬性</b>，點開村莊詳情的「弱點」是牠怕的屬性（例如火焰騎兵怕冰屬性、索爾死於蛇毒所以怕毒屬性）；武器的屬性附魔打中弱點時，血條扣得更快。'},
   {k:'hit',ic:'cat_sword',n:'武器打法',s:'攻速不同、強化越高越常觸發附加效果',v:'4.39',h:'點村莊卡片下方的<b>往下箭頭</b>（或怪物小圖），會展開戰鬥畫面（一次一個，再點一下收起），下面還列出每輪掉落和已經打到、還沒收成的東西：騎士拿著駐守的武器打怪物，打中時怪物閃一下、停頓後被打退，跳出的數字就是傷害。戰鬥畫面收起時，卡片上的小怪物也是同樣的攻速和附加效果。<br>攻速：<b>劍</b> 1.0 秒、<b>斧</b> 1.3 秒（兩連斬）、<b>錘</b> 1.8 秒、<b>短刃</b> 0.6 秒、<b>長柄</b> 1.2 秒、<b>弓</b> 1.1 秒、<b>弩</b> 1.6 秒。<br>強化越高越常觸發附加效果（+1～+6 每級 2%，+7 起 16%～40%）：劍<b>會心</b>、斧<b>流血</b>、錘<b>震碎</b>、短刃<b>中毒</b>、長柄<b>貫穿</b>、弓<b>穿心</b>、弩<b>破甲</b>。狩獵時間和收成不受影響。'},
-  {k:'realm',ic:'realm_2',n:'第二界 約頓海姆',s:'收復 1-10 後開放',v:'4.37',h:'收復 1-10 彩虹橋頭、打倒海姆達爾後開放第二界，用上方地圖列切換。<br>10 座新村莊、4 種新材料（巨人骨、永凍霜晶、雷鳴鐵、世界樹古根），第五階巨人武器要熔爐 Lv6。<br>v4.37 起巨人體重鍊已經拿掉，第二界材料用來鍛造巨人武器。'}]],
+  {k:'realm',ic:'realm_2',n:'九界地圖',s:'收復每一界第 10 關開放下一界',v:'4.79',h:'目前開放四界：米德加德（人類之境）→ 約頓海姆（巨人之境）→ 尼福爾海姆（冰霧之國）→ 亞爾夫海姆（光精靈之國）。收復一界的第 10 關、打倒那一界的神，就會開放下一界，用上方地圖列切換。<br>每一界有自己的 2 種一般材料、怪物主題武器和 Boss 武器；第三界起武器攻擊力更高，村莊需求也更高。第一次進入第三、四界時會播放劇情。'}]],
  ['成長與獎勵',[
   {k:'quest',ic:'ic_check',n:'每日任務・成就',s:'每天領活躍度寶箱',v:'4.59',h:'<b>每日任務</b>：完成登入、收成、鍛造、強化、熔解累積活躍度，40／70／100 點各開一個寶箱。<br><b>委託成就</b>：免費拿鑽石。<br>v4.59 起<b>七日簽到</b>搬到商城。'},
   {k:'shop',ic:'nav_shop',n:'商城',s:'月卡、七日簽到、材料',v:'4.63',h:'封測期間<b>月卡免費</b>：立得鑽石，之後每天再領。<br><b>七日簽到</b>：漏簽不會歸零，第 7 天領完從第 1 天重新開始；每天第一次進遊戲會自動打開。<br><b>材料</b>：8 種材料都可以用金幣或鑽石買，點材料跳出小卡選數量。<br>狩獵號角已拿掉，其他商品正式上線再補。'}]],
@@ -1449,7 +1492,7 @@ function collectAll(){tick();let tot={},cnt=0,ev=0;const r0=realmNow()*10;S.vill
 function showHarvest(title,got,ev){ui.result={t:'h',title,got,ev};render()}
 function deliver(i,id){const r=deliverCore(i,id);if(!r)return toast('這把武器不符合委託條件。','bad');const lbr=lbReward(i);if(lbr.length)setTimeout(()=>toast(`${VILLAGES[i].name}排行榜 第 ${lbRank(i)} 名！<br>`+lbr.join('<br>'),'ok'),400);snd(r.first?'unlock':'deliver');if(r.fg)setTimeout(()=>toast(`首次收復 ${VILLAGES[i].name}：獲得 ${fmt(r.fg)} 金幣`,'ok'),200);
   if(r.first){const nb=BPS.filter(b=>b.unlock===cleared()).map(b=>b.n);const nx=VILLAGES[i+1];
-    toast(nx?`委託完成！解鎖 ${vNo(i+1)} ${nx.name}`+(nb.length?`，新圖紙：${nb.slice(0,4).join('、')}${nb.length>4?' 等 '+nb.length+' 張':''}`:''):'約頓海姆全部收復！','ok');if(i===9){ui.realm=1;setTimeout(()=>toast('米德加德全部收復！第二界「約頓海姆」開放了','ok'),700)}}
+    toast(nx?`委託完成！解鎖 ${vNo(i+1)} ${nx.name}`+(nb.length?`，新圖紙：${nb.slice(0,4).join('、')}${nb.length>4?' 等 '+nb.length+' 張':''}`:''):REALM_N[vRealm(i)][0]+'全部收復！','ok');const nr=vRealm(i)+1;if(i%10===9&&REALM_N[nr]){ui.realm=nr;setTimeout(()=>toast(`${REALM_N[nr-1][0]}全部收復！第${'一二三四五六七八九'[nr]}界「${REALM_N[nr][0]}」開放了`,'ok'),700)}}
   else toast(`${bpOf(W(id)).n} 已駐守 ${VILLAGES[i].name}`,'ok');ui.sheet=null;render()}
 function recall(i){if(recallCore(i))toast(`武器已收回，${VILLAGES[i].name} 暫停狩獵。`);render()}
 const cheapList=()=>S.weapons.filter(w=>w.q<=1&&w.lv===0&&!busyW(w)&&!w.lock);
@@ -2275,23 +2318,23 @@ function vState(i){const st=S.villages[i];if(st.status==='locked')return['locked
 /* v3.73 村莊怪物血條：狩獵一輪＝打倒一隻怪物（純畫面效果，狩獵時間與收成都不變） */
 // v4.05 每一界第 10 關都是神（Mochi 選）：1-10 海姆達爾、2-10 斯卡蒂、烏特加德洛基移到 2-8；尼德霍格只當每週首領
 // v4.04 神話怪物（Mochi 選 B）：MONS＝血條上的短名（6 字內），MON_T＝稱號，MON_LORE＝村莊詳情頁的傳說小字
-const MONS=['斯寇格拉','賽赫利姆尼爾','哈提','斯庫爾','瓦爾拉文','克拉肯','山怪特羅爾','莫庫卡爾菲','穆斯貝爾騎兵','海姆達爾','斯里瓦爾迪','鐵森林狼王','赫拉斯瓦爾格','德勞格','諾克','林德蟲','卡瑞','烏特加德洛基','赫朗格尼爾','索爾'];
-const MON_T=['林中魅妖','不死野豬','追月之狼','追日之狼','戰場鴉魔','深海巨怪','石皮巨魔','泥巨人','火焰騎兵','守望之神','九頭巨人','狼群首領','吞屍巨鷹','巨人屍鬼','冰湖水妖','洞穴蠕龍','風之巨人','幻術巨人王','石心巨人','雷神'];
+const MONS=['斯寇格拉','賽赫利姆尼爾','哈提','斯庫爾','瓦爾拉文','克拉肯','山怪特羅爾','莫庫卡爾菲','穆斯貝爾騎兵','海姆達爾','斯里瓦爾迪','鐵森林狼王','赫拉斯瓦爾格','德勞格','諾克','林德蟲','卡瑞','烏特加德洛基','赫朗格尼爾','索爾','燈籠老人','加斯特','米林','格拉巴克','格拉夫維特','貝格爾米爾','赫林格林尼爾','戈因與莫因','霍德爾','赫爾','托姆特','胡德拉','環舞者','戴恩','杜拉索爾','維特','瑪拉','韋蘭德','伊登','弗雷'];
+const MON_T=['林中魅妖','不死野豬','追月之狼','追日之狼','戰場鴉魔','深海巨怪','石皮巨魔','泥巨人','火焰騎兵','守望之神','九頭巨人','狼群首領','吞屍巨鷹','巨人屍鬼','冰湖水妖','洞穴蠕龍','風之巨人','幻術巨人王','石心巨人','雷神','沼澤鬼火','迷霧遊魂','哭泣幽靈','灰背蛇','墓穴之蛇','洪水倖存者','亡者門巨人','雙蛇王','盲眼之神','冥界女王','家精','牛尾魅妖','月光精靈','啃枝之鹿','斷角之鹿','山林守護靈','夢魔女王','復仇鐵匠','青春女神','豐饒之神'];
 // v4.44 怪物屬性（Mochi 選三組互剋）：弱點＝對手屬性（ELEM_OPP）；以後新的怪物都要帶一種，跟牠（祂）的故事對得上
-const MON_EL=['ice','ice','dark','ice','dark','toxic','dark','toxic','fire','light','toxic','ice','bolt','dark','ice','toxic','ice','dark','toxic','bolt'];
-// v4.40 怪物形態（武器系統定案 §8）：1-1 魅妖、1-9 騎兵、1-10 海姆達爾、2-10 索爾＝人形；諾克傳說化成馬＝野獸；v4.78 亡靈＝1-2 每天復活的野豬、1-5 戰死者怨魂化的鴉魔、2-4 屍鬼，2-3 巨鷹是巨人化身＝巨型、1-6 克拉肯是海中巨獸＝野獸
-const MON_RACE=['man','undead','beast','beast','undead','beast','giant','giant','man','man','giant','beast','giant','undead','beast','giant','giant','giant','giant','man'];
+const MON_EL=['ice','ice','dark','ice','dark','toxic','dark','toxic','fire','light','toxic','ice','bolt','dark','ice','toxic','ice','dark','toxic','bolt','dark','ice','dark','toxic','toxic','ice','dark','toxic','dark','ice','dark','toxic','light','light','bolt','toxic','dark','fire','light','fire'];
+// v4.40 怪物形態（武器系統定案 §8）：1-1 魅妖、1-9 騎兵、1-10 海姆達爾、2-10 索爾＝人形；諾克傳說化成馬＝野獸；v4.79 亡靈＝1-2 每天復活的野豬、1-5 戰死者怨魂化的鴉魔、2-4 屍鬼，2-3 巨鷹是巨人化身＝巨型、1-6 克拉肯是海中巨獸＝野獸；v4.79 第三界尼福爾海姆的鬼火、遊魂、米林、赫爾＝亡靈，瑪拉（夢魔）＝亡靈，韋蘭德＝人形
+const MON_RACE=['man','undead','beast','beast','undead','beast','giant','giant','man','man','giant','beast','giant','undead','beast','giant','giant','giant','giant','man','undead','undead','undead','beast','beast','giant','giant','giant','man','undead','man','man','man','beast','beast','giant','undead','man','man','man'];
 const MON_LORE=['前面是美女，背後卻是空心的樹幹，專騙伐木工走進深林。','英靈殿每晚殺來吃、隔天又復活的野豬，這次逃到了人間。','斯庫爾的兄弟，永遠追趕月亮；月圓的夜裡在狼嚎谷對月長嚎，獵人不敢出門。','永遠追趕太陽的巨狼，一口咬住太陽，霜溪鎮整天不見日光，溪水全結成冰。','戰死者的怨魂附在渡鴉身上，吃了自己的心臟，半鳥半狼、死不了，成群俯衝城牆。','大到水手誤以為是島，觸手一捲就拖沉整艘長船。','皮硬得像岩石，還把尼德霍格蛻下的龍鱗披在身上；只怕陽光，照到就會變成石頭。','約頓海姆的巨人為赫朗格尼爾捏出的黏土戰士，高得頭碰得到雲，胸口卻只裝著一顆母馬的心，膽子很小；打輸了會哭著逃回約頓海姆。','火之國的前鋒，戰馬披著龍鱗馬鎧；身上的火要等諸神黃昏才會燃盡，只有冰屬性壓得住。','看得見九界一切的守望之神，守在通往神界的彩虹橋頭；祂第一個發現你鍛出了能傷神的武器，要親自試試它。落敗前，祂吹響加拉爾號角，封住了彩虹橋。',
- '九顆頭輪流睡覺，所以哨站永遠有人醒著；九顆頭最恨的都是索爾。','鐵森林的巨人女巫養大的狼群首領，芬里爾的遠親。','坐在世界盡頭的巨人化身成鷹，拍一下翅膀，九界就起風；牠在崖頂看著，想知道凡人有多少本事。','守著陪葬寶物不肯死去的屍鬼，越打越大。','用琴聲把人引到冰面上，再從冰洞裡伸手把人拖下去。','沒有翅膀的毒龍，盤在礦脈裡守著霜晶，蛻下的龍鱗散落在礦道裡，只有短刃鑽得進去。','北風的化身，牠一吐氣，高原上就颳三天暴風雪。','曾讓索爾喝不乾的牛角杯，其實杯底連著大海；牠捉弄過雷神，現在要捉弄你。','心臟、頭顱都是石頭，手拿磨刀石、背著石盾，是約頓海姆最強的巨人；牠一直想跟雷神索爾單挑。','奧丁之子、九界最強的神。祂的雷神之錘是矮人兄弟鍛的，錘柄卻因為洛基搗蛋短了一截；祂想看看凡人鐵匠鍛出的錘，接不接得住雷霆。'];
+ '九顆頭輪流睡覺，所以哨站永遠有人醒著；九顆頭最恨的都是索爾。','鐵森林的巨人女巫養大的狼群首領，芬里爾的遠親。','坐在世界盡頭的巨人化身成鷹，拍一下翅膀，九界就起風；牠在崖頂看著，想知道凡人有多少本事。','守著陪葬寶物不肯死去的屍鬼，越打越大。','用琴聲把人引到冰面上，再從冰洞裡伸手把人拖下去。','沒有翅膀的毒龍，盤在礦脈裡守著霜晶，蛻下的龍鱗散落在礦道裡，只有短刃鑽得進去。','北風的化身，牠一吐氣，高原上就颳三天暴風雪。','曾讓索爾喝不乾的牛角杯，其實杯底連著大海；牠捉弄過雷神，現在要捉弄你。','心臟、頭顱都是石頭，手拿磨刀石、背著石盾，是約頓海姆最強的巨人；牠一直想跟雷神索爾單挑。','奧丁之子、九界最強的神。祂的雷神之錘是矮人兄弟鍛的，錘柄卻因為洛基搗蛋短了一截；祂想看看凡人鐵匠鍛出的錘，接不接得住雷霆。','瑞典沼澤的鬼火老人，提著燈籠把旅人引進泥沼，自己的腳卻從不沾地。','在霧中迷路凍死的旅人，滿臉冰霜，眼睛空空的，一直在找回家的路。','被遺棄的嬰孩亡魂，跳上人的背就越來越重，直到對方把牠背進墓地。','啃食世界樹根的毒蛇之一，背上一整排灰色骨刺。','名字的意思是「墓穴之狼」，在冰下吃死人的蛇，卻長著一顆狼頭。','伊米爾的血淹死所有霜巨人時，牠躲進木箱活了下來，是後來所有霜巨人的祖先。','守在亡者之門前的霜巨人，傳說不聽話的人會被送到門口給牠當奴僕。','兩條蛇王一起盤在萬泉之源赫瓦格密爾，世界樹的根被牠們啃得最深。','奧丁的盲眼兒子，被洛基騙著用槲寄生射死了光明之神巴德爾，從此背著弒弟的罪。','洛基的女兒，奧丁把祂丟進尼福爾海姆，統治所有病死、老死的亡者。','住在農舍裡的小家精，好好供粥就保佑一家，忘了粥就殺掉你的牛。','森林裡的美女，前面美得不得了，裙子下卻藏著一條牛尾巴。','月光下跳圓舞的光精靈，凡人踏進精靈環就會被跳到死。','在世界樹枝梢上啃嫩葉的四頭巨鹿之一。','四頭世界樹巨鹿裡最兇的一頭，角上的露水流成九界所有的河。','守護土地的山林精靈，平常像石頭和老樹，有人冒犯聖林才會醒來。','夜裡坐在人胸口上的夢魔，北歐語的「噩夢」就是從牠的名字來的。','被國王打斷腳筋、關在島上的精靈鐵匠，報仇之後用自己鍛的翅膀飛走。','看守金蘋果的青春女神，諸神靠祂的蘋果才能永遠年輕。','亞爾夫海姆之主、豐饒與陽光之神，為了娶巨人女子葛德，送掉了自己的寶劍。'];
 const monLore=i=>MON_LORE[i]?`<div class="mon-lore"><b>${MON_T[i]}・${MONS[i]}</b><span>${MON_LORE[i]}</span></div>`:'';
-const MON_ART=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19];   // 已有 AI 怪物圖的關卡（0 起算，圖在 art/mon_N.webp）；沒圖的先用村莊圖
+const MON_ART=Array.from({length:40},(_,i)=>i);   // v4.79 第三、四界先借舊圖（ART_WAIT）   // 已有 AI 怪物圖的關卡（0 起算，圖在 art/mon_N.webp）；沒圖的先用村莊圖
 const MONFX={kills:{},next:{},hp:{}};
 const hpBar=i=>`<div class="ui-prog prog hpbar"><i class="hp-g"></i><i data-vhp="${i}"></i><span class="hp-t"><b class="hp-n">${MONS[i]}</b><b data-vhpt="${i}"></b></span></div>`;   // v4.01 卡片和詳情頁共用
 // v4.12 村莊詳情的怪物大圖（Mochi 選 C，取代 v4.09 卡片循環翻頁）：‹ › 或下方小圖翻看同一界 10 隻，還沒解鎖的只顯示黑影
 function monDex(i){const r0=Math.floor(i/10)*10,sm=ui.sheet&&ui.sheet.m,m=sm!=null&&sm>=r0&&sm<r0+10?sm:i,lk=S.villages[m].status==='locked',v=VILLAGES[m],go=k=>r0+(k-r0+10)%10;
   return `<div class="mon-dex"><div class="md-stage"><button class="md-arr" data-act="mondex" data-k="${go(m-1)}" aria-label="上一隻">${ic('arrow-left')}</button>${img('mon_'+(m+1),'md-big'+(lk?' lk':''),lk?'':MONS[m])}<button class="md-arr" data-act="mondex" data-k="${go(m+1)}" aria-label="下一隻">${ic('arrow-right')}</button></div>
-   <div class="md-nm">${lk?'？？？':MON_T[m]+'・'+MONS[m]}</div><div class="md-sub">${vNo(m)} ${lk?'未解鎖的村莊':v.name}${m===i?(/神/.test(MON_T[m])?'・本村要打的神明':'・本村要打的怪物'):''}</div>
-   ${lk?`<div class="md-req">完成 ${vNo(m-1)} ${VILLAGES[m-1].name} 後解鎖</div>`:`<div class="md-req">任何武器都能挑戰${/神/.test(MON_T[m])?"祂":"牠"}</div><div class="md-el"><span>屬性 <b class="elc-${MON_EL[m]}">${ELEM[MON_EL[m]].n}</b></span>・<span>弱點 <b class="elc-${vWeak(m)}">${ELEM[vWeak(m)].n}</b></span>・<span>型態 <b>${RACE_N[MON_RACE[m]]}</b></span> <span class="muted nobr">（弱點 +10%～30%・同屬性 −10%～30%）</span></div><div class="md-lore">${MON_LORE[m]}</div>`}
+   <div class="md-nm">${lk?'？？？':MON_T[m]+'・'+MONS[m]}</div><div class="md-sub">${vNo(m)} ${lk?'未解鎖的村莊':v.name}${m===i?(VILLAGES[m].tag==='god'?'・本村要打的神明':'・本村要打的怪物'):''}</div>
+   ${lk?`<div class="md-req">完成 ${vNo(m-1)} ${VILLAGES[m-1].name} 後解鎖</div>`:`<div class="md-req">任何武器都能挑戰${VILLAGES[m].tag==='god'?"祂":"牠"}</div><div class="md-el"><span>屬性 <b class="elc-${MON_EL[m]}">${ELEM[MON_EL[m]].n}</b></span>・<span>弱點 <b class="elc-${vWeak(m)}">${ELEM[vWeak(m)].n}</b></span>・<span>型態 <b>${RACE_N[MON_RACE[m]]}</b></span> <span class="muted nobr">（弱點 +10%～30%・同屬性 −10%～30%）</span></div><div class="md-lore">${MON_LORE[m]}</div>`}
    <div class="md-strip">${Array.from({length:10},(_,k)=>{const j=r0+k,l=S.villages[j].status==='locked';return `<button class="${j===m?'on':''} ${l?'lk':''}" data-act="mondex" data-k="${j}" aria-label="${vNo(j)}">${img('mon_'+(j+1))}</button>`}).join('')}</div></div>`}
 function vMon(i,k,bs){const art=MON_ART.includes(i);return `<div class="vmon ${k} ${art?'has-art':''} ${bs?'bs-tap':''}" data-mon="${i}" ${bs?`data-act="bsopen" data-i="${i}" role="button" aria-label="展開戰鬥畫面"`:''}>${art?img('mon_'+(i+1),'vthumb vmon-m',MONS[i]):img('v'+(i+1),'vthumb vmon-bg')}</div>`}
 function monPop(el,kind,txt,dx){if(!(el.classList.contains('bs-mon')&&/bleed|poison/.test(kind))){el.classList.remove('hit','kill');void el.offsetWidth;el.classList.add(kind==='kill'?'kill':'hit')}   // v4.20 戰鬥條：流血／中毒的小傷害不播受擊
@@ -2316,8 +2359,11 @@ const hitOf=w=>HIT[bpOf(w).cat]||HIT.sword;
 // 強化越高越常觸發附加效果（每次都是額外約 1.5 擊）：劍會心、斧流血、錘震碎、雙刀中毒、長柄貫穿、弓穿心、弩破甲
 const KN={sword:{k:'sw',K:1000,ph:450,n:3},axe:{k:'ax',K:1300,ph:100,n:2},hammer:{k:'hm',K:1800,ph:910,n:2,hv:1},dagger:{k:'dg',K:600,ph:240,n:4},
   polearm:{k:'sp',K:1200,ph:680,n:2},bow:{k:'bw',K:1100,ph:600,n:3},crossbow:{k:'cb',K:1600,ph:800,n:2}};
-const BS_BGP={1:'top',8:'top',9:'bot',10:'bot',11:'bot2',12:'bot',13:'bl',14:'top',15:'bl',16:'bot',17:'bot2',18:'bot',19:'bot2'};   // v4.35 背景本身畫了怪物的關卡（1-2、1-9、1-10、整個第二界）：戰鬥畫面只取沒有怪物的那一段（Mochi 選）
-const KN_FULL=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19];   // 已有全身怪物圖（art/mon_N_idle／mon_N_atk）的關卡；其他關卡先用怪物頭像。v4.30 補上 1-8、2-10；v4.35 補上第二界 2-1～2-8，20 關全部都有
+const BS_BGP={1:'top',8:'top',9:'bot',10:'bot',11:'bot2',12:'bot',13:'bl',14:'top',15:'bl',16:'bot',17:'bot2',18:'bot',19:'bot2'};
+for(let i=20;i<40;i++){const o=BS_BGP[i<30?i-10:i-30];if(o)BS_BGP[i]=o}   // v4.79 第三、四界借舊背景時沿用舊背景的取景；新背景到了要重看
+// v4.79 第三、四界怪物依形態有不同的待機和攻擊動作（Mochi 選）：float 飄浮、glide 滑行穿過、leap 跳撲、crawl 蛇行、burst 從地下竄出、stomp 重踏、shoot 射擊後座、blink 閃現、charge 衝鋒、dive 俯衝、cast 跪地施法
+const MON_MV={20:'float',21:'glide',22:'leap',23:'crawl',24:'burst',25:'stomp',26:'stomp',27:'crawl',28:'shoot',29:'glide',30:'leap',31:'blink',32:'blink',33:'leap',34:'charge',35:'stomp',36:'float',37:'dive',38:'cast',39:'leap'};   // v4.35 背景本身畫了怪物的關卡（1-2、1-9、1-10、整個第二界）：戰鬥畫面只取沒有怪物的那一段（Mochi 選）
+const KN_FULL=Array.from({length:40},(_,i)=>i);   // 已有全身怪物圖（art/mon_N_idle／mon_N_atk）的關卡；其他關卡先用怪物頭像。v4.30 補上 1-8、2-10；v4.35 補上第二界 2-1～2-8，20 關全部都有
 const knProc=lv=>ui.bsProc?1:procP(lv);
 const KHIT={};
 function knHit(w){const c=bpOf(w).cat,kn=KN[c];if(!kn)return null;const p=knProc(w.lv),key=c+p;if(KHIT[key])return KHIT[key];
@@ -2340,7 +2386,7 @@ function bsMore(i,w){const v=VILLAGES[i],bk=S.villages[i].bank;
    <div class="bs-k">已經打到${bk.cycles?`（${bk.cycles} 輪，還沒收成）`:''}</div>${bk.cycles?`<div class="bs-got">${harvestIcons({gold:bk.gold,...bk.mats})}</div>`:'<div class="small muted">這輪打完就會有收穫。</div>'}</div>`}
 function vStrip(i,w){const kn=KN[bpOf(w).cat],t=performance.now(),full=KN_FULL.includes(i),m='mon_'+(i+1);
   return `<div class="bs c-${kn.k}" data-act="bsclose" role="button" aria-label="收起戰鬥畫面" style="--n:${kn.n};--d:-${Math.round(t%kn.K)}ms;--dp:-${Math.round(t%(kn.K*kn.n))}ms">${img('v'+(i+1),'bs-bg'+(BS_BGP[i]?' bgp-'+BS_BGP[i]:''))}<i class="bs-gd"></i>
-   <div class="bs-mon ${full?'':'pt'}" data-mon="${i}"><div class="bs-br"><div class="bs-hb">${full?img(m+'_idle','idle',MONS[i])+img(m+'_atk','atk'):img(m,'idle',MONS[i])}${full?['tn','fl'].map(c=>`<i class="${c}">${img(m+'_idle','idle')}${img(m+'_atk','atk')}</i>`).join(''):img(m,'tn')+img(m,'fl')}</div></div></div>
+   <div class="bs-mon ${full?'':'pt'} ${MON_MV[i]?'mv-'+MON_MV[i]:''}" data-mon="${i}"><div class="bs-br"><div class="bs-hb">${full?img(m+'_idle','idle',MONS[i])+img(m+'_atk','atk'):img(m,'idle',MONS[i])}${full?['tn','fl'].map(c=>`<i class="${c}">${img(m+'_idle','idle')}${img(m+'_atk','atk')}</i>`).join(''):img(m,'tn')+img(m,'fl')}</div></div></div>
    <div class="bs-kn">${Array.from({length:12},(_,f)=>img(`kn_${kn.k}_${f}`,'k'+f)).join('')}</div></div>`}
 // 打中才扣血，扣掉的量＝跳出的傷害數字；每輪開始時依「血條落後時間多少」算倍率 f（0.6～1.6），爆擊多扣的會在之後幾輪少扣補回；
 // 血條最多只能比時間超前一點點，所以最後一下剛好打倒；看不到時直接對齊剩餘時間
@@ -2369,13 +2415,13 @@ function monPaint(i,h){const hp=h.cur/h.max*100;
 const clock=(ms,ref)=>{const s=Math.max(0,Math.ceil(ms/1000)),long=(ref??ms)>=3600000;return(long?[Math.floor(s/3600),Math.floor(s%3600/60),s%60]:[Math.floor(s/60),s%60]).map(x=>String(x).padStart(2,'0')).join(':')};
 // v3.76 地圖切換：沒選過就顯示目前進度所在的那一界
 // v3.95 另一界有村莊可以收成：地圖列那一界的圖示亮紅點
-const realmHarvest=k=>(k===0||k===1&&rfOpen())&&S.villages.slice(k*10,k*10+10).some(v=>v.bank.cycles>0);
-const realmNow=()=>Math.max(0,Math.min(rfOpen()?1:0,ui.realm??(rfOpen()?1:0)));
+const realmHarvest=k=>k<REALM_N.length&&realmOpen(k)&&S.villages.slice(k*10,k*10+10).some(v=>v.bank.cycles>0);
+const realmNow=()=>Math.max(0,Math.min(realmTop(),ui.realm??realmTop()));
 function viewVillage(){
   const achReady=ACH.filter(a=>!S.ach[a.id]&&a.test()).length,ready=S.villages.slice(realmNow()*10,realmNow()*10+10).filter(v=>v.bank.cycles).length;
-  const rm=realmNow(),[rn,rs,rbg]=REALM_N[rm],r0=rm*10,r1=r0+10,rOk=i=>i===0||(i===1&&rfOpen());
-  return `<section class="realm" style="background-image:url(${A(rbg)})"><div class="realm-in"><button class="arr ${rm>0?'':'off'}" data-act="realm" data-k="${rm-1}" aria-label="上一界">${ic('arrow-left')}</button><div class="center"><h1>${rn}</h1><div class="small">${rs}</div></div><button class="arr ${rm<1&&rfOpen()?'':'off'}" data-act="realm" data-k="${rm+1}" aria-label="下一界">${ic('arrow-right')}</button></div>
-   <div class="realms">${REALMS.map((r,i)=>`<div class="rlm ${rOk(i)?'on':'off'} ${i===rm?'cur':''}" ${i<2?`data-act="realm" data-k="${i}" role="button"`:''}>${img('realm_'+(i+1),rOk(i)?'':'locked')}${rOk(i)?'':img('ic_lock','rl')}${i!==rm&&realmHarvest(i)?'<i class="dot give-dot rdot" title="這一界有村莊可以收成"></i>':''}<span>${r}</span></div>`).join('')}</div></section>${evtBanner()}
+  const rm=realmNow(),[rn,rs,rbg]=REALM_N[rm],r0=rm*10,r1=r0+10,rOk=i=>i<REALM_N.length&&realmOpen(i);
+  return `<section class="realm" style="background-image:url(${A(rbg)})"><div class="realm-in"><button class="arr ${rm>0?'':'off'}" data-act="realm" data-k="${rm-1}" aria-label="上一界">${ic('arrow-left')}</button><div class="center"><h1>${rn}</h1><div class="small">${rs}</div></div><button class="arr ${rm<realmTop()?'':'off'}" data-act="realm" data-k="${rm+1}" aria-label="下一界">${ic('arrow-right')}</button></div>
+   <div class="realms">${REALMS.map((r,i)=>`<div class="rlm ${rOk(i)?'on':'off'} ${i===rm?'cur':''}" ${i<REALM_N.length?`data-act="realm" data-k="${i}" role="button"`:''}>${img('realm_'+(i+1),rOk(i)?'':'locked')}${rOk(i)?'':img('ic_lock','rl')}${i!==rm&&realmHarvest(i)?'<i class="dot give-dot rdot" title="這一界有村莊可以收成"></i>':''}<span>${r}</span></div>`).join('')}</div></section>${evtBanner()}
   <div class="row vbar ${LB_OFF?'two':''}">${btn(`全部收成${ready?` <span class="ui-badge badge">${ready}</span>`:''}`,'collectAll',{cls:'btn-primary grow',dis:!ready})}${btn(`任務${questDotN()?` <span class="ui-badge badge">${questDotN()}</span>`:''}`,'achopen')}${LB_OFF?'':btn('排行榜','lbopen',{attrs:`data-i="${Math.max(0,cleared()-1)}"`})}</div>
   <div class="vlist">${VILLAGES.map((v,i)=>{if(i<r0||i>=r1)return'';const[k,lab]=vState(i),st=S.villages[i],w=st.weaponId!=null&&W(st.weaponId);
    if(k==='locked'){const first=S.villages.findIndex(x=>x.status==='locked')===i;if(!first)return '';const left=S.villages.slice(r0,r1).filter(x=>x.status==='locked').length;
@@ -2432,7 +2478,7 @@ function fkRow(i){const m=fkMine(i);if(!m&&S.villages[i].status!=='cleared')retu
   return `<button class="fk-row" data-act="fkopen" data-i="${i}"><span class="grow small">${m?`我的最快 <b class="t-gold">${m.sec.toFixed(1)} 秒</b>${my?`（第 ${my.rk} 名）`:''}`:'還沒有秒殺紀錄'}${my&&my.top!=null?`・全服最快 ${(+my.top).toFixed(1)} 秒`:''}</span><span class="go">秒殺榜 ›</span></button>`}
 function sheetFk(i){i=Math.max(0,Math.min(VILLAGES.length-1,i|0));if(AUTH)setTimeout(()=>fkLoad(i),0);const v=VILLAGES[i],c=fkBoard(i),m=fkMine(i),rows=c.rows||[];
   const head=`<div class="sheet-head">${btn('‹','vopen',{cls:'icon-btn',attrs:`data-i="${i}" aria-label="回村莊"`})}<h2>秒殺榜</h2>${vClose}</div>`;
-  const tabs=`<div class="lb-tabs">${VILLAGES.map((x,k)=>{if(k>=10&&!rfOpen())return'';const lk=S.villages[k].status==='locked';return `<button class="lb-tab ${k===i?'on':''} ${lk?'lk':''}" data-act="fkopen" data-i="${k}" ${lk?'disabled':''}><img src="${A('v'+(k+1))}" alt=""><span>${vNo(k)}</span>${fkBoss(k)?'<i class="fk-k">王</i>':''}${lk?img('ic_lock','lb-lk'):''}</button>`}).join('')}</div>`;
+  const tabs=`<div class="lb-tabs">${VILLAGES.map((x,k)=>{if(!realmOpen(vRealm(k)))return'';const lk=S.villages[k].status==='locked';return `<button class="lb-tab ${k===i?'on':''} ${lk?'lk':''}" data-act="fkopen" data-i="${k}" ${lk?'disabled':''}><img src="${A('v'+(k+1))}" alt=""><span>${vNo(k)}</span>${fkBoss(k)?'<i class="fk-k">王</i>':''}${lk?img('ic_lock','lb-lk'):''}</button>`}).join('')}</div>`;
   const g=x=>grChip(GRADES[grOf(+x)],'sm');
   const me=m?`<div class="lb-me fk-me">${wArt(m.w.b,{frame:fq(m.w)})}<div class="grow"><div class="small muted">我的最快</div><b class="t-gold fk-s">${m.sec.toFixed(1)} 秒</b> ${g(m.sec)}<div class="small ${lc(m.w)}">${BP[m.w.b]?BP[m.w.b].n:''} +${m.w.lv|0}</div></div><div class="lb-mypos"><span class="small muted">名次</span><b>${c.my?c.my.rk:'…'}</b><span class="small muted">／${c.my?c.my.n:'…'}</span></div></div>`
     :`<div class="lb-me empty"><div class="grow"><b>還沒有秒殺紀錄</b><div class="small muted">${S.villages[i].status==='cleared'?'在村莊詳情按「挑戰評級」再打一次就會上榜':'60 秒挑戰打倒'+esc(MONS[i])+'就會上榜'}</div></div></div>`;
@@ -2505,7 +2551,7 @@ function sheetLb(i){i=Math.max(0,Math.min(VILLAGES.length-1,i));const pend=lbRew
   if(AUTH)setTimeout(()=>lbFetch(),0);const v=VILLAGES[i],st=S.villages[i],b=S.best[i],rk=lbRank(i),npc=lbOthers(i),got=S.lbRw[i]||[];
   const rows=lbRows(i);
   const head=`<div class="sheet-head"><span style="width:44px"></span><h2>排行榜</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>`;
-  const tabs=`<div class="lb-tabs">${VILLAGES.map((x,k)=>{if(k>=10&&!rfOpen())return'';const lk=S.villages[k].status==='locked',r=lbRank(k);return `<button class="lb-tab ${k===i?'on':''} ${lk?'lk':''}" data-act="lbopen" data-i="${k}" ${lk?'disabled':''}><img src="${A('v'+(k+1))}" alt=""><span>${vNo(k)}</span>${r&&r<=10?`<i class="lb-rk r${Math.min(r,4)}">${r}</i>`:''}${lk?img('ic_lock','lb-lk'):''}</button>`}).join('')}</div>`;
+  const tabs=`<div class="lb-tabs">${VILLAGES.map((x,k)=>{if(!realmOpen(vRealm(k)))return'';const lk=S.villages[k].status==='locked',r=lbRank(k);return `<button class="lb-tab ${k===i?'on':''} ${lk?'lk':''}" data-act="lbopen" data-i="${k}" ${lk?'disabled':''}><img src="${A('v'+(k+1))}" alt=""><span>${vNo(k)}</span>${r&&r<=10?`<i class="lb-rk r${Math.min(r,4)}">${r}</i>`:''}${lk?img('ic_lock','lb-lk'):''}</button>`}).join('')}</div>`;
   const me=b?`<div class="lb-me" data-act="lbw" data-i="${i}" data-k="${rows.findIndex(x=>x.me)}" role="button">${wArt(b.b,{frame:fq(b)})}<div class="grow"><div class="small muted">你的最佳紀錄</div><b class="${lc(b)}">${BP[b.b].n} +${b.lv}</b><div class="small">攻擊力 <b class="t-gold">${fmt(b.p)}</b></div></div><div class="lb-mypos"><span class="small muted">名次</span><b>${rk||'…'}</b><span class="small muted">／${npc.length+1}</span></div></div>`
     :`<div class="lb-me empty"><div class="grow"><b>還沒有交付武器</b><div class="small muted">交付武器就會上榜</div></div></div>`;
   const nxt=b&&rk>1?npc.filter(x=>x.p>b.p).slice(-1)[0]:null;
@@ -2567,7 +2613,7 @@ function sheetAch(){const v=ui.achV||'A',nDone=ACH.filter(a=>S.ach[a.id]).length
 
 /* ---------- 商城 ---------- */
 // v4.59 商城（Mochi：只留免費月卡＋七日簽到＋材料，其餘正式上線再補）：材料可用金幣或鑽石買，單價 [金幣, 鑽石]，鑽石總價無條件進位
-const MAT_COST={miron:[10,.5],pine:[10,.5],troll:[100,5],bifrost:[150,8],frost:[40,2],gwood:[40,2],ubone:[400,20],thor:[600,30]},MS_MAX=9999;
+const MAT_COST={miron:[10,.5],pine:[10,.5],troll:[100,5],bifrost:[150,8],frost:[40,2],gwood:[40,2],ubone:[400,20],thor:[600,30],rime:[80,4],snake:[80,4],mistle:[800,40],helfrost:[1200,60],elfwood:[120,6],moonsilk:[120,6],marahorn:[1600,80],bristle:[2400,120]},MS_MAX=9999;   // v4.79 第三、四界材料接著往上
 const matCost=(k,n)=>{const c=MAT_COST[k]||[0,0];return[c[0]*n,Math.ceil(c[1]*n)]};
 // 點材料跳出購買小卡：數量用 −／＋ 和快捷鍵調整
 function shopMatCard(k,live){const n=Math.max(1,Math.min(MS_MAX,ui.shopN|0||1)),[g,m]=matCost(k,n),qb=(v,t)=>`<button class="ui-btn ui-btn--chip chipbtn" data-act="shopN" data-k="${k}" data-v="${v}">${t}</button>`;
@@ -2609,6 +2655,7 @@ function viewShop(){
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'4.79',t:'第三界尼福爾海姆、第四界亞爾夫海姆（暫代圖）＋怪物依形態的動作',b:[['r34open','開放第三界（收復 1-1～2-10）'],['r34open4','開放第四界（收復 1-1～3-10）'],['r34all','第三、四界全部收復'],['rs3','播放進入第三界劇情'],['rs4','播放進入第四界劇情'],['mv34','第三、四界戰鬥動作輪播（每按一次換一隻）'],['r34lock','第三、四界改回未開放']]},
  {v:'4.78',t:'飛行改亡靈：錘剋亡靈、弓剋巨型',b:[['race78','列出 7 種武器剋的型態＋20 關型態，並打開 1-5 村莊詳情']]},
  {v:'4.77',t:'同屬性抗性＋弱點 +10～30%',b:[['res77','給 1-9 用的三級冰屬性／火屬性武器（看倍率）、打開附魔表'],['res77i','開火屬性說明小卡（弱點與抗性關卡）']]},
  {v:'4.76',t:'屬性名稱統一「火屬性」三個字、說明小卡拿掉大方塊',b:[['elpop','給 1 把雷屬性三級測試劍，打開附魔＋雷屬性說明'],['elall','給 6 把不同屬性的武器（去村莊看弱點）']]},
@@ -2736,6 +2783,15 @@ function devdo(k){if(k.startsWith('gd')||k==='fropen'){ui.sheet=null;   // v3.98
 if(k==='sfxstall'){if(ACX)ACX_CK={t:performance.now()-5000,ct:ACX.currentTime+99};sfxLog('模擬卡住');toast('已模擬音效卡住，按「試播金幣聲」應該會自動重建並出聲');return render()}
   if(k==='sfxbg'){if(ACX){try{ACX.suspend()}catch(e){}ACX_DIRTY=true}toast('已模擬切到背景（音效暫停），按「試播金幣聲」應該要有聲音');return render()}
   if(k==='rdot1'||k==='rdot2'){S.villages.forEach((st,i)=>{if(i<10)st.status='cleared'});if(S.villages[10].status==='locked')S.villages[10].status='open';const st=S.villages[k==='rdot1'?0:10];st.bank.cycles+=2;st.bank.gold+=100;ui.realm=k==='rdot1'?1:0;ui.tab='village';save();render();return toast('完成，看地圖列另一界的圖示有沒有紅點','ok')}
+  if(k.startsWith('r34')||k==='rs3'||k==='rs4'||k==='mv34'){   // v4.79 第三、四界
+    if(k==='rs3'||k==='rs4'){ui.sheet=null;render();return showStory(k==='rs3'?2:3)}
+    if(k==='mv34'){const n=20,kk=ui.mvK=((ui.mvK??-1)+1)%n,i=20+kk,st=S.villages[i],b=BPS.filter(x=>x.cat==='sword'&&!x.dev).sort((x,y)=>y.base-x.base)[0];
+      S.villages.forEach((v,j)=>{if(j<=i&&v.status!=='cleared')v.status='cleared'});if(st.weaponId==null||!W(st.weaponId)){const w=makeWeapon(b.id,0,6);st.weaponId=w.id;st.cycleStart=NOW()-dur(i,w)*.3}delete MONFX.hp[i];
+      ui.sheet=null;ui.tab='village';ui.realm=vRealm(i);ui.bsOpen=i;save();render();setTimeout(()=>document.querySelector('.bs')?.scrollIntoView({block:'center'}),50);return toast(`${kk+1}/${n}：${vNo(i)} ${MONS[i]}・動作 ${MON_MV[i]}（圖先借舊怪物）`,'ok')}
+    const top=k==='r34open'?20:k==='r34open4'?30:40;
+    if(k==='r34lock'){S.villages.forEach((st,i)=>{if(i>=20){if(st.weaponId!=null)recallCore(i);st.status='locked'}});ui.realm=1}
+    else{S.villages.forEach((st,i)=>{if(i<top)st.status='cleared'});if(S.villages[top]&&S.villages[top].status==='locked')S.villages[top].status='open';ui.realm=Math.min(3,vRealm(top-(top===40?1:0)))}
+    S.rsPend=0;ui.tab='village';ui.sheet=null;save();render();return toast('完成','ok')}
   if(k.startsWith('r2')){
     if(k==='r2open'||k==='r2all'){S.villages.forEach((st,i)=>{if(i<10||k==='r2all')st.status='cleared'});if(S.villages[10].status==='locked')S.villages[10].status='open';ui.realm=1}
     else if(k==='r2lock'){S.villages.forEach((st,i)=>{if(i>=10){if(st.weaponId!=null)recallCore(i);st.status='locked'}});ui.realm=0}
@@ -2881,7 +2937,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
    bsthumb:()=>{devdo('bsall');ui.bsOpen=null;ui.bsProc=1;Object.keys(KHIT).forEach(k=>delete KHIT[k]);toast('1-1～1-7 收起戰鬥畫面，看卡片小怪物：長柄 1-5 應該跳「貫穿」（附加效果必定觸發，可再按一次「附加效果必定觸發」關掉）','ok');render()},
    bsmon:()=>{const n=KN_FULL.length,k=ui.bsMonK=((ui.bsMonK??-1)+1)%n,i=KN_FULL[k],st=S.villages[i],b=BPS.filter(x=>x.cat==='hammer').sort((x,y)=>x.t-y.t)[0];   // v4.32 用錘（打退最大）看最壞情況
      S.villages.forEach((v,j)=>{if(j<=i&&v.status!=='cleared')v.status='cleared'});const w=makeWeapon(b.id,2,6);st.weaponId=w.id;st.cycleStart=NOW()-dur(i,w)*.3;delete MONFX.hp[i];
-     ui.sheet=null;ui.tab='village';ui.realm=i>=10?1:0;ui.bsOpen=i;toast(`${k+1}/${n}：${Math.floor(i/10)+1}-${i%10+1} ${MONS[i]}（錘 +6）`,'ok');render();setTimeout(()=>document.querySelector('.bs')?.scrollIntoView({block:'center'}),50)},
+     ui.sheet=null;ui.tab='village';ui.realm=vRealm(i);ui.bsOpen=i;toast(`${k+1}/${n}：${Math.floor(i/10)+1}-${i%10+1} ${MONS[i]}（錘 +6）`,'ok');render();setTimeout(()=>document.querySelector('.bs')?.scrollIntoView({block:'center'}),50)},
    bs11:()=>{const ks=Object.keys(KN),st=S.villages[0],cur=st.weaponId!=null&&W(st.weaponId),c=ks[(ks.indexOf(cur?bpOf(cur).cat:'')+1)%ks.length],b=BPS.filter(x=>x.cat===c).sort((x,y)=>x.t-y.t)[0];
      const w=makeWeapon(b.id,2,6);if(st.status!=='cleared')st.status='cleared';st.weaponId=w.id;st.cycleStart=NOW()-dur(0,w)*.3;delete MONFX.hp[0];
      ui.sheet=null;ui.tab='village';ui.realm=0;ui.bsOpen=0;toast('1-1 換成 '+CATS[c]+'（+6）','ok')},
@@ -2960,7 +3016,8 @@ let WARM_T=0;function warmTabs(){clearTimeout(WARM_T);WARM_T=setTimeout(()=>{if(
   [['bp'],['mat']].forEach(([f])=>{ui.ftab=f;try{warmArt(viewForge())}catch(e){}});ui.ftab=ft;
   [viewArmory,viewVillage,viewShop].forEach(f=>{try{warmArt(f())}catch(e){}});warmArt('art/dp/fog_band.webp art/bg_forge.webp')},400)}
 function render(){
-  if(QUIET)return;if(ui.nwOn&&!(ui.sheet&&ui.sheet.t==='set'&&ui.sheet.k==='n')){ui.nwOn=false;nwMarkAll()}   // v4.03 離開更新公告頁才把 NEW 消掉
+  if(QUIET)return;if(S.rsPend&&!ui.sheet&&!ui.ch&&!ui.result&&!document.body.classList.contains('gating')){const k=S.rsPend;S.rsPend=0;save();setTimeout(()=>showStory(k),300)}   // v4.79 收復 X-10 後、關掉結果畫面才播新一界的劇情
+  if(ui.nwOn&&!(ui.sheet&&ui.sheet.t==='set'&&ui.sheet.k==='n')){ui.nwOn=false;nwMarkAll()}   // v4.03 離開更新公告頁才把 NEW 消掉
   renderRes();renderNav();
   const hs=[...document.querySelectorAll('#view .hscroll,#view .catbar')].map(e=>e.scrollLeft);   // 保留橫向捲動位置（點圖紙不會跳回最前面）
   const V=document.getElementById('view'),y=scrollY,html=({forge:viewForge,armory:viewArmory,village:viewVillage,shop:viewShop,market:viewMarketPage})[ui.tab]();
@@ -3062,7 +3119,7 @@ document.addEventListener('click',e=>{
    lock:()=>{const w=W(+d.id);if(w){w.lock=!w.lock;save();toast(w.lock?'已鎖定，這把武器不會被熔解，也不會被登錄圖鑑。':'已取消鎖定。')}render()},eslot:()=>{ui.enchSlot=+d.k;render()},
    collect:()=>{tick();collect(+d.i);render()},collectAll,deliver:()=>deliver(+d.i,+d.id),recall:()=>recall(+d.i),strat:()=>{if(setStrategy(+d.i,d.k))toast('已切換為「'+STRATS[d.k].n+'」');render()},
    melt:()=>{const id=+d.id;if(ui.meltArm!==id){ui.meltArm=id;return render()}ui.meltArm=null;const g=meltCore(id);if(g){snd('melt');toast('熔解完成：'+gotText(g),'ok');ui.sheet=null}render()},meltCheap,
-   enhance:()=>enhance(+d.id),achv:()=>{ui.achV=d.k;render()},lbw:()=>{ui.sheet={t:'lbw',i:+d.i,k:+d.k};render()},fkopen:()=>{ui.sheet={t:'fk',i:+d.i};render();const L=document.querySelector('.lb-tab.on');if(L)L.scrollIntoView({block:'nearest',inline:'center'})},realm:()=>{const k=+d.k;if(k<0||k>1)return;if(k===1&&!rfOpen())return toast(`收復 ${vNo(9)} ${VILLAGES[9].name}後開放約頓海姆`);ui.realm=k;render();scrollTo(0,0)},lbopen:()=>{if(LB_OFF)return;ui.sheet={t:'lb',i:+(d.i??S.villages.findIndex(v=>v.status!=='cleared')-1)};render()},achtab:()=>{ui.achTab=d.k;render()},qtab:()=>{ui.qTab=d.k;render()},qbox:()=>{const r=claimBox(+d.i);if(r){snd('coin');toast('活躍度寶箱：'+rwText(r),'ok')}render()},qsign:()=>{const r=claimSign();if(r){snd('coin');toast('簽到獎勵：'+rwText(r),'ok')}render()},achAll:claimAllAch,autoEnh:()=>autoEnhance(+d.id),enchant:()=>enchant(+d.id,+d.s),
+   enhance:()=>enhance(+d.id),achv:()=>{ui.achV=d.k;render()},lbw:()=>{ui.sheet={t:'lbw',i:+d.i,k:+d.k};render()},fkopen:()=>{ui.sheet={t:'fk',i:+d.i};render();const L=document.querySelector('.lb-tab.on');if(L)L.scrollIntoView({block:'nearest',inline:'center'})},realm:()=>{const k=+d.k;if(!(k>=0&&k<REALM_N.length))return;if(!realmOpen(k))return toast(`收復 ${vNo(k*10-1)} ${VILLAGES[k*10-1].name}後開放${REALM_N[k][0]}`);ui.realm=k;render();scrollTo(0,0)},lbopen:()=>{if(LB_OFF)return;ui.sheet={t:'lb',i:+(d.i??S.villages.findIndex(v=>v.status!=='cleared')-1)};render()},achtab:()=>{ui.achTab=d.k;render()},qtab:()=>{ui.qTab=d.k;render()},qbox:()=>{const r=claimBox(+d.i);if(r){snd('coin');toast('活躍度寶箱：'+rwText(r),'ok')}render()},qsign:()=>{const r=claimSign();if(r){snd('coin');toast('簽到獎勵：'+rwText(r),'ok')}render()},achAll:claimAllAch,autoEnh:()=>autoEnhance(+d.id),enchant:()=>enchant(+d.id,+d.s),
    ach:()=>{if(claimAch(d.k))toast('成就獎勵已領取','ok');render()},rclose:()=>{ui.result=null;render()},
    fxskip:()=>{ui.fxDone&&ui.fxDone()},fxclose:()=>{ui.busy=false;render()},backArmory:()=>{ui.sheet=null;ui.enhLast=null;ui.tab='armory';render()},
    uiskinp2:()=>p2Toggle(),
@@ -3122,6 +3179,15 @@ const STORY=[['op_1','諸神黃昏將至，眾神之父奧丁召集九界的神�
  ['op_5','鐵匠逃到邊境的鐵爐村，重新點燃熔爐。','s5'],
  ['op_6','「我要武裝九界的勇士，向諸神宣戰。」<br>從這一鎚開始。','s6']];
 const STORY_HAS={op_1:1,op_2:1,op_3:1,op_4:1,op_5:1,op_6:1};
+// v4.79 進入新的一界時的劇情（第一次收復上一界第 10 關後播放；圖 art/story3_N、story4_N 還沒到先借開場圖）：[圖, 文字, 特效]，索引＝界（0 起算）
+const REALM_STORY={2:[['story3_1','雷神的鎚子第一次落空了。<br>整座阿斯嘉都聽到了那聲雷響。','s4'],
+ ['story3_2','至高王座上，獨眼的主神看見了你的爐火。<br>「一個凡人，<br>鍛出了能讓雷神跪下的武器。」','s1'],
+ ['story3_3','女武神從天而降，宣讀諸神的命令：<br>「九界凡人，交出你們所有的武器。<br>諸神黃昏不能提前到來。」','s4'],
+ ['story3_4','每個村莊的爐火都熄了。<br>只有一個地方的鐵錘聲還在響，那是你的鐵匠鋪。','s5'],
+ ['story3_5','「想反抗諸神？<br>先來尼福爾海姆，先過我這一關。」<br>——赫爾','s6']],
+ 3:[['story4_1','赫爾的半面面具掉在冰上。<br>戴上它，活人才走得出這片霧。','s3'],
+ ['story4_2','霧的另一頭是陽光。<br>太美了，美得不像是安全的地方。','s1'],
+ ['story4_3','「鐵匠，我把自己的劍送人了。<br>你的劍，我也收得走。」<br>——弗雷','s6']]};
 const LG=n=>'art/login/'+n+'.webp';
 function gateEl(){let g=document.getElementById('gate');if(!g){g=document.createElement('div');g.id='gate';document.body.appendChild(g)}return g}
 function gateClose(){const g=document.getElementById('gate');if(g){g.classList.add('out');setTimeout(()=>{if(g.classList.contains('out'))g.remove()},450)}document.body.classList.remove('gating')}
@@ -3165,12 +3231,12 @@ function showLogin(msg){document.body.classList.add('gating');const g=gateEl();g
       if(g.dataset.busy)return;g.dataset.busy='1';g.querySelectorAll('[data-gt]').forEach(x=>x.disabled=true);say(k==='login'?'登入中…':'建立帳號中…');verCheck();
       (k==='login'?cloudLogin(em,pw):cloudSignup(em,pw)).then(r=>{toast(r==='cloud'?'已讀取雲端進度，歡迎回來！':k==='signup'?'帳號建立完成，進度會自動存到雲端。':'登入成功，進度會自動存到雲端。','ok');afterAuthEnter()})
         .catch(e=>{say(SB_ERR(e.message),1)}).finally(()=>{delete g.dataset.busy;g.querySelectorAll('[data-gt]').forEach(x=>x.disabled=false)});return}}}
-function showStory(){document.body.classList.add('gating');const list=STORY.filter(s=>STORY_HAS[s[0]]);let i=0;const g=gateEl();g.className='gate-story';
+function showStory(rk){document.body.classList.add('gating');const list=rk!=null?REALM_STORY[rk]:STORY.filter(s=>STORY_HAS[s[0]]);let i=0;const g=gateEl();g.className='gate-story';   // v4.79 rk＝播第幾界的劇情（不動 introSeen）
   const draw=()=>{const [img,txt,cls]=list[i];
-    g.innerHTML=`<div class="st-scene ${cls}" data-gt="next"><img class="st-bg" src="${LG(img)}" alt=""><div class="st-fx">${cls==='s4'||cls==='s6'?gEmb(10,'big'):cls==='s5'?gEmb(8):cls==='s1'?[0,1,2,3,4,5].map(k=>`<img class="st-mote m${k}" src="${A('dp/'+(k%2?'fx_mote_gold':'fx_dust_gold'))}" alt="">`).join(''):[0,1,2,3,4,5].map(k=>`<img class="st-mote m${k}" src="${A('dp/fx_mote_gold')}" alt="">`).join('')}</div><div class="st-fog"></div><div class="gt-vig"></div>
+    g.innerHTML=`<div class="st-scene ${cls}" data-gt="next"><img class="st-bg" src="${rk!=null?A(img):LG(img)}" alt=""><div class="st-fx">${cls==='s4'||cls==='s6'?gEmb(10,'big'):cls==='s5'?gEmb(8):cls==='s1'?[0,1,2,3,4,5].map(k=>`<img class="st-mote m${k}" src="${A('dp/'+(k%2?'fx_mote_gold':'fx_dust_gold'))}" alt="">`).join(''):[0,1,2,3,4,5].map(k=>`<img class="st-mote m${k}" src="${A('dp/fx_mote_gold')}" alt="">`).join('')}</div><div class="st-fog"></div><div class="gt-vig"></div>
      <div class="st-txt"><p>${txt}</p><div class="st-dots">${list.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('')}</div><span class="small">點畫面繼續</span></div></div>
      <button class="st-skip" data-gt="skip">略過 ›</button>`};
-  draw();g.onclick=e=>{const b=e.target.closest('[data-gt]');if(!b)return;if(b.dataset.gt==='skip'||i>=list.length-1){S.introSeen=1;save();gateClose();return}i++;snd('ui_click');draw()}}
+  draw();g.onclick=e=>{const b=e.target.closest('[data-gt]');if(!b)return;if(b.dataset.gt==='skip'||i>=list.length-1){if(rk!=null){ui.realm=rk;ui.tab='village';gateClose();render();return}S.introSeen=1;save();gateClose();return}i++;snd('ui_click');draw()}}
 
 /* ---------- v3.20 新手導覽：光圈框住要點的地方＋鐵匠提示；不擋操作，條件達成自動下一步 ---------- */
 const tutW=()=>S.weapons.filter(w=>!w.test&&!busyW(w)).sort((a,b)=>a.id-b.id)[0];   // 導覽用：第一把沒有駐守的武器

@@ -168,7 +168,7 @@ function saveTests(){
   const res=[];
   withSandbox(()=>{
     // 新存檔
-    S=fresh();res.push(T('E1 新存檔結構完整',S.v===3&&S.villages.length===VILLAGES.length&&S.weapons.length===0&&S.stats&&Object.keys(S.mats).length===8&&Object.values(S.mats).every(x=>x===0)&&Object.keys(S.items).join()==='relic_g,relic_b,relic_r,relic_y,estone,enstone'&&RELICS.every(k=>S.items[k]===0)&&S.items.estone===10&&S.items.enstone===3,'v'+S.v));
+    S=fresh();res.push(T('E1 新存檔結構完整',S.v===3&&S.villages.length===VILLAGES.length&&S.weapons.length===0&&S.stats&&Object.keys(S.mats).length===MAT_DEF.length&&Object.values(S.mats).every(x=>x===0)&&Object.keys(S.items).join()==='relic_g,relic_b,relic_r,relic_y,estone,enstone'&&RELICS.every(k=>S.items[k]===0)&&S.items.estone===10&&S.items.enstone===3,'v'+S.v));
     // v2 遷移
     const o={gold:999,gems:50,mats:{iron:5,oak:5,leather:5,silver:2,fang:1,scale:0,rune:0,shard:3},items:{scroll:2,bless:0,blueprint:0},furnace:2,anvil:1,slots:1,nextId:3,
       weapons:[{id:1,b:'t1_woodaxe',q:1,lv:3,ench:[{k:'swift',v:8}]},{id:1,b:'t1_farmspear',q:0,lv:2,ench:[]},{id:5,b:'xx_missing',q:0,lv:0}],jobs:[],
@@ -224,7 +224,7 @@ function saveTests(){
     res.push(T('E14 收藏武器不能熔解、武器庫滿 200 把不能再鍛造',m1===null&&!!W(lk.id)&&typeof f1==='string',`收藏熔解${m1===null?'被擋下':'成功(錯誤)'}；滿倉鍛造：${typeof f1==='string'?f1:'成功(錯誤)'}`));
     // v4.54 新材料 8 種、道具＝4 種遺物＋強化石＋附魔石、每界村莊掉該界材料、開局武器只花金幣；獎勵只有金幣鑽石
     const rw=[...ACH.map(a=>a.r),...SIGN,...DAILY_BOX.map(x=>x[1]()),repBox(10)].every(r=>Object.keys(r).every(k=>k==='gold'||k==='gems'));
-    res.push(T('E13 新材料 8 種、道具 6 種，每關掉該界材料，開局武器只花金幣，獎勵只剩金幣和鑽石',Object.keys(MATS).length===8&&Object.keys(ITEMS).join()==='relic_g,relic_b,relic_r,relic_y,estone,enstone'&&RELICS.length===4&&VILLAGES.every((v,i)=>v.drops.filter(d=>d[1]===.5).map(d=>d[0]).join()===REALM_MAT[Math.floor(i/10)].join())&&BPS.filter(b=>!b.dev&&!b.unlock).every(b=>!Object.keys(recipe(b)).length)&&rw&&!GD_SHOP.length&&GD_DON.every(x=>x.k!=='iron'),
+    res.push(T('E13 新材料 16 種（每界 4 種）、道具 6 種，每關掉該界材料，開局武器只花金幣，獎勵只剩金幣和鑽石',Object.keys(MATS).length===16&&Object.keys(ITEMS).join()==='relic_g,relic_b,relic_r,relic_y,estone,enstone'&&RELICS.length===4&&VILLAGES.every((v,i)=>v.drops.filter(d=>d[1]===.5).map(d=>d[0]).join()===REALM_MAT[Math.floor(i/10)].join())&&BPS.filter(b=>!b.dev&&!b.unlock).every(b=>!Object.keys(recipe(b)).length)&&rw&&!GD_SHOP.length&&GD_DON.every(x=>x.k!=='iron'),
       `材料 ${Object.keys(MATS).length} 種；道具 ${Object.keys(ITEMS).map(itemName).join('、')}；獎勵${rw?'只有金幣鑽石':'還有舊道具(錯誤)'}`));
   });
   return res;
@@ -386,7 +386,7 @@ function realm2Tests(){const res=[];
     S=fresh();S.speed=1;
     const o=JSON.parse(JSON.stringify(S));o.villages=o.villages.slice(0,10);o.villages.forEach(v=>v.status='cleared');o.weapons=[{id:1,b:'t3_greataxe',q:2,lv:3,rf:9,traits:[],ench:[null,null,null,null]},{id:2,b:'t1_woodaxe',q:0,lv:0,rf:3,traits:[],ench:[]}];o.nextId=3;
     const s=sanitize(o);
-    res.push(T('K1 舊存檔補上第二界、收復 1-10 後 2-1 自動開放',s.villages.length===20&&s.villages[10].status==='open'&&s.villages[11].status==='locked',`村莊 ${s.villages.length}；2-1 ${s.villages[10].status}`));
+    res.push(T('K1 舊存檔補上新的界、收復 1-10 後 2-1 自動開放',s.villages.length===VILLAGES.length&&s.villages[10].status==='open'&&s.villages[11].status==='locked',`村莊 ${s.villages.length}；2-1 ${s.villages[10].status}`));
     res.push(T('K2 關卡編號 1-1／1-10／2-1／2-10',[0,9,10,19].map(vNo).join(',')==='1-1,1-10,2-1,2-10',[0,9,10,19].map(vNo).join(',')));
     S=s;const w=makeWeapon('t3_greataxe',2,3,[]),p0=power(w);w.rf=5;
     const h=sheetWeapon(w.id,'main');
@@ -459,7 +459,7 @@ function monTests(){if(typeof document==='undefined')return[];const box=document
   return[T('H 村莊怪物：每關都有怪物，駐守中的村莊都有怪物圖和血條',ok,`怪物 ${MONS.length} 種／村莊 ${VILLAGES.length}；駐守 ${hunting} 座，怪物圖 ${box.querySelectorAll('[data-mon]').length}、血條 ${box.querySelectorAll('[data-vhp]').length}`)]}
 // v4.04 神話怪物：每關都有短名（6 字內，血條放得下）、稱號、傳說；塵世巨蟒首領有自己的圖
 function mythTests(){const n=VILLAGES.length,bad=MONS.filter(x=>x.length>6),j=EVT_BOSS.find(b=>b.id==='jorm');
-  const nd=EVT_BOSS.find(b=>b.id==='nidhogg'),god=[9,19].every(i=>/神/.test(MON_T[i]));
+  const nd=EVT_BOSS.find(b=>b.id==='nidhogg'),god=VILLAGES.every((v,i)=>i%10!==9||v.tag==='god');   // v4.72 每界第 10 關都是神（赫爾的稱號沒有「神」字，改看 tag）
   const ok=MONS.length===n&&MON_T.length===n&&MON_LORE.length===n&&!bad.length&&new Set(MONS).size===n&&j&&j.art==='boss_jorm'&&nd&&nd.art==='boss_nidhogg'&&god;
   return[T('H 神話怪物：20 隻都有名字（6 字內、不重複）、稱號、傳說，塵世巨蟒、尼德霍格首領用自己的圖，1-10、2-10 是神',ok,`名字 ${MONS.length}／稱號 ${MON_T.length}／傳說 ${MON_LORE.length}；太長：${bad.join('、')||'無'}；巨蟒圖 ${j&&j.art}、尼德霍格圖 ${nd&&nd.art}、最後一關是神 ${god}`)]}
 // v4.12 村莊詳情的怪物大圖：20 座村莊都能顯示自己的怪物，‹ › 只在同一界 10 隻之間循環
@@ -474,7 +474,7 @@ function godReqTests(){const v=VILLAGES[9],u=VILLAGES[19],mk=e=>({id:-1,b:'t3_ha
   return[T('H 關卡跟故事一致：神的關卡都要神聖、2-10 要戰錘、1-9 要霜寒、2-6 蠕龍要剋龍、舊名稱都換掉（v4.43 掉落刪除，不再檢查）',!!ok,`沒要神聖的神：${badGod.map(vNo).join('、')||'無'}；舊名稱：${old.map(x=>x.name).join('、')||'無'}；不該掉龍鱗：${noScale.map(x=>x.name).join('、')||'無'}`)]}
 // v4.24 第一、二界故事主線：1-8／2-9 對調、2-10 索爾、代名詞（神＝祂，怪物＝牠，不用他／她／它）
 function storyTests(){const pr=[...MON_LORE,...VILLAGES.map(v=>v.txt)].map((t,i)=>[i,t]).filter(([i,t])=>/[他它]|(?<!巨人女巫放話：先打贏)她/.test(t.replace(/其他|試試它/g,'')));
-  const ok=MONS[7]==='莫庫卡爾菲'&&MONS[18]==='赫朗格尼爾'&&MONS[19]==='索爾'&&MON_T[19]==='雷神'&&VILLAGES[18].name==='石籬原'&&!VILLAGES[18].drops.some(d=>d[0]==='fireheart')&&KN_FULL.includes(18)&&KN_FULL.includes(7)&&KN_FULL.includes(19)&&!Object.keys(ART_WAIT).some(k=>!/^dev_/.test(k)&&!BP_TMP[k.replace(/_disp$/,'')]);   // v4.51 新武器暫代圖例外   // v4.44 索爾之錘（神明武器）刪掉了，不再檢查
+  const ok=MONS[7]==='莫庫卡爾菲'&&MONS[18]==='赫朗格尼爾'&&MONS[19]==='索爾'&&MON_T[19]==='雷神'&&VILLAGES[18].name==='石籬原'&&!VILLAGES[18].drops.some(d=>d[0]==='fireheart')&&KN_FULL.includes(18)&&KN_FULL.includes(7)&&KN_FULL.includes(19)&&!Object.keys(ART_WAIT).some(k=>!/^dev_/.test(k)&&!BP_TMP[k.replace(/_disp$/,'')]&&!/^(v(2[1-9]|3\d|40)|mon_(2[1-9]|3\d|40)(_idle|_atk)?|mat_(rime|snake|mistle|helfrost|elfwood|moonsilk|marahorn|bristle)|story[34]_\d)$/.test(k));   // v4.72 第三、四界的圖還沒到（暫代）   // v4.51 新武器暫代圖例外   // v4.44 索爾之錘（神明武器）刪掉了，不再檢查
   return[T('H 故事主線：1-8 泥巨人、2-9 石籬原赫朗格尼爾（全身圖跟著搬）、2-10 雷神索爾',!!ok,`1-8 ${MONS[7]}、2-9 ${VILLAGES[18].name} ${MONS[18]}、2-10 ${MONS[19]}`),
     T('H 代名詞：怪物傳說和關卡說明不用他／她／它（指武器的「它」除外）',!pr.length,pr.length?'還有：'+pr.map(x=>x[0]).join('、'):'都改好了')]}
 // v4.27 神明用「祂」：神的傳說、村莊文字不能用他／她／牠
@@ -654,11 +654,11 @@ function newWpnTests(real){const mk=(id,lv)=>({id:-1,b:id,q:0,lv,ench:[null,null
   const st=real.filter(b=>b.unlock===0),cats=Object.keys(CSPD),ul=real.filter(b=>b.unlock).map(b=>b.unlock).join(',');
   const pw=[P('w0_sword',0),P('w1_sword',0),P('w2_axe',0),P('w1_troll',0),P('g_hofund',0)].join('/');
   const r1=P('w1_sword',6)<VILLAGES[9].req&&P('w1_sword',7)>=VILLAGES[9].req,r2=P('w2_axe',7)<VILLAGES[19].req&&P('w2_axe',8)>=VILLAGES[19].req;
-  return[T('NW1 新武器 17 把：開局 7 種各 1 把，第一界 2/4/6/7/10、第二界 1/3/5/8/10 關解鎖',real.length===17&&st.length===7&&cats.every(c=>st.some(b=>b.cat===c))&&ul==='2,4,6,7,10,11,13,15,18,20',`${real.length} 把・解鎖 ${ul}`),
+  return[T('NW1 武器 27 把：開局 7 種各 1 把，第一界 2/4/6/7/10、第二界 1/3/5/8/10、第三界 2/4/6/9/10、第四界 1/3/5/7/10 關解鎖',real.length===27&&st.length===7&&cats.every(c=>st.some(b=>b.cat===c))&&ul==='2,4,6,7,10,11,13,15,18,20,22,24,26,29,30,31,33,35,37,40',`${real.length} 把・解鎖 ${ul}`),
    T('NW2 數值兩界一階：開局 12、一般 15（第一二界一樣）、怪物主題 ×1.1、Boss 含專屬特效約 +20%',pw==='12/15/15/17/18'&&BP.g_hofund.fx&&BP.w1_troll.k==='m',pw),
-   T('NW3 偏難需求：1-10 要 +7、2-10 要 +8（+6／+7 不夠）',r1&&r2&&VREQ.length===20&&VILLAGES[0].req===12,`1-10 需求 ${VILLAGES[9].req}・2-10 需求 ${VILLAGES[19].req}`),
+   T('NW3 偏難需求：1-10 要 +7、2-10 要 +8（+6／+7 不夠）',r1&&r2&&VREQ.length===VILLAGES.length&&VILLAGES[0].req===12,`1-10 需求 ${VILLAGES[9].req}・2-10 需求 ${VILLAGES[19].req}`),
    T('NW4 配方：開局 7 把只花金幣，其他要金幣＋該界材料，各圖紙有自己的金幣價',real.every(b=>goldOf(b)===b.gold&&b.gold>0&&(!b.unlock?!Object.keys(recipe(b)).length:Object.keys(recipe(b)).some(k=>REALM_MAT[Math.floor((b.unlock-1)/10)].includes(k))))&&goldOf(BP.g_skadi)===10000,real.map(goldOf).join(',')),
-   T('NW5 17 把都用自己的圖（15 把新圖＋2 把 Boss 現有圖），不再借舊圖',real.every(b=>!ART_WAIT[b.id+'_disp']&&!ART_WAIT[b.id])&&real.filter(b=>!b.fx).every(b=>WFIT[b.id]===.6),Object.keys(BP_TMP).length+' 把暫代')]}
+   T('NW5 第一、二界 17 把都用自己的圖（15 把新圖＋2 把 Boss 現有圖），第三、四界圖還沒到先暫代',real.filter(b=>!BP_TMP[b.id]).length===17&&real.filter(b=>!BP_TMP[b.id]).every(b=>!ART_WAIT[b.id+'_disp']&&!ART_WAIT[b.id])&&real.filter(b=>!b.fx&&!BP_TMP[b.id]).every(b=>WFIT[b.id]===.6),Object.keys(BP_TMP).length+' 把暫代')]}
 
 // v4.53 交易所：列表／詳情的武器名稱含屬性，詳情用武器小卡的四格數值
 function mkCardTests(){const w={b:'w1_sword',q:0,lv:7,traits:[],ench:[{k:'ice',v:2},null,null,null]},r={id:-5,seller:'npc',seller_nick:'x',weapon:w,bp:'w1_sword',lv:7,q:0,cur:'gold',price:100,expires_at:new Date(Date.now()+864e5).toISOString()};
@@ -684,7 +684,7 @@ function fkTests(){const S0=S;S=JSON.parse(JSON.stringify(S0));const mk0=FK.mock
     FK.mock=()=>({rows:[{rk:1,uid:'x',nick:'霜狼',sec:9.2,w:{b:w.b,q:0,lv:12,ench:[]}},{rk:2,uid:'me',nick:'我',sec:18,w:st.fkw,mine:true}],n:2,me:{rk:2},my:{rk:2,n:2,top:9.2},t:1});
     const h=sheetFk(0),row=fkRow(0),t1=fkAnnText({nick:'A',village:9,sec:12.4,kind:'first'}),t2=fkAnnText({nick:'B',village:19,sec:8.9,bp:w.b,lv:12,kind:'top'});
     return[T('FK1 秒殺紀錄只留最快一次、到 0.1 秒、記當時的武器',ok1,`最快 ${st.fk}`),
-      T('FK2 跑馬燈只給每界第 9、10 關的王',boss==='8,9,18,19',boss),
+      T('FK2 跑馬燈只給每界第 9、10 關的王',boss===VILLAGES.map((v,i)=>i).filter(i=>i%10>=8).join(),boss),
       T('FK3 秒殺榜有名次、秒數、評級、我的名次；村莊詳情有我的最快和全服最快',h.includes('霜狼')&&h.includes('9.2')&&h.includes('lb-row me')&&h.includes('gr-')&&row.includes('18.0 秒')&&row.includes('第 2 名')&&row.includes('9.2')),
       T('FK4 公告文字：首殺、刷新紀錄都有怪物名字和秒數',t1.includes(MONS[9])&&t1.includes('12.4')&&t2.includes(MONS[19])&&t2.includes('+12')&&t2.includes('8.9'))]}
   catch(e){return[T('FK 秒殺榜測試',false,e.message)]}finally{S=S0;FK.mock=mk0}}
