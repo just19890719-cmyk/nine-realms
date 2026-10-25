@@ -333,7 +333,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.87';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.88';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1313,6 +1313,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.88',d:'10/25',t:'奧丁之咒顯示在武器名稱前面',b:['道具欄格子裡，中了奧丁之咒的武器名稱前面會顯示紅色「<b>奧丁之咒</b>」，跟屬性名稱一樣的位置'],g:['ench']},
  {v:'4.87',d:'10/25',t:'屬性底紋與小圖示・聖屬性金光・雷神新圖',b:['附魔表 18 格加上<b>屬性底紋</b>（火焰、冰霜、雷電、毒霧、聖光、暗影），一級淡、三級最明顯；「奧丁之咒」那一列也有紅色詛咒底紋','屬性名稱前面加上<b>屬性小圖示</b>：附魔表、武器名稱、村莊屬性和弱點都看得到','<b>聖屬性</b>改成白字配<b>金色光暈</b>和金框，不會再像一般白字；雷屬性還是亮黃字，兩個分得開','<b>索爾雷晶</b>和<b>索爾之錘</b>換成黃色雷電的新圖，跟雷屬性顏色一致'],g:['ench']},
  {v:'4.86',d:'10/25',t:'吞屍巨鷹換新圖',b:['2-3 <b>吞屍巨鷹赫拉斯瓦爾格</b>換上新的頭像、待機和攻擊圖：黑羽配金邊、金色眼睛和亮黃雷電，跟雷屬性的新顏色一致'],g:['hp']},
  {v:'4.85',d:'10/25',t:'奧丁之咒武器不會再藏起來',b:['中了<b>奧丁之咒</b>的武器，在道具欄會<b>自己一格</b>，不會再跟同款武器疊在一起看不到','武器圖下方會標紅色「奧丁之咒」，一眼就認得出來'],g:['ench']},
@@ -1976,8 +1977,8 @@ function stkFollow(){const n=ui.stkNext,s=ui.sheet;if(!n||ui.busy)return;ui.stkN
 const wSame=w=>wStackable(w)?S.weapons.filter(x=>wStackable(x)&&wKey(x)===wKey(w)).length:1;
 function wTile(w,act,dot,n=1,nw=wNew(w)){const b=bpOf(w),i=where(w);
   return `<button class="wt ${lc(w)}b ${i>=0?'posted':''} ${w.lock?'locked-fav':''}" ${act}>${dot?'<i class="dot give-dot" title="可以交付村莊"></i>':''}<span class="wt-art">${wArt(b.id,{frame:fq(w)})}
-   ${i>=0?`<span class="wt-post">駐守 ${vNo(i)}</span>`:bossSlotOf(w)>=0?'<span class="wt-post boss">討伐首領</span>':isBroken(w)?'<span class="wt-post boss">奧丁之咒</span>':''}${nw?'<span class="new-tag">NEW</span>':''}${n>1?`<i class="ib-x wt-x">×${fmt(n)}</i>`:''}</span>
-   <span class="wt-name ${lc(w)}"><span class="wt-lv">+${w.lv}</span>${(e=>e?`<span class="wn-el e-${e.k} t${e.t}">${e.tn}</span> `:'')(wElem(w))}${b.n}${w.lock?img('ic_lock','wt-lk','已鎖定'):''}</span></button>`}
+   ${i>=0?`<span class="wt-post">駐守 ${vNo(i)}</span>`:bossSlotOf(w)>=0?'<span class="wt-post boss">討伐首領</span>':''}${nw?'<span class="new-tag">NEW</span>':''}${n>1?`<i class="ib-x wt-x">×${fmt(n)}</i>`:''}</span>
+   <span class="wt-name ${lc(w)}"><span class="wt-lv">+${w.lv}</span>${isBroken(w)?'<span class="wn-brk">奧丁之咒</span> ':''}${(e=>e?`<span class="wn-el e-${e.k} t${e.t}">${e.tn}</span> `:'')(wElem(w))}${b.n}${w.lock?img('ic_lock','wt-lk','已鎖定'):''}</span></button>`}
 function bpTile(b,on){const l=bpLock(b);return `<button class="wt bp ${on?'on':''} ${l?'locked':''}" data-act="bp" data-k="${b.id}"><span class="wt-art">${wArt(b.id,{frame:'bp'})}${l?`<span class="wt-lock">${img('ic_lock')}</span>`:''}${bpNew(b)?'<span class="new-tag">NEW</span>':''}</span><span class="wt-name">${b.n}</span>${l?`<span class="wt-pow wt-lockline">${l}</span>`:`<span class="wt-pow">${kindN(b)}・${CATS[b.cat]}</span>`}</button>`}
 const matBox=(k,need)=>need==null?`<button class="matbox mb-tap" data-act="matinfo" data-k="${k}">${img(MATART[k])}<span class="mb-n">${MATS[k]}</span><span class="mb-c">${fmt(S.mats[k])}</span></button>`
   :`<div class="matbox need ${S.mats[k]<need?'lack':'ok'}">${img(MATART[k])}<span class="mb-n">${MATS[k]}</span><span class="mb-have">持有 ${fmt(S.mats[k])}</span><span class="mb-need">需要 ${fmt(need)}</span></div>`;
@@ -2647,9 +2648,9 @@ function viewShop(){
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'4.88',t:'道具欄格子：奧丁之咒改顯示在武器名稱前面',b:[['brkstk','給 3 把同款 +6 劍，其中 1 把中咒（看道具欄）']]},
  {v:'4.87',t:'屬性底紋＋小圖示；聖屬性改白字＋金色光暈、金框；索爾雷晶、索爾之錘換黃雷新圖',b:[['thor87','給 1 把 +6 索爾之錘＋10 個索爾雷晶（看新圖）'],['res77','打開附魔表看聖屬性'],['elall','給 6 把不同屬性的武器（看名稱）']]},
  {v:'4.86',t:'2-3 吞屍巨鷹換黃雷新圖（頭像、待機、攻擊）',b:[['eagle86','打開 2-3 村莊詳情看巨鷹新圖'],['eagle86b','2-3 駐守一把 +6 劍，展開戰鬥畫面看待機和攻擊']]},
- {v:'4.85',t:'奧丁之咒武器在道具欄自己一格（不跟同款疊在一起）',b:[['brkstk','給 3 把同款 +6 劍，其中 1 把中咒（看道具欄）']]},
  {v:'4.83',t:'附魔 5% 奧丁之咒＋矮人解咒石、商城賣強化石／附魔石、附魔故事書',b:[['lore83','打開附魔故事書「矮人盜石」（第一次送 10 附魔石＋2 解咒石）'],['lore83r','重置故事書已讀（可以再領一次測試）'],['brk83','給 1 把中咒測試劍＋3 顆解咒石，打開武器小卡'],['brk83f','下一次附魔一定中奧丁之咒（給三級火屬性劍＋附魔石）'],['brk83s','打開商城看矮人解咒石']]},
  {v:'4.82',t:'三級屬性重抽跳置中確認小卡',b:[['ench81','給 1 把三級火屬性測試劍＋附魔石，打開附魔（按附魔會跳確認小卡）']]},
  {v:'4.80',t:'屬性加成 +3／6／10%、同屬性 −3／6／10%',b:[['res77','給 1-9 用的三級冰／火屬性武器（應 ×1.1／×0.9）、打開附魔表'],['res77i','開火屬性說明小卡（+3%～10%）']]},
