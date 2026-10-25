@@ -520,7 +520,7 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.44 舊武器刪除：要在放回測試資料前檢查
-  const bd=[...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
+  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
     T('BD2 神明材質階、神格覺醒拿掉',TIERS.length===5&&typeof GOD==='undefined'&&typeof awkN==='undefined',`材質 ${TIERS.length} 階`)];
   return withTestBps(()=>runTests0(mode,bd))}
 // v4.44 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
@@ -545,6 +545,18 @@ const TEST_BPS=[
  ['t4_hammer','熔岩巨錘','hammer',4,17],['t4_polearm','狂風巨戟','polearm',4,14],['t4_dagger','霜晶獠刃','dagger',4,11],['t4_shield','巨骨塔盾','shield',4,12]
 ].map(([id,n,cat,t,base,unlock,r])=>({id,n,cat,t,base,unlock:unlock??TIERS[t].unlock,r:r||undefined,test:true}))   // v4.45 天生詞條不讀
  .filter(b=>!['t1_handaxe','t1_shortspear','t2_daneaxe','t2_broadsword','t2_warspear','t2_seax','t3_doubleaxe','t3_saber','t3_spear','t3_scythe','t1_pickaxe','t1_sling','t2_throwaxe','t1_roundshield','t2_kiteshield','t3_shield','t4_shield'].includes(b.id));
+// v4.72 武器圖鑑：登錄會吃掉武器、加成算進攻擊力、駐守／鎖定不能登錄、套裝湊齊再加
+function cxTests(){if(typeof cxRegCore==='undefined')return[];return withSandbox(()=>{try{S=fresh();
+  const a=makeWeapon('w0_axe',0,0),p0=power(a),r1=cxRegCore('w0_axe',0),gone=!W(a.id),pct1=cxPct();
+  const b=makeWeapon('w0_sword',0,6),p1=power(b);b.lock=true;const r2=cxRegCore('w0_sword',1);b.lock=false;
+  const st=S.villages[0];st.weaponId=b.id;const r3=cxRegCore('w0_sword',1);st.weaponId=null;
+  const c=makeWeapon('w0_sword',0,8),d=makeWeapon('w0_sword',0,6);const r4=cxRegCore('w0_sword',1);
+  const dup=cxRegCore('w0_sword',1);
+  CX_W0.filter(k=>k!=='w0_axe').forEach(k=>{makeWeapon(k,0,0);cxRegCore(k,0)});const set=cxSetOk(CX_SETS[0]),pctAll=cxPct();
+  const ok1=r1.w&&gone&&pct1===.2&&power(makeWeapon('w0_axe',0,0))>=p0,ok2=!!r2.err&&!!r3.err,ok3=!!dup.err;
+  return[T('CX1 圖鑑：登錄後武器消失、加成 +0.2%、攻擊力跟著變高',!!ok1,`消失 ${gone}・加成 ${pct1}%`),
+   T('CX2 鎖定、駐守中的武器不能登錄；自動挑等級最低的那把；同一格不能登錄兩次',ok2&&ok3&&r4.w&&r4.w.lv===6,`鎖定 ${!!r2.err}・駐守 ${!!r3.err}・挑到 +${r4.w&&r4.w.lv}・重複 ${!!dup.err}`),
+   T('CX3 套裝：鐵爐村 7 把 +0 湊齊再加 +2%',set&&Math.abs(pctAll-(7*.2+.6+2))<.01,`湊齊 ${set}・總加成 ${pctAll}%`)]}finally{CX_MEMO=null}})}
 function withTestBps(f){const keep=BPS.slice(),add=TEST_BPS.filter(b=>!BP[b.id]),rq=VILLAGES.map(v=>v.req);BPS.length=0;BPS.push(...add,...keep.filter(b=>b.dev));add.forEach(b=>BP[b.id]=b);VILLAGES.forEach(v=>v.req=v.req0??v.req);VHP_OLD=true;   // v4.51 舊圖紙配舊需求（v4.71 血量也用舊公式）
   try{return f()}finally{VHP_OLD=false;BPS.length=0;BPS.push(...keep);VILLAGES.forEach((v,i)=>v.req=rq[i]);add.forEach(b=>delete BP[b.id]);S.weapons=S.weapons.filter(w=>BP[w.b]);S.jobs=S.jobs.filter(j=>BP[j.b])}}   // 測試留下的舊圖紙武器一起清掉
 function runTests0(mode,bd){
