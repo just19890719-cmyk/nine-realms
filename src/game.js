@@ -329,7 +329,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.74';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.75';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1302,6 +1302,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.75',d:'10/25',t:'武器小卡屬性更清楚',b:['武器小卡的「屬性」改叫「<b>附魔屬性</b>」，直接寫附魔名稱（例如<b>雷神之怒</b>），不再寫「雷霆 三級」，也不發光'],g:['ench']},
  {v:'4.74',d:'10/25',t:'附魔說明更好懂',b:['附魔表左邊的屬性改叫<b>火屬、冰屬、雷屬、毒屬、聖屬、暗屬</b>','附魔表上方只寫一級、二級、三級','加成一律寫成「<b>打中弱點傷害 +20%</b>」（二級 +40%、三級 +60%），不再用 ×1.2','點屬性跳出的說明小卡拿掉機率（附魔表上已經有），也不會再隔幾秒像重新打開一樣閃一下'],g:['ench']},
  {v:'4.73',d:'10/25',t:'秒殺榜',b:['60 秒挑戰打倒怪物會記下<b>最快秒數</b>（到 0.1 秒）和當時用的武器，只留最快那一次','20 關都有<b>全服秒殺榜</b>：前 50 名的秒數、評級和武器，還有自己的名次','打完挑戰的結算畫面和村莊詳情的「挑戰評級」都會顯示我的最快和全服最快，點一下打開秒殺榜','每一界第 9、10 關的王（穆斯貝爾騎兵、海姆達爾、赫朗格尼爾、索爾）：全服首殺和刷新第 1 名會上<b>跑馬燈</b>'],g:['vil']},
  {v:'4.72',d:'10/25',t:'武器圖鑑',b:['道具欄新增「<b>圖鑑</b>」分頁：把武器登錄進圖鑑，<b>那把武器會消失</b>，換到全帳號<b>所有武器攻擊力</b>永久加成','每把武器 3 格：+0 格 +0.2%、+6 格 +0.6%、+9 格 +1.5%（強化到那個等級以上就能登錄，自動挑等級最低的那把）','6 個套裝湊齊再加 +2%～+5%，例如「諸神之器」：霍夫德之劍、索爾之錘都登錄 +9 再 +5%','駐守中、鎖定的武器不能登錄；原本的「收藏」改叫「<b>鎖定</b>」'],g:['codex','bag','melt']},
@@ -2166,7 +2167,7 @@ function wpGrid(w){const c=bpOf(w).cat,pr=PROC[c],sp=CSPD[c],rc=raceOf(w),e=wEle
   return `<div class="wp-g">${cell('攻速',sp?sp.toFixed(1)+' 秒':'—',sp?'單擊 '+fmt(hitDmg(w)):'')}
       ${cell('附加效果',pr?`${pr[0]} <i>${pct(procP(w.lv))}</i>`:'—',pr?pr[1]:'')}
       ${cell('相剋',rc?`${RACE_N[rc]} <i>+${raceBonus(w)}%</i>`:'—')}
-      ${e?`<div class="el"><span>屬性</span><b class="wn-el e-${e.k} t${e.t}">${e.n} ${['','一','二','三'][e.t]}級</b><em>打中弱點傷害 +${Math.round((e.m-1)*100)}%</em></div>`:cell('屬性','<span class="muted">無</span>','附魔可獲得')}</div>`}
+      ${e?`<div class="el"><span>附魔屬性</span><b class="elc-${e.k}">${e.tn}</b><em>打中弱點傷害 +${Math.round((e.m-1)*100)}%</em></div>`:cell('附魔屬性','<span class="muted">無</span>','附魔可獲得')}</div>`}
 function sheetWeapon(id,mode){
   const w=W(id);if(!w){const last=ui.enhLast&&ui.enhLast.id===id&&ui.enhLast.k==='broke'?ui.enhLast:null;
     if(last)return `<div class="sheet-head"><span style="width:44px"></span><h2>強化</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>`
@@ -2605,6 +2606,7 @@ function viewShop(){
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'4.75',t:'武器小卡「附魔屬性」只寫附魔名稱、不發光',b:[['elpop','給 1 把雷屬三級測試劍並打開附魔（關掉說明、按返回看武器小卡）']]},
  {v:'4.74',t:'附魔表改火屬／冰屬…、只顯示等級；說明小卡改「傷害 +20%」、拿掉機率、不再重播彈出動畫',b:[['elpop','給 1 把雷屬三級測試劍，打開附魔小卡＋雷屬說明（放著看會不會一直重新彈出）']]},
  {v:'4.73',t:'秒殺榜：20 關記最快秒數、全服前 50 名，王關首殺／刷新第 1 名上跑馬燈',b:[['fkfake','秒殺榜塞 20 筆假資料（含我）並打開'],['fkann','跑馬燈：王關首殺＋刷新紀錄各一則'],['fkwin','用 +12 最強武器挑戰最後一座開放的村莊（看結算的秒殺紀錄）'],['fkclr','清掉假資料和我的秒殺紀錄']]},
  {v:'4.72',t:'武器圖鑑：登錄武器（武器會消失）換全帳號攻擊力 %，每把 3 格＋6 個套裝',b:[['cxgive','17 種武器各給 +0／+6／+9 一把，打開圖鑑'],['cxmost','圖鑑登錄到快滿（每把留 +9 沒登），看套裝'],['cxreset','清空圖鑑']]},
