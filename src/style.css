@@ -2087,11 +2087,11 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
   border:1px solid transparent;border-image:url(art/ui/bag2/bag2_tag_post.webp) 0 58 0 18 fill / 0 9px 0 3px stretch}
 .b2-slot .curse{color:#fff;border-image-source:url(art/ui/bag2/bag2_tag_curse.webp)}
 .b2-slot .glow{position:absolute;left:15%;top:3px;font-size:11px;font-weight:700;text-shadow:0 0 2px #000,0 0 3px #000}
-/* v4.97 +9 以上四角發光（Mochi 選加強版）：用品階框本身提亮，遮罩只留四個角，慢慢亮暗 */
-.b2-slot .cg{position:absolute;inset:-14%;z-index:1;pointer-events:none;mix-blend-mode:screen;-webkit-mask-image:radial-gradient(circle at 12% 12%,#000 0,transparent 30%),radial-gradient(circle at 88% 12%,#000 0,transparent 30%),radial-gradient(circle at 12% 88%,#000 0,transparent 30%),radial-gradient(circle at 88% 88%,#000 0,transparent 30%);mask-image:radial-gradient(circle at 12% 12%,#000 0,transparent 30%),radial-gradient(circle at 88% 12%,#000 0,transparent 30%),radial-gradient(circle at 12% 88%,#000 0,transparent 30%),radial-gradient(circle at 88% 88%,#000 0,transparent 30%);animation:cgp 2.4s ease-in-out infinite alternate;will-change:opacity}
-.b2-slot .cg img{position:absolute;inset:12.28%;width:75.44%;height:75.44%;max-width:none;filter:brightness(3.2) saturate(1.5) blur(1px)}
-.b2-slot .cg img.h{filter:brightness(3.5) saturate(1.6) blur(5px)}
-@keyframes cgp{from{opacity:.45}to{opacity:1}}
+/* v4.99 +9 以上發光框（Mochi AI 生圖 glow_l3/l6/l4/l5，黑底轉成透明度疊上），慢慢亮暗 */
+.b2-slot .cg{position:absolute;inset:-1%;z-index:1;pointer-events:none;animation:cgp 2.4s ease-in-out infinite alternate;will-change:opacity}
+.b2-slot .cg img{position:absolute;inset:0;width:100%;height:100%;max-width:none}
+.b2-slot .cg img.h{filter:blur(3px) brightness(1.4)}   /* 第二層模糊光暈，讓光更亮更柔（Mochi：再亮一點） */
+@keyframes cgp{from{opacity:.7}to{opacity:1}}
 .b2-slot .w,.b2-slot .ic,.b2-slot .lv,.b2-slot .x,.b2-slot .lk,.b2-slot .nw,.b2-slot .post,.b2-slot .curse,.b2-slot .glow{z-index:2}
 @media (prefers-reduced-motion:reduce){.b2-slot .cg{animation:none;opacity:.8}}
 .b2-slot.brk .w{filter:grayscale(.6) brightness(.7) sepia(.3) hue-rotate(-20deg)}
