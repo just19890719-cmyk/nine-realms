@@ -127,7 +127,7 @@ body{color:var(--bone);font-family:var(--body);line-height:1.5;padding-left:max(
 .gear img{width:40px;height:40px}
 .plus{margin-left:2px;border-radius:4px;color:var(--gold-hi);font-size:14px;line-height:1;display:grid;place-items:center;padding:0;border:0;background:none;width:26px;height:26px}
 .plus img{width:26px;height:26px}
-.bar{top:env(safe-area-inset-top,0px);z-index:20;margin:0 calc(-1 * max(12px,env(safe-area-inset-left,0px)));padding:6px max(12px,env(safe-area-inset-right,0px)) 6px max(12px,env(safe-area-inset-left,0px));background:linear-gradient(#1b1511,rgba(18,14,11,.96));border-bottom:1px solid var(--line);position:sticky}
+.bar{top:env(safe-area-inset-top,0px);z-index:20;margin:0 calc(-1 * max(12px,env(safe-area-inset-left,0px)));padding:6px max(12px,env(safe-area-inset-right,0px)) 6px max(12px,env(safe-area-inset-left,0px));background:linear-gradient(#1b1511,#120e0b);border-bottom:1px solid var(--line);position:sticky}
 .res .gear{margin-left:2px}
 .mute{background:none;border:0;font-size:18px;width:44px;height:44px;padding:0;margin:0 -4px;opacity:.85;cursor:pointer;flex:none}
 /* 頂部資源列窄螢幕（v3.12 修正）：名字放不下時改成徽章上的等級標記，320px 以下資源改到第二行；不縮小文字 */
@@ -2025,13 +2025,14 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 
 /* ===== v4.96 道具欄新外觀（背包樣板 proto/bag2，Mochi 10/25 確認）：煤黑古銅；美術 art/ui/bag2/，全部只在 .b2 底下 ===== */
 .b2{--b2br:1.5;--b2-gold:#b88f4a;--b2-gold-hi:#f0cf86;--b2-text:#e7e2d8;--b2-mute:#8d96a3;--b2-dim:#5d6672;--b2-num:#f4e2b8;--b2-danger:#e0594b;
-  position:relative;isolation:isolate;container-type:inline-size;margin:8px -4px 10px;padding:18px 16px 16px;background:#0b0d10;color:var(--b2-text)}
+  position:relative;isolation:isolate;container-type:inline-size;margin:0 -4px 10px;padding:18px 16px 16px;background:#0b0d10;color:var(--b2-text)}
 .b2::before{content:"";position:absolute;left:0;right:0;top:0;height:150cqw;max-height:100%;z-index:-1;filter:brightness(var(--b2br));background:url(art/ui/bag2/bag2_main_tex.webp) center top/100% auto no-repeat;
   -webkit-mask-image:linear-gradient(#000 72%,transparent);mask-image:linear-gradient(#000 72%,transparent);pointer-events:none}
 .b2::after{content:"";position:absolute;inset:0;z-index:3;border:1px solid transparent;border-image:url(art/ui/bag2/bag2_main_frame.webp) 150 / 30px stretch round;pointer-events:none}
 .b2 button{color:inherit;-webkit-tap-highlight-color:transparent}
 /* v4.98 上方（標題、頁籤、分類、排序）往下捲時固定在資源列下面，只有格子在捲（Mochi） */
-.b2-top{position:sticky;top:calc(var(--barh,52px) + env(safe-area-inset-top,0px));z-index:2;margin:-18px -16px 0;padding:18px 16px 6px}
+.b2-top{position:sticky;top:calc(var(--barh,52px) + env(safe-area-inset-top,0px));z-index:4;margin:-18px -16px 0;padding:18px 16px 6px}
+.b2-topfr{position:absolute;inset:0;z-index:1;border:0 solid transparent;border-image:url(art/ui/bag2/bag2_main_frame.webp) 150 150 1284 150 / 30px 30px 0 30px stretch;pointer-events:none}   /* v5.07 固定區自帶上框：從頂端就貼在資源列下面，捲動時完全不動 */
 .b2-top::after{content:'';position:absolute;left:4px;right:4px;bottom:-22px;height:28px;pointer-events:none;background:url(art/ui/bag2/bag2_rule_mid.webp) center top/auto 12px no-repeat,url(art/ui/bag2/bag2_rule_line.webp) center top/100% 12px no-repeat,linear-gradient(rgba(6,7,9,.9),rgba(6,7,9,0)) 0 6px/100% 16px no-repeat}   /* v5.02 固定區下緣飾線＋淡出 */
 .b2-top::before{content:"";position:absolute;inset:0;z-index:-1;background:#0b0d10 url(art/ui/bag2/bag2_main_tex.webp) center top/100% auto no-repeat;filter:brightness(var(--b2br))}
 /* 標題列：名稱置中、容量在右 */
@@ -2096,4 +2097,8 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .b2 .empty-state{margin:0}
 @media (max-width:340px){.b2-cat{border-image-width:7px;font-size:10px}.b2-top{margin:-14px -12px 0;padding:14px 12px 6px}.b2-cat img{width:24px;height:24px}.b2{padding:14px 12px 12px}.b2-cap{padding-right:10px}.b2-head h2::before,.b2-head h2::after{width:40px}}
 body{margin-top:0}   /* v5.05 拿掉瀏覽器預設的上方 8px：捲動時上方資源列不再往上跳一下 */
+.sheet>.sheet-head:first-child{margin-top:-8px}   /* v5.07 彈窗標題列從一開始就貼在最上面，捲動時不再往上移 8px */
+html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不再讓整個畫面左右跳 */
+.wp-notes{min-height:calc(3 * 1.5em + 8px);padding-top:8px;box-sizing:border-box}.wp-notes .wp-note:first-child{margin-top:0}   /* v5.07 小卡下面固定預留 3 行提示，按熔解不會變大 */
+.armnote{min-height:3em}   /* v5.07 危險區強化確認提示預留 2 行 */
 </style>
