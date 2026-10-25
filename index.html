@@ -3654,6 +3654,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'5.12',d:'10/25',t:'小卡和頁面不再跳動、不再左右多出一截',b:['同款武器有好幾把時，按「熔解」小卡也不會變矮（窄手機也一樣）','手機很窄時，交易所的篩選列和村莊的「預估秒數」不會再把頁面撐寬、可以左右滑','武器小卡「下一級」說明換行時不會把「攻擊力」拆成兩半'],g:['bag']},
  {v:'5.12',d:'10/25',t:'小卡和頁面不再跳動、不再左右多出一截',b:['同款武器有好幾把時，按「熔解」小卡也不會變矮（窄手機也一樣）','手機很窄時，交易所的篩選列和村莊的「預估秒數」不會再把頁面撐寬、可以左右滑'],g:['bag']},
  {v:'5.11',d:'10/25',t:'強化、附魔頁的叉叉改回原本圓形',b:['強化頁、附魔頁上方的返回、說明、叉叉按鈕，改回原本的圓形圖示（v5.10 誤變成八角形）'],g:['enh','ench']},
  {v:'5.10',d:'10/25',t:'武器小卡換上道具欄同款外觀',b:['點武器跳出的小卡、強化頁、附魔頁，外框、底紋、數值格、按鈕都改成跟道具欄同一套煤黑古銅','小卡裡的武器大圖改用道具欄的格子與品階框（+9 以上一樣有裂痕呼吸燈）'],g:['bag']},
@@ -4614,7 +4615,7 @@ function sheetWeapon(id,mode){
       <div class="wp-pow"><b>${fmt(power(w))}</b><span>攻擊力（每秒傷害）</span></div></div></div>
      ${wpGrid(w)}
      <div class="wp-lv"><div class="wp-bar">${Array.from({length:13},(_,k)=>`<i class="${k<=w.lv?'on':''} ${k===w.lv?'cur':''}" style="--c:var(--l${FLV(k)})"></i>`).join('')}</div>
-      <div class="rw"><span>+0</span><span>${max?'已達 +12':`下一級 +${nx}：${pr?pr[0]+' <b>'+pct(procP(nx))+'</b>・':''}${rc?'相剋 <b>+'+raceBonus(w,nx)+'%</b>・':''}攻擊力 <b>${fmt(power(w,nx))}</b>`}</span><span>+12</span></div></div>
+      <div class="rw"><span>+0</span><span>${max?'已達 +12':`下一級 +${nx}：${pr?'<span class="nobr">'+pr[0]+' <b>'+pct(procP(nx))+'</b>・</span>':''}${rc?'<span class="nobr">相剋 <b>+'+raceBonus(w,nx)+'%</b>・</span>':''}<span class="nobr">攻擊力 <b>${fmt(power(w,nx))}</b></span>`}</span><span>+12</span></div></div>
      <div class="wp-a">${btn('強化','wmode',{cls:'btn-primary',attrs:`data-m="enh" data-id="${id}"`,dis:busy||isBroken(w)})}${btn(w.lv>=stable(w)?`已 +${stable(w)}`:'一鍵安定值','autoEnh',{cls:'btn-primary',attrs:`data-id="${id}"`,dis:busy||isBroken(w)||w.lv>=stable(w)||(!w.test&&stones()<enhCost(w))})}${btn(isBroken(w)?'解咒':'附魔','wmode',{cls:'btn-primary',attrs:`data-m="ench" data-id="${id}"`,dis:busy})}
       ${i>=0?btn('收回','recall',{attrs:`data-i="${i}"`}):bs>=0?btn('收回','bossout',{attrs:`data-s="${bs}"`}):btn('駐守'+(canGive(w)?'<i class="dot give-dot"></i>':''),'wmode',{attrs:`data-m="give" data-id="${id}"`,dis:isBroken(w)})}
       ${btn('上架','mksellw',{attrs:`data-id="${id}"`,dis:w.test||!mkSellable(w)})}${btn(ui.meltArm===id?'確認':'熔解','melt',{cls:'btn-danger',attrs:`data-id="${id}"`,dis:busy||w.lock})}</div>
