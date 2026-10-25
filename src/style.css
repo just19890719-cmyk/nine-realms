@@ -1990,10 +1990,10 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 /* v4.91 Mochi：程式畫的框線看起來廉價 → 沒有皮膚槽位的元件也換成 AI 細線框（素材 art/ui/ui491_*，皮膚槽位設定在 skin.js）
    框：fr 暗銅／fr_on 金（選中）／fr_red 紅（危險）／fr_off 灰（鎖住、停用），角落雕花一樣大（15px）；fl* 是沒有雕花的細線框，給小元件用；cap* 是膠囊 */
 .sheet,.modal-card,.info-body{scrollbar-width:none}.sheet::-webkit-scrollbar,.modal-card::-webkit-scrollbar,.info-body::-webkit-scrollbar{display:none}   /* 小卡內容稍微超出時不顯示旁邊的捲動條（還是可以滑） */
-.wt:not(#_),.wt:is(.l0b,.l1b,.l2b,.l3b,.l4b,.l5b,.l6b,.posted):not(#_),.sg-day:not(#_),.matbox:not(#_),.ev-st:not(#_),.wp-g>*:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fr.webp) 50 / 15px stretch;background:linear-gradient(rgba(0,0,0,.38),rgba(0,0,0,.38)),url(art/ui/ui491_tex.webp) center/240px;box-shadow:none}
+.wt:not(#_),.wt:is(.l0b,.l1b,.l2b,.l3b,.l4b,.l5b,.l6b,.posted):not(#_),.sg-day:not(#_),.matbox:not(#_),.wp-g>*:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fr.webp) 50 / 15px stretch;box-shadow:none}
 .wt.on:not(#_),.sg-day.today:not(#_){outline:none;border-image-source:url(art/ui/ui491_fr_on.webp)}
-.ev-st.risk:not(#_),.enh-stage.danger:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fr_red.webp) 50 / 15px stretch}
-.enh-stage:not(.danger):not(#_){border-color:transparent;border-image:url(art/ui/ui491_fr.webp) 50 / 15px stretch}
+.ev-st:not(#_),.enh-stage:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fl.webp) 24 / 8px stretch;box-shadow:none}   /* 石碑和上面的數值格不加雕花，避免框裡套框太雜 */
+.ev-st.risk:not(#_),.enh-stage.danger:not(#_){border-image-source:url(art/ui/ui491_fl_red.webp)}
 .ev-warn.risk:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fl_red.webp) 24 / 8px stretch}
 .enh-more:not(#_),.cbar-in:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fl.webp) 24 / 8px stretch;box-shadow:none}
 .vlocked:not(#_){border-style:solid;border-color:transparent;border-image:url(art/ui/ui491_fr_off.webp) 50 / 15px stretch}

@@ -1898,7 +1898,7 @@ function skinCss(){if(typeof UI_SKIN==='undefined')return'';const out=[];
     // width：只設定圖框的繪製寬度（border-image-width），不改元件原本的邊框寬度，所以版面尺寸完全不變。
     //   上下寬度相加 ≥ 元件高度時，瀏覽器會把四邊等比例縮小 → 只能橫向伸縮的素材（3-slice）用這個方式，四角不會變形。
     if(base.width){const sl=(base.slice||[24,24,24,24]).join(' '),iw=base.width.map(v=>typeof v==='number'?v+'px':v).join(' ');
-      out.push(`${sel}{border-color:transparent;border-image:url("${cfg.src}") ${sl}${base.fill===false?'':' fill'} / ${iw} / ${base.outset||0} ${base.repeat||'stretch'};background:none${ex}}`);
+      out.push(`${sel}{border-color:transparent;border-image:url("${cfg.src}") ${sl}${base.fill===false?'':' fill'} / ${iw} / ${base.outset||0} ${base.repeat||'stretch'}${base.bg?'':';background:none'}${ex}}`);   // v4.91 bg:true＝保留元件原本的底色（框中間是空的）
       // overlay：不能被拉伸的中央裝飾（例如導航列中間的鑽飾）另外疊一層，固定比例置中，不跟著元件寬度變形
       if(base.overlay){const ov=base.overlay;out.push(`${sel.split(',').map(x=>x+'::before').join(',')}{content:"";position:absolute;left:50%;top:0;height:100%;aspect-ratio:${ov.ratio};transform:translateX(-50%);background:url("${ov.src}") center/100% 100% no-repeat;pointer-events:none}`)}
       continue}
