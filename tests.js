@@ -567,10 +567,55 @@ function withTestBps(f){const keep=BPS.slice(),add=TEST_BPS.filter(b=>!BP[b.id])
 var TEST_LAST=null;
 function runTests0(mode,bd){
   if(mode==='econ')return econHtml(12)+econHtml(8);
+<<<<<<< HEAD
   const r=runAll({N:100000});r.res.push(...bd,...frameLvTests(),...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...storyTests(),...curveTests(),...vNeedTests(),...vPickTests(),...bsTglTests(),...godWordTests(),...hitTests(),...enchTests(),...wsTests(),...wpnTests(),...stackTests());const pass=r.res.filter(x=>x.pass).length;
   TEST_LAST={res:r.res,done:true};   // v5.08 統一測試指令（src/tools/run_tests.js）讀這裡的逐項結果
+=======
+  const r=runAll({N:100000});r.res.push(...bd,...frameLvTests(),...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...storyTests(),...curveTests(),...vNeedTests(),...vPickTests(),...bsTglTests(),...godWordTests(),...hitTests(),...enchTests(),...wsTests(),...wpnTests(),...stackTests(),...uiStableTests());const pass=r.res.filter(x=>x.pass).length;
+>>>>>>> 170f2b4 (v5.08 畫面穩定永久測試 UI1～UI8；同款熔解不變矮；320 寬不撐出水平捲動)
   return `<div><b>${pass}/${r.res.length} 通過</b>（${r.ms} 毫秒）</div>`+resHtml(r.res);
 }
+// v5.08 永久回歸：v5.01～v5.07 修過的道具欄／小卡畫面問題（BUG_HISTORY 同類問題：小卡多一行字就長高、捲動時上方跳、重畫時動畫重播、開小卡時捲軸消失畫面左右跳）
+function uiStableTests(){if(typeof document==='undefined'||typeof b2Slot==='undefined')return[];return withSandbox(()=>{const res=[],keep={sheet:ui.sheet,meltArm:ui.meltArm,riskArm:ui.riskArm,riskOk:ui.riskOk,enhV:ui.enhV,tab:ui.tab,atab:ui.atab};
+  try{S=sanitize(fresh());const b=(BPS.find(x=>!x.dev)||BPS[0]).id;
+  // UI1 奧丁之咒：灰階＋鎖鏈，不再有「咒」字和紅色詛咒框，保留品階框
+  const c=makeWeapon(b,0,7);c.ench[0]={k:'broken',v:1};const ch=isBroken(c)?b2Slot(c,''):'';
+  res.push(T('UI1 被詛咒的武器：灰階＋鎖鏈，沒有「咒」字和紅色詛咒框，框色照強化等級',!!ch&&/class="chain"/.test(ch)&&/b2-slot[^"]*brk/.test(ch)&&!/>咒</.test(ch)&&!/rim_curse/.test(ch)&&ch.includes('bag2_rim_l'+FLV(7)),ch?'正常':'測試武器沒有變成被詛咒（isBroken）'));
+  // UI2／UI3 +9 以上：裂痕框＋只有裂痕呼吸；重畫時動畫接著上次的進度（負的 animation-delay 跟時間同步）
+  const lv=[8,9,10,11,12].map(l=>{const w=makeWeapon(b,0,l);return[l,b2Slot(w,'')]}),
+    crkOk=lv.every(([l,h])=>l<9?!/crk/.test(h)&&h.includes('bag2_rim_l'+FLV(l)):h.includes('bag2_rim9_l'+FLV(l))&&h.includes('bag2_crk_l'+FLV(l))&&/class="rim crk"/.test(h));
+  const d=+((lv[1][1].match(/--crkd:(-?[\d.]+)s/)||[])[1]),now=(Date.now()%6000)/1000,phOk=d<=0&&Math.abs(-d-now)<.5||Math.abs(-d-now)>5.5;
+  res.push(T('UI2 +9～+12 用裂痕框＋裂痕發光層，+8 以下沒有',crkOk,lv.map(([l,h])=>'+'+l+(/crk/.test(h)?'裂痕':'一般')).join('・')));
+  res.push(T('UI3 裂痕呼吸燈重畫不重播：延遲＝-(現在時間 mod 6 秒)',phOk,`延遲 ${d}s、應約 -${now.toFixed(2)}s`));
+  // 小卡放到畫面外量高度（跟遊戲同樣的外框 class）
+  const box=document.createElement('div');box.style.cssText='position:absolute;left:-10000px;top:0;width:430px;height:900px;visibility:hidden;transform:translateZ(0)';document.body.appendChild(box);
+  const hOf=html=>{let o='';for(const w of[320,375,430]){box.style.width=w+'px';box.innerHTML=`<div class="scrim wpopc still"><div class="ui-sheet sheet wpop still">${html}</div></div>`;o+=box.querySelector('.sheet').getBoundingClientRect().height.toFixed(1)+'/'}return o};
+  try{
+    // UI4 熔解：按第一次出現「再按一次確認」，小卡高度不變；同款多把時也一樣
+    const one=l=>{const m=makeWeapon(b,0,l);ui.meltArm=null;const a=hOf(sheetWeapon(m.id,'main'));ui.meltArm=m.id;const sh=sheetWeapon(m.id,'main');return[a,hOf(sh),/再按一次「確認」/.test(sh)]},m3=one(3),m8=one(8);
+    makeWeapon(b,0,0);const s1=makeWeapon(b,0,0);makeWeapon(b,0,0);ui.meltArm=null;const h2=hOf(sheetWeapon(s1.id,'main'));ui.meltArm=s1.id;const h3=hOf(sheetWeapon(s1.id,'main'));ui.meltArm=null;
+    res.push(T('UI4 按「熔解」出現確認字，武器小卡高度不變（+3、+8 沒有提示字、同款多把；320／375／430 寬）',[m3,m8].every(([a,z,t])=>t&&a===z)&&h3===h2,`寬 320/375/430：+3 ${m3[0]}→${m3[1]}、+8 ${m8[0]}→${m8[1]}、同款 ${h2}→${h3}`));
+    // UI5 危險區強化：按第一次出現「再按一次確認」，強化小卡高度不變（兩種版型）
+    const e=makeWeapon(b,0,stable({b,lv:0})),r=[];S.items.estone=999;
+    for(const v of['2','O']){ui.enhV=v;ui.riskArm=ui.riskOk=null;const a=hOf(sheetWeapon(e.id,'enh'));ui.riskArm=e.id;const sh=sheetWeapon(e.id,'enh'),z=hOf(sh);r.push([v,a,z,/再按一次確認/.test(sh)])}
+    res.push(T('UI5 危險區強化按第一次出現確認字，強化小卡高度不變（新舊兩種版型；320／375／430 寬）',r.every(([,a,z,t])=>t&&a===z),r.map(([v,a,z,t])=>`版型${v} ${a}→${z}${t?'':'（沒出現確認字）'}`).join('、')));
+  }finally{box.remove()}
+  // UI6 全遊戲：捲軸位置固定、頁面頂端沒有空隙、上方資源列不透明、小卡標題捲動時不跳
+  const cs=getComputedStyle(document.documentElement),bd=getComputedStyle(document.body),bar=document.querySelector('.bar'),bg=bar?getComputedStyle(bar).backgroundImage:'',
+    t=document.createElement('div');t.innerHTML='<div class="sheet"><div class="sheet-head">x</div></div>';t.style.cssText='position:absolute;left:-10000px;visibility:hidden';document.body.appendChild(t);const shm=getComputedStyle(t.querySelector('.sheet-head')).marginTop;t.remove();
+  const g=cs.scrollbarGutter,opq=!bar||/linear-gradient/.test(bg)&&!/rgba\([^)]*,\s*0?\.\d+\)/.test(bg);
+  res.push(T('UI6 開關小卡捲軸位置不變（scrollbar-gutter: stable）、頁面頂端 0 空隙、上方資源列不透明、小卡標題 -8px',(g===undefined||/stable/.test(g))&&bd.marginTop==='0px'&&opq&&shm==='-8px',`gutter ${g}・body ${bd.marginTop}・資源列 ${bar?bg.slice(0,40):'沒有'}・標題 ${shm}`));
+  // UI7 道具欄（武器／材料、圖鑑除外）：頂部框自己畫上緣，區塊上方 0 邊距，捲動時上方不跳
+  ui.tab='armory';ui.atab='w';const va=viewArmory(),vb=viewBag(),q=document.createElement('div');q.style.cssText='position:absolute;left:-10000px;width:430px;visibility:hidden';q.innerHTML=va;document.body.appendChild(q);
+  const sec=q.querySelector('.b2'),top=q.querySelector('.b2-top'),mt=sec?getComputedStyle(sec).marginTop:'',zi=top?+getComputedStyle(top).zIndex:0;q.remove();
+  res.push(T('UI7 道具欄頂部：武器、道具兩頁都有自己的上框、區塊上方 0 邊距、置頂層級在格子上面',/b2-topfr/.test(va)&&/b2-topfr/.test(vb)&&mt==='0px'&&zi>=4,`上框 ${/b2-topfr/.test(va)}/${/b2-topfr/.test(vb)}・邊距 ${mt}・層級 ${zi}`));
+  // UI8 320／375／430 寬：主要頁面不能撐出水平捲動（v5.08 修：交易所篩選列、村莊「・預估」那行）
+  {const pages=[['鍛造',viewForge],['道具欄',()=>{ui.atab='w';return viewArmory()}],['道具',viewBag],['村莊',viewVillage],['商城',viewShop],['交易所',viewMarket]],bs=getComputedStyle(document.body),pg=document.createElement('div'),o=document.createElement('main');{const v=document.getElementById('view');if(v)v.id='view0'}o.className='wrap';o.id='view';pg.style.cssText=`position:absolute;left:-10000px;top:0;visibility:hidden;box-sizing:border-box;padding:0 ${bs.paddingRight} 0 ${bs.paddingLeft}`;pg.appendChild(o);document.body.appendChild(pg);const bad=[];
+   S.villages[0].status='cleared';S.villages[1].status='open';makeWeapon(b,0,6);
+   try{for(const w of[320,375,430])for(const[n,f]of pages){pg.style.width=w+'px';try{o.innerHTML=f()}catch(e){bad.push(n+' 畫面錯誤');continue}if(pg.scrollWidth>pg.clientWidth+1)bad.push(`${w}px ${n} 寬了 ${pg.scrollWidth-pg.clientWidth}px`)}}finally{pg.remove();const v=document.getElementById('view0');if(v)v.id='view'}
+   res.push(T('UI8 主要頁面在 320／375／430 寬都沒有水平溢出',!bad.length,bad.length?bad.slice(0,4).join('；'):'6 頁 × 3 種寬度正常'))}
+  }finally{Object.assign(ui,keep)}
+  return res})}
 // v4.34 武器框顏色看強化等級
 function frameLvTests(){if(typeof FLV==='undefined')return[];const exp={0:0,1:1,6:1,7:2,8:2,9:3,10:6,11:4,12:5,15:5},bad=Object.entries(exp).filter(([lv,f])=>FLV(+lv)!==f);
   const nm=[0,3,7,9,10,11,12].map(lv=>FLV_T[FLV(lv)]).join('');return[T('FL2 品階名稱：凡鐵、精鍛、寒鋒、血刃、神鑄、星魂、永恆',nm==='凡鐵精鍛寒鋒血刃神鑄星魂永恆',nm),T('FL1 框色：+0 灰、+1～+6 綠、+7～+8 藍、+9 紅、+10 金、+11 紫、+12 鑽石',!bad.length,bad.length?'錯：'+bad.map(x=>'+'+x[0]).join('、'):'10 個等級都對')]}

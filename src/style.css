@@ -2147,4 +2147,8 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 .k2 .ev-bar{background:transparent;border:0;box-shadow:none}
 @media (max-width:400px){.k2 .sheet-head h2::before,.k2 .sheet-head h2::after{display:none}}   /* 375 寬標題兩側花紋會把 X 擠出去 */
 @media (max-width:360px){.sheet.wpop.k2:not(#_){padding:18px 16px 12px;border-image-width:18px}.k2 .sheet-head h2{font-size:18px}}
+/* v5.08 確認字一直在、沒按時隱形：跟原本提示疊在同一格，任何寬度小卡都不變高 */
+.wp-alt{display:grid;margin-top:8px}.wp-notes .wp-alt:first-child{margin-top:0}.wp-alt>.wp-note{grid-area:1/1;margin-top:0}.wp-alt>.off,.armnote.off{visibility:hidden}
+/* v5.08 320 寬交易所篩選列不撐破畫面：格子項目可以縮、幣別／排序那排放不下就換行 */
+.mk-filter>*{min-width:0}.mk-chips.row{flex-wrap:wrap;row-gap:6px}
 </style>

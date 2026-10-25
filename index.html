@@ -2163,6 +2163,10 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 .k2 .ev-bar{background:transparent;border:0;box-shadow:none}
 @media (max-width:400px){.k2 .sheet-head h2::before,.k2 .sheet-head h2::after{display:none}}   /* 375 寬標題兩側花紋會把 X 擠出去 */
 @media (max-width:360px){.sheet.wpop.k2:not(#_){padding:18px 16px 12px;border-image-width:18px}.k2 .sheet-head h2{font-size:18px}}
+/* v5.08 確認字一直在、沒按時隱形：跟原本提示疊在同一格，任何寬度小卡都不變高 */
+.wp-alt{display:grid;margin-top:8px}.wp-notes .wp-alt:first-child{margin-top:0}.wp-alt>.wp-note{grid-area:1/1;margin-top:0}.wp-alt>.off,.armnote.off{visibility:hidden}
+/* v5.08 320 寬交易所篩選列不撐破畫面：格子項目可以縮、幣別／排序那排放不下就換行 */
+.mk-filter>*{min-width:0}.mk-chips.row{flex-wrap:wrap;row-gap:6px}
 </style>
 <div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div><div class="news" id="news" aria-live="polite" data-act="chatsys"></div></div>
 <main class="wrap" id="view"></main>
@@ -3650,6 +3654,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'5.12',d:'10/25',t:'小卡和頁面不再跳動、不再左右多出一截',b:['同款武器有好幾把時，按「熔解」小卡也不會變矮（窄手機也一樣）','手機很窄時，交易所的篩選列和村莊的「預估秒數」不會再把頁面撐寬、可以左右滑'],g:['bag']},
  {v:'5.11',d:'10/25',t:'強化、附魔頁的叉叉改回原本圓形',b:['強化頁、附魔頁上方的返回、說明、叉叉按鈕，改回原本的圓形圖示（v5.10 誤變成八角形）'],g:['enh','ench']},
  {v:'5.10',d:'10/25',t:'武器小卡換上道具欄同款外觀',b:['點武器跳出的小卡、強化頁、附魔頁，外框、底紋、數值格、按鈕都改成跟道具欄同一套煤黑古銅','小卡裡的武器大圖改用道具欄的格子與品階框（+9 以上一樣有裂痕呼吸燈）'],g:['bag']},
  {v:'5.07',d:'10/25',t:'捲動、開關小卡時畫面完全不跳',b:['道具欄上方固定區從一開始就貼在資源列下面，往下捲時標題、頁籤、分類完全不動','所有彈窗的標題列捲動時也不再往上移','開關小卡時整個畫面不再左右跳一下（電腦版捲軸）','熔解、危險區強化的「再按一次確認」改回顯示在小卡下方，小卡固定預留提示空間，按下去不會變大，也不再從上方跳通知','上方資源列改成不透明，捲動時不會透出底下的東西'],g:['bag']},
@@ -4613,7 +4618,7 @@ function sheetWeapon(id,mode){
      <div class="wp-a">${btn('強化','wmode',{cls:'btn-primary',attrs:`data-m="enh" data-id="${id}"`,dis:busy||isBroken(w)})}${btn(w.lv>=stable(w)?`已 +${stable(w)}`:'一鍵安定值','autoEnh',{cls:'btn-primary',attrs:`data-id="${id}"`,dis:busy||isBroken(w)||w.lv>=stable(w)||(!w.test&&stones()<enhCost(w))})}${btn(isBroken(w)?'解咒':'附魔','wmode',{cls:'btn-primary',attrs:`data-m="ench" data-id="${id}"`,dis:busy})}
       ${i>=0?btn('收回','recall',{attrs:`data-i="${i}"`}):bs>=0?btn('收回','bossout',{attrs:`data-s="${bs}"`}):btn('駐守'+(canGive(w)?'<i class="dot give-dot"></i>':''),'wmode',{attrs:`data-m="give" data-id="${id}"`,dis:isBroken(w)})}
       ${btn('上架','mksellw',{attrs:`data-id="${id}"`,dis:w.test||!mkSellable(w)})}${btn(ui.meltArm===id?'確認':'熔解','melt',{cls:'btn-danger',attrs:`data-id="${id}"`,dis:busy||w.lock})}</div>
-     <div class="wp-notes">${(n=>n>1?`<div class="small muted center wp-note wp-stk">同款共 ${n} 把，強化、附魔、駐守、上架、熔解只會動這一把</div>`:'')(wSame(w))}${ui.meltArm===id?'<div class="small t-danger center wp-note">再按一次「確認」熔解，熔解後無法復原。</div>':isBroken(w)?'<div class="small t-danger center wp-note">奧丁之咒：不能強化、駐守、挑戰、上架。按「解咒」用矮人解咒石破除（變回無屬性）。</div>':busy?'<div class="small muted center wp-note">駐守中的武器要先收回，才能強化、附魔或熔解。</div>':w.lv<stable(w)?`<div class="small muted center wp-note">一鍵安定值 +${stable(w)}：${w.test?'測試武器免費':'要 '+fmt(autoEnhCost(w))+' 顆強化石・持有 '+fmt(stones())}，不會爆裝</div>`:''}</div></div>`;
+     <div class="wp-notes">${(n=>n>1?`<div class="small muted center wp-note wp-stk">同款共 ${n} 把，強化、附魔、駐守、上架、熔解只會動這一把</div>`:'')(wSame(w))}<div class="wp-alt"><div class="small t-danger center wp-note ${ui.meltArm===id?'':'off'}">再按一次「確認」熔解，熔解後無法復原。</div>${(t=>t.replace('wp-note"',`wp-note${ui.meltArm===id?' off':''}"`))(isBroken(w)?'<div class="small t-danger center wp-note">奧丁之咒：不能強化、駐守、挑戰、上架。按「解咒」用矮人解咒石破除（變回無屬性）。</div>':busy?'<div class="small muted center wp-note">駐守中的武器要先收回，才能強化、附魔或熔解。</div>':w.lv<stable(w)?`<div class="small muted center wp-note">一鍵安定值 +${stable(w)}：${w.test?'測試武器免費':'要 '+fmt(autoEnhCost(w))+' 顆強化石・持有 '+fmt(stones())}，不會爆裝</div>`:'')}</div></div></div>`;   // v5.08 確認字和原本的提示疊在同一格（另一個隱形），小卡高度永遠不變
   }
   if(bs>=0)return head+showcase()+`<div class="goal">這把武器正在討伐首領，要先收回。</div>${btn('從首領收回','bossout',{cls:'btn-primary big',attrs:`data-s="${bs}"`})}`;
   if(i>=0&&mode!=='give')return head+showcase()+`<div class="goal">這把武器正在 ${VILLAGES[i].name} 駐守，要先收回。</div>${btn('從村莊收回','recall',{cls:'btn-primary big',attrs:`data-i="${i}"`})}`;
@@ -4640,7 +4645,7 @@ function sheetWeapon(id,mode){
       const lab=ui.busy?'強化中…':lackGold?'強化石不足':lackBless?'祝福石不足':lackScroll?'防爆卷不足':armed?`確認強化（${pct(total)} 爆裝）`:`${last?'再次強化':'強化'} +${w.lv}→+${next}`;
       const bar=`<div class="ev-bar ${canAuto?'two':''}"><button class="ui-btn ${unguarded?'ui-btn--danger':'ui-btn--primary'} btn ${unguarded?'btn-risk':'btn-primary'} big" data-act="enhance" data-id="${id}" ${ui.busy||lackGold||lackBless||lackScroll?'disabled':''}>${lab}</button>
         ${canAuto?`<button class="ui-btn ui-btn--accent btn wd-auto ev-auto" data-act="autoEnh" data-id="${id}" ${ui.busy||lackGold?'disabled':''}><span>${lackGold?'強化石不足':'一鍵到 <b>+'+stable(w)+'</b>'}</span><span class="small">${free?'測試免費':'要 '+fmt(autoEnhCost(w))+' 顆強化石'}</span></button>`:''}</div>
-        ${unguarded&&!w.test?`<div class="small t-danger center armnote">${armed?'危險區強化，再按一次確認。':''}</div>`:''}`;
+        ${unguarded&&!w.test?`<div class="small t-danger center armnote ${armed?'':'off'}">危險區強化，再按一次確認。</div>`:''}`;
       const info=`<details class="enh-more ev-more"><summary>ⓘ 規則與攻擊力明細</summary><div class="kvgrid">${kv('安定值','+'+stable(w)+'（'+kindN(b)+'）')}${kv('失敗後爆裝率',danger?pct(bc):'0%')}${kv('基礎成功率',pct(RATE[next]))}${kv('失敗率',pct(1-r))}</div>
         <div class="small"><b>規則</b>：每次強化用 1 顆強化石，成功或失敗都會用掉。失敗不會降級。+1～+6 一定成功；+7～+9 失敗就爆裝；+10～+12 成功 1%，失敗時 1/3 維持原樣、2/3 爆裝。最高 +${MAX_LV}。</div></details>`;
       if(ev==='1')return head+`<div class="ev ev1">`+nameRow+stage+stats('row4')+tg+warn+lack+info+bar+`</div>`;
@@ -4657,7 +4662,7 @@ function sheetWeapon(id,mode){
      <button class="ui-btn ${unguarded?'ui-btn--danger':'ui-btn--primary'} btn ${unguarded?'btn-risk':'btn-primary'} big" data-act="enhance" data-id="${id}" ${ui.busy||lackGold||lackBless||lackScroll?'disabled':''}>${label}</button>
      ${!danger&&w.lv<stable(w)?`<button class="ui-btn ui-btn--accent btn wd-auto" data-act="autoEnh" data-id="${id}" ${ui.busy||lackGold?'disabled':''}><span>${lackGold?'強化石不足，無法一鍵強化':'一鍵強化到安定值 <b>+'+stable(w)+'</b>'}</span><span class="small">${free?'測試武器免費':'要 '+fmt(autoEnhCost(w))+' 顆強化石・持有 '+fmt(stones())}${lackGold?'':'・不會爆裝'}</span></button>`:''}
      ${lackScroll||lackBless?`<div class="lack-line">${lackScroll?'勾選了防爆卷，但已經用完。':'勾選了祝福石，但已經用完。'}${btn(lackScroll?'取消防爆卷':'取消祝福石','noItem',{cls:'btn-sec sm',attrs:`data-k="${lackScroll?'useScroll':'useBless'}"`})}${btn('去商城補充','tab',{cls:'btn-sec sm',attrs:'data-k="shop"'})}</div>`:''}
-     ${unguarded&&!w.test?`<div class="small t-danger center armnote">${armed?'危險區強化。再按一次確認，本次進入強化頁之後不會再問。':''}</div>`:''}
+     ${unguarded&&!w.test?`<div class="small t-danger center armnote ${armed?'':'off'}">危險區強化。再按一次確認，本次進入強化頁之後不會再問。</div>`:''}
      <details class="enh-more"><summary>詳細說明</summary>
       <div class="kvgrid">${kv('安定值','+'+stable(w)+'（'+kindN(b)+'）')}${kv('失敗後爆裝率',danger?pct(bc):'0%')}${kv('基礎成功率',pct(RATE[next]))}${kv('失敗率',pct(1-r))}</div>
       <div class="small"><b>攻擊力組成</b>：基礎 ${b.base} × 材質 ${TIERS[b.t].mult} × 品質 ${QUAL[w.q].m} × 強化 ${enhMult(w.lv).toFixed(2)}${el?` × 元素 ${(1+el/100).toFixed(3)}`:''} ＝ ${fmt(power(w))}</div>
@@ -4798,7 +4803,7 @@ function viewVillage(){
    if(k==='open'){const has=S.weapons.filter(x=>eligible(i,x)).sort((a,b)=>vPow(i,b)-vPow(i,a))[0]||null,sec=has&&chEst(i,has);   // v4.52 限時挑戰：駐守中的武器也能挑戰；卡片不顯示弱點（Mochi：點開詳情才看）
      return `<div class="ui-card vcard open next" data-act="vopen" data-i="${i}" role="button" tabindex="0"><span class="next-tag">下一個挑戰</span>${has&&sec<=CH_SEC?'<i class="dot give-dot"></i>':''}${img('v'+(i+1),'vthumb')}<div class="grow"><div class="row nowrap"><b class="grow">${vNo(i)} ${v.name}</b></div>
       <div class="small vwho">${MONS[i]}・血量 ${fmt(VHP(i))}</div>${FIRST_GOLD[i]?`<div class="small t-gold">首次收復獎勵 ${img('it_gold','fg-ic')} ${fmt(FIRST_GOLD[i])} 金幣</div>`:''}
-      <div class="small ${has?sec<=CH_SEC?'t-ok':'t-danger':'muted'}">${has?`<span class="nobr">最強 ${bpOf(has).n} +${has.lv}</span><span class="nobr">・預估 ${Math.round(sec)} 秒${sec<=CH_SEC?' '+grChip(GRADES[grOf(sec)],'sm'):'（超過）'}</span>`:'道具欄還沒有武器'}</div></div>
+      <div class="small ${has?sec<=CH_SEC?'t-ok':'t-danger':'muted'}">${has?`<span class="nobr">最強 ${bpOf(has).n} +${has.lv}・</span><span class="nobr">預估 ${Math.round(sec)} 秒${sec<=CH_SEC?' '+grChip(GRADES[grOf(sec)],'sm'):'（超過）'}</span>`:'道具欄還沒有武器'}</div></div>
       <div class="vside">${has?btn('挑戰','vopen',{cls:'btn-primary sm',attrs:`data-i="${i}"`}):btn('去鍛造','forgeCat',{cls:'btn-sec sm',attrs:'data-k="all"'})}</div></div>`}
    const bs=knOn(w)&&ui.bsOpen===i;   // v4.21 點怪物小圖才展開戰鬥畫面，一次只開一個
    // v4.39 卡片下方的箭頭也能展開／收起戰鬥畫面；展開時下方多列每輪掉落和已經打到還沒收成的東西（Mochi）
@@ -5025,6 +5030,7 @@ function viewShop(){
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'5.12',t:'畫面穩定永久測試 UI1～UI8；同款多把按熔解不變矮；320 寬不再撐出水平捲動',b:[['uitest','執行畫面穩定測試（UI1～UI8）'],['stk508','給 3 把同款 +0 並打開小卡（按熔解，高度不變）']]},
  {v:'5.11',t:'強化／附魔頁上方的返回、說明、叉叉改回原本圓形圖示',b:[['k2enh','打開強化頁（看上方三顆圓鈕）'],['k2ench','打開附魔頁（看上方三顆圓鈕）']]},
  {v:'5.10',t:'UI 母版延伸第 1 批：武器小卡、強化、附魔改用道具欄的外框、格子、按鈕',b:[['k2pop','打開 +10 武器小卡（看外框、品階框、按鈕）'],['k2enh','打開 +6 強化頁（危險區）'],['k2ench','打開附魔頁']]},
  {v:'5.07',t:'捲動／開關小卡不跳：固定區貼齊、彈窗標題不上移、捲軸預留、確認提示預留空間',b:[['bag98','產生 60 把武器並打開道具欄（從最上面往下捲，上方完全不動）'],['bag96','產生 +0～+12 武器（點一把按熔解，小卡大小不變、背景不跳）']]},
@@ -5295,6 +5301,9 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='thor87'){const w=makeWeapon('g_skadi',2,6,[]);S.mats.thor=(S.mats.thor|0)+10;save();ui.tab='armory';ui.atab='w';ui.sheet={t:'w',id:w.id,m:'main'};render();return toast('已給 +6 索爾之錘、索爾雷晶 ×10（材料分頁看雷晶）','ok')}
   if(k==='eagle86b'){devBps();S.villages.forEach((v,i)=>{if(i<=12)v.status='cleared'});const st=S.villages[12],w=makeWeapon('dev_sword',2,6,[]);st.weaponId=w.id;st.cycleStart=NOW()-dur(12,w)*.3;delete MONFX.hp[12];ui.realm=1;ui.tab='village';ui.sheet=null;ui.bsOpen=12;save();render();setTimeout(()=>document.querySelectorAll('#view .vcard')[2]?.scrollIntoView({block:'start'}),50);return}
   if(k==='eagle86'){S.villages.forEach((v,i)=>{if(i<12&&v.status==='locked')v.status='cleared'});if(S.villages[12].status==='locked')S.villages[12].status='open';ui.realm=1;ui.tab='village';ui.sheet={t:'v',i:12};render();return}
+  if(k==='stk508'){const b=(BPS.find(x=>!x.dev&&!x.unlock)||BPS[0]);const ws=[0,1,2].map(()=>makeWeapon(b.id,0,0));save();ui.tab='armory';ui.atab='w';ui.meltArm=null;ui.sheet={t:'w',id:ws[0].id,m:'main'};render();return toast('已給 3 把同款 +0：按「熔解」，小卡高度不能變（375 寬也一樣）','ok')}   // v5.08
+  if(k==='uitest'){if(typeof uiStableTests!=='function'){const sc=document.createElement('script');sc.src='tests.js?v='+BUILD_ID;sc.charset='utf-8';sc.onload=()=>devdo(k);sc.onerror=()=>toast('測試程式沒有載入。');document.head.appendChild(sc);return}
+    const r=uiStableTests(),bad=r.filter(x=>!x.pass);render();return toast(`畫面穩定測試 ${r.length-bad.length}/${r.length} 通過${bad.length?'：'+bad.map(x=>x.name.split(' ')[0]).join('、'):''}`,bad.length?'':'ok')}   // v5.08
   if(k==='brkstk'){[0,1,2].forEach(j=>makeWeapon('dev_sword',2,6,[],[j?null:{k:'broken',v:1},null,null,null]));save();ui.sheet=null;ui.tab='armory';ui.atab='w';render();return toast('已給 3 把 +6 測試劍：2 把疊成 ×2、1 把奧丁之咒自己一格','ok')}
   if(k==='elall'){const ks=Object.keys(ELEM);ks.forEach((x,j)=>makeWeapon('dev_sword',2,6,[],[{k:x,v:1+j%3},null,null,null]));save();ui.sheet=null;ui.tab='armory';render();return toast('已給 6 把 +6 測試劍：火屬性一級、冰屬性二級、雷屬性三級、毒屬性一級、聖屬性二級、暗屬性三級。拿去駐守看卡片的弱點提示會不會變綠','ok')}
   if(k==='ec18'){const w=S.weapons.find(x=>where(x)<0)||S.weapons[0];if(!w)return toast('道具欄沒有武器','bad');w.ench=[{k:'bolt',v:3},null,null,null];ui.sheet={t:'w',id:w.id,m:'ench'};save();render();return toast('名稱前面應該是「雷神之怒」，下面 18 格裡雷神之怒那格有框','ok')}   // v4.67
