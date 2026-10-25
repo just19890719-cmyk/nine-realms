@@ -168,7 +168,7 @@ function saveTests(){
   const res=[];
   withSandbox(()=>{
     // 新存檔
-    S=fresh();res.push(T('E1 新存檔結構完整',S.v===3&&S.villages.length===VILLAGES.length&&S.weapons.length===0&&S.stats&&Object.keys(S.mats).length===8&&Object.values(S.mats).every(x=>x===0)&&Object.keys(S.items).join()==='relic_g,relic_b,relic_r,relic_y,estone,enstone'&&RELICS.every(k=>S.items[k]===0)&&S.items.estone===10&&S.items.enstone===3,'v'+S.v));
+    S=fresh();res.push(T('E1 新存檔結構完整',S.v===3&&S.villages.length===VILLAGES.length&&S.weapons.length===0&&S.stats&&Object.keys(S.mats).length===8&&Object.values(S.mats).every(x=>x===0)&&Object.keys(S.items).join()==='relic_g,relic_b,relic_r,relic_y,estone,enstone,repair'&&RELICS.every(k=>S.items[k]===0)&&S.items.estone===10&&S.items.enstone===3,'v'+S.v));
     // v2 遷移
     const o={gold:999,gems:50,mats:{iron:5,oak:5,leather:5,silver:2,fang:1,scale:0,rune:0,shard:3},items:{scroll:2,bless:0,blueprint:0},furnace:2,anvil:1,slots:1,nextId:3,
       weapons:[{id:1,b:'t1_woodaxe',q:1,lv:3,ench:[{k:'swift',v:8}]},{id:1,b:'t1_farmspear',q:0,lv:2,ench:[]},{id:5,b:'xx_missing',q:0,lv:0}],jobs:[],
@@ -206,11 +206,16 @@ function saveTests(){
     res.push(T('E9 3,000 次隨機操作：無負數、ID 不重複、同一把武器不會同時駐守兩村、熔解後真正消失',!errs,`異常 ${errs} 次；最終武器 ${S.weapons.length} 把`));
     // v4.44 屬性附魔：只有 1 欄、重抽覆蓋、扣費正確、等級機率 70：25：5、6 種平均、不加攻擊力
     S=fresh();S.gold=1e9;S.items.enstone=1e5;const x=makeWeapon('t2_wolfaxe',2,0,[]);const p0=power(x),cnt={},tc=[0,0,0,0];
-    for(let n=0;n<6000;n++){enchantCore(x.id,0);const e=x.ench[0];cnt[e.k]=(cnt[e.k]||0)+1;tc[e.v]++}
-    const g1=S.gold,n1=S.items.enstone;enchantCore(x.id,0);const n2=S.items.enstone,e2=enchantCore(x.id,1),e3=enchantCore(x.id,3);S.items.enstone=0;const e4=enchantCore(x.id,0);
-    const even=Object.keys(ELEM).every(k=>Math.abs((cnt[k]||0)/6000-1/6)<.025),tierOk=Math.abs(tc[1]/6000-.7)<.03&&Math.abs(tc[2]/6000-.25)<.03&&Math.abs(tc[3]/6000-.05)<.015;
+    let brk=0;const ot=S.tut;S.tut=99;for(let n=0;n<6000;n++){if(isBroken(x)){S.items.repair=1;repairCore(x.id)}enchantCore(x.id,0);const e=x.ench[0];if(e.k==='broken'){brk++;continue}cnt[e.k]=(cnt[e.k]||0)+1;tc[e.v]++}const ok6=6000-brk;   // v4.83 破損 5% 另外算
+    if(isBroken(x)){S.items.repair=1;repairCore(x.id)}const g1=S.gold,n1=S.items.enstone;DEV.elForce=['fire',1];enchantCore(x.id,0);const n2=S.items.enstone,e2=enchantCore(x.id,1),e3=enchantCore(x.id,3);S.items.enstone=0;const e4=enchantCore(x.id,0);
+    const even=Object.keys(ELEM).every(k=>Math.abs((cnt[k]||0)/ok6-1/6)<.025),tierOk=Math.abs(tc[1]/ok6-.7)<.03&&Math.abs(tc[2]/ok6-.25)<.03&&Math.abs(tc[3]/ok6-.05)<.015&&Math.abs(brk/6000-BRK_P)<.012;S.tut=ot;
     res.push(T('E10 屬性附魔：1 欄、重抽覆蓋、扣 1 顆附魔石＋金幣（沒有就擋下）、6 種平均、等級 70／25／5、不加攻擊力',x.ench.length===4&&!x.ench[1]&&!x.ench[2]&&!x.ench[3]&&g1-S.gold===enchCost(x)&&n1-n2===1&&e4.err==='附魔石不夠'&&e2.err&&e3.err&&even&&tierOk&&power(x)===p0,
-      `6000 次：${Object.keys(ELEM).map(k=>ELEM[k].n+' '+(cnt[k]||0)).join('、')}；等級 ${tc[1]}／${tc[2]}／${tc[3]}；第 2 格「${e2.err||'可用(錯)'}」；攻擊力 ${p0}→${power(x)}`));
+      `6000 次（破損 ${brk}）：${Object.keys(ELEM).map(k=>ELEM[k].n+' '+(cnt[k]||0)).join('、')}；等級 ${tc[1]}／${tc[2]}／${tc[3]}；第 2 格「${e2.err||'可用(錯)'}」；攻擊力 ${p0}→${power(x)}`));
+    // v4.83 奧丁之咒：不能駐守／挑戰／強化／上架／登錄圖鑑／再附魔，解咒石解咒變無屬性，載入不會被清掉
+    {S=fresh();S.gold=1e6;S.items.enstone=5;const b=makeWeapon('t2_wolfaxe',2,3,[],[{k:'broken',v:1},null,null,null]),c={...b,ench:[{k:'broken',v:1},null,null,null]};elemCleanW(c);
+     const el=eligible(0,b),sell=mkSellable(b),eh=enhanceCore(b.id,{}),en=enchantCore(b.id,0),r0=repairCore(b.id);S.items.repair=1;const r1x=repairCore(b.id);
+     res.push(T('E12 奧丁之咒與矮人解咒石',!el&&!sell&&!!eh.err&&!!en.err&&!!r0.err&&r1x.ok&&!b.ench[0]&&isBroken(c)&&(S.items.repair|0)===0&&eligible(0,b)&&!elemOf(c),
+      `駐守 ${el}、上架 ${sell}、強化「${eh.err}」、附魔「${en.err}」、沒石頭修「${r0.err}」、解咒後 ${JSON.stringify(b.ench[0])}、載入保留 ${isBroken(c)}`))}
     // v4.44 舊附魔載入時清空、弱點倍率
     {const w={id:1,b:'t1_woodaxe',q:0,lv:0,ench:[{k:'flame',v:10},{k:'giant',v:30},{k:'fire',v:2},null]},w2={id:2,b:'t1_woodaxe',q:0,lv:0,ench:[{k:'ice',v:3},null,null,null]},w3={id:3,b:'t1_woodaxe',q:0,lv:0,ench:[{k:'bolt',v:9},null,null,null]};elemCleanW(w);elemCleanW(w2);elemCleanW(w3);
      const m9=weakMul(8,w2),m9f=weakMul(8,{ench:[{k:'fire',v:3}]}),m0=weakMul(0,w2),m19=weakMul(19,{ench:[{k:'toxic',v:1}]}),m19b=weakMul(19,{ench:[{k:'bolt',v:2}]}),m1d=weakMul(0,{ench:[{k:'dark',v:3}]}),mn=weakMul(8,{ench:[null]});
@@ -224,7 +229,7 @@ function saveTests(){
     res.push(T('E14 收藏武器不能熔解、武器庫滿 200 把不能再鍛造',m1===null&&!!W(lk.id)&&typeof f1==='string',`收藏熔解${m1===null?'被擋下':'成功(錯誤)'}；滿倉鍛造：${typeof f1==='string'?f1:'成功(錯誤)'}`));
     // v4.54 新材料 8 種、道具＝4 種遺物＋強化石＋附魔石、每界村莊掉該界材料、開局武器只花金幣；獎勵只有金幣鑽石
     const rw=[...ACH.map(a=>a.r),...SIGN,...DAILY_BOX.map(x=>x[1]()),repBox(10)].every(r=>Object.keys(r).every(k=>k==='gold'||k==='gems'));
-    res.push(T('E13 新材料 8 種、道具 6 種，每關掉該界材料，開局武器只花金幣，獎勵只剩金幣和鑽石',Object.keys(MATS).length===8&&Object.keys(ITEMS).join()==='relic_g,relic_b,relic_r,relic_y,estone,enstone'&&RELICS.length===4&&VILLAGES.every((v,i)=>v.drops.filter(d=>d[1]===.5).map(d=>d[0]).join()===REALM_MAT[Math.floor(i/10)].join())&&BPS.filter(b=>!b.dev&&!b.unlock).every(b=>!Object.keys(recipe(b)).length)&&rw&&!GD_SHOP.length&&GD_DON.every(x=>x.k!=='iron'),
+    res.push(T('E13 新材料 8 種、道具 7 種，每關掉該界材料，開局武器只花金幣，獎勵只剩金幣和鑽石',Object.keys(MATS).length===8&&Object.keys(ITEMS).join()==='relic_g,relic_b,relic_r,relic_y,estone,enstone,repair'&&RELICS.length===4&&VILLAGES.every((v,i)=>v.drops.filter(d=>d[1]===.5).map(d=>d[0]).join()===REALM_MAT[Math.floor(i/10)].join())&&BPS.filter(b=>!b.dev&&!b.unlock).every(b=>!Object.keys(recipe(b)).length)&&rw&&!GD_SHOP.length&&GD_DON.every(x=>x.k!=='iron'),
       `材料 ${Object.keys(MATS).length} 種；道具 ${Object.keys(ITEMS).map(itemName).join('、')}；獎勵${rw?'只有金幣鑽石':'還有舊道具(錯誤)'}`));
   });
   return res;
@@ -371,7 +376,7 @@ function repTests(){const res=[];
       res.push(T('I4 鍛造一律 5 秒、一次一批，舊存檔的長鍛造縮成 5 秒',d1===FORGE_SEC*1000&&d10===FORGE_SEC*1000&&typeof e1==='string'&&o.jobs[0].end===1000+FORGE_SEC*1000&&!('forge' in TALENTS),
         `巨人武器 ${d1/1000} 秒、伐木斧 ×10 ${d10/1000} 秒；鍛造中再開：${e1}；舊存檔結束時間 ${(o.jobs[0].end-1000)/1000} 秒後`))}
     const x=sanitize(JSON.parse(JSON.stringify({...S,rep:{lv:'abc',xp:-5,t:{gold:999,forge:-3,zz:5}}})));
-    res.push(T('I5 存檔修正：壞掉的聲望資料會被修好',x.rep.lv===1&&x.rep.xp===0&&x.rep.t.gold===TALENTS.gold.max&&!('forge' in x.rep.t)&&!('zz' in x.rep.t),JSON.stringify(x.rep)));
+    res.push(T('I5 存檔修正：壞掉的聲望資料會被解咒',x.rep.lv===1&&x.rep.xp===0&&x.rep.t.gold===TALENTS.gold.max&&!('forge' in x.rep.t)&&!('zz' in x.rep.t),JSON.stringify(x.rep)));
   }finally{repGain.mute=false}});
   return res}
 
@@ -483,7 +488,7 @@ function godWordTests(){const bad=VILLAGES.map((v,i)=>i).filter(i=>/神/.test(MO
 // v4.38 駐守村莊不開詳情：點武器只出小卡（收回／換武器），沒有狩獵策略、沒有排行榜
 // v4.39 卡片箭頭：駐守卡片有往下箭頭，展開後有戰鬥畫面、每輪掉落、已打到
 function bsTglTests(){const S0=S,o=ui.bsOpen;S=fresh();const w=makeWeapon('t1_woodaxe',0,0,[]);const st=S.villages[0];st.status='cleared';st.weaponId=w.id;st.cycleStart=NOW();st.bank={cycles:3,gold:30,mats:{},events:0};   // v4.43 舊材料刪除，只剩金幣
-  ui.tab='village';ui.realm=0;ui.bsOpen=null;const c=viewVillage();ui.bsOpen=0;const op=viewVillage(),nD=VILLAGES[0].drops.length+7+wDrops(0).length;S=S0;ui.bsOpen=o;   // v4.70 金幣＋強化石＋附魔石＋4 遺物＋武器
+  ui.tab='village';ui.realm=0;ui.bsOpen=null;const c=viewVillage();ui.bsOpen=0;const op=viewVillage(),nD=VILLAGES[0].drops.length+8+wDrops(0).length;S=S0;ui.bsOpen=o;   // v4.70 金幣＋強化石＋附魔石＋4 遺物＋武器（v4.83 ＋解咒石）
 
   const ok=/class="bs-tgl "[^>]*data-act="bsopen"/.test(c)&&!/bs-more/.test(c)&&/class="bs-tgl up"[^>]*data-act="bsclose"/.test(op)&&/class="bs /.test(op)&&/bs-drops/.test(op)&&(op.match(/class="bs-d[ "]/g)||[]).length===nD&&!/新的掉落設計中/.test(op)&&/bs-got/.test(op)&&/×30/.test(op);
   return[T('H 村莊卡片箭頭：收起時往下、展開有戰鬥畫面＋每輪掉落＋已打到、再點收起',!!ok,ok?'正常':'內容不對')]}
