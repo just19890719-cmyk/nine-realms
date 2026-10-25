@@ -564,9 +564,11 @@ function cxTests(){if(typeof cxRegCore==='undefined')return[];return withSandbox
    T('CX3 套裝：鐵爐村 7 把 +0 湊齊再加 +2%',set&&Math.abs(pctAll-(7*.2+.6+2))<.01,`湊齊 ${set}・總加成 ${pctAll}%`)]}finally{CX_MEMO=null}})}
 function withTestBps(f){const keep=BPS.slice(),add=TEST_BPS.filter(b=>!BP[b.id]),rq=VILLAGES.map(v=>v.req);BPS.length=0;BPS.push(...add,...keep.filter(b=>b.dev));add.forEach(b=>BP[b.id]=b);VILLAGES.forEach(v=>v.req=v.req0??v.req);VHP_OLD=true;   // v4.51 舊圖紙配舊需求（v4.71 血量也用舊公式）
   try{return f()}finally{VHP_OLD=false;BPS.length=0;BPS.push(...keep);VILLAGES.forEach((v,i)=>v.req=rq[i]);add.forEach(b=>delete BP[b.id]);S.weapons=S.weapons.filter(w=>BP[w.b]);S.jobs=S.jobs.filter(j=>BP[j.b])}}   // 測試留下的舊圖紙武器一起清掉
+var TEST_LAST=null;
 function runTests0(mode,bd){
   if(mode==='econ')return econHtml(12)+econHtml(8);
   const r=runAll({N:100000});r.res.push(...bd,...frameLvTests(),...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...storyTests(),...curveTests(),...vNeedTests(),...vPickTests(),...bsTglTests(),...godWordTests(),...hitTests(),...enchTests(),...wsTests(),...wpnTests(),...stackTests());const pass=r.res.filter(x=>x.pass).length;
+  TEST_LAST={res:r.res,done:true};   // v5.08 統一測試指令（src/tools/run_tests.js）讀這裡的逐項結果
   return `<div><b>${pass}/${r.res.length} 通過</b>（${r.ms} 毫秒）</div>`+resHtml(r.res);
 }
 // v4.34 武器框顏色看強化等級
