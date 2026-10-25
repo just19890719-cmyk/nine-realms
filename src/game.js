@@ -4,8 +4,9 @@ const VERSION=3;
 const ART_V='?v=3';  // 武器顯示圖改過透明度：加版本號，避免瀏覽器沿用舊快取
 // v3.76 第二界的 AI 圖還沒到：先借第一界的圖顯示，圖到了刪掉對應那一項就好
 const ART_WAIT={};
-const ART_NEW=/^(mat_srelic)$/;   // v4.30 斯卡蒂之弓的舊圖換成索爾之錘、雷神錘柄：檔名沒變，加版本號避免沿用快取
-const A=n=>(n=ART_WAIT[n]||n,(typeof UI_ART!=='undefined'&&UI_ART[n])||'art/'+n+'.webp'+(n.endsWith('_disp')?ART_V:/^(mon|boss|bg)_|^v\d+$/.test(n)?(/^mon_13(_|$)/.test(n)?'?m=4.86':'?m=4.30'):'')+(ART_NEW.test(n)?(n.endsWith('_disp')?'&':'?')+'g=4.30':''));  // UI_ART（skin.js）可把既有圖示換成新素材路徑；預設空白＝不變
+const ART_NEW=/^(mat_srelic|mat_thor|g_skadi(_disp)?)$/;   // v4.87 索爾雷晶、索爾之錘換黃雷新圖
+   // v4.30 斯卡蒂之弓的舊圖換成索爾之錘、雷神錘柄：檔名沒變，加版本號避免沿用快取
+const A=n=>(n=ART_WAIT[n]||n,(typeof UI_ART!=='undefined'&&UI_ART[n])||'art/'+n+'.webp'+(n.endsWith('_disp')?ART_V:/^(mon|boss|bg)_|^v\d+$/.test(n)?(/^mon_13(_|$)/.test(n)?'?m=4.86':'?m=4.30'):'')+(ART_NEW.test(n)?(n.endsWith('_disp')?'&':'?')+'g='+(n==='mat_srelic'?'4.30':'4.87'):''));  // UI_ART（skin.js）可把既有圖示換成新素材路徑；預設空白＝不變
 // v4.54 新材料（Mochi 選：跟該界怪物故事有關、配方量加倍）：每一界 2 種一般材料（每打倒一隻 50%），怪物主題武器那關掉怪物部位（5%），第 10 關掉 Boss 素材（10%）
 const MAT_DEF=[['miron','中庭鐵礦','人類之境的鐵，鐵爐村鍛造的基本金屬。'],['pine','松林硬木','松林哨站一帶的硬木，做槍桿、弓身和握柄。'],['troll','巨魔石皮','山怪特羅爾照到陽光會變成石頭，這是牠半石化的外皮。'],['bifrost','彩虹橋碎晶','海姆達爾守護的彩虹橋碎片，霍夫德之劍的彩虹聖光就來自這裡。'],
  ['frost','約頓霜鐵','巨人國度永凍土層裡的冷鐵。'],['gwood','約頓巨木','巨人森林的古木，比人間的木頭大上十倍。'],['ubone','幻術巨人王骨','幻術巨人王烏特加德洛基的骨頭，摸起來會一直變形。'],['thor','索爾雷晶','雷神落雷打過的岩石結晶，裡面還有雷電在跑。']];
@@ -332,7 +333,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.86';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.87';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1312,6 +1313,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.87',d:'10/25',t:'聖屬性金色光暈・雷神新圖',b:['<b>聖屬性</b>改成白字配<b>金色光暈</b>和金框，不會再像一般白字；雷屬性還是亮黃字，兩個分得開','<b>索爾雷晶</b>和<b>索爾之錘</b>換成黃色雷電的新圖，跟雷屬性顏色一致'],g:['ench']},
  {v:'4.86',d:'10/25',t:'吞屍巨鷹換新圖',b:['2-3 <b>吞屍巨鷹赫拉斯瓦爾格</b>換上新的頭像、待機和攻擊圖：黑羽配金邊、金色眼睛和亮黃雷電，跟雷屬性的新顏色一致'],g:['hp']},
  {v:'4.85',d:'10/25',t:'奧丁之咒武器不會再藏起來',b:['中了<b>奧丁之咒</b>的武器，在道具欄會<b>自己一格</b>，不會再跟同款武器疊在一起看不到','武器圖下方會標紅色「奧丁之咒」，一眼就認得出來'],g:['ench']},
  {v:'4.84',d:'10/25',t:'屬性顏色調整',b:['<b>雷屬性</b>改成閃電<b>亮黃色</b>（原本紫色，跟暗屬性太像）','<b>聖屬性</b>改成<b>白金色</b>，六種屬性一眼就能分開'],g:['ench']},
@@ -2645,9 +2647,9 @@ function viewShop(){
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'4.87',t:'聖屬性改白字＋金色光暈、金框；索爾雷晶、索爾之錘換黃雷新圖',b:[['thor87','給 1 把 +6 索爾之錘＋10 個索爾雷晶（看新圖）'],['res77','打開附魔表看聖屬性'],['elall','給 6 把不同屬性的武器（看名稱）']]},
  {v:'4.86',t:'2-3 吞屍巨鷹換黃雷新圖（頭像、待機、攻擊）',b:[['eagle86','打開 2-3 村莊詳情看巨鷹新圖'],['eagle86b','2-3 駐守一把 +6 劍，展開戰鬥畫面看待機和攻擊']]},
  {v:'4.85',t:'奧丁之咒武器在道具欄自己一格（不跟同款疊在一起）',b:[['brkstk','給 3 把同款 +6 劍，其中 1 把中咒（看道具欄）']]},
- {v:'4.84',t:'雷屬性改亮黃、聖屬性改白金',b:[['elall','給 6 把不同屬性的武器（看名稱顏色）'],['res77','打開附魔表看 18 格顏色']]},
  {v:'4.83',t:'附魔 5% 奧丁之咒＋矮人解咒石、商城賣強化石／附魔石、附魔故事書',b:[['lore83','打開附魔故事書「矮人盜石」（第一次送 10 附魔石＋2 解咒石）'],['lore83r','重置故事書已讀（可以再領一次測試）'],['brk83','給 1 把中咒測試劍＋3 顆解咒石，打開武器小卡'],['brk83f','下一次附魔一定中奧丁之咒（給三級火屬性劍＋附魔石）'],['brk83s','打開商城看矮人解咒石']]},
  {v:'4.82',t:'三級屬性重抽跳置中確認小卡',b:[['ench81','給 1 把三級火屬性測試劍＋附魔石，打開附魔（按附魔會跳確認小卡）']]},
  {v:'4.80',t:'屬性加成 +3／6／10%、同屬性 −3／6／10%',b:[['res77','給 1-9 用的三級冰／火屬性武器（應 ×1.1／×0.9）、打開附魔表'],['res77i','開火屬性說明小卡（+3%～10%）']]},
@@ -2887,6 +2889,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='race78'){S.villages.forEach((v,i)=>{if(i<4)v.status='cleared'});if(S.villages[4].status==='locked')S.villages[4].status='open';ui.testOut='<b>v4.78 武器剋制</b><br>'+Object.entries(CAT_RACE).map(([c,r])=>CATS[c]+'→'+RACE_N[r]).join('、')+'<br><b>20 關型態</b><br>'+MON_RACE.map((r,i)=>vNo(i)+' '+RACE_N[r]).join('、');ui.sheet={t:'v',i:4};render();return toast('1-5 戰場鴉魔應該是亡靈')}
   if(k==='race79'){ui.testOut='<b>v4.79 相剋加成</b><br>'+RACE_PCT.map((p,l)=>'+'+l+' '+p+'%').join('、');const w=makeWeapon('dev_sword',2,9,[]);save();ui.sheet={t:'w',id:w.id,m:'main'};render();return toast('+9 相剋應為 12%，下一級 +10 為 15%')}
   if(k==='elpop'){const w=makeWeapon('dev_sword',2,6,[],[{k:'bolt',v:3},null,null,null]);save();ui.sheet={t:'w',id:w.id,m:'ench'};ui.result=Object.assign({t:'info'},affInfo('bolt'));render();return}
+  if(k==='thor87'){const w=makeWeapon('g_skadi',2,6,[]);S.mats.thor=(S.mats.thor|0)+10;save();ui.tab='armory';ui.atab='w';ui.sheet={t:'w',id:w.id,m:'main'};render();return toast('已給 +6 索爾之錘、索爾雷晶 ×10（材料分頁看雷晶）','ok')}
   if(k==='eagle86b'){devBps();S.villages.forEach((v,i)=>{if(i<=12)v.status='cleared'});const st=S.villages[12],w=makeWeapon('dev_sword',2,6,[]);st.weaponId=w.id;st.cycleStart=NOW()-dur(12,w)*.3;delete MONFX.hp[12];ui.realm=1;ui.tab='village';ui.sheet=null;ui.bsOpen=12;save();render();setTimeout(()=>document.querySelectorAll('#view .vcard')[2]?.scrollIntoView({block:'start'}),50);return}
   if(k==='eagle86'){S.villages.forEach((v,i)=>{if(i<12&&v.status==='locked')v.status='cleared'});if(S.villages[12].status==='locked')S.villages[12].status='open';ui.realm=1;ui.tab='village';ui.sheet={t:'v',i:12};render();return}
   if(k==='brkstk'){[0,1,2].forEach(j=>makeWeapon('dev_sword',2,6,[],[j?null:{k:'broken',v:1},null,null,null]));save();ui.sheet=null;ui.tab='armory';ui.atab='w';render();return toast('已給 3 把 +6 測試劍：2 把疊成 ×2、1 把奧丁之咒自己一格','ok')}
