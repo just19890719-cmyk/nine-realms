@@ -333,7 +333,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='5.07';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='5.10';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1313,6 +1313,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'5.10',d:'10/25',t:'武器小卡換上道具欄同款外觀',b:['點武器跳出的小卡、強化頁、附魔頁，外框、底紋、數值格、按鈕都改成跟道具欄同一套煤黑古銅','小卡裡的武器大圖改用道具欄的格子與品階框（+9 以上一樣有裂痕呼吸燈）'],g:['bag']},
  {v:'5.07',d:'10/25',t:'捲動、開關小卡時畫面完全不跳',b:['道具欄上方固定區從一開始就貼在資源列下面，往下捲時標題、頁籤、分類完全不動','所有彈窗的標題列捲動時也不再往上移','開關小卡時整個畫面不再左右跳一下（電腦版捲軸）','熔解、危險區強化的「再按一次確認」改回顯示在小卡下方，小卡固定預留提示空間，按下去不會變大，也不再從上方跳通知','上方資源列改成不透明，捲動時不會透出底下的東西'],g:['bag']},
  {v:'5.06',d:'10/25',t:'按確認時小卡不再變大',b:['熔解、危險區強化要「再按一次確認」時，提示改成跳出通知，小卡不會再多一行字、整個框跟著變大'],g:['bag']},
  {v:'5.05',d:'10/25',t:'捲動時上方資源列不再跳一下',b:['在最上面開始往下捲時，上方資源列和道具欄標題不會再先往上跳一小段'],g:['bag']},
@@ -2020,6 +2021,9 @@ function b2Slot(w,act,dot,n=1,nw=wNew(w)){const b=bpOf(w),i=where(w),bs=bossSlot
   return `<button class="b2-slot ${on?'sel':''} ${brk?'brk':''} ${i>=0||bs>=0?'posted':''}" style="--rim:url(art/ui/bag2/bag2_rim${w.lv>=9?'9':''}_l${FLV(w.lv)}.webp)${w.lv>=9?`;--crk:url(art/ui/bag2/bag2_crk_l${FLV(w.lv)}.webp)`:''}" ${act} aria-label="${b.n} +${w.lv}"><span class="rim${w.lv>=9?' crk':''}"${w.lv>=9?` style="--crkd:-${(Date.now()%6000)/1000}s"`:''}></span>${b2W(b.id)}${brk?'<span class="chain"></span>':''}
    ${i>=0?`<span class="post">駐 ${vNo(i)}</span>`:bs>=0?'<span class="post">首領</span>':''}${w.lock?b2Img('ic_lock','lk','已鎖定'):nw?'<i class="nw"></i>':''}
    ${w.lv?`<span class="lv">+${w.lv}</span>`:n>1?`<span class="x">${fmt(n)}</span>`:''}</button>`}
+// v5.10 UI 母版：彈窗裡的武器大圖也用道具欄的格子＋品階框（跟 b2Slot 同一套，只是不能點）
+function b2Show(w,cls=''){const hi=w.lv>=9,f=FLV(w.lv),brk=isBroken(w);
+  return `<span class="b2-slot b2-show ${cls} ${brk?'brk':''}" style="--rim:url(art/ui/bag2/bag2_rim${hi?'9':''}_l${f}.webp)${hi?`;--crk:url(art/ui/bag2/bag2_crk_l${f}.webp)`:''}"><span class="rim${hi?' crk':''}"${hi?` style="--crkd:-${(Date.now()%6000)/1000}s"`:''}></span>${b2W(bpOf(w).id)}${brk?'<span class="chain"></span>':''}</span>`}
 const b2Fill=(n,cols=5)=>'<span class="b2-slot empty"></span>'.repeat((cols-n%cols)%cols+cols);
 // v4.72 武器圖鑑頁：上方總加成，下面分「武器（每把 3 格）／套裝」
 function viewCodex(){const p=cxPct(),n=cxN(),tot=cxBps().length*3,sub=ui.cxs||'w';
@@ -2261,7 +2265,7 @@ function sheetWeapon(id,mode){
     const c=b.cat,pr=PROC[c],sp=CSPD[c],rc=raceOf(w),e=wElem(w),nx=Math.min(12,w.lv+1),max=w.lv>=12;
     const cell=(k,v,sub)=>`<div><span>${k}</span><b>${v}</b>${sub?`<em>${sub}</em>`:''}</div>`;
     return `<div class="wp-in"><button class="ui-iconbtn wp-x" data-act="close" aria-label="關閉">${img('ic_close')}</button>
-     <div class="wp-top">${wArt(b.id,{frame:fq(w)})}<div class="grow"><div class="wp-nm">${wName(w)}</div>
+     <div class="wp-top">${b2Show(w)}<div class="grow"><div class="wp-nm">${wName(w)}</div>
       <div class="wp-sub"><span>${CATS[c]}・${kindN(b)}</span>${i>=0?`<span class="t-ok">駐守 ${vNo(i)}</span>`:bs>=0?'<span class="t-ok">討伐首領中</span>':''}${w.test?'<span class="testtag">測試</span>':''}</div>
        <button class="ui-iconbtn icon-btn img wp-lk" data-act="lock" data-id="${id}" aria-label="${w.lock?'取消鎖定':'鎖定'}">${img(w.lock?'ic_lock':'ic_unlock')}</button>
       <div class="wp-pow"><b>${fmt(power(w))}</b><span>攻擊力（每秒傷害）</span></div></div></div>
@@ -2324,7 +2328,7 @@ function sheetWeapon(id,mode){
   }
   if(mode==='ench'){   // v4.44 屬性附魔小卡：目前屬性 → 屬性池（6 種、等級機率）→ 按鈕；只有 1 欄
     const c1=enchCost(w),e=elemOf(w);
-    const mini=`<div class="nv-head">${wArt(b.id,{frame:fq(w),cls:'nv-art'})}<div class="grow"><b class="ec-nm">${wName(w)}</b><span class="small muted">${isBroken(w)?'<b class="t-danger">奧丁之咒：完全不能使用，要用矮人解咒石破除</b>':e?`打中弱點 +${Math.round((e.m-1)*100)}%・同屬性 −${Math.round((1-e.r)*100)}%・重抽會覆蓋`:'無屬性・附魔隨機獲得 1 種'}</span><div class="ec-have">${img('it_gold')}<b>${fmt(S.gold)}</b>${img('it_ench')}<b>${fmt(enStones())}</b></div></div></div>`;   // v4.67 Mochi：附魔結果直接顯示在武器名稱裡，不另外放目前屬性欄
+    const mini=`<div class="nv-head">${b2Show(w,'nv-art')}<div class="grow"><b class="ec-nm">${wName(w)}</b><span class="small muted">${isBroken(w)?'<b class="t-danger">奧丁之咒：完全不能使用，要用矮人解咒石破除</b>':e?`打中弱點 +${Math.round((e.m-1)*100)}%・同屬性 −${Math.round((1-e.r)*100)}%・重抽會覆蓋`:'無屬性・附魔隨機獲得 1 種'}</span><div class="ec-have">${img('it_gold')}<b>${fmt(S.gold)}</b>${img('it_ench')}<b>${fmt(enStones())}</b></div></div></div>`;   // v4.67 Mochi：附魔結果直接顯示在武器名稱裡，不另外放目前屬性欄
     const pool=`<div class="ec-18"><span></span>${[1,2,3].map(t=>`<span class="ec-th">${['','一','二','三'][t]}級</span>`).join('')}
       ${Object.entries(ELEM).map(([k,x])=>`<button class="ec-en elc-${k}" data-act="affinfo" data-k="${k}">${x.n}</button>${[1,2,3].map(t=>`<button class="ec-c18 elc-${k} t${t} ${e&&e.k===k&&e.t===t?'on':''}" data-act="affinfo" data-k="${k}"><b>${x.tn[t-1]}</b><span>${elemP(t).toFixed(2)}%</span></button>`).join('')}`).join('')}</div>
      <div class="ec-brk"><span class="wn-brk">奧丁之咒</span><span>武器完全不能用，要用解咒石破除</span><b>${r1(BRK_P*100)}%</b></div>
@@ -2683,6 +2687,7 @@ function viewShop(){
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'5.10',t:'UI 母版延伸第 1 批：武器小卡、強化、附魔改用道具欄的外框、格子、按鈕',b:[['k2pop','打開 +10 武器小卡（看外框、品階框、按鈕）'],['k2enh','打開 +6 強化頁（危險區）'],['k2ench','打開附魔頁']]},
  {v:'5.07',t:'捲動／開關小卡不跳：固定區貼齊、彈窗標題不上移、捲軸預留、確認提示預留空間',b:[['bag98','產生 60 把武器並打開道具欄（從最上面往下捲，上方完全不動）'],['bag96','產生 +0～+12 武器（點一把按熔解，小卡大小不變、背景不跳）']]},
  {v:'5.05',t:'拿掉頁面頂端 8px 空隙（捲動時上方不再跳）',b:[['bag98','產生 60 把武器並打開道具欄（從最上面往下捲，資源列不動）']]},
  {v:'5.04',t:'固定區飾線對齊底紋邊緣（不再有斷層）',b:[['bag98','產生 60 把武器並打開道具欄（往下捲看上方固定區下緣）']]},
@@ -2930,6 +2935,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='res77'){const wi=makeWeapon('dev_sword',2,6,[],[{k:'ice',v:3},null,null,null]),wf=makeWeapon('dev_sword',2,6,[],[{k:'fire',v:3},null,null,null]);save();ui.sheet={t:'w',id:wf.id,m:'ench'};render();return toast(`1-9 火焰騎兵：永凍之霜 ×${weakMul(8,wi)}（應 1.1）、滅世之焰 ×${weakMul(8,wf)}（應 0.9）`)}
   if(k==='bag98'){const b=(BPS.find(x=>!x.dev&&!x.unlock)||BPS[0]);if(b)for(let n=0;n<60;n++)makeWeapon(b.id,0,1+n%12);ui.tab='armory';ui.atab='w';ui.acat='all';ui.ast='all';ui.aq='all';ui.sheet=null;save();render();scrollTo(0,0);return toast('往下捲，上方應該固定不動')}
   if(k==='bag96'){S.weapons=S.weapons||[];devdo('flvtest');const ts=S.weapons.filter(x=>x.test);if(ts[1])ts[1].lock=true;{const c=ts.find(x=>x.lv===7);if(c)c.ench=[{k:'broken',v:1},null,null,null]}const b=(BPS.find(x=>!x.dev&&!x.unlock)||BPS[0]);if(b){const n0=S.nextId;for(let n=0;n<3;n++)makeWeapon(b.id,0,0);makeWeapon(b.id,0,6);makeWeapon(b.id,0,6);S.seenW=n0-1}ui.tab='armory';ui.atab='w';ui.acat='all';ui.ast='all';ui.aq='all';ui.sheet=null;save();render();return toast('左上：駐／咒；右上：鎖頭／NEW；左下：強化等級；右下：數量')}
+  if(k==='k2pop'||k==='k2enh'||k==='k2ench'){devdo('bag96');document.getElementById('toasts').innerHTML='';const lv=k==='k2pop'?10:6,w=S.weapons.find(x=>x.test&&x.lv===lv&&!isBroken(x))||S.weapons.find(x=>x.test);if(w){ui.sheet={t:'w',id:w.id,m:k==='k2pop'?'main':k==='k2enh'?'enh':'ench'};render()}return}
   if(k==='bag96m'){ui.tab='armory';ui.atab='m';ui.sheet=null;render();scrollTo(0,0);return}
   if(k==='iron93'){S.weapons=S.weapons||[];devdo('flvtest');ui.tab='armory';ui.atab='w';ui.sheet=null;render();return}
   if(k==='skin91'){S.weapons=S.weapons||[];devdo('flvtest');const w=S.weapons.find(x=>x.test&&x.lv===8)||S.weapons[0];ui.tab='armory';ui.atab='w';ui.sheet=w?{t:'w',id:w.id,m:'main'}:null;render();return}
@@ -3101,7 +3107,7 @@ if(typeof window!=='undefined')window.addEventListener('resize',()=>fitNames());
 function renderLayer(){stkFollow();
   const L=document.getElementById('layer');const s=ui.sheet;let h='';
   const sc=document.querySelector('.sheet'),st=sc?sc.scrollTop:0,same=sc&&ui._lastSheet===JSON.stringify(s),keep=same||sc&&s&&s.t==='w'&&ui._lastSheetW===s.id;   // v4.91 同一把武器的小卡切換（武器⇄強化⇄附魔）不重播彈出動畫
-  if(s){const pop=s.t==='w'&&((s.m==='main'||s.m==='ench')&&!!W(s.id)||s.m==='enh'),full=!pop&&(s.t==='w'||s.t==='fxt');h+=`<div class="scrim ${pop?'wpopc':''} ${keep?'still':''}" data-act="scrim"><div class="ui-sheet sheet ${full?'full':''} ${pop?'wpop':''} ${s.t==='chat'?'cx-sheet':''} ${keep?'still':''}">${s.t==='w'?sheetWeapon(s.id,s.m):s.t==='v'?sheetVillage(s.i):s.t==='ch'&&ui.ch?sheetCh():s.t==='chr'&&ui.chr?sheetChr():s.t==='a'?sheetAch():s.t==='fk'?sheetFk(s.i):s.t==='lb'?sheetLb(s.i):s.t==='lbw'?sheetLbW(s.i,s.k):s.t==='ws'?sheetWorkshop(s.k):s.t==='evt'?sheetEvt():s.t==='chat'?sheetChat():s.t==='gd'?sheetGuild():s.t==='fr'?sheetFriend():s.t==='bw'?sheetBossW(s.r,s.j):s.t==='fxt'?sheetFxTest(s):s.t==='set'?sheetSet(s.k):/^mk/.test(s.t)?sheetMk(s):sheetDev()}</div></div>`}
+  if(s){const pop=s.t==='w'&&((s.m==='main'||s.m==='ench')&&!!W(s.id)||s.m==='enh'),full=!pop&&(s.t==='w'||s.t==='fxt');h+=`<div class="scrim ${pop?'wpopc':''} ${keep?'still':''}" data-act="scrim"><div class="ui-sheet sheet ${full?'full':''} ${pop?'wpop k2':''} ${s.t==='chat'?'cx-sheet':''} ${keep?'still':''}">${s.t==='w'?sheetWeapon(s.id,s.m):s.t==='v'?sheetVillage(s.i):s.t==='ch'&&ui.ch?sheetCh():s.t==='chr'&&ui.chr?sheetChr():s.t==='a'?sheetAch():s.t==='fk'?sheetFk(s.i):s.t==='lb'?sheetLb(s.i):s.t==='lbw'?sheetLbW(s.i,s.k):s.t==='ws'?sheetWorkshop(s.k):s.t==='evt'?sheetEvt():s.t==='chat'?sheetChat():s.t==='gd'?sheetGuild():s.t==='fr'?sheetFriend():s.t==='bw'?sheetBossW(s.r,s.j):s.t==='fxt'?sheetFxTest(s):s.t==='set'?sheetSet(s.k):/^mk/.test(s.t)?sheetMk(s):sheetDev()}</div></div>`}
   const r=ui.result;
   if(r&&r.t==='h')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card">${ptitle(r.title)}${r.ev?`<div class="small t-danger center">其中 ${r.ev} 輪受襲：沒有材料、金幣減半</div>`:''}<div class="hgrid">${harvestIcons(r.got)}</div>${btn('確定','rclose',{cls:'btn-primary big'})}</div></div>`;
   if(r&&r.t==='info')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card">${r.ico?`<div class="info-ico">${r.ico}</div>`:r.icon?`<div class="info-ico">${img(r.icon)}</div>`:''}${ptitle(r.title)}<div class="info-body">${r.html}</div>${r.acts||''}${btn(r.ok||'知道了','rclose',{cls:r.ok?'btn-sec big':'btn-primary big'})}</div></div>`;
