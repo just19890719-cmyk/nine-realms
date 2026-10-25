@@ -543,7 +543,7 @@ body{color:var(--bone);font-family:var(--body);line-height:1.5;padding-left:max(
 
 /* ===== 動畫影格 ===== */
 /* 同一個抽屜重新繪製（例如強化結束更新內容）時不重播滑入動畫，避免整個畫面跳一下 */
-.sheet.still,.scrim.still{animation:none}
+.sheet.still,.scrim.still,.modal-card.still{animation:none}
 @keyframes up{from{transform:translateY(30px);opacity:.6}to{transform:none;opacity:1}}
 @keyframes bob{50%{transform:translateY(-6px)}}
 @keyframes shk{25%{transform:translate(-2px,1px)}75%{transform:translate(2px,-1px)}}
