@@ -2510,7 +2510,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='4.89';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='4.90';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -3490,6 +3490,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'4.90',d:'10/25',t:'跑框特效不再重來',b:['+9 以上武器框的<b>電流繞框</b>特效，連按附魔、強化或畫面更新時不會再跳回起點重跑，所有地方都一樣'],g:['ench']},
  {v:'4.89',d:'10/25',t:'道具欄外框統一',b:['道具欄每一格的<b>外框統一成銅色</b>，不會再出現裡面藍框、外面綠框的情況；強化等級看裡面的武器框顏色'],g:['bag']},
  {v:'4.88',d:'10/25',t:'奧丁之咒顯示在武器名稱前面',b:['道具欄格子裡，中了奧丁之咒的武器名稱前面會顯示紅色「<b>奧丁之咒</b>」，跟屬性名稱一樣的位置'],g:['ench']},
  {v:'4.87',d:'10/25',t:'屬性底紋與小圖示・聖屬性金光・雷神新圖',b:['附魔表 18 格加上<b>屬性底紋</b>（火焰、冰霜、雷電、毒霧、聖光、暗影），一級淡、三級最明顯；「奧丁之咒」那一列也有紅色詛咒底紋','屬性名稱前面加上<b>屬性小圖示</b>：附魔表、武器名稱、村莊屬性和弱點都看得到','<b>聖屬性</b>改成白字配<b>金色光暈</b>和金框，不會再像一般白字；雷屬性還是亮黃字，兩個分得開','<b>索爾雷晶</b>和<b>索爾之錘</b>換成黃色雷電的新圖，跟雷屬性顏色一致'],g:['ench']},
@@ -3730,7 +3731,7 @@ function devAllWeapons(ids){const L=[0,1,6,7,9,10,15],q=ui.devAllQ??-1,lv=ui.dev
   ids.forEach((id,i)=>{const w=makeWeapon(id,q<0?i%5:q,lv<0?L[i%L.length]:lv,[]);w.lv=lv<0?L[i%L.length]:lv;w.test=true});
   ui.sheet=null;ui.tab='armory';ui.acat='all';ui.aq='all';ui.ast='test';scrollTo(0,0);toast('已產生 '+ids.length+' 把測試武器（道具欄已篩選「測試」）')}
 function wArt(id,{frame=null,cls=''}={}){const bp=frame==='bp',k=(frame!=null?(WFIT[ART_WAIT[id]||id]||.65):.8)*100,o=(100-k)/2;   // frame:'bp'＝圖紙底圖（墊在武器下面，安全距離同外框）
-  return `<span class="wart ${cls}">${bp?`<img class="wart-bg" src="${A('bp_paper2')}" alt="">`:''}<img class="wart-w" src="${A(id+'_disp')}" alt="" style="left:${o}%;top:${o}%;width:${k}%;height:${k}%">${frame!=null&&!bp?`<img class="wart-f" src="${A('frame'+frame)}" alt="">${/^_lv[3-6]$/.test(frame)?`<span class="wart-run"><img src="${A('frame'+frame)}" alt=""></span>`:''}`:''}</span>`}
+  return `<span class="wart ${cls}">${bp?`<img class="wart-bg" src="${A('bp_paper2')}" alt="">`:''}<img class="wart-w" src="${A(id+'_disp')}" alt="" style="left:${o}%;top:${o}%;width:${k}%;height:${k}%">${frame!=null&&!bp?`<img class="wart-f" src="${A('frame'+frame)}" alt="">${/^_lv[3-6]$/.test(frame)?(d=>`<span class="wart-run" style="animation-delay:${d}ms"><img src="${A('frame'+frame)}" alt="" style="animation-delay:${d}ms"></span>`)(-Math.round(performance.now()%2200)):''}`:''}</span>`}
 const cutArt=src=>src.replace(/\.webp$/,'_disp.webp'+ART_V); // 去背版武器圖（暗色底轉透明），特效才能包住武器
 // 預先載入特效圖，避免第一次播放時閃白
 function preloadVfx(){setTimeout(()=>{for(const k in VFX)for(let i=1;i<=VFX[k].N;i++){const im=new Image();im.src=vfxSrc(VFX[k],i)}},1500)}
@@ -4826,6 +4827,7 @@ function viewShop(){
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'4.90',t:'+9 以上跑框特效：畫面重畫時接著跑，不再重置',b:[['run90','給 +9 測試劍並打開附魔，每 0.3 秒重畫一次（看跑框會不會跳）']]},
  {v:'4.89',t:'道具欄格子外框統一銅色（強化等級只看內框）',b:[['flvtest','給各強化等級的武器（看道具欄外框）']]},
  {v:'4.88',t:'道具欄格子：奧丁之咒改顯示在武器名稱前面',b:[['brkstk','給 3 把同款 +6 劍，其中 1 把中咒（看道具欄）']]},
  {v:'4.87',t:'屬性底紋＋小圖示；聖屬性改白字＋金色光暈、金框；索爾雷晶、索爾之錘換黃雷新圖',b:[['thor87','給 1 把 +6 索爾之錘＋10 個索爾雷晶（看新圖）'],['res77','打開附魔表看聖屬性'],['elall','給 6 把不同屬性的武器（看名稱）']]},
@@ -5069,6 +5071,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='race78'){S.villages.forEach((v,i)=>{if(i<4)v.status='cleared'});if(S.villages[4].status==='locked')S.villages[4].status='open';ui.testOut='<b>v4.78 武器剋制</b><br>'+Object.entries(CAT_RACE).map(([c,r])=>CATS[c]+'→'+RACE_N[r]).join('、')+'<br><b>20 關型態</b><br>'+MON_RACE.map((r,i)=>vNo(i)+' '+RACE_N[r]).join('、');ui.sheet={t:'v',i:4};render();return toast('1-5 戰場鴉魔應該是亡靈')}
   if(k==='race79'){ui.testOut='<b>v4.79 相剋加成</b><br>'+RACE_PCT.map((p,l)=>'+'+l+' '+p+'%').join('、');const w=makeWeapon('dev_sword',2,9,[]);save();ui.sheet={t:'w',id:w.id,m:'main'};render();return toast('+9 相剋應為 12%，下一級 +10 為 15%')}
   if(k==='elpop'){const w=makeWeapon('dev_sword',2,6,[],[{k:'bolt',v:3},null,null,null]);save();ui.sheet={t:'w',id:w.id,m:'ench'};ui.result=Object.assign({t:'info'},affInfo('bolt'));render();return}
+  if(k==='run90'){const w=makeWeapon('dev_sword',2,9,[]);S.items[ENSTONE]=(S.items[ENSTONE]|0)+20;S.gold+=20000;save();ui.sheet={t:'w',id:w.id,m:'ench'};render();let n=0;const t=setInterval(()=>{render();if(++n>=20)clearInterval(t)},300);return toast('接下來 6 秒每 0.3 秒重畫一次，跑框應該連續不跳','ok')}
   if(k==='thor87'){const w=makeWeapon('g_skadi',2,6,[]);S.mats.thor=(S.mats.thor|0)+10;save();ui.tab='armory';ui.atab='w';ui.sheet={t:'w',id:w.id,m:'main'};render();return toast('已給 +6 索爾之錘、索爾雷晶 ×10（材料分頁看雷晶）','ok')}
   if(k==='eagle86b'){devBps();S.villages.forEach((v,i)=>{if(i<=12)v.status='cleared'});const st=S.villages[12],w=makeWeapon('dev_sword',2,6,[]);st.weaponId=w.id;st.cycleStart=NOW()-dur(12,w)*.3;delete MONFX.hp[12];ui.realm=1;ui.tab='village';ui.sheet=null;ui.bsOpen=12;save();render();setTimeout(()=>document.querySelectorAll('#view .vcard')[2]?.scrollIntoView({block:'start'}),50);return}
   if(k==='eagle86'){S.villages.forEach((v,i)=>{if(i<12&&v.status==='locked')v.status='cleared'});if(S.villages[12].status==='locked')S.villages[12].status='open';ui.realm=1;ui.tab='village';ui.sheet={t:'v',i:12};render();return}
