@@ -1987,18 +1987,20 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .fk-me .fk-s{font-size:20px;font-family:var(--display)}
 .kvgrid [class*="elc-"]{color:var(--ec)}   /* v4.76 村莊詳情的屬性、弱點用屬性顏色 */
 
-/* v4.91 Mochi：程式畫的框線看起來廉價 → 沒有皮膚槽位的元件也換成 AI 細線框（素材 art/ui/ui491_*，皮膚槽位設定在 skin.js） */
+/* v4.91 Mochi：程式畫的框線看起來廉價 → 沒有皮膚槽位的元件也換成 AI 細線框（素材 art/ui/ui491_*，皮膚槽位設定在 skin.js）
+   框：fr 暗銅／fr_on 金（選中）／fr_red 紅（危險）／fr_off 灰（鎖住、停用），角落雕花一樣大（15px）；fl* 是沒有雕花的細線框，給小元件用；cap* 是膠囊 */
 .sheet,.modal-card,.info-body{scrollbar-width:none}.sheet::-webkit-scrollbar,.modal-card::-webkit-scrollbar,.info-body::-webkit-scrollbar{display:none}   /* 小卡內容稍微超出時不顯示旁邊的捲動條（還是可以滑） */
-.wt:not(#_),.wt:is(.l0b,.l1b,.l2b,.l3b,.l4b,.l5b,.l6b,.posted):not(#_){border-color:transparent;border-image:url(art/ui/ui491_tile.webp) 44 fill / 13px stretch;background:none;box-shadow:none}
-.sg-day:not(#_),.matbox:not(#_){border-color:transparent;border-image:url(art/ui/ui491_cell.webp) 46 fill / 14px stretch;background:none;box-shadow:none}
-.sg-day.today:not(#_){border-image-source:url(art/ui/ui491_cell_on.webp)}
-.ach-rw:not(#_){border-color:transparent;border-image:url(art/ui/ui491_pill.webp) 59 60 fill / 30px stretch;background:none}
-.res .chip:not(#_){border-color:transparent;border-image:url(art/ui/ui491_res.webp) 56 58 fill / 30px stretch;background:none;box-shadow:none}
-.cbar-in:not(#_){border-color:transparent;border-image:url(art/ui/ui491_chat.webp) 36 40 fill / 10px 12px stretch;background:none;box-shadow:none}
-.sel select:not(#_){appearance:none;-webkit-appearance:none;border-color:transparent;border-image:url(art/ui/ui491_select.webp) 34 70 34 34 fill / 10px 21px 10px 10px stretch;background:none;padding-right:26px}
+.wt:not(#_),.wt:is(.l0b,.l1b,.l2b,.l3b,.l4b,.l5b,.l6b,.posted):not(#_),.sg-day:not(#_),.matbox:not(#_),.ev-st:not(#_),.wp-g>*:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fr.webp) 50 / 15px stretch;background:linear-gradient(rgba(0,0,0,.38),rgba(0,0,0,.38)),url(art/ui/ui491_tex.webp) center/240px;box-shadow:none}
+.wt.on:not(#_),.sg-day.today:not(#_){outline:none;border-image-source:url(art/ui/ui491_fr_on.webp)}
+.ev-st.risk:not(#_),.enh-stage.danger:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fr_red.webp) 50 / 15px stretch}
+.enh-stage:not(.danger):not(#_){border-color:transparent;border-image:url(art/ui/ui491_fr.webp) 50 / 15px stretch}
+.ev-warn.risk:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fl_red.webp) 24 / 8px stretch}
+.enh-more:not(#_),.cbar-in:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fl.webp) 24 / 8px stretch;box-shadow:none}
+.vlocked:not(#_){border-style:solid;border-color:transparent;border-image:url(art/ui/ui491_fr_off.webp) 50 / 15px stretch}
+.ach-rw:not(#_),.res .chip:not(#_){border-color:transparent;border-image:url(art/ui/ui491_cap.webp) 53 / 30px stretch;background:#15110d;box-shadow:none}
+.sel select:not(#_){appearance:none;-webkit-appearance:none;border-color:transparent;border-image:url(art/ui/ui491_fl.webp) 24 / 8px stretch;background:url(art/ui/ui491_chev.webp) right 10px center/10px auto no-repeat,#15110d;padding-right:28px}
 .sel select option{background:#16110d;color:var(--bone)}
 .info-btn:not(#_){border-color:transparent;background:url(art/ui/ui491_info.webp) center/100% 100% no-repeat;box-shadow:none}
-.wt.on:not(#_){outline:none;border-image-source:url(art/ui/ui491_cell_on.webp)}   /* 選中的圖紙／武器格用金色細框，不用程式畫的外框線 */
-.ui-panel .ui-card.sel-head:not(#_){border-image:none;border-color:transparent;background:none}   /* 面板裡的已選擇區塊不要再套一層框 */
-.res .chip:not(#_){padding-right:14px}
+.wp-g>*:not(#_){padding:9px 13px}
+.ui-panel.panel .ui-card.sel-head.sel-head:not(#_){border-image:none;border-color:transparent;background:none}   /* 面板裡的已選擇區塊不要再套一層框 */
 </style>

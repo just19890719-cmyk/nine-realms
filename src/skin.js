@@ -19,39 +19,36 @@
  *
  * 槽位對應的元件請見開發工具 →「UI 元件」分頁，或 UI_元件架構說明.txt。
  * ===================================================================== */
-const UI491_BTN=false;   // v4.91 按鈕要等角落雕花版的新圖（兩端整片雕花會因按鈕高矮變大變小，Mochi 不要）
 const UI_SKIN={
-  ...(UI491_BTN?{
-  'btn-primary':{src:'art/ui/ui491_btn_pri.webp',slice:[63,50,63,50],width:[30,24,30,24],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:max(16px,.5em + 12px);padding-right:max(16px,.5em + 12px)'},  'btn-primary:pressed':{src:'art/ui/ui491_btn_pri_p.webp'},  'btn-primary:disabled':{src:'art/ui/ui491_btn_pri_d.webp',css:'filter:none;opacity:1;color:#cfc4b0;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
-  'btn-primary-big':{src:'art/ui/ui491_btn_pri.webp',slice:[63,50,63,50],width:[30,24,30,24],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:max(16px,.5em + 12px);padding-right:max(16px,.5em + 12px)'},  'btn-primary-big:pressed':{src:'art/ui/ui491_btn_pri_p.webp'},  'btn-primary-big:disabled':{src:'art/ui/ui491_btn_pri_d.webp',css:'filter:none;opacity:1;color:#cfc4b0;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
-  'btn-primary-compact':{src:'art/ui/ui491_btn_pri.webp',slice:[63,50,63,50],width:[30,24,30,24],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:max(16px,.5em + 12px);padding-right:max(16px,.5em + 12px)'},  'btn-primary-compact:pressed':{src:'art/ui/ui491_btn_pri_p.webp'},  'btn-primary-compact:disabled':{src:'art/ui/ui491_btn_pri_d.webp',css:'filter:none;opacity:1;color:#cfc4b0;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
-  'btn-secondary':{src:'art/ui/ui491_btn_sec.webp',slice:[63,50,63,50],width:[30,24,30,24],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:max(16px,.5em + 12px);padding-right:max(16px,.5em + 12px)'},  'btn-secondary:pressed':{src:'art/ui/ui491_btn_sec_p.webp'},  'btn-secondary:disabled':{src:'art/ui/ui491_btn_sec_d.webp',css:'filter:none;opacity:1;color:#cfc4b0;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
-  'btn-secondary-big':{src:'art/ui/ui491_btn_sec.webp',slice:[63,50,63,50],width:[30,24,30,24],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:max(16px,.5em + 12px);padding-right:max(16px,.5em + 12px)'},  'btn-secondary-big:pressed':{src:'art/ui/ui491_btn_sec_p.webp'},  'btn-secondary-big:disabled':{src:'art/ui/ui491_btn_sec_d.webp',css:'filter:none;opacity:1;color:#cfc4b0;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
-  'btn-secondary-compact':{src:'art/ui/ui491_btn_sec.webp',slice:[63,50,63,50],width:[30,24,30,24],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:max(16px,.5em + 12px);padding-right:max(16px,.5em + 12px)'},  'btn-secondary-compact:pressed':{src:'art/ui/ui491_btn_sec_p.webp'},  'btn-secondary-compact:disabled':{src:'art/ui/ui491_btn_sec_d.webp',css:'filter:none;opacity:1;color:#cfc4b0;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
-  'btn-danger':{src:'art/ui/ui491_btn_dan.webp',slice:[63,50,63,50],width:[30,24,30,24],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:max(16px,.5em + 12px);padding-right:max(16px,.5em + 12px)'},  'btn-danger:pressed':{src:'art/ui/ui491_btn_dan_p.webp'},  'btn-danger:disabled':{src:'art/ui/ui491_btn_dan_d.webp',css:'filter:none;opacity:1;color:#cfc4b0;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
-  'btn-danger-big':{src:'art/ui/ui491_btn_dan.webp',slice:[63,50,63,50],width:[30,24,30,24],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:max(16px,.5em + 12px);padding-right:max(16px,.5em + 12px)'},  'btn-danger-big:pressed':{src:'art/ui/ui491_btn_dan_p.webp'},  'btn-danger-big:disabled':{src:'art/ui/ui491_btn_dan_d.webp',css:'filter:none;opacity:1;color:#cfc4b0;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
-  'btn-danger-compact':{src:'art/ui/ui491_btn_dan.webp',slice:[63,50,63,50],width:[30,24,30,24],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:max(16px,.5em + 12px);padding-right:max(16px,.5em + 12px)'},  'btn-danger-compact:pressed':{src:'art/ui/ui491_btn_dan_p.webp'},  'btn-danger-compact:disabled':{src:'art/ui/ui491_btn_dan_d.webp',css:'filter:none;opacity:1;color:#cfc4b0;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
-  }:{}),
-  // v4.91 Mochi：程式畫的框和按鈕看起來很廉價 → 全部換成 AI 細線框（拼圖 3 張：/mnt/project-files/ui-skin/v4.91/）
-  //   width 是四邊圖框的繪製寬度；按鈕的上下寬度相加大於按鈕高度時，瀏覽器會整組等比縮小，所以同一張圖可以給各種高度的按鈕用
-  'btn-chip':{src:'art/ui/ui491_pill.webp',slice:[59,60,59,60],width:[30,30,30,30]},  'btn-chip:on':{src:'art/ui/ui491_pill_on.webp',css:'color:var(--gold-hi)'},
-  'btn-toggle':{src:'art/ui/ui491_tog.webp',slice:[40,40,40,40],width:[12,12,12,12]},  'btn-toggle:on':{src:'art/ui/ui491_tog_on.webp'},
+  // v4.91 Mochi：程式畫的框和按鈕看起來很廉價 → 換成 AI 細線框（拼圖：/mnt/project-files/ui-skin/v4.91/整合版_*）
+  //   規則：雕花只在四個角，所有元件的角落雕花都一樣大（圖框繪製寬度 ÷ 切片 ≈ 0.3）；框中間是空的，底紋另外用可重複的 ui491_tex
+  'btn-primary':{src:'art/ui/ui491_b_pri.webp',slice:[52,52,52,52],width:[15,15,15,15],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:16px;padding-right:16px'},  'btn-primary:pressed':{src:'art/ui/ui491_b_pri_p.webp'},  'btn-primary:disabled':{src:'art/ui/ui491_b_pri_d.webp',css:'filter:none;opacity:1;color:#bdb3a2;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
+  'btn-primary-big':{src:'art/ui/ui491_b_pri.webp',slice:[52,52,52,52],width:[15,15,15,15],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:16px;padding-right:16px'},  'btn-primary-big:pressed':{src:'art/ui/ui491_b_pri_p.webp'},  'btn-primary-big:disabled':{src:'art/ui/ui491_b_pri_d.webp',css:'filter:none;opacity:1;color:#bdb3a2;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
+  'btn-primary-compact':{src:'art/ui/ui491_b_pri.webp',slice:[52,52,52,52],width:[15,15,15,15],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:16px;padding-right:16px'},  'btn-primary-compact:pressed':{src:'art/ui/ui491_b_pri_p.webp'},  'btn-primary-compact:disabled':{src:'art/ui/ui491_b_pri_d.webp',css:'filter:none;opacity:1;color:#bdb3a2;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
+  'btn-secondary':{src:'art/ui/ui491_b_sec.webp',slice:[52,52,52,52],width:[15,15,15,15],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:16px;padding-right:16px'},  'btn-secondary:pressed':{src:'art/ui/ui491_b_sec_p.webp'},  'btn-secondary:disabled':{src:'art/ui/ui491_b_sec_d.webp',css:'filter:none;opacity:1;color:#bdb3a2;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
+  'btn-secondary-big':{src:'art/ui/ui491_b_sec.webp',slice:[52,52,52,52],width:[15,15,15,15],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:16px;padding-right:16px'},  'btn-secondary-big:pressed':{src:'art/ui/ui491_b_sec_p.webp'},  'btn-secondary-big:disabled':{src:'art/ui/ui491_b_sec_d.webp',css:'filter:none;opacity:1;color:#bdb3a2;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
+  'btn-secondary-compact':{src:'art/ui/ui491_b_sec.webp',slice:[52,52,52,52],width:[15,15,15,15],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:16px;padding-right:16px'},  'btn-secondary-compact:pressed':{src:'art/ui/ui491_b_sec_p.webp'},  'btn-secondary-compact:disabled':{src:'art/ui/ui491_b_sec_d.webp',css:'filter:none;opacity:1;color:#bdb3a2;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
+  'btn-danger':{src:'art/ui/ui491_b_dan.webp',slice:[52,52,52,52],width:[15,15,15,15],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:16px;padding-right:16px'},  'btn-danger:pressed':{src:'art/ui/ui491_b_dan_p.webp'},  'btn-danger:disabled':{src:'art/ui/ui491_b_dan_d.webp',css:'filter:none;opacity:1;color:#bdb3a2;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
+  'btn-danger-big':{src:'art/ui/ui491_b_dan.webp',slice:[52,52,52,52],width:[15,15,15,15],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:16px;padding-right:16px'},  'btn-danger-big:pressed':{src:'art/ui/ui491_b_dan_p.webp'},  'btn-danger-big:disabled':{src:'art/ui/ui491_b_dan_d.webp',css:'filter:none;opacity:1;color:#bdb3a2;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
+  'btn-danger-compact':{src:'art/ui/ui491_b_dan.webp',slice:[52,52,52,52],width:[15,15,15,15],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:16px;padding-right:16px'},  'btn-danger-compact:pressed':{src:'art/ui/ui491_b_dan_p.webp'},  'btn-danger-compact:disabled':{src:'art/ui/ui491_b_dan_d.webp',css:'filter:none;opacity:1;color:#bdb3a2;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
+  'btn-chip':{src:'art/ui/ui491_cap.webp',slice:[53,53,53,53],width:[30,30,30,30],fill:false,css:'background:#15110d'},  'btn-chip:on':{src:'art/ui/ui491_cap_on.webp',css:'color:var(--gold-hi)'},
+  'btn-toggle':{src:'art/ui/ui491_fr.webp',slice:[50,50,50,50],width:[15,15,15,15],fill:false,css:'background:linear-gradient(rgba(0,0,0,.38),rgba(0,0,0,.38)),url(art/ui/ui491_tex.webp) center/240px'},  'btn-toggle:on':{src:'art/ui/ui491_fr_on.webp'},
   'btn-accent':null,            'btn-accent:pressed':null,
   'btn-icon':null,              'btn-icon:pressed':null,
-  'tab':{src:'art/ui/ui491_tab.webp',slice:[34,34,34,34],width:[10,10,10,10]},  'tab:on':{src:'art/ui/ui491_tab_on.webp'},
+  'tab':{src:'art/ui/ui491_fr.webp',slice:[50,50,50,50],width:[15,15,15,15],fill:false,css:'background:linear-gradient(rgba(0,0,0,.38),rgba(0,0,0,.38)),url(art/ui/ui491_tex.webp) center/240px'},  'tab:on':{src:'art/ui/ui491_fr_on.webp'},
   // 面板與卡片
-  'panel':{src:'art/ui/ui491_panel.webp',slice:[52,52,52,52],width:[16,16,16,16]},
+  'panel':{src:'art/ui/ui491_fr.webp',slice:[50,50,50,50],width:[15,15,15,15],fill:false,css:'background:url(art/ui/ui491_tex.webp) center/240px'},
   'title':null,
-  'card':{src:'art/ui/ui491_cell.webp',slice:[46,46,46,46],width:[14,14,14,14]},  'card:on':{src:'art/ui/ui491_cell_on.webp'},
-  'card-compact':{src:'art/ui/ui491_cell.webp',slice:[46,46,46,46],width:[14,14,14,14]},  'card-compact:on':{src:'art/ui/ui491_cell_on.webp'},
+  'card':{src:'art/ui/ui491_fr.webp',slice:[50,50,50,50],width:[15,15,15,15],fill:false,css:'background:linear-gradient(rgba(0,0,0,.38),rgba(0,0,0,.38)),url(art/ui/ui491_tex.webp) center/240px'},  'card:on':{src:'art/ui/ui491_fr_on.webp'},
+  'card-compact':{src:'art/ui/ui491_fr.webp',slice:[50,50,50,50],width:[15,15,15,15],fill:false,css:'background:linear-gradient(rgba(0,0,0,.38),rgba(0,0,0,.38)),url(art/ui/ui491_tex.webp) center/240px'},  'card-compact:on':{src:'art/ui/ui491_fr_on.webp'},
   'card-feature':null,
-  'card-option':{src:'art/ui/ui491_cell.webp',slice:[46,46,46,46],width:[14,14,14,14]},  'card-option:on':{src:'art/ui/ui491_cell_on.webp'},
-  'card-row':{src:'art/ui/ui491_row.webp',slice:[46,46,46,46],width:[14,14,14,14]},
+  'card-option':{src:'art/ui/ui491_fr.webp',slice:[50,50,50,50],width:[15,15,15,15],fill:false,css:'background:linear-gradient(rgba(0,0,0,.38),rgba(0,0,0,.38)),url(art/ui/ui491_tex.webp) center/240px'},  'card-option:on':{src:'art/ui/ui491_fr_on.webp'},
+  'card-row':{src:'art/ui/ui491_fr.webp',slice:[50,50,50,50],width:[15,15,15,15],fill:false,css:'background:linear-gradient(rgba(0,0,0,.38),rgba(0,0,0,.38)),url(art/ui/ui491_tex.webp) center/240px'},
   'badge':null,
   'prog':null,                  'prog-fill':null,
   // 視窗與常駐列
-  'sheet':{src:'art/ui/ui491_modal.webp',slice:[58,58,58,58],width:[17,17,17,17]},
-  'modal':{src:'art/ui/ui491_modal.webp',slice:[58,58,58,58],width:[17,17,17,17]},
+  'sheet':{src:'art/ui/ui491_fr_modal.webp',slice:[50,50,50,50],width:[17,17,17,17],fill:false,css:'background:url(art/ui/ui491_tex.webp) center/240px'},
+  'modal':{src:'art/ui/ui491_fr_modal.webp',slice:[50,50,50,50],width:[17,17,17,17],fill:false,css:'background:url(art/ui/ui491_tex.webp) center/240px'},
   'toast':null,
   'topbar':null,
   'navbar':null,
