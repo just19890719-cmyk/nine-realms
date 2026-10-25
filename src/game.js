@@ -1312,7 +1312,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
- {v:'4.83',d:'10/25',t:'奧丁之咒與矮人解咒石',b:['附魔有 <b>5%</b> 會中<b>奧丁之咒</b>（跟全部三級加起來一樣），原本的屬性消失','中咒的武器<b>完全不能使用</b>：不能駐守、挑戰、強化、上架、登錄圖鑑','新道具<b>矮人解咒石</b>：破除奧丁之咒（變回無屬性，要再附魔）；打倒怪物有機率掉，商城也能用金幣或鑽石買'],g:['ench']},
+ {v:'4.83',d:'10/25',t:'奧丁之咒與矮人解咒石',b:['附魔有 <b>5%</b> 會中<b>奧丁之咒</b>（跟全部三級加起來一樣），原本的屬性消失','中咒的武器<b>完全不能使用</b>：不能駐守、挑戰、強化、上架、登錄圖鑑','新道具<b>矮人解咒石</b>：破除奧丁之咒（變回無屬性，要再附魔）；打倒怪物有機率掉，商城也能用金幣或鑽石買','商城新增<b>道具</b>區：強化石、附魔石、矮人解咒石','附魔小卡右上角多了一本<b>故事書</b>：矮人兄弟為什麼要偷奧丁的附魔石'],g:['ench','shop']},
  {v:'4.82',d:'10/25',t:'附魔防誤點加強',b:['武器已經是<b>三級屬性</b>時再按附魔，會在畫面中間跳出<b>確認小卡</b>，按「確定重抽」才會重抽；點外面或「取消」就不抽'],g:['ench']},
  {v:'4.81',d:'10/25',t:'附魔防誤點',b:['武器已經是<b>三級屬性</b>時再按附魔，按鈕會先變成紅色的「<b>確定重抽</b>」，再按一次才會重抽，避免一直按不小心蓋掉','附魔後不再跳「附魔結果」提示，結果直接顯示在武器名稱','附魔小卡的武器名稱往下移一些，不會貼著標題'],g:['ench']},
  {v:'4.80',d:'10/25',t:'屬性加成調整',b:['打中怪物弱點改為 <b>+3%／+6%／+10%</b>（看附魔等級）','同屬性抗性改為 <b>−3%／−6%／−10%</b>','三對互剋、每一關的弱點都不變'],g:['ench']},
@@ -1414,7 +1414,7 @@ const GUIDE=[
   {k:'realm',ic:'realm_2',n:'第二界 約頓海姆',s:'收復 1-10 後開放',v:'4.37',h:'收復 1-10 彩虹橋頭、打倒海姆達爾後開放第二界，用上方地圖列切換。<br>10 座新村莊、4 種新材料（巨人骨、永凍霜晶、雷鳴鐵、世界樹古根），第五階巨人武器要熔爐 Lv6。<br>v4.37 起巨人體重鍊已經拿掉，第二界材料用來鍛造巨人武器。'}]],
  ['成長與獎勵',[
   {k:'quest',ic:'ic_check',n:'每日任務・成就',s:'每天領活躍度寶箱',v:'4.59',h:'<b>每日任務</b>：完成登入、收成、鍛造、強化、熔解累積活躍度，40／70／100 點各開一個寶箱。<br><b>委託成就</b>：免費拿鑽石。<br>v4.59 起<b>七日簽到</b>搬到商城。'},
-  {k:'shop',ic:'nav_shop',n:'商城',s:'月卡、七日簽到、材料',v:'4.63',h:'封測期間<b>月卡免費</b>：立得鑽石，之後每天再領。<br><b>七日簽到</b>：漏簽不會歸零，第 7 天領完從第 1 天重新開始；每天第一次進遊戲會自動打開。<br><b>材料</b>：8 種材料都可以用金幣或鑽石買，點材料跳出小卡選數量。<br>狩獵號角已拿掉，其他商品正式上線再補。'}]],
+  {k:'shop',ic:'nav_shop',n:'商城',s:'月卡、七日簽到、材料、道具',v:'4.83',h:'封測期間<b>月卡免費</b>：立得鑽石，之後每天再領。<br><b>七日簽到</b>：漏簽不會歸零，第 7 天領完從第 1 天重新開始；每天第一次進遊戲會自動打開。<br><b>材料</b>：8 種材料都可以用金幣或鑽石買，點材料跳出小卡選數量。<br><b>道具</b>：強化石 300 金幣／6 鑽石、附魔石 500 金幣／10 鑽石、矮人解咒石 1,000 金幣／30 鑽石。<br>狩獵號角已拿掉，其他商品正式上線再補。'}]],
  ['玩家互動',[
   {k:'mk',ic:'nav_market',n:'交易所',s:'金幣或鑽石買賣武器和道具',v:'4.56',h:'用金幣或鑽石買賣，最低 10，成交收 5% 手續費。任何武器、道具都能買賣，不限關卡進度。<br><b>上架武器</b>：在道具欄點武器，按「上架」，填售價。鎖定（上鎖）或駐守中的武器不能上架。<br><b>上架道具</b>：在道具欄點道具或材料，按「上架交易所」，填一個的單價和數量。買家可以只買一部分，買剩的繼續掛著。<br>賣出的錢、上架 3 天沒賣出退回的東西，都放在交易所的「待領取」分頁（有東西會亮紅點），按「全部領取」才入帳。<br>最多同時上架 10 件（一筆道具算一件）。'},
   {k:'chat',ic:'it_horn',n:'聊天與跑馬燈',s:'世界頻道、系統公告、武器卡',v:'3.93',h:'世界頻道可以和全服玩家聊天（鐵匠 Lv3 以上可以發言），系統頻道會顯示全服 +10 以上的強化公告。<br>點名字可以看玩家名片；聊天可以貼出自己的武器卡、戴稱號。<br>跑馬燈出現強化公告時可以按「恭喜」。'},
@@ -1499,6 +1499,15 @@ function enhance(id){
   if(!r.danger){ui.busy=false;ui.lockUntil=Date.now()+150;ui.enhLast={id,k:res.k,t:res.t,d:res.d,test:false};snd(ENH_SND[res.k],1,.7);renderLayer();return greenFlash()}   // v4.58 +1～+6 不播動畫，直接出結果（Mochi）
   playFx(r.danger,r.before,r.next,res)}
 function enchant(id,slot){const r=enchantCore(id,slot);if(r.err)return toast(r.err,'bad');if(r.k==='broken'){snd('enh_break');ui.result={t:'info',title:'奧丁之咒！',html:'<div class="center">符文之主奧丁不許凡人動祂的符文，降下了詛咒。<br>這把武器<b class="t-danger">完全不能使用</b>，<br>要用<b>矮人解咒石</b>破除，解咒後變回無屬性。</div>',ok:'知道了'};return render()}snd(r.v>=3?'enh_ok':'enchant');render()}
+// v4.83 故事書（Mochi：附魔系統旁邊放一本書，裡面一張圖＋故事，讓遊戲有劇情）。圖 art/ic_lore、art/story_ench 還沒到時先放待生圖框
+const LORE_ART={ic_lore:false,story_ench:false};
+const loreArt=(n,cls)=>LORE_ART[n]?img(n,cls):`<span class="ph-ico ${cls}">待生圖</span>`;
+const loreBtn=k=>`<button class="ui-iconbtn icon-btn img lore-btn" data-act="lore" data-k="${k}" aria-label="故事">${loreArt('ic_lore','lore-ic')}</button>`;
+const LORE={ench:{t:'矮人盜石',art:'story_ench',p:['奧丁為了諸神黃昏，命令九界交出所有武器。不肯交的村莊，一夜之間化成焦土。',
+  '住在地底的矮人兄弟<b>布洛克與艾特里</b>，替諸神鍛過雷神之錘，最清楚諸神的手段。他們看不慣奧丁濫殺平民，趁祂離開王座、到密米爾之泉喝水的時候，從寶庫偷走一袋刻著盧恩的<b>附魔石</b>，連夜送到人類最後的鐵匠手上。',
+  '奧丁是符文之主，偷來的符文逃不過祂的眼睛。祂在每一顆附魔石上都留下詛咒：每次附魔，都有機會被<b class="t-danger">奧丁之咒</b>反噬，武器從此不能使用。',
+  '矮人兄弟只好在地底日夜鍛造<b>矮人解咒石</b>，偷偷送到鐵匠鋪。「這些石頭是我們拿命換來的，鐵匠，讓凡人也有對抗諸神的力量吧。」']}};
+function loreOpen(k){const L=LORE[k];if(!L)return;snd('ui_open');ui.result={t:'info',k:'lore',title:L.t,html:`<div class="lore-art">${loreArt(L.art,'lore-img')}</div><div class="lore-txt">${L.p.map(x=>`<p>${x}</p>`).join('')}</div>`,ok:'闔上書本'};render()}
 function repair(id){const r=repairCore(id);if(r.err)return toast(r.err,'bad');snd('upgrade');toast('詛咒破除了，武器變回無屬性，可以再附魔。','ok');render()}   // v4.81 Mochi：不跳「附魔結果」提示，結果直接看武器名稱
 const furnaceMax=()=>rfOpen()?6:5;   // v3.76 熔爐 Lv6（巨人武器）在第二界開放後才能升
 const wsGate=k=>{const n=WS_GATE[k][S[k]+1]||0;return cleared()<n?'收復 '+vNo(n-1)+' 後開放':''};
@@ -2195,7 +2204,9 @@ function sheetWeapon(id,mode){
     return`<div class="sheet-head"><h2>武器詳情</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img'})}</div><div class="empty">這把武器已經不在了。</div>`}
   const b=bpOf(w),i=where(w),bs=bossSlotOf(w),busy=i>=0||bs>=0,highValue=w.lock||w.q>=2||w.lv>=3||b.t>=2;
   const title={main:'武器詳情',enh:'強化',ench:'附魔',give:'交給村莊'}[mode];
-  const head=`<div class="sheet-head">${mode==='main'?'<span style="width:44px"></span>':btn(img('ic_back'),'wmode',{cls:'icon-btn img',attrs:`data-m="main" data-id="${id}" aria-label="返回"`})}<h2>${title}</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>`;
+  const xb=btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'}),bk=mode==='main'?'<span style="width:44px"></span>':btn(img('ic_back'),'wmode',{cls:'icon-btn img',attrs:`data-m="main" data-id="${id}" aria-label="返回"`});
+  const head=mode==='ench'?`<div class="sheet-head"><span class="sh-2">${bk}<span style="width:44px"></span></span><h2>${title}</h2><span class="sh-2">${loreBtn('ench')}${xb}</span></div>`   // v4.83 附魔小卡叉叉旁邊放故事書（Mochi）
+    :`<div class="sheet-head">${bk}<h2>${title}</h2>${xb}</div>`;
   const showcase=(extra='')=>`<div class="ui-card ui-card--feature showcase ${lc(w)}b ${extra}">
    <div class="sc-top"><div><h2 class="${lc(w)}">${b.n} <span class="lvt">+${w.lv}</span></h2></div>
     <button class="ui-iconbtn icon-btn img" data-act="lock" data-id="${id}" aria-label="${w.lock?'取消鎖定':'鎖定'}">${img(w.lock?'ic_lock':'ic_unlock')}</button></div>
@@ -2584,7 +2595,7 @@ function sheetAch(){const v=ui.achV||'A',nDone=ACH.filter(a=>S.ach[a.id]).length
 
 /* ---------- 商城 ---------- */
 // v4.59 商城（Mochi：只留免費月卡＋七日簽到＋材料，其餘正式上線再補）：材料可用金幣或鑽石買，單價 [金幣, 鑽石]，鑽石總價無條件進位
-const MAT_COST={repair:[1000,30],miron:[10,.5],pine:[10,.5],troll:[100,5],bifrost:[150,8],frost:[40,2],gwood:[40,2],ubone:[400,20],thor:[600,30]},MS_MAX=9999;
+const MAT_COST={estone:[300,6],enstone:[500,10],repair:[1000,30],miron:[10,.5],pine:[10,.5],troll:[100,5],bifrost:[150,8],frost:[40,2],gwood:[40,2],ubone:[400,20],thor:[600,30]},MS_MAX=9999;
 const matCost=(k,n)=>{const c=MAT_COST[k]||[0,0];return[c[0]*n,Math.ceil(c[1]*n)]};
 // 點材料跳出購買小卡：數量用 −／＋ 和快捷鍵調整
 const shopNm=k=>MATS[k]||itemName(k),shopHave=k=>MATS[k]?S.mats[k]|0:S.items[k]|0;   // v4.83 商城也賣道具（矮人解咒石）
@@ -2622,13 +2633,13 @@ function viewShop(){
   <div class="ui-panel panel sg-panel">${info('sign')}${ptitle('七日簽到')}${viewSign()}</div>
   <div class="ui-panel panel">${ptitle('材料')}<div class="matgrid">${MAT_DEF.map(([k])=>`<button class="matbox mb-tap ms-box" data-act="shopmat" data-k="${k}">${img(MATART[k])}<span class="mb-n">${MATS[k]}</span><span class="ms-p">${img('it_gold')}${fmtS(MAT_COST[k][0])}</span></button>`).join('')}</div>
    <div class="small muted center ms-tip">點材料選數量，用金幣或鑽石購買</div></div>
-  <div class="ui-panel panel">${ptitle('道具')}<div class="matgrid">${[REPAIR].map(k=>`<button class="matbox mb-tap ms-box" data-act="shopmat" data-k="${k}">${itemIco(k)}<span class="mb-n">${shopNm(k)}</span><span class="ms-p">${img('it_gold')}${fmtS(MAT_COST[k][0])}</span></button>`).join('')}</div></div>
+  <div class="ui-panel panel">${ptitle('道具')}<div class="matgrid">${[STONE,ENSTONE,REPAIR].map(k=>`<button class="matbox mb-tap ms-box" data-act="shopmat" data-k="${k}">${itemIco(k)}<span class="mb-n">${shopNm(k)}</span><span class="ms-p">${img('it_gold')}${fmtS(MAT_COST[k][0])}</span></button>`).join('')}</div></div>
 `;
 }
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
- {v:'4.83',t:'附魔 5% 奧丁之咒＋矮人解咒石',b:[['brk83','給 1 把中咒測試劍＋3 顆解咒石，打開武器小卡'],['brk83f','下一次附魔一定中奧丁之咒（給三級火屬性劍＋附魔石）'],['brk83s','打開商城看矮人解咒石']]},
+ {v:'4.83',t:'附魔 5% 奧丁之咒＋矮人解咒石、商城賣強化石／附魔石、附魔故事書',b:[['lore83','打開附魔故事書「矮人盜石」'],['brk83','給 1 把中咒測試劍＋3 顆解咒石，打開武器小卡'],['brk83f','下一次附魔一定中奧丁之咒（給三級火屬性劍＋附魔石）'],['brk83s','打開商城看矮人解咒石']]},
  {v:'4.82',t:'三級屬性重抽跳置中確認小卡',b:[['ench81','給 1 把三級火屬性測試劍＋附魔石，打開附魔（按附魔會跳確認小卡）']]},
  {v:'4.80',t:'屬性加成 +3／6／10%、同屬性 −3／6／10%',b:[['res77','給 1-9 用的三級冰／火屬性武器（應 ×1.1／×0.9）、打開附魔表'],['res77i','開火屬性說明小卡（+3%～10%）']]},
  {v:'4.79',t:'型態相剋加成遞增（+12 為 21%）',b:[['race79','列出 +0～+12 相剋加成，並打開 +9 測試劍小卡（相剋應為 12%、下一級 15%）']]},
@@ -2857,6 +2868,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='affopen'){const c={},t=[0,0,0,0];for(let i=0;i<6000;i++){const x=Object.keys(ELEM)[rnd(0,5)],v=weighted([1,2,3],y=>ELEM_TW[y]);c[x]=(c[x]||0)+1;t[v]++}   // v4.44 屬性附魔
     return toast(`附魔 6000 次：${Object.entries(c).map(([x,n])=>ELEM[x].n+' '+n).join('、')}<br>等級：一級 ${t[1]}、二級 ${t[2]}、三級 ${t[3]}（應約 4200／1500／300）`,'ok')}
   if(k==='res77'){const wi=makeWeapon('dev_sword',2,6,[],[{k:'ice',v:3},null,null,null]),wf=makeWeapon('dev_sword',2,6,[],[{k:'fire',v:3},null,null,null]);save();ui.sheet={t:'w',id:wf.id,m:'ench'};render();return toast(`1-9 火焰騎兵：永凍之霜 ×${weakMul(8,wi)}（應 1.1）、滅世之焰 ×${weakMul(8,wf)}（應 0.9）`)}
+  if(k==='lore83'){const w=makeWeapon('dev_sword',2,6,[]);save();ui.sheet={t:'w',id:w.id,m:'ench'};loreOpen('ench');return}
   if(k==='brk83'){const w=makeWeapon('dev_sword',2,6,[],[{k:'broken',v:1},null,null,null]);S.items[REPAIR]=(S.items[REPAIR]|0)+3;save();ui.sheet={t:'w',id:w.id,m:'main'};render();return}
   if(k==='brk83f'){const w=makeWeapon('dev_sword',2,6,[],[{k:'fire',v:3},null,null,null]);S.items[ENSTONE]=(S.items[ENSTONE]|0)+5;S.gold+=5000;DEV.elForce=['broken',0];save();ui.sheet={t:'w',id:w.id,m:'ench'};render();return toast('下一次附魔一定中奧丁之咒')}
   if(k==='brk83s'){ui.sheet=null;ui.result=null;ui.tab='shop';render();scrollTo(0,document.body.scrollHeight);return}
@@ -3089,7 +3101,7 @@ document.addEventListener('click',e=>{
    lock:()=>{const w=W(+d.id);if(w){w.lock=!w.lock;save();toast(w.lock?'已鎖定，這把武器不會被熔解，也不會被登錄圖鑑。':'已取消鎖定。')}render()},eslot:()=>{ui.enchSlot=+d.k;render()},
    collect:()=>{tick();collect(+d.i);render()},collectAll,deliver:()=>deliver(+d.i,+d.id),recall:()=>recall(+d.i),strat:()=>{if(setStrategy(+d.i,d.k))toast('已切換為「'+STRATS[d.k].n+'」');render()},
    melt:()=>{const id=+d.id;if(ui.meltArm!==id){ui.meltArm=id;return render()}ui.meltArm=null;const g=meltCore(id);if(g){snd('melt');toast('熔解完成：'+gotText(g),'ok');ui.sheet=null}render()},meltCheap,
-   enhance:()=>enhance(+d.id),achv:()=>{ui.achV=d.k;render()},lbw:()=>{ui.sheet={t:'lbw',i:+d.i,k:+d.k};render()},fkopen:()=>{ui.sheet={t:'fk',i:+d.i};render();const L=document.querySelector('.lb-tab.on');if(L)L.scrollIntoView({block:'nearest',inline:'center'})},realm:()=>{const k=+d.k;if(k<0||k>1)return;if(k===1&&!rfOpen())return toast(`收復 ${vNo(9)} ${VILLAGES[9].name}後開放約頓海姆`);ui.realm=k;render();scrollTo(0,0)},lbopen:()=>{if(LB_OFF)return;ui.sheet={t:'lb',i:+(d.i??S.villages.findIndex(v=>v.status!=='cleared')-1)};render()},achtab:()=>{ui.achTab=d.k;render()},qtab:()=>{ui.qTab=d.k;render()},qbox:()=>{const r=claimBox(+d.i);if(r){snd('coin');toast('活躍度寶箱：'+rwText(r),'ok')}render()},qsign:()=>{const r=claimSign();if(r){snd('coin');toast('簽到獎勵：'+rwText(r),'ok')}render()},achAll:claimAllAch,autoEnh:()=>autoEnhance(+d.id),enchant:()=>{const w=W(+d.id),e=w&&elemOf(w);if(e&&e.t>=3){snd('enh_warn');ui.result={t:'info',title:'確定要重抽嗎？',html:`<div class="center">這把已經是三級「<b class="elc-${e.k}">${e.tn}</b>」<br>重抽會蓋掉，<b class="t-danger">不能復原</b>。</div>`,acts:btn('確定重抽','enchok',{cls:'btn-danger big',attrs:`data-id="${w.id}" data-s="${+d.s||0}"`}),ok:'取消'};return render()}enchant(+d.id,+d.s)},enchok:()=>{ui.result=null;enchant(+d.id,+d.s)},repair:()=>repair(+d.id),   // v4.82 Mochi：三級重抽跳置中小卡確認（連點時點到外面只會關掉，不會重抽）
+   enhance:()=>enhance(+d.id),achv:()=>{ui.achV=d.k;render()},lbw:()=>{ui.sheet={t:'lbw',i:+d.i,k:+d.k};render()},fkopen:()=>{ui.sheet={t:'fk',i:+d.i};render();const L=document.querySelector('.lb-tab.on');if(L)L.scrollIntoView({block:'nearest',inline:'center'})},realm:()=>{const k=+d.k;if(k<0||k>1)return;if(k===1&&!rfOpen())return toast(`收復 ${vNo(9)} ${VILLAGES[9].name}後開放約頓海姆`);ui.realm=k;render();scrollTo(0,0)},lbopen:()=>{if(LB_OFF)return;ui.sheet={t:'lb',i:+(d.i??S.villages.findIndex(v=>v.status!=='cleared')-1)};render()},achtab:()=>{ui.achTab=d.k;render()},qtab:()=>{ui.qTab=d.k;render()},qbox:()=>{const r=claimBox(+d.i);if(r){snd('coin');toast('活躍度寶箱：'+rwText(r),'ok')}render()},qsign:()=>{const r=claimSign();if(r){snd('coin');toast('簽到獎勵：'+rwText(r),'ok')}render()},achAll:claimAllAch,autoEnh:()=>autoEnhance(+d.id),enchant:()=>{const w=W(+d.id),e=w&&elemOf(w);if(e&&e.t>=3){snd('enh_warn');ui.result={t:'info',title:'確定要重抽嗎？',html:`<div class="center">這把已經是三級「<b class="elc-${e.k}">${e.tn}</b>」<br>重抽會蓋掉，<b class="t-danger">不能復原</b>。</div>`,acts:btn('確定重抽','enchok',{cls:'btn-danger big',attrs:`data-id="${w.id}" data-s="${+d.s||0}"`}),ok:'取消'};return render()}enchant(+d.id,+d.s)},enchok:()=>{ui.result=null;enchant(+d.id,+d.s)},repair:()=>repair(+d.id),lore:()=>loreOpen(d.k),   // v4.82 Mochi：三級重抽跳置中小卡確認（連點時點到外面只會關掉，不會重抽）
    ach:()=>{if(claimAch(d.k))toast('成就獎勵已領取','ok');render()},rclose:()=>{ui.result=null;render()},
    fxskip:()=>{ui.fxDone&&ui.fxDone()},fxclose:()=>{ui.busy=false;render()},backArmory:()=>{ui.sheet=null;ui.enhLast=null;ui.tab='armory';render()},
    uiskinp2:()=>p2Toggle(),
