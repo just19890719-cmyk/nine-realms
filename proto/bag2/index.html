@@ -189,35 +189,35 @@ img{max-width:100%}
  * 正式美術（art/ui/bag2/，Mochi 10/25 生圖）：.b2-app.art 時套用，蓋掉上面的暫代外觀
  * 切片數字＝原圖像素；顯示寬度＝原圖 × 縮放（標在每一行）
  * ===================================================================== */
-.art .b2{border:1px solid transparent;padding:14px 14px 14px;background:#0b111a var(--a-main_tex) center top/cover;
-  border-image:var(--a-main_frame) 72 / 24px stretch}   /* 主框 556 寬，角 72 → 24px；中間不畫，露出底紋 */
+.art .b2{border:1px solid transparent;padding:18px 16px 16px;background:#0b111a var(--a-main_tex) center top/cover;
+  border-image:var(--a-main_frame) 150 / 30px stretch}   /* 主框 737 寬，角飾 150 → 30px；中間不畫，露出底紋 */
 .art .b2-head h2{display:flex;align-items:center;gap:6px;text-shadow:0 1px 0 #000,0 0 8px rgba(0,0,0,.8)}
-.art .b2-head h2::before,.art .b2-head h2::after{content:"";width:44px;height:16px;background:var(--a-title_l) center/contain no-repeat}
+.art .b2-head h2::before,.art .b2-head h2::after{content:"";width:60px;height:13px;background:var(--a-title_l) center/contain no-repeat}
 .art .b2-head h2::after{background-image:var(--a-title_r)}
 .art .b2-cap i{height:6px;background:none;border:1px solid transparent;border-image:var(--a-cap_track) 0 30 fill / 0 4px stretch}
-.art .b2-cap i::after{inset:-1px auto -1px -1px;background:none;border-image:var(--a-cap_fill) 0 30 fill / 0 4px stretch}
+.art .b2-cap i::after{inset:-1px auto -1px -1px;background:none;border-image:var(--a-cap_fill) 0 25 fill / 0 3px stretch}
 .art .b2-rule{height:12px;margin:0;background:var(--a-rule_mid) center/auto 12px no-repeat,var(--a-rule_line) center/100% 12px no-repeat}
-.art .b2-tab{border:1px solid transparent;background:none;border-image:var(--a-tab) 0 48 fill / 0 15px stretch;text-shadow:0 1px 0 #000}   /* 439×131，高 40 → 端 15px */
+.art .b2-tab{border:1px solid transparent;background:none;border-image:var(--a-tab) 0 53 fill / 0 16px stretch;text-shadow:0 1px 0 #000}   /* 579×132，高 40 → 端 16px */
 .art .b2-tab.on{border-image-source:var(--a-tab_on);color:var(--b2-gold-hi)}
 .art .b2-tab:disabled{border-image-source:var(--a-tab_off)}
-.art .b2-cat{border:1px solid transparent;background:none;border-image:var(--a-cat) 44 fill / 11px stretch}   /* 178×176 */
+.art .b2-cat{border:1px solid transparent;background:none;border-image:var(--a-cat) 40 fill / 10px stretch}   /* 190×176 */
 .art .b2-cat.on{border-image-source:var(--a-cat_on)}
 .art .b2-cat img{filter:none;opacity:.72}.art .b2-cat.on img{opacity:1}
-.art .b2-sel select{border:1px solid transparent;background:none;border-image:var(--a-field) 0 50 fill / 0 12px stretch}   /* 614×138，高 34 */
+.art .b2-sel select{border:1px solid transparent;background:none;border-image:var(--a-field) 0 55 fill / 0 13px stretch}   /* 751×138，高 34 */
 .art .b2-sel::after{width:10px;height:10px;right:10px;border:0;transform:translateY(-50%);background:var(--a-ic_chev) center/contain no-repeat}
-.art .b2-cnt button{border:1px solid transparent;background:none;border-image:var(--a-btn_sec) 0 72 fill / 0 15px stretch;color:var(--b2-text)}
+.art .b2-cnt button{border:1px solid transparent;background:none;border-image:var(--a-btn_sec) 0 55 fill / 0 12px stretch;color:var(--b2-text)}
 .art .b2-well{border:1px solid transparent;background:none;padding:10px;border-image:var(--a-sub) 44 fill / 14px stretch}   /* 462×449 */
-.art .b2-sec{align-items:center;min-height:24px;margin:2px -2px 8px;padding:0 6px 0 24px;border:1px solid transparent;border-image:var(--a-sec) 0 170 0 64 fill / 0 62px 0 24px stretch}   /* 463×59，高 24 */
+.art .b2-sec{align-items:center;min-height:24px;margin:2px -2px 8px;padding:0 6px 0 24px;border:1px solid transparent;border-image:var(--a-sec) 0 224 0 50 fill / 0 91px 0 20px stretch}   /* 729×59，高 24 */
 .art .b2-slot{border:0;box-shadow:none;background:var(--a-slot) 0 0/100% 100%}
 .art .b2-slot.empty{background-image:var(--a-slot_empty)}
 .art .b2-slot .rim{inset:0;border:0;background:var(--rim,none) 0 0/100% 100%}
 .art .b2-slot.sel{box-shadow:none}
-.art .b2-slot.sel::after{content:"";position:absolute;inset:-4.6% -4.6%;background:var(--a-sel) 0 0/100% 100%;pointer-events:none}   /* 選取框比格子大 9% */
+.art .b2-slot.sel::after{content:"";position:absolute;inset:-6% -7%;background:var(--a-sel) 0 0/100% 100%;pointer-events:none}   /* 選取框比格子大 9% */
 .art .b2-slot.brk .rim{border:0}
 .art .b2-slot .post,.art .b2-slot .curse{left:0;top:3px;height:15px;padding:0 9px 0 3px;line-height:15px;background:none;border-radius:0;border:1px solid transparent;text-shadow:0 1px 1px #000;
-  border-image:var(--a-tag_post) 0 60 0 20 fill / 0 9px 0 3px stretch}   /* 261×92，高 15 */
+  border-image:var(--a-tag_post) 0 58 0 18 fill / 0 9px 0 3px stretch}   /* 497×92，高 15 */
 .art .b2-slot .curse{border-image-source:var(--a-tag_curse)}
-.art .b2-slot .x{border:1px solid transparent;border-radius:0;background:none;line-height:14px;padding:0 4px;border-image:var(--a-badge) 0 30 fill / 0 5px stretch}   /* 223×81，高 16 */
+.art .b2-slot .x{border:1px solid transparent;border-radius:0;background:none;line-height:14px;padding:0 4px;border-image:var(--a-badge) 0 32 fill / 0 6px stretch}   /* 327×81，高 16 */
 .art .b2-slot .nw{width:11px;height:11px;border-radius:0;background:var(--a-new) center/contain no-repeat;box-shadow:none}
 .art .b2-slot .ph{border:0}
 .art .b2-dock{border:1px solid transparent;background:none;border-image:var(--a-sub) 44 fill / 14px stretch;padding:12px}
@@ -227,9 +227,9 @@ img{max-width:100%}
 .art .b2-tgl::after{width:10px;height:10px;top:auto;bottom:3px;border:0;background:var(--a-ic_chev) center/contain no-repeat;transform:translateX(-50%) rotate(180deg)}
 .art .b2-dock.open .b2-tgl::after{top:auto;transform:translateX(-50%)}
 .art .b2-btn{border:1px solid transparent;background:none;text-shadow:0 1px 1px #000,0 0 4px rgba(0,0,0,.7);
-  border-image:var(--a-btn_sec) 0 72 fill / 0 23px stretch}   /* 610×137，高 44 → 端 23px */
+  border-image:var(--a-btn_sec) 0 55 fill / 0 18px stretch}   /* 高 138，顯示 44 → 端 18px */
 .art .b2-btn.pri{border-image-source:var(--a-btn_pri);color:#ffe7b0}
-.art .b2-btn.dan{border-image:var(--a-btn_dan) 0 72 fill / 0 23px stretch;color:#ffd0c8}
+.art .b2-btn.dan{border-image:var(--a-btn_dan) 0 55 fill / 0 18px stretch;color:#ffd0c8}
 .art .b2-btn:active:not(:disabled){transform:none;filter:none;border-image-source:var(--a-btn_sec_p)}
 .art .b2-btn.pri:active:not(:disabled){border-image-source:var(--a-btn_pri_p)}
 .art .b2-btn.dan:active:not(:disabled){border-image-source:var(--a-btn_dan_p)}
@@ -238,7 +238,7 @@ img{max-width:100%}
 .art .b2-tab .dot{width:12px;height:12px;border-radius:0;background:var(--a-new) center/contain no-repeat}
 .art .b2-slot .glow{left:15%;top:3px}   /* 讓開左上角品質寶石 */
 @media (max-height:720px){
-  .art .b2{padding:10px 10px 10px}.art .b2-tab{border-image-width:0 13px}
+  .art .b2{padding:10px 10px 10px}.art .b2-tab{border-image-width:0 14px}
   .art .b2-well{padding:8px}.art .b2-dock{padding:9px 10px}.art .b2-head{padding-top:0}
   .art .b2-tabs{margin:4px 0 4px}.art .b2-tab{min-height:34px}.art .b2-cat{height:38px}
   .art .b2-acts{margin-top:6px}.art .b2-btn{min-height:40px}
