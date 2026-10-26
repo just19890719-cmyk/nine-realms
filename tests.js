@@ -567,11 +567,15 @@ function withTestBps(f){const keep=BPS.slice(),add=TEST_BPS.filter(b=>!BP[b.id])
 var TEST_LAST=null;
 function runTests0(mode,bd){
   if(mode==='econ')return econHtml(12)+econHtml(8);
-  const r=runAll({N:100000});r.res.push(...bd,...frameLvTests(),...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...storyTests(),...curveTests(),...vNeedTests(),...vPickTests(),...bsTglTests(),...godWordTests(),...hitTests(),...enchTests(),...wsTests(),...wpnTests(),...stackTests(),...uiStableTests());const pass=r.res.filter(x=>x.pass).length;
+  const r=runAll({N:100000});r.res.push(...bd,...frameLvTests(),...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...storyTests(),...curveTests(),...vNeedTests(),...vPickTests(),...bsTglTests(),...godWordTests(),...hitTests(),...enchTests(),...wsTests(),...wpnTests(),...stackTests(),...uiStableTests(),...uiFitTests());const pass=r.res.filter(x=>x.pass).length;
   TEST_LAST={res:r.res,done:true};   // v5.08 統一測試指令（src/tools/run_tests.js）讀這裡的逐項結果
   return `<div><b>${pass}/${r.res.length} 通過</b>（${r.ms} 毫秒）</div>`+resHtml(r.res);
 }
 // v5.08 永久回歸：v5.01～v5.07 修過的道具欄／小卡畫面問題（BUG_HISTORY 同類問題：小卡多一行字就長高、捲動時上方跳、重畫時動畫重播、開小卡時捲軸消失畫面左右跳）
+// v5.15 手機 UI 等比適配：比例公式（規範 V1.0）與排版寬度
+function uiFitTests(){if(typeof getUIScale!=='function')return[];const W=[[320,82.1,390],[360,92.3,390],[375,96.2,390],[390,100,390],[402,103.1,390],[430,110,391],[440,110,400]];
+  const bad=W.filter(([w,p,l])=>Math.abs(getUIScale(w)*100-p)>0.06||uiLayoutW(w)!==l).map(([w])=>w+'px：'+(getUIScale(w)*100).toFixed(1)+'%／排版 '+uiLayoutW(w));
+  return [T('UF1 手機適配比例 360＝92.3%、390＝100%、430 以上上限 110%，360～429 一律用 390 寬排版',!bad.length,bad.length?bad.join('；'):'7 種寬度都正確')]}
 function uiStableTests(){if(typeof document==='undefined'||typeof b2Slot==='undefined')return[];return withSandbox(()=>{const res=[],keep={sheet:ui.sheet,meltArm:ui.meltArm,riskArm:ui.riskArm,riskOk:ui.riskOk,enhV:ui.enhV,tab:ui.tab,atab:ui.atab};
   try{S=sanitize(fresh());const b=(BPS.find(x=>!x.dev)||BPS[0]).id;
   // UI1 奧丁之咒：灰階＋鎖鏈，不再有「咒」字和紅色詛咒框，保留品階框

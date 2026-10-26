@@ -2674,7 +2674,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='5.12';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='5.15';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -5030,6 +5030,7 @@ function viewShop(){
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'5.15',t:'手機 UI 等比適配（第 1 階段，預設關）：以 390 寬排版、最多放大 1.1 倍，360～440 手機版型一致',b:[['uifit','手機適配 開／關'],['uifitinfo','顯示裝置寬、排版寬與比例']]},
  {v:'5.12',t:'畫面穩定永久測試 UI1～UI8；同款多把按熔解不變矮；320 寬不再撐出水平捲動',b:[['uitest','執行畫面穩定測試（UI1～UI8）'],['stk508','給 3 把同款 +0 並打開小卡（按熔解，高度不變）']]},
  {v:'5.11',t:'強化／附魔頁上方的返回、說明、叉叉改回原本圓形圖示',b:[['k2enh','打開強化頁（看上方三顆圓鈕）'],['k2ench','打開附魔頁（看上方三顆圓鈕）']]},
  {v:'5.10',t:'UI 母版延伸第 1 批：武器小卡、強化、附魔改用道具欄的外框、格子、按鈕',b:[['k2pop','打開 +10 武器小卡（看外框、品階框、按鈕）'],['k2enh','打開 +6 強化頁（危險區）'],['k2ench','打開附魔頁']]},
@@ -5302,6 +5303,8 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='eagle86b'){devBps();S.villages.forEach((v,i)=>{if(i<=12)v.status='cleared'});const st=S.villages[12],w=makeWeapon('dev_sword',2,6,[]);st.weaponId=w.id;st.cycleStart=NOW()-dur(12,w)*.3;delete MONFX.hp[12];ui.realm=1;ui.tab='village';ui.sheet=null;ui.bsOpen=12;save();render();setTimeout(()=>document.querySelectorAll('#view .vcard')[2]?.scrollIntoView({block:'start'}),50);return}
   if(k==='eagle86'){S.villages.forEach((v,i)=>{if(i<12&&v.status==='locked')v.status='cleared'});if(S.villages[12].status==='locked')S.villages[12].status='open';ui.realm=1;ui.tab='village';ui.sheet={t:'v',i:12};render();return}
   if(k==='stk508'){const b=(BPS.find(x=>!x.dev&&!x.unlock)||BPS[0]);const ws=[0,1,2].map(()=>makeWeapon(b.id,0,0));save();ui.tab='armory';ui.atab='w';ui.meltArm=null;ui.sheet={t:'w',id:ws[0].id,m:'main'};render();return toast('已給 3 把同款 +0：按「熔解」，小卡高度不能變（375 寬也一樣）','ok')}   // v5.08
+  if(k==='uifit'||k==='uifitinfo'){if(k==='uifit'){try{localStorage.setItem(UIFIT_KEY,uiFitOn()?'0':'1')}catch(e){}uiFit()}   // v5.15 手機等比適配開關
+    toast(`手機適配：${uiFitOn()?'開':'關'}｜裝置寬 ${uiDevW()}px → 排版寬 ${innerWidth}px，比例 ${Math.round((uiFitOn()?getUIScale(uiDevW()):1)*1000)/10}%`+(/fit/.test(location.hash)?'（網址有 #fit，固定開）':''),'ok');return}
   if(k==='uitest'){if(typeof uiStableTests!=='function'){const sc=document.createElement('script');sc.src='tests.js?v='+BUILD_ID;sc.charset='utf-8';sc.onload=()=>devdo(k);sc.onerror=()=>toast('測試程式沒有載入。');document.head.appendChild(sc);return}
     const r=uiStableTests(),bad=r.filter(x=>!x.pass);render();return toast(`畫面穩定測試 ${r.length-bad.length}/${r.length} 通過${bad.length?'：'+bad.map(x=>x.name.split(' ')[0]).join('、'):''}`,bad.length?'':'ok')}   // v5.08
   if(k==='brkstk'){[0,1,2].forEach(j=>makeWeapon('dev_sword',2,6,[],[j?null:{k:'broken',v:1},null,null,null]));save();ui.sheet=null;ui.tab='armory';ui.atab='w';render();return toast('已給 3 把 +6 測試劍：2 把疊成 ×2、1 把奧丁之咒自己一格','ok')}
@@ -5452,6 +5455,17 @@ function fitNames(){const els=[...document.querySelectorAll('.wt-name')];if(!els
   const base=parseFloat(getComputedStyle(m[0][0]).fontSize)||14;m.forEach(([el,r])=>{el.style.fontSize=Math.max(11,Math.floor(base*r*2)/2)+'px'});
   m.forEach(([el])=>{let f=parseFloat(el.style.fontSize);if(el.scrollWidth>el.clientWidth+.5&&f>11)el.style.fontSize=Math.max(11,f-1)+'px'})}
 if(typeof window!=='undefined')window.addEventListener('resize',()=>fitNames());
+// v5.15 手機 UI 等比適配（規範 V1.0）：以 390 寬排版，交給手機瀏覽器原生等比縮放（上限 1.1 倍）；觸控座標、固定定位、安全區都由瀏覽器處理
+// 第 1 階段只在開發者工具打開（或網址加 #fit）才生效；存在這台裝置的 localStorage，不進存檔。桌機瀏覽器不吃 viewport，維持原樣
+const UI_BASE=390,UI_MAX=1.1,UIFIT_KEY='nr_uifit',VP_DEF='width=device-width,initial-scale=1,viewport-fit=cover';
+function getUIScale(dw){return Math.min(dw/UI_BASE,UI_MAX)}
+function uiLayoutW(dw){return Math.round(dw/getUIScale(dw))}   // 360～429 → 390；430 以上 → 裝置寬÷1.1（440→400）
+function uiFitOn(){try{return localStorage.getItem(UIFIT_KEY)==='1'||/fit/.test(location.hash)}catch(e){return false}}
+function uiDevW(){const a=screen.width,b=screen.height,port=screen.orientation?/portrait/.test(screen.orientation.type):matchMedia('(orientation:portrait)').matches;return port?Math.min(a,b):Math.max(a,b)}   // iOS 橫向時 screen 不互換，取短邊／長邊
+function uiFit(){const m=document.querySelector('meta[name=viewport]');if(!m)return;const on=uiFitOn(),dw=uiDevW(),sc=on?getUIScale(dw):1;
+  const c=on?`width=${uiLayoutW(dw)},initial-scale=${sc.toFixed(4)},viewport-fit=cover`:VP_DEF;if(m.getAttribute('content')!==c)m.setAttribute('content',c);
+  document.documentElement.style.setProperty('--ui',sc.toFixed(4));document.documentElement.classList.toggle('uifit',on)}
+if(typeof window!=='undefined'){uiFit();addEventListener('orientationchange',()=>setTimeout(uiFit,200));addEventListener('resize',()=>{if(uiFitOn())uiFit()})}
 function renderLayer(){stkFollow();
   const L=document.getElementById('layer');const s=ui.sheet;let h='';
   const sc=document.querySelector('.sheet'),st=sc?sc.scrollTop:0,same=sc&&ui._lastSheet===JSON.stringify(s),keep=same||sc&&s&&s.t==='w'&&ui._lastSheetW===s.id;   // v4.91 同一把武器的小卡切換（武器⇄強化⇄附魔）不重播彈出動畫
