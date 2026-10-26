@@ -525,7 +525,7 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.44 舊武器刪除：要在放回測試資料前檢查
-  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),...sh2Tests(),...q2Tests(),...s2Tests(),...m2Tests(),...cx2Tests(),...v2Tests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
+  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),...sh2Tests(),...q2Tests(),...s2Tests(),...m2Tests(),...cx2Tests(),...v2Tests(),...v3Tests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
     T('BD2 神明材質階、神格覺醒拿掉',TIERS.length===5&&typeof GOD==='undefined'&&typeof awkN==='undefined',`材質 ${TIERS.length} 階`)];
   return withTestBps(()=>runTests0(mode,bd))}
 // v4.44 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
@@ -789,6 +789,24 @@ function v2Tests(){const tab0=ui.tab,sh0=ui.sheet,r0=ui.result,y0=scrollY,vs0=JS
     out.push(T('V2 村莊詳情沒有左右多出一截',document.documentElement.scrollWidth<=innerWidth,`頁寬 ${document.documentElement.scrollWidth}／視窗 ${innerWidth}`));
     return out}
   catch(e){return[T('V2 村莊詳情母版測試',false,e.message)]}finally{S.villages[0]=JSON.parse(vs0);S.weapons.length=wn0;S.nextId=ni0;ui.sheet=sh0;ui.result=r0;ui.tab=tab0;render();scrollTo(0,y0)}}
+function v3Tests(){const tab0=ui.tab,sh0=ui.sheet,r0=ui.result,y0=scrollY,rl0=ui.realm,bo0=ui.bsOpen,vs0=JSON.stringify(S.villages.slice(0,3)),wn0=S.weapons.length,ni0=S.nextId;
+  try{const out=[],bis=e=>getComputedStyle(e).borderImageSource,bs=BPS.filter(x=>!x.dev&&!x.unlock);
+    [0,1,2].forEach(i=>{if(S.villages[i].weaponId!=null)recallCore(i)});S.villages[0].status='open';S.villages[1].status='locked';S.villages[2].status='locked';makeWeapon(bs[0].id,0,6);
+    ui.result=null;ui.sheet=null;ui.realm=0;ui.bsOpen=null;ui.tab='village';render();const L=()=>document.querySelector('#view .vlist.v3');
+    const old=e=>e?[...e.querySelectorAll('*')].filter(x=>/ui491_|ui493_/.test(bis(x)+getComputedStyle(x).backgroundImage)).length:-1;
+    const nb=e=>e?[...e.querySelectorAll('.ui-btn.btn:not(.ui-btn--icon)')].filter(x=>!/bag2_btn/.test(bis(x))).length:-1;
+    let l=L(),nx=l&&l.querySelector('.vcard.next'),tg=nx&&nx.querySelector('.next-tag'),lk=l&&l.querySelector('.vlocked'),bar=document.querySelector('#view .vbar.v3');
+    out.push(T('V3 村莊頁：下一個挑戰＝高亮橫列卡＋古銅緞帶、上鎖＝暗灰橫列卡、按鈕都是道具欄按鈕，沒有舊框',!!nx&&/bag2_row_on/.test(bis(nx))&&!!tg&&/bag2_tag_next/.test(bis(tg))&&!!lk&&/bag2_row_lock/.test(bis(lk))&&!!bar&&nb(bar)===0&&nb(l)===0&&old(l)===0&&old(bar)===0,`下一個挑戰 ${nx?'有':'無'}；緞帶 ${tg?'有':'無'}；上鎖 ${lk?'有':'無'}；非 bag2 按鈕 ${nb(bar)+nb(l)}；舊框 ${old(l)+old(bar)}`));
+    const w=S.weapons.find(x=>x.b===bs[0].id&&where(x)<0);deliverCore(0,w.id);S.villages[0].status='cleared';S.villages[1].status='open';const w2=makeWeapon(bs[1].id,0,4);deliverCore(1,w2.id);S.villages[1].status='cleared';S.villages[2].status='open';
+    S.villages[0].cycleStart-=dur(0,w)*3+10;tick();render();l=L();
+    const cards=l?[...l.querySelectorAll('.vcard')]:[],rd=cards.find(e=>e.querySelector('.harvest-btn')),hunt=cards.find(e=>!e.querySelector('.harvest-btn')&&e.querySelector('.hpbar'));
+    const hb=rd&&rd.querySelector('.harvest-btn'),hp=rd&&rd.querySelector('.hpbar'),fill=hp&&hp.querySelector('i[data-vhp]'),wc=rd&&rd.querySelector('.wchip');
+    out.push(T('V3 駐守中：可收成卡＝高亮、狩獵中卡＝一般橫列卡、收成鈕＝道具欄主按鈕、血條＝道具欄外框＋填充、武器＝膠囊',!!rd&&/bag2_row_on/.test(bis(rd))&&!!hunt&&/bag2_row\.webp/.test(bis(hunt))&&!!hb&&/bag2_btn_pri/.test(bis(hb))&&!!hp&&/bag2_hp_frame/.test(bis(hp))&&!!fill&&/bag2_hp_fill/.test(bis(fill))&&!!wc&&/bag2_chip/.test(bis(wc)),`可收成 ${rd?'有':'無'}；狩獵中 ${hunt?'有':'無'}；收成鈕 ${hb?'有':'無'}；血條 ${hp?'有':'無'}`));
+    const cut=l?[...l.querySelectorAll('.ui-btn,.harvest-btn,.next-tag')].filter(e=>e.scrollWidth>e.clientWidth+1).length:-1,lr=l&&l.getBoundingClientRect(),ov=l?[...l.querySelectorAll('.vcard,.vlocked,.vcard .ui-btn,.harvest-btn')].filter(e=>{const q=e.getBoundingClientRect();return q.right>lr.right+1||q.left<lr.left-1}).length:-1;
+    const hin=hp&&fill?fill.getBoundingClientRect().right<=hp.getBoundingClientRect().right+.5:false;
+    out.push(T('V3 村莊頁按鈕、緞帶的字沒有超出，卡片沒有超出清單，血條填滿時不超出外框',cut===0&&ov===0&&hin&&document.documentElement.scrollWidth<=innerWidth,`寬 ${innerWidth}：字超出 ${cut}；元素超出 ${ov}；血條 ${hin?'在框內':'超出'}；頁寬 ${document.documentElement.scrollWidth}`));
+    return out}
+  catch(e){return[T('V3 村莊列表頁母版測試',false,e.message)]}finally{JSON.parse(vs0).forEach((v,i)=>S.villages[i]=v);S.weapons.length=wn0;S.nextId=ni0;ui.realm=rl0;ui.bsOpen=bo0;ui.sheet=sh0;ui.result=r0;ui.tab=tab0;render();scrollTo(0,y0)}}
 function cx2Tests(){const tab0=ui.tab,at0=ui.atab,cs0=ui.cxs,sh0=ui.sheet,r0=ui.result,y0=scrollY,cx0=JSON.stringify(S.codex||{}),wn0=S.weapons.length;
   try{const out=[],bis=e=>getComputedStyle(e).borderImageSource,bs=cxBps();S.codex={};S.codex[bs[0].id]=[1,1,0];const tw=makeWeapon(bs[1].id,0,6);
     ui.sheet=null;ui.result=null;ui.tab='armory';ui.atab='c';ui.cxs='w';render();const c=document.querySelector('#view .cx2');
