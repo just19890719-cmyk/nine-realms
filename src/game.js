@@ -254,11 +254,11 @@ const bossCands=()=>S.weapons.filter(w=>!w.test&&bossSlotOf(w)<0);
 const bossDot=()=>!BOSS_OFF&&(evtSt().slots.some(x=>!x)&&bossCands().length>0||bossStageN()>0||!!bossRankTier());
 // v3.70 每日任務（每天 0 點換日，進度＝今天的統計增加量）＋活躍度寶箱＋7 日簽到
 const DAILY=[
-  {id:'login',n:'今天登入遊戲',pt:10,m:1,ic:'ic_check',p:()=>1},
-  {id:'harv',n:'村莊收成 5 輪',pt:20,m:5,ic:'it_gold',p:()=>S.stats.harvest-S.daily.b.harvest},
-  {id:'forge',n:'鍛造 3 把武器',pt:20,m:3,ic:'nav_forge',p:()=>forgedN()-S.daily.b.forged},
-  {id:'enh',n:'強化武器 5 次',pt:25,m:5,ic:'mat_rune',p:()=>S.stats.enhTry-S.daily.b.enhTry},
-  {id:'melt',n:'熔解 1 把武器',pt:25,m:1,ic:'mat_shard',p:()=>S.stats.melted-S.daily.b.melted}
+  {id:'login',n:'今天登入遊戲',pt:10,m:1,ic:'ui/bag2/bag2_q_login',p:()=>1},
+  {id:'harv',n:'村莊收成 5 輪',pt:20,m:5,ic:'ui/bag2/bag2_q_harvest',p:()=>S.stats.harvest-S.daily.b.harvest},
+  {id:'forge',n:'鍛造 3 把武器',pt:20,m:3,ic:'ui/bag2/bag2_q_forge',p:()=>forgedN()-S.daily.b.forged},
+  {id:'enh',n:'強化武器 5 次',pt:25,m:5,ic:'ui/bag2/bag2_q_enhance',p:()=>S.stats.enhTry-S.daily.b.enhTry},
+  {id:'melt',n:'熔解 1 把武器',pt:25,m:1,ic:'ui/bag2/bag2_q_melt',p:()=>S.stats.melted-S.daily.b.melted}
 ];
 const DAILY_BOX=[[40,()=>({gold:200+200*cleared()})],[70,()=>({gold:500+300*cleared()})],[100,()=>({gems:30})]];   // v4.43 舊道具、材料刪除，改金幣和鑽石
 const SIGN=[{gold:1000},{gold:1500},{gems:30},{gems:50},{gold:3000},{gems:50},{gems:100}];
@@ -334,7 +334,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='5.18';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='5.20';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1318,6 +1318,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'5.20',d:'10/26',t:'任務換上道具欄同款外觀',b:['任務小卡的外框、頁籤、每日任務、活躍度寶箱、委託成就，都改成跟道具欄同一套煤黑古銅','每日任務換上新的任務圖示，活躍度寶箱換上 1～3 階寶箱圖，已領取的寶箱蓋上印記','任務內容、活躍度、獎勵都沒有改'],g:[]},
  {v:'5.18',d:'10/26',t:'裂縫呼吸燈不再小閃一下',b:['+9 以上武器的裂縫呼吸燈、小卡跑框，手機卡頓時不會再往前跳、小閃一下'],g:[]},
  {v:'5.17',d:'10/26',t:'商城換上道具欄同款外觀',b:['商城的外框、月卡、七日簽到、材料和道具格子，都改成跟道具欄同一套煤黑古銅','簽到的「今天」改用金色光框，已簽到的那天蓋上印記','價格、獎勵、購買方式都沒有改'],g:['shop']},
  {v:'5.15',d:'10/26',t:'存檔白畫面、紅點重閃修正',b:['存檔資料不完整時，遊戲會自動補回預設值，不會再整個白畫面','提示紅點、收成按鈕的呼吸燈不會再一直重新閃'],g:[]},
@@ -2615,7 +2616,7 @@ function claimAllAch(){let n=0,got={};ACH.forEach(a=>{if(!S.ach[a.id]&&a.test()&
 // v3.70 每日任務（活躍度寶箱）與七日簽到
 function viewDaily(){const pts=dailyPts();
   const box=DAILY_BOX.map(([need,rf],i)=>{const got=S.daily.box.includes(i),rd=boxReady(i),r=rf();
-    return `<div class="dq-box ${got?'done':rd?'ready':''}"><div class="dq-need">活躍 ${need}</div><div class="dq-rws">${Object.entries(r).map(([k,n])=>`<span class="ach-rw">${img(rwIcon(k))}<b>×${fmtS(n)}</b></span>`).join('')}</div>${btn(got?'已領取':rd?'領取':'未達成','qbox',{cls:(rd?'btn-primary':'btn-sec')+' sm',attrs:`data-i="${i}"`,dis:!rd})}</div>`}).join('');
+    return `<div class="dq-box ${got?'done':rd?'ready':''}">${img('ui/bag2/bag2_chest'+(i+1),'dq-chest')}${got?'<i class="sg-stamp dq-stamp"></i>':''}<div class="dq-need">活躍 ${need}</div><div class="dq-rws">${Object.entries(r).map(([k,n])=>`<span class="ach-rw">${img(rwIcon(k))}<b>×${fmtS(n)}</b></span>`).join('')}</div>${btn(got?'已領取':rd?'領取':'未達成','qbox',{cls:(rd?'btn-primary':'btn-sec')+' sm',attrs:`data-i="${i}"`,dis:!rd})}</div>`}).join('');
   return `<div class="dq-sum"><div class="dq-pts"><span class="small muted">今日活躍度</span><b>${pts}</b><span class="small muted">／100</span></div><div class="dq-track"><div class="prog ui-prog"><i style="width:${pts}%"></i></div>${DAILY_BOX.map(([n])=>`<span class="dq-mk ${pts>=n?'on':''}" style="left:${n}%"></span>`).join('')}</div></div>
    <div class="dq-boxes">${box}</div>
    <div class="dq-list">${DAILY.map(q=>{const c=dailyP(q),ok=c>=q.m;return `<div class="dq-row ${ok?'done':''}">${img(q.ic,'dq-ic')}<div class="grow"><div class="dq-t"><b>${q.n}</b><span class="small">${ok?'完成':c+'／'+q.m}</span></div><i class="cb-bar"><i style="width:${c/q.m*100}%"></i></i></div><span class="dq-pt">+${q.pt}</span></div>`}).join('')}</div>
@@ -2626,9 +2627,9 @@ function viewSign(){const rd=signReady(),cur=rd?S.sign.n%SIGN.length:S.sign.n-1;
    ${btn(rd?`簽到領取第 ${cur+1} 天獎勵`:'今天已簽到，明天再來','qsign',{cls:(rd?'btn-primary':'btn-sec')+' big',dis:!rd})}
    <div class="small muted center">漏簽不會歸零；第 7 天領完後從第 1 天重新開始。</div>`}
 function sheetAch(){const v=ui.achV||'A',nDone=ACH.filter(a=>S.ach[a.id]).length,nReady=ACH.filter(a=>achSt(a)==='ready').length;
-  const qd=(n)=>n?`<i class="dot">${n}</i>`:'',qt=ui.qTab||'d';
+  const qt=ui.qTab||'d';
   const head=`<div class="sheet-head"><span style="width:44px"></span><h2>任務</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img'})}</div>
-   <div class="subtabs ach-tabs q-tabs">${[['d','每日任務',boxReadyN()],['o','委託成就',nReady]].map(([k,n,c])=>`<button class="ui-tab ${qt===k?'on':''}" data-act="qtab" data-k="${k}">${n}${qd(c)}</button>`).join('')}</div>`;
+   <div class="b2-tabs q2-tabs">${[['d','每日任務',boxReadyN()],['o','委託成就',nReady]].map(([k,n,c])=>`<button class="b2-tab ${qt===k?'on':''}" data-act="qtab" data-k="${k}">${n}${c?`<i class="q2-cnt">${c}</i>`:''}</button>`).join('')}</div>`;   // v5.20 換成道具欄頁籤；數字提醒用 B-03 紅圓
   if(qt==='d')return head+viewDaily();
   const pick=devMode()?`<div class="ach-vpick"><span class="small muted">版型預覽</span>${['O','A','B','C','D'].map(k=>`<button class="ui-btn ui-btn--chip chipbtn ${v===k?'on':''}" data-act="achv" data-k="${k}">${k==='O'?'原版':k}</button>`).join('')}</div>`:'';
   const sum=`<div class="ach-sum"><div><b>${nDone}</b><span class="small muted">／${ACH.length} 已領取</span></div><div class="grow small muted">免費鑽石</div>${btn(nReady?`一鍵領取（${nReady}）`:'沒有可領取','achAll',{cls:(nReady?'btn-primary':'btn-sec')+' sm',dis:!nReady})}</div>`;
@@ -2698,6 +2699,7 @@ function viewShop(){   // v5.17 換成道具欄母版（.b2）：主框、次面
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'5.20',t:'任務小卡換成道具欄母版（主框、頁籤、寶箱、任務橫列卡、成就橫列卡）',b:[['q520','打開每日任務（第 1 箱已領、第 2 箱可領）'],['q520o','打開委託成就（有 1 項可領取）']]},
  {v:'5.18',t:'+9 裂縫呼吸燈、小卡跑框改用動畫時間軸對齊，卡頓時不再跳',b:[['bag96','產生 +0～+12 武器並打開道具欄（看 +9 以上裂縫連續呼吸）'],['k2pop','打開 +10 武器小卡（看跑框連續轉）']]},
  {v:'5.17',t:'商城換成道具欄母版（次面板、橫列卡、物品格、今天光框、已領取印記）',b:[['sh517','打開商城（今天可簽到）'],['sh517d','打開商城（月卡已領、今天已簽到）']]},
  {v:'5.15',t:'兩個穩定度修正：壞存檔不白畫面、紅點呼吸不重閃',b:[['dot508','紅點呼吸不重閃：產生可交付武器＋收成，開村莊頁看紅點連續呼吸'],['badsave','壞存檔測試：存一份缺欄位的存檔後重新整理（應該正常進遊戲，不會白畫面）']]},
@@ -2873,6 +2875,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='cpull'){cloudPull().then(()=>toast('已從雲端下載','ok')).catch(e=>toast('下載失敗：'+SB_ERR(e.message),'bad'));return}
   if(k==='clogout'){ui.sheet=null;return cloudLogout()}
   if(k==='maintprev'){ui.sheet=null;render();return showMaint(null,true)}
+  if(k==='q520'||k==='q520o'){ui.result=null;dailyRoll();const b=S.daily.b;b.harvest=S.stats.harvest-5;b.forged=forgedN()-3;b.enhTry=S.stats.enhTry-5;S.daily.box=[0];if(k==='q520o'){S.stats.harvest=Math.max(S.stats.harvest,100);b.harvest=S.stats.harvest-5;delete S.ach.h100}ui.qTab=k==='q520'?'d':'o';ui.sheet={t:'a'};save();return render()}
   if(k==='sh517'||k==='sh517d'){ui.sheet=null;ui.result=null;ui.tab='shop';if(k==='sh517'){S.sign.last=''}else{if(!monthlyOn())S.monthly.until=NOW()+30*864e5;S.monthly.last=today();S.sign.last=today()}save();scrollTo(0,0);return render()}
   if(k==='mk514'||k==='mk514m'){ui.sheet=null;ui.tab='market';MK.tab=k==='mk514m'?'mine':'buy';mkLoad();scrollTo(0,0);return render()}
   if(k==='mkopen'){ui.sheet=null;ui.tab='market';mkLoad();return render()}
@@ -3135,7 +3138,7 @@ if(typeof window!=='undefined')window.addEventListener('resize',()=>fitNames());
 function renderLayer(){stkFollow();
   const L=document.getElementById('layer');const s=ui.sheet;let h='';
   const sc=document.querySelector('.sheet'),st=sc?sc.scrollTop:0,same=sc&&ui._lastSheet===JSON.stringify(s),keep=same||sc&&s&&s.t==='w'&&ui._lastSheetW===s.id;   // v4.91 同一把武器的小卡切換（武器⇄強化⇄附魔）不重播彈出動畫
-  if(s){const pop=s.t==='w'&&((s.m==='main'||s.m==='ench')&&!!W(s.id)||s.m==='enh'),full=!pop&&(s.t==='w'||s.t==='fxt');h+=`<div class="scrim ${pop?'wpopc':''} ${keep?'still':''}" data-act="scrim"><div class="ui-sheet sheet ${full?'full':''} ${pop?'wpop k2':''} ${s.t==='chat'?'cx-sheet':''} ${keep?'still':''}">${s.t==='w'?sheetWeapon(s.id,s.m):s.t==='v'?sheetVillage(s.i):s.t==='ch'&&ui.ch?sheetCh():s.t==='chr'&&ui.chr?sheetChr():s.t==='a'?sheetAch():s.t==='fk'?sheetFk(s.i):s.t==='lb'?sheetLb(s.i):s.t==='lbw'?sheetLbW(s.i,s.k):s.t==='ws'?sheetWorkshop(s.k):s.t==='evt'?sheetEvt():s.t==='chat'?sheetChat():s.t==='gd'?sheetGuild():s.t==='fr'?sheetFriend():s.t==='bw'?sheetBossW(s.r,s.j):s.t==='fxt'?sheetFxTest(s):s.t==='set'?sheetSet(s.k):/^mk/.test(s.t)?sheetMk(s):sheetDev()}</div></div>`}
+  if(s){const pop=s.t==='w'&&((s.m==='main'||s.m==='ench')&&!!W(s.id)||s.m==='enh'),full=!pop&&(s.t==='w'||s.t==='fxt');h+=`<div class="scrim ${pop?'wpopc':''} ${keep?'still':''}" data-act="scrim"><div class="ui-sheet sheet ${full?'full':''} ${pop?'wpop k2':''} ${s.t==='a'?'q2':''} ${s.t==='chat'?'cx-sheet':''} ${keep?'still':''}">${s.t==='w'?sheetWeapon(s.id,s.m):s.t==='v'?sheetVillage(s.i):s.t==='ch'&&ui.ch?sheetCh():s.t==='chr'&&ui.chr?sheetChr():s.t==='a'?sheetAch():s.t==='fk'?sheetFk(s.i):s.t==='lb'?sheetLb(s.i):s.t==='lbw'?sheetLbW(s.i,s.k):s.t==='ws'?sheetWorkshop(s.k):s.t==='evt'?sheetEvt():s.t==='chat'?sheetChat():s.t==='gd'?sheetGuild():s.t==='fr'?sheetFriend():s.t==='bw'?sheetBossW(s.r,s.j):s.t==='fxt'?sheetFxTest(s):s.t==='set'?sheetSet(s.k):/^mk/.test(s.t)?sheetMk(s):sheetDev()}</div></div>`}
   const r=ui.result;
   if(r&&r.t==='h')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card">${ptitle(r.title)}${r.ev?`<div class="small t-danger center">其中 ${r.ev} 輪受襲：沒有材料、金幣減半</div>`:''}<div class="hgrid">${harvestIcons(r.got)}</div>${btn('確定','rclose',{cls:'btn-primary big'})}</div></div>`;
   if(r&&r.t==='info')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card">${r.ico?`<div class="info-ico">${r.ico}</div>`:r.icon?`<div class="info-ico">${img(r.icon)}</div>`:''}${ptitle(r.title)}<div class="info-body">${r.html}</div>${r.acts||''}${btn(r.ok||'知道了','rclose',{cls:r.ok?'btn-sec big':'btn-primary big'})}</div></div>`;

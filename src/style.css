@@ -2219,4 +2219,54 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 /* v5.17 外框本身比 310px 窄（320～340 寬手機、或被放進窄容器）時再縮一級，名字和獎勵數字才不會被切 */
 .sh2{container-type:inline-size}
 @container (max-width:310px){.sh2 .matbox .mb-n{font-size:9px;letter-spacing:-.06em}.sh2 .matbox.ms-box:not(#_){border-width:3px;border-image-width:3px}.sh2 .sg-day .ach-rw b{font-size:10px;letter-spacing:-.04em}.sh2 .sg-day .ach-rw:not(#_){padding:1px 2px;gap:0}.sh2 .sg-day .ach-rw img{width:11px;height:11px}.sh2 .sg-day:not(#_){border-width:4px;border-image-width:4px}}
+/* ===== v5.20 任務小卡換成道具欄母版（排程 2-3）：外框／標題同武器小卡 .k2；頁籤＝bag2_tab；寶箱格＝bag2_sub＋B-02 寶箱；任務、成就＝bag2_row 橫列卡；進度條＝bag2_cap；只在 .q2 底下 ===== */
+.sheet.q2:not(#_){border:1px solid transparent;border-radius:0;border-image:url(art/ui/bag2/bag2_main_frame.webp) 150 / 24px stretch;
+  background:linear-gradient(#555,#555),url(art/ui/bag2/bag2_main_tex.webp) center top/cover no-repeat,#0b0d10;background-blend-mode:color-dodge,normal,normal;
+  padding:22px 18px 16px;box-shadow:0 12px 40px rgba(0,0,0,.8);color:var(--b2-text)}
+.q2 .sheet-head:not(#_){background:transparent;box-shadow:none;border:0}
+.q2 .sheet-head h2{display:flex;align-items:center;gap:6px;font-size:20px;letter-spacing:.12em;white-space:nowrap;color:var(--b2-gold-hi)}
+.q2 .sheet-head h2::before,.q2 .sheet-head h2::after{content:"";width:30px;height:9px;background:url(art/ui/bag2/bag2_title_l.webp) center/contain no-repeat}
+.q2 .sheet-head h2::after{background-image:url(art/ui/bag2/bag2_title_r.webp)}
+.q2-tabs{grid-template-columns:repeat(2,minmax(0,1fr));margin:2px 0 10px}
+.q2-tabs .b2-tab{min-height:42px}
+.q2-cnt{position:absolute;top:-6px;right:-4px;min-width:22px;height:22px;padding:0 4px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;background:url(art/ui/bag2/bag2_count.webp) center/100% 100% no-repeat;color:#fff;font:700 11px/1 var(--sans,system-ui);font-style:normal;letter-spacing:0;text-shadow:0 1px 1px #000}
+/* 進度條：道具欄容量條 */
+.q2 .prog:not(#_){height:10px;border:0 solid transparent;border-radius:0;background:none;box-shadow:none;overflow:visible;border-image:url(art/ui/bag2/bag2_cap_track.webp) 0 30 fill / 0 6px stretch}
+.q2 .prog i:not(#_){height:100%;border:0 solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_cap_fill.webp) 0 25 fill / 0 5px stretch}
+/* 活躍度摘要、寶箱格：次面板 */
+.q2 .dq-sum:not(#_),.q2 .ach-sum:not(#_){border:12px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_sub.webp) 44 fill / 12px stretch;padding:0 4px}
+.q2 .dq-pts b,.q2 .ach-sum b{color:var(--b2-gold-hi)}
+.q2 .dq-pts .small,.q2 .ach-sum .small{color:var(--b2-mute)}
+.q2 .dq-mk:not(#_){width:16px;height:8px;margin:-4px 0 0 -8px;border:0;border-radius:0;background:url(art/ui/bag2/bag2_rule_mid.webp) center/contain no-repeat;filter:grayscale(1) brightness(.55)}
+.q2 .dq-mk:last-child:not(#_){margin-left:-14px}
+.q2 .dq-mk.on:not(#_){filter:none}
+.q2 .dq-box:not(#_){position:relative;border:10px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_sub.webp) 44 fill / 10px stretch;padding:0 2px 2px;gap:4px}
+.q2 .dq-box.done:not(#_){opacity:1}
+.q2 .dq-box.done>:not(.dq-stamp){opacity:.55}
+.q2 .dq-box.ready::after{content:"";position:absolute;inset:-14px;pointer-events:none;border:14px solid transparent;border-image:url(art/ui/bag2/bag2_today.webp) 30 / 14px stretch}
+.q2 .dq-chest{width:44px;height:36px;object-fit:contain;filter:drop-shadow(0 2px 2px #000)}
+.q2 .dq-stamp{right:-6px;top:-6px;width:24px;height:24px}
+.q2 .dq-need{color:var(--b2-mute)}
+.q2 .ach-rw:not(#_){border:1px solid transparent;border-image:url(art/ui/bag2/bag2_badge.webp) 0 32 fill / 0 6px stretch;border-radius:0;background:none;box-shadow:none;padding:1px 6px;color:var(--b2-num);gap:2px}
+.q2 .ach-rw img{width:16px;height:16px}.q2 .ach-rw b{font-size:12px}
+/* 每日任務、委託成就：橫列卡（完成／可領取＝亮的那張） */
+.q2 .dq-row:not(#_),.q2 .ach-a:not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_row.webp) 32 fill / 16px stretch}
+.q2 .dq-row:not(#_){padding:8px 12px 8px 10px}
+.q2 .ach-a:not(#_){padding:10px 12px 10px 10px}
+.q2 .dq-row.done:not(#_),.q2 .ach-a.ready:not(#_){border-image-source:url(art/ui/bag2/bag2_row_on.webp)}
+.q2 .ach-a.done:not(#_){opacity:.6}
+.q2 .dq-ic{width:34px;height:34px;filter:drop-shadow(0 1px 2px #000)}
+.q2 .dq-t .small,.q2 .ach-bar .small{color:var(--b2-mute)}
+.q2 .dq-row.done .dq-t .small{color:#9fd08a}
+.q2 .dq-pt{color:var(--b2-gold-hi)}
+.q2 .ach-ic:not(#_){border:6px solid transparent;border-radius:0;background:none;border-image:url(art/ui/bag2/bag2_slot.webp) 40 fill / 6px stretch;box-sizing:border-box;width:50px;height:50px}
+.q2 .ach-a .t-ok{color:#9fd08a}
+.q2 .small.muted.center{color:var(--b2-mute)}
+/* 按鈕：道具欄按鈕（跟交易所、商城同一套） */
+.q2 .ui-btn.btn:not(.ui-btn--icon):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_btn_sec2.webp) 0 70 fill / 0 19px stretch;color:var(--b2-text)}
+.q2 .ui-btn.btn:not(.ui-btn--icon):active:not(:disabled):not(#_){border-image-source:url(art/ui/bag2/bag2_btn_sec2_p.webp)}
+.q2 .ui-btn--primary.btn:not(.ui-btn--icon):not(#_){border-image:url(art/ui/bag2/bag2_btn_pri.webp) 0 55 fill / 0 16px stretch;color:#ffe7b0}
+.q2 .ui-btn--primary.btn:not(.ui-btn--icon):active:not(:disabled):not(#_){border-image-source:url(art/ui/bag2/bag2_btn_pri_p.webp)}
+.q2 .ui-btn.btn:not(.ui-btn--icon):disabled:not(#_){border-image:url(art/ui/bag2/bag2_btn_off2.webp) 0 70 fill / 0 19px stretch;color:var(--b2-dim);opacity:1;filter:none}
+@media (max-width:400px){.sheet.q2:not(#_){padding:20px 14px 14px}.q2 .dq-box:not(#_){border-width:7px;border-image-width:7px}.q2 .dq-boxes{gap:6px}.q2 .dq-box .ach-rw:not(#_){padding:1px 4px}.q2 .dq-box .ach-rw img{width:14px;height:14px}}
 </style>
