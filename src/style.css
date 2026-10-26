@@ -2372,4 +2372,49 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 .cx2 .cx-mem .m{color:var(--b2-dim)}.cx2 .cx-mem .m.y{color:var(--qc)}
 .cx2 .cx-mem .m .wart{background:url(art/ui/bag2/bag2_slot.webp) center/100% 100% no-repeat}
 @media (max-width:400px){.cx2 .cx-sl{gap:4px}.cx2 .cx-s:not(#_){width:50px;border-width:5px;border-image-width:5px}.cx2 .cx-row:not(#_){padding:6px 8px 6px 6px;gap:6px}.cx2 .cx-row .wart{width:46px;height:46px}}
+/* ===== v5.24 村莊詳情／駐守換成道具欄母版（排程 2-7）：外框／標題同 .s2；面板＝bag2_sub；掉落格＝bag2_slot；評級格＝bag2_slot_empty／目前評級＝bag2_slot＋bag2_today；秒殺列＝bag2_row；武器格＝b2Slot；按鈕＝bag2 按鈕；只在 .v2 底下 ===== */
+.sheet.v2:not(#_){--b2br:1.5;border:1px solid transparent;border-radius:0;border-image:url(art/ui/bag2/bag2_main_frame.webp) 150 / 24px stretch;
+  background:linear-gradient(#555,#555),url(art/ui/bag2/bag2_main_tex.webp) center top/cover no-repeat,#0b0d10;background-blend-mode:color-dodge,normal,normal;
+  padding:22px 18px 16px;box-shadow:0 12px 40px rgba(0,0,0,.8);color:var(--b2-text)}
+.v2 .sheet-head:not(#_){background:transparent;box-shadow:none;border:0}
+.v2 .sheet-head h2{display:flex;align-items:center;gap:6px;font-size:20px;letter-spacing:.08em;white-space:nowrap;color:var(--b2-gold-hi);text-shadow:0 1px 2px #000,0 0 6px #000}
+.v2 .sheet-head h2::before,.v2 .sheet-head h2::after{content:"";width:30px;height:9px;background:url(art/ui/bag2/bag2_title_l.webp) center/contain no-repeat}
+.v2 .sheet-head h2::after{background-image:url(art/ui/bag2/bag2_title_r.webp)}
+.v2 .banner{border-radius:0;border:6px solid transparent;border-image:url(art/ui/bag2/bag2_slot.webp) 40 / 6px stretch}
+/* 面板：次面板；標題兩側飾條 */
+.v2 .ui-panel.panel:not(#_),.v2 .mon-dex:not(#_){border:14px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_sub.webp) 44 fill / 14px stretch;padding:0 2px 2px}
+.v2 .ptitle{justify-content:center;gap:6px;color:var(--b2-gold-hi);text-shadow:0 1px 2px #000}
+.v2 .ptitle::before,.v2 .ptitle::after{flex:none;width:30px;height:9px;background:url(art/ui/bag2/bag2_title_l.webp) center/contain no-repeat}
+.v2 .ptitle::after{background-image:url(art/ui/bag2/bag2_title_r.webp)}
+.v2 .kv{border-bottom-color:rgba(162,119,74,.25)}.v2 .kv span,.v2 .small.muted,.v2 .md-sub{color:var(--b2-mute)}
+/* 怪物圖鑑：大圖、下方小圖都用道具欄格子／選取框（左右圓形箭頭維持原樣） */
+.v2 .md-big{border-radius:0;border:6px solid transparent;border-image:url(art/ui/bag2/bag2_slot.webp) 40 / 6px stretch;box-shadow:none}
+.v2 .md-nm{color:var(--b2-gold-hi)}
+.v2 .md-strip button{border-radius:0}
+.v2 .md-strip button.on:not(#_){outline:none;border:2px solid transparent;border-image:url(art/ui/bag2/bag2_sel.webp) 40 / 3px stretch}
+/* 掉落格、收成格 */
+.v2 .matbox:not(#_){border:6px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_slot.webp) 40 fill / 6px stretch;padding:3px 0;color:var(--b2-text)}
+.v2 .matbox .wart.mb-w{background:none}   /* 掉落格本身已經是道具欄格子，裡面的武器圖不再疊舊格子底 */
+.v2 .matbox .mb-n{color:var(--b2-text)}.v2 .matbox .mb-c{color:var(--b2-num)}
+.v2 .hico:not(#_){border:8px solid transparent;border-radius:0;background:none;border-image:url(art/ui/bag2/bag2_slot.webp) 40 fill / 8px stretch;padding:0 0 2px;color:var(--b2-num)}
+/* 評級表 */
+.v2 .gr-c:not(#_){position:relative;border:6px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_slot_empty.webp) 40 fill / 6px stretch;padding:2px 0}
+.v2 .gr-c.on:not(#_){border-image-source:url(art/ui/bag2/bag2_slot.webp)}
+.v2 .gr-c.on::after{content:"";position:absolute;inset:-12px;pointer-events:none;border:14px solid transparent;border-image:url(art/ui/bag2/bag2_today.webp) 30 / 14px stretch}
+/* 秒殺紀錄列、駐守武器列 */
+.v2 .fk-row:not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_row.webp) 32 fill / 16px stretch;padding:8px 12px 8px 12px}
+.v2 .fk-row .go:not(#_){border:1px solid transparent;border-radius:0;border-image:url(art/ui/bag2/bag2_chip.webp) 0 45 fill / 0 13px stretch;color:var(--b2-text);padding:4px 12px}
+.v2 .ui-panel.vw-pick .tilebox{width:92px;flex:none}.v2 .vw-pick .b2-slot{width:92px}
+/* 駐守中三顆按鈕：字比較多，按鈕兩端的尖角收窄一點 */
+.v2 .vw-acts .ui-btn.btn:not(.ui-btn--icon):not(#_){border-image-width:0 13px;padding:0 10px;font-size:14px;letter-spacing:0}
+/* 選武器：道具欄格子＋名稱＋預估 */
+.v2 .ch-pick>.b2-slot{width:100%}
+.v2 .ch-nm{margin-top:3px;font-size:12px;line-height:1.25;font-weight:700;word-break:break-all}
+/* 按鈕：同任務小卡 .q2 */
+.v2 .ui-btn.btn:not(.ui-btn--icon):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_btn_sec2.webp) 0 70 fill / 0 19px stretch;color:var(--b2-text)}
+.v2 .ui-btn.btn:not(.ui-btn--icon):active:not(:disabled):not(#_){border-image-source:url(art/ui/bag2/bag2_btn_sec2_p.webp)}
+.v2 .ui-btn--primary.btn:not(.ui-btn--icon):not(#_){border-image:url(art/ui/bag2/bag2_btn_pri.webp) 0 55 fill / 0 16px stretch;color:#ffe7b0}
+.v2 .ui-btn--primary.btn:not(.ui-btn--icon):active:not(:disabled):not(#_){border-image-source:url(art/ui/bag2/bag2_btn_pri_p.webp)}
+.v2 .ui-btn.btn:not(.ui-btn--icon):disabled:not(#_){border-image:url(art/ui/bag2/bag2_btn_off2.webp) 0 70 fill / 0 19px stretch;color:var(--b2-dim);opacity:1;filter:none}
+@media (max-width:400px){.sheet.v2:not(#_){padding:20px 14px 14px}.v2 .ui-panel.panel:not(#_),.v2 .mon-dex:not(#_){border-width:11px;border-image-width:11px}.v2 .gr-c:not(#_){border-width:5px;border-image-width:5px}.v2 .matbox:not(#_){border-width:5px;border-image-width:5px}.v2 .gr-tab{gap:3px}.v2 .gr-c .small{font-size:10.5px;letter-spacing:-.02em}}
 </style>

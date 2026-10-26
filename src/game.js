@@ -334,7 +334,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='5.23';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='5.24';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1318,6 +1318,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'5.24',d:'10/27',t:'村莊詳情、駐守小卡換上道具欄同款外觀',b:['點村莊跳出來的詳情：外框、怪物資料、掉落物、挑戰評級、收成區、按鈕都改成跟道具欄同一套煤黑古銅','選武器挑戰／指派駐守的武器格換成道具欄同款格子和等級外框，名稱和預估秒數照樣顯示','駐守中點武器跳出來的小卡也一起換','數值、掉落機率和挑戰規則都沒有改'],g:[]},
  {v:'5.23',d:'10/27',t:'圖鑑分頁換上道具欄同款外觀',b:['道具欄裡的圖鑑：總加成、武器列、套裝卡、武器／套裝頁籤都改成跟道具欄同一套煤黑古銅','+0／+6／+9 登錄格換成道具欄格子：已登錄有該等級的外框，可登錄的有金色光框','武器名稱不再被截成「鐵爐村…」，會完整顯示','圖鑑加成、登錄規則和套裝都沒有改'],g:[]},
  {v:'5.22',d:'10/27',t:'說明小卡、結果小卡、提示訊息換上道具欄同款外觀',b:['點道具、收成、看等級、讀故事書、買材料時跳出來的小卡，外框、標題、按鈕和物品格都改成跟道具欄同一套煤黑古銅','收成結果加上金色橫幅，奧丁之咒加上紅色橫幅','畫面上方的提示訊息換成新的通知條','小卡內容和功能都沒有改'],g:[]},
  {v:'5.21',d:'10/26',t:'設定頁換上道具欄同款外觀',b:['右上角齒輪打開的設定、更新公告、玩法說明，外框和每一列都改成跟道具欄同一套煤黑古銅','音效開關、音量拉桿換上新的開關和把手圖','公告、玩法內容和音效功能都沒有改'],g:[]},
@@ -2556,11 +2557,11 @@ function sheetVillage(i){
   // v4.38 駐守中的村莊不再開詳情（Mochi）：掉落看卡片，點卡片上的武器只跳出這張小卡（看武器、換武器、收回武器）
   const chm=!!(ui.sheet&&ui.sheet.ch)&&st.status==='cleared';   // v4.71 已收復的村莊再挑戰刷評級
   if(w&&!chm)return `<div class="sheet-head"><span style="width:44px"></span><h2>${vNo(i)} ${v.name}</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>
-   <div class="ui-panel panel vw-pick"><div class="tilebox">${wTile(w,`data-act="wopen" data-id="${w.id}"`)}</div><div class="grow"><b class="${lc(w)}">${bpOf(w).n} +${w.lv}</b><div class="small muted">攻擊力 ${fmt(power(w))}・駐守狩獵中</div></div></div>${grPanel(i,1)}
+   <div class="ui-panel panel vw-pick"><div class="tilebox">${b2Slot(w,`data-act="wopen" data-id="${w.id}"`)}</div><div class="grow"><b class="${lc(w)}">${bpOf(w).n} +${w.lv}</b><div class="small muted">攻擊力 ${fmt(power(w))}・駐守狩獵中</div></div></div>${grPanel(i,1)}
    <div class="vw-acts">${btn('看武器詳情','wopen',{cls:'btn-sec big',attrs:`data-id="${w.id}"`})}${btn('換武器','vswap',{cls:'btn-sec big',attrs:`data-i="${i}"`})}${btn('收回武器','recall',{cls:'btn-primary big',attrs:`data-i="${i}"`})}</div>`;
   // v4.52 還沒收復＝選武器限時挑戰（駐守中的也能挑戰）；已收復＝指派駐守掛機。預估秒數已算攻速、強化、附加效果、弱點、相剋
   const open=st.status==='open'||chm,ok=S.weapons.filter(x=>eligible(i,x)&&(open||where(x)<0)).sort((a,b)=>vPow(i,b)-vPow(i,a)),wk=vWeak(i);
-  const tile=x=>{const sec=open?chEst(i,x):vSec(i,x),g=GRADES[grOf(sec)];return `<div class="ch-pick">${wTile(x,`data-act="${open?'chgo':'deliver'}" data-i="${i}" data-id="${x.id}"`)}<div class="small ${!open||sec<=CH_SEC?'t-ok':'t-danger'}">${open?`預估 ${Math.round(sec)} 秒${g?' '+grChip(g,'sm'):''}`:`${fmt(kph(i,x))} 隻／小時`}</div></div>`};
+  const tile=x=>{const sec=open?chEst(i,x):vSec(i,x),g=GRADES[grOf(sec)];return `<div class="ch-pick">${b2Slot(x,`data-act="${open?'chgo':'deliver'}" data-i="${i}" data-id="${x.id}"`)}<div class="ch-nm ${lc(x)}">${bpOf(x).n}</div><div class="small ${!open||sec<=CH_SEC?'t-ok':'t-danger'}">${open?`預估 ${Math.round(sec)} 秒${g?' '+grChip(g,'sm'):''}`:`${fmt(kph(i,x))} 隻／小時`}</div></div>`};
   return head+`<div class="ui-panel panel"><div class="kvgrid">${kv('怪物',MONS[i])}${kv('血量',fmt(VHP(i)))}${kv('屬性',MON_EL[i]?`<span class="elc-${MON_EL[i]}">${ELEM[MON_EL[i]].n}</span>`:'—')}${kv('弱點',wk?`<span class="elc-${wk}">${ELEM[wk].n}</span>`:'—')}${kv('型態',RACE_N[MON_RACE[i]]||'—')}${open?kv('時間限制',CH_SEC+' 秒'):kv('每隻金幣',killGoldTxt(i)+(grMul(i)!==1?` <span class="muted">×${grMul(i)}</span>`:''))}${FIRST_GOLD[i]?kv('首次收復獎勵',st.status==='cleared'?'<span class="muted">已領取</span>':'<span class="t-gold">'+fmt(FIRST_GOLD[i])+' 金幣</span>').replace('class="kv"','class="kv kv-wide"'):''}</div></div>
    ${v.drops.length?`<div class="ui-panel panel">${ptitle('每打倒一隻可能掉')}${drops('normal')}${grMul(i)!==1?`<div class="small muted vx-drop">機率已含評級 ×${grMul(i)}</div>`:''}</div>`:''}${bank}${grPanel(i,st.status==='cleared'&&!chm)}
    <div class="ui-panel panel">${ptitle(chm?'選一把武器挑戰評級':open?'選一把武器挑戰':'指派駐守武器')}${ok.length?`<div class="wgrid">${ok.map(tile).join('')}</div><div class="small muted">${chm?'只記最好成績，打輸或評級比較低都不會變差。':open?`${CH_SEC} 秒內打倒就收復，輸了可以馬上再試，沒有任何懲罰。`:'點武器即可駐守，每打倒一隻就收成一次。'}</div>`:`<div class="empty">道具欄沒有${open?'':'閒置的'}武器，先到鐵匠鋪鍛造一把。</div>`}</div>`;
@@ -2702,6 +2703,7 @@ function viewShop(){   // v5.17 換成道具欄母版（.b2）：主框、次面
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'5.24',t:'村莊詳情／駐守換成道具欄母版（外框、次面板、掉落格、評級格、秒殺列、武器格＝道具欄格子、按鈕）',b:[['v524','村莊詳情：未收復（選武器挑戰）'],['v524c','村莊詳情：已收復（有收成、評級 A）'],['v524p','村莊詳情：駐守中']]},
  {v:'5.23',t:'道具欄圖鑑換成道具欄母版（總加成、分區小標、武器橫列卡、子頁籤、登錄格、套裝卡），武器名稱不截斷',b:[['c523','打開圖鑑武器頁（有已登錄、可登錄的格子）'],['c523s','打開圖鑑套裝頁（第一套達成）']]},
  {v:'5.22',t:'說明／結果小卡、提示訊息換成道具欄母版（主框、標題飾條、結果橫幅、物品格、按鈕、小膠囊、通知條）',b:[['m522','道具說明小卡（強化石）'],['m522h','收成結果（金色橫幅）'],['m522c','奧丁之咒（紅色橫幅）'],['m522s','商城購買小卡'],['m522t','跳兩則提示訊息']]},
  {v:'5.21',t:'設定／公告／玩法換成道具欄母版（主框、小標、橫列卡、音效開關與把手、NEW 標籤）',b:[['s521','打開設定（公告、玩法有 NEW）'],['s521n','打開更新公告'],['s521g','打開玩法說明（展開第一項）']]},
@@ -2881,6 +2883,11 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='cpull'){cloudPull().then(()=>toast('已從雲端下載','ok')).catch(e=>toast('下載失敗：'+SB_ERR(e.message),'bad'));return}
   if(k==='clogout'){ui.sheet=null;return cloudLogout()}
   if(k==='maintprev'){ui.sheet=null;render();return showMaint(null,true)}
+  if(/^v524/.test(k)){const bs=BPS.filter(x=>!x.dev&&!x.unlock),st=S.villages[0],q=k.slice(4);ui.result=null;ui.tab='village';
+    if(S.weapons.filter(w=>!w.test).length<2){makeWeapon(bs[0].id,0,6);makeWeapon(bs[1].id,0,3)}
+    if(q==='p'){if(st.weaponId==null){const w=S.weapons.find(w=>where(w)<0&&!w.test&&eligible(0,w));if(w)deliverCore(0,w.id)}}
+    else if(q==='c'){if(st.weaponId!=null)recallCore(0);if(st.status==='open')st.status='cleared';st.gr=st.gr??2;st.bank.cycles=Math.max(3,st.bank.cycles|0);st.bank.gold=Math.max(420,st.bank.gold|0)}
+    ui.sheet={t:'v',i:0};save();return render()}
   if(/^c523/.test(k)){const bs=cxBps();S.codex=S.codex||{};S.codex[bs[0].id]=[1,1,0];S.codex[bs[2].id]=[1,1,1];if(!S.weapons.some(w=>w.b===bs[1].id&&w.lv>=6))makeWeapon(bs[1].id,0,6);
     if(k==='c523s')CX_SETS.filter(x=>x.j===0).slice(0,1).forEach(x=>x.ks.forEach(q=>{S.codex[q]=S.codex[q]||[0,0,0];S.codex[q][0]=1}));
     ui.sheet=null;ui.result=null;ui.tab='armory';ui.atab='c';ui.cxs=k==='c523s'?'s':'w';save();render();return scrollTo(0,0)}
@@ -3155,7 +3162,7 @@ if(typeof window!=='undefined')window.addEventListener('resize',()=>fitNames());
 function renderLayer(){stkFollow();
   const L=document.getElementById('layer');const s=ui.sheet;let h='';
   const sc=document.querySelector('.sheet'),st=sc?sc.scrollTop:0,same=sc&&ui._lastSheet===JSON.stringify(s),keep=same||sc&&s&&s.t==='w'&&ui._lastSheetW===s.id;   // v4.91 同一把武器的小卡切換（武器⇄強化⇄附魔）不重播彈出動畫
-  if(s){const pop=s.t==='w'&&((s.m==='main'||s.m==='ench')&&!!W(s.id)||s.m==='enh'),full=!pop&&(s.t==='w'||s.t==='fxt');h+=`<div class="scrim ${pop?'wpopc':''} ${keep?'still':''}" data-act="scrim"><div class="ui-sheet sheet ${full?'full':''} ${pop?'wpop k2':''} ${s.t==='a'?'q2':''} ${s.t==='set'?'s2':''} ${s.t==='chat'?'cx-sheet':''} ${keep?'still':''}">${s.t==='w'?sheetWeapon(s.id,s.m):s.t==='v'?sheetVillage(s.i):s.t==='ch'&&ui.ch?sheetCh():s.t==='chr'&&ui.chr?sheetChr():s.t==='a'?sheetAch():s.t==='fk'?sheetFk(s.i):s.t==='lb'?sheetLb(s.i):s.t==='lbw'?sheetLbW(s.i,s.k):s.t==='ws'?sheetWorkshop(s.k):s.t==='evt'?sheetEvt():s.t==='chat'?sheetChat():s.t==='gd'?sheetGuild():s.t==='fr'?sheetFriend():s.t==='bw'?sheetBossW(s.r,s.j):s.t==='fxt'?sheetFxTest(s):s.t==='set'?sheetSet(s.k):/^mk/.test(s.t)?sheetMk(s):sheetDev()}</div></div>`}
+  if(s){const pop=s.t==='w'&&((s.m==='main'||s.m==='ench')&&!!W(s.id)||s.m==='enh'),full=!pop&&(s.t==='w'||s.t==='fxt');h+=`<div class="scrim ${pop?'wpopc':''} ${keep?'still':''}" data-act="scrim"><div class="ui-sheet sheet ${full?'full':''} ${pop?'wpop k2':''} ${s.t==='a'?'q2':''} ${s.t==='set'?'s2':''} ${s.t==='v'?'v2':''} ${s.t==='chat'?'cx-sheet':''} ${keep?'still':''}">${s.t==='w'?sheetWeapon(s.id,s.m):s.t==='v'?sheetVillage(s.i):s.t==='ch'&&ui.ch?sheetCh():s.t==='chr'&&ui.chr?sheetChr():s.t==='a'?sheetAch():s.t==='fk'?sheetFk(s.i):s.t==='lb'?sheetLb(s.i):s.t==='lbw'?sheetLbW(s.i,s.k):s.t==='ws'?sheetWorkshop(s.k):s.t==='evt'?sheetEvt():s.t==='chat'?sheetChat():s.t==='gd'?sheetGuild():s.t==='fr'?sheetFriend():s.t==='bw'?sheetBossW(s.r,s.j):s.t==='fxt'?sheetFxTest(s):s.t==='set'?sheetSet(s.k):/^mk/.test(s.t)?sheetMk(s):sheetDev()}</div></div>`}
   const r=ui.result;
   if(r&&r.t==='h')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card m2"><div class="m2-rib ok">${ptitle(r.title)}</div>${r.ev?`<div class="small t-danger center">其中 ${r.ev} 輪受襲：沒有材料、金幣減半</div>`:''}<div class="hgrid">${harvestIcons(r.got)}</div>${btn('確定','rclose',{cls:'btn-primary big'})}</div></div>`;
   if(r&&r.t==='info')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card m2">${r.ico?`<div class="info-ico">${r.ico}</div>`:r.icon?`<div class="info-ico">${img(r.icon)}</div>`:''}${r.rib?`<div class="m2-rib ${r.rib}">${ptitle(r.title)}</div>`:ptitle(r.title)}<div class="info-body">${r.html}</div>${r.acts||''}${btn(r.ok||'知道了','rclose',{cls:r.ok?'btn-sec big':'btn-primary big'})}</div></div>`;
