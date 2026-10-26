@@ -525,7 +525,7 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.44 舊武器刪除：要在放回測試資料前檢查
-  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
+  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
     T('BD2 神明材質階、神格覺醒拿掉',TIERS.length===5&&typeof GOD==='undefined'&&typeof awkN==='undefined',`材質 ${TIERS.length} 階`)];
   return withTestBps(()=>runTests0(mode,bd))}
 // v4.44 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
@@ -758,3 +758,18 @@ function k2Tests(){const S0=S,sh0=ui.sheet,r0=ui.result;S=JSON.parse(JSON.string
     const h=b2Show(w);out.push(T('K2-show 武器大圖用格子＋品階框，+9 以上有裂痕',h.includes('b2-slot')&&h.includes('bag2_rim9_l6')&&h.includes('bag2_crk_l6')&&b2Show({...w,lv:6}).includes('bag2_rim_l1')));
     return out}
   catch(e){return[T('K2 UI 母版延伸測試',false,e.message)]}finally{S=S0;ui.sheet=sh0;ui.result=r0;renderLayer()}}
+// v5.14 交易所換成道具欄母版：外框／頁籤／小膠囊／橫列卡都用 bag2，沒有舊框（重新整理鈕是圓形圖示鈕，維持原本的圖）；標題右邊的上架數不被外框裁掉、頁面不撐寬
+function mk2Tests(){const tab0=ui.tab,mk0={tab:MK.tab,rows:MK.rows,t:MK.t},sh0=ui.sheet,y0=scrollY;
+  try{const b=BPS.find(x=>!x.dev)||BPS[0],out=[];MK.rows=[{id:-9514,seller:'npc',seller_nick:'測試賣家',weapon:{b:b.id,q:0,lv:5,traits:[],ench:[null,null,null,null]},bp:b.id,lv:5,q:0,cur:'gold',price:999,expires_at:new Date(Date.now()+864e5).toISOString()},...MK.rows];if(!MK.t)MK.t=Date.now();
+    ui.sheet=null;ui.tab='market';MK.tab='buy';render();const sc=document.querySelector('#view section.b2.mk2');
+    if(!AUTH&&!mkMock())return[T('MK2 交易所頁用道具欄母版（未登入）',!!sc&&!!sc.querySelector('.b2-head h2'),sc?'登入提示':'找不到 .b2.mk2')];
+    const bis=e=>getComputedStyle(e).borderImageSource,old=sc?[...sc.querySelectorAll('*:not(.mk-ref)')].filter(e=>/ui491_|ui493_/.test(bis(e)+getComputedStyle(e).backgroundImage)).length:-1;
+    const tabs=sc?[...sc.querySelectorAll('.b2-tab')]:[],chips=sc?[...sc.querySelectorAll('.mk2-chip')]:[],rows=sc?[...sc.querySelectorAll('.mk-row')]:[];
+    out.push(T('MK2 交易所用道具欄外框、頁籤、小膠囊、橫列卡，沒有舊框',!!sc&&tabs.length===3&&chips.length>0&&chips.every(e=>/bag2_chip/.test(bis(e)))&&rows.length>0&&rows.every(e=>/bag2_row/.test(bis(e)))&&old===0,`頁籤 ${tabs.length}；小膠囊 ${chips.length}；商品列 ${rows.length}；舊框 ${old}`));
+    const sr=sc&&sc.getBoundingClientRect(),cp=sc&&sc.querySelector('.b2-cap'),cr=cp&&cp.getBoundingClientRect();
+    out.push(T('MK2 標題右邊「上架 n / 10」完整在外框裡',!!cr&&cr.right<=sr.right-12&&cp.scrollWidth<=cp.clientWidth+1,cr?`寬 ${innerWidth}：右緣 ${Math.round(cr.right)}／外框內 ${Math.round(sr.right-12)}`:'找不到'));
+    out.push(T('MK2 交易所頁沒有左右多出一截',document.documentElement.scrollWidth<=innerWidth,`頁寬 ${document.documentElement.scrollWidth}／視窗 ${innerWidth}`));
+    MK.tab='mine';render();const mb=[...document.querySelectorAll('#view .mk2 .ui-btn.btn:not(.ui-btn--icon)')].filter(e=>!/bag2_btn/.test(bis(e))).length;
+    out.push(T('MK2 交易所按鈕都用道具欄按鈕',mb===0,`非 bag2 按鈕 ${mb} 個`));
+    return out}
+  catch(e){return[T('MK2 交易所母版測試',false,e.message)]}finally{MK.tab=mk0.tab;MK.rows=mk0.rows;MK.t=mk0.t;ui.sheet=sh0;ui.tab=tab0;render();scrollTo(0,y0)}}

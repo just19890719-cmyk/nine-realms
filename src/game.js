@@ -896,25 +896,29 @@ function mkRow(r,act){if(mkIsItem(r))return mkItemRow(r,act);const w=r.weapon,b=
   return `<button class="ui-card ui-card--row mk-row ${me?'me':''}" data-act="${act}" data-id="${r.id}"><div class="mk-art">${wArt(b.id,{frame:fq(w)})}</div>
    <div class="grow mk-mid"><b class="mk-nm">${wName({...w,b:b.id})}</b><span class="small muted">${CATS[b.cat]}・攻擊力 ${fmt(power({...w,b:b.id}))}</span>
    <span class="small muted">${me?'<span class="t-gold">我的上架</span>':esc(r.seller_nick||'無名鐵匠')}・剩 ${fmtT(mkLeft(r))}</span></div>${mkPrice(r.cur,r.price)}</button>`}
-function viewMarketPage(){if(!MK.t&&!MK.loading&&(AUTH||mkMock()))setTimeout(mkLoad,0);return `<div class="pagehead"><h2>交易所</h2></div>`+viewMarket()}
-function viewMarket(){
-  if(!AUTH&&!mkMock())return `<div class="ui-panel panel mk-gate">${ptitle('交易所')}<div class="small muted center">交易所需要登入帳號才能使用，訪客進度只存在這支手機，無法和其他玩家交易。</div>${btn('登入／註冊','mklogin',{cls:'btn-primary big'})}</div>`;
+function viewMarketPage(){if(!MK.t&&!MK.loading&&(AUTH||mkMock()))setTimeout(mkLoad,0);return viewMarket()}   // v5.14 標題改在道具欄母版的頁首裡
+function viewMarket(){   // v5.14 換成道具欄母版（.b2）：主框、頁首、頁籤、小膠囊篩選、橫列卡（Mochi 10/26 恢復開發，排程第 2-1 步）
+  const head=cap=>`<div class="b2-head"><h2>交易所</h2>${cap||''}</div><div class="b2-rule"></div>`;
+  if(!AUTH&&!mkMock())return `<section class="b2 mk2"><div class="b2-top"><i class="b2-topfr"></i>${head()}</div><div class="b2-well mk-gate"><div class="small muted center">交易所需要登入帳號才能使用，訪客進度只存在這支手機，無法和其他玩家交易。</div>${btn('登入／註冊','mklogin',{cls:'btn-primary big'})}</div></section>`;
   if(!MK.t&&!MK.loading&&!MK.err)setTimeout(mkLoad,0);
   if(MK.tab==='sell')MK.tab='claim';   // v4.56 「上架武器」分頁改成「待領取」，上架改從道具欄點武器
-  const tabs=[['buy','購買'],['mine',`我的上架 ${MK.mine.length}/${MK_MAX}`],['claim',`待領取${mkClaimN()?' '+mkClaimN()+'<i class="dot mk-dot"></i>':''}`]].map(([k,n])=>`<button class="ui-btn ui-btn--chip chipbtn ${MK.tab===k?'on':''}" data-act="mktab" data-k="${k}">${n}</button>`).join('');
-  let body='';
+  const n=MK.mine.length,cap=`<div class="b2-cap ${n>=MK_MAX?'full':''}">上架 <b>${n}</b> / ${MK_MAX}<i style="--p:${Math.min(100,n/MK_MAX*100)}%"></i></div>`;
+  const tabs=[['buy','購買'],['mine','我的上架'],['claim','待領取']].map(([k,t])=>`<button class="b2-tab ${MK.tab===k?'on':''}" data-act="mktab" data-k="${k}">${t}${k==='claim'&&mkClaimN()?'<i class="dot"></i>':''}</button>`).join('');
+  const chip=(act,k,t,on)=>`<button class="mk2-chip ${on?'on':''}" data-act="${act}" data-k="${k}">${t}</button>`;
+  let fil='',body='',sec='';
   if(MK.tab==='buy'){const cats=['all',...new Set(MK.rows.map(mkCat))];
     let rows=MK.rows.filter(r=>(MK.cat==='all'||mkCat(r)===MK.cat)&&(MK.cur==='all'||r.cur===MK.cur));
     if(MK.sort==='low')rows=[...rows].sort((a,b)=>(a.cur===b.cur?a.price-b.price:a.cur==='gold'?-1:1));if(MK.sort==='pow'){const P=r=>mkIsItem(r)?-1:power({...r.weapon,b:bpId(r.bp)});rows=[...rows].sort((a,b)=>P(b)-P(a))}
-    const chip=(act,k,n,on)=>`<button class="ui-btn ui-btn--chip chipbtn ${on?'on':''}" data-act="${act}" data-k="${k}">${n}</button>`;
-    body=`<div class="mk-filter"><div class="hscroll mk-chips">${cats.map(c=>chip('mkcat',c,c==='all'?'全部':c==='item'?'道具':CATS[c],MK.cat===c)).join('')}</div>
-      <div class="mk-chips row">${chip('mkcur','all','全部',MK.cur==='all')}${chip('mkcur','gold','金幣',MK.cur==='gold')}${chip('mkcur','gems','鑽石',MK.cur==='gems')}<span class="grow"></span>${chip('mksort','new','最新',MK.sort==='new')}${chip('mksort','low','價低',MK.sort==='low')}${chip('mksort','pow','攻擊力',MK.sort==='pow')}</div></div>
-      <div class="mk-list">${rows.length?rows.map(r=>mkRow(r,'mkview')).join(''):`<div class="small muted center mk-empty">${MK.loading?'讀取中…':'目前沒有符合條件的商品'}</div>`}</div>`}
-  else if(MK.tab==='mine'){body=`<div class="mk-list">${MK.mine.length?MK.mine.map(r=>`<div class="mk-mine">${mkRow(r,'mkview')}${btn('下架','mkcancel',{cls:'btn-sec sm',attrs:`data-id="${r.id}"`})}</div>`).join(''):`<div class="small muted center mk-empty">${MK.loading?'讀取中…':'你目前沒有上架中的東西'}</div>`}</div>
+    fil=`<div class="mk-filter"><div class="hscroll mk-chips">${cats.map(c=>chip('mkcat',c,c==='all'?'全部':c==='item'?'道具':CATS[c],MK.cat===c)).join('')}</div>
+      <div class="mk-chips row">${chip('mkcur','all','全部',MK.cur==='all')}${chip('mkcur','gold','金幣',MK.cur==='gold')}${chip('mkcur','gems','鑽石',MK.cur==='gems')}<span class="grow"></span>${chip('mksort','new','最新',MK.sort==='new')}${chip('mksort','low','價低',MK.sort==='low')}${chip('mksort','pow','攻擊力',MK.sort==='pow')}</div></div>`;
+    sec=`${rows.length} 件商品`;
+    body=`<div class="mk-list">${rows.length?rows.map(r=>mkRow(r,'mkview')).join(''):`<div class="small muted center mk-empty">${MK.loading?'讀取中…':'目前沒有符合條件的商品'}</div>`}</div>`}
+  else if(MK.tab==='mine'){sec=`${n} / ${MK_MAX} 件`;body=`<div class="mk-list">${n?MK.mine.map(r=>`<div class="mk-mine">${mkRow(r,'mkview')}${btn('下架','mkcancel',{cls:'btn-sec sm',attrs:`data-id="${r.id}"`})}</div>`).join(''):`<div class="small muted center mk-empty">${MK.loading?'讀取中…':'你目前沒有上架中的東西'}</div>`}</div>
       <div class="small muted mk-note">要上架：到道具欄點武器或道具，按「上架」（道具可以填單價和數量）。成交後收入會放在「待領取」，按「全部領取」入帳（扣 ${MK_FEE*100}% 手續費）；上架 ${MK_DAYS} 天沒賣出也會放在待領取，領取後回到道具欄。</div>`}
-  else body=mkClaimN()?mkClaimBox():`<div class="small muted center mk-empty">${MK.loading?'讀取中…':'目前沒有要領取的東西'}</div><div class="small muted mk-note">賣出的收入、${MK_DAYS} 天沒賣出退回的武器和道具都會放在這裡，按「全部領取」才入帳。</div>`;
-  return `<div class="ui-panel panel mk">${ptitle(mkMock()?'離線模擬市場':'玩家交易')}<div class="mk-tabs">${tabs}<button class="ui-iconbtn mk-ref" data-act="mkref" aria-label="重新整理">${MK.loading?'…':'⟳'}</button></div>
-   ${MK.err?`<div class="small t-danger center mk-err">${MK.err}</div>`:''}${body}</div>`}
+  else{body=mkClaimN()?mkClaimBox():`<div class="small muted center mk-empty">${MK.loading?'讀取中…':'目前沒有要領取的東西'}</div><div class="small muted mk-note">賣出的收入、${MK_DAYS} 天沒賣出退回的武器和道具都會放在這裡，按「全部領取」才入帳。</div>`}
+  return `<section class="b2 mk2"><div class="b2-top"><i class="b2-topfr"></i>${head(cap)}<div class="b2-tabs">${tabs}</div>${fil}</div>
+   <div class="b2-well"><div class="b2-sec">${mkMock()?'離線模擬市場':'玩家交易'}<span>${sec}<button class="ui-iconbtn mk-ref" data-act="mkref" aria-label="重新整理">${MK.loading?'…':'⟳'}</button></span></div>
+   ${MK.err?`<div class="small t-danger center mk-err">${MK.err}</div>`:''}${body}</div></section>`}
 function mkWeaponBox(w){w={...w,b:bpId(w.b)};const b=BP[w.b];   // v4.53 跟武器小卡同一套：名稱含屬性、攻擊力、四格數值
   return `<div class="ui-panel panel mk-wp"><div class="wp-top">${wArt(b.id,{frame:fq(w)})}<div class="grow"><div class="wp-nm">${wName(w)}</div>
     <div class="wp-sub"><span>${CATS[b.cat]}・${kindN(b)}</span></div><div class="wp-pow"><b>${fmt(power(w))}</b><span>攻擊力（每秒傷害）</span></div></div></div>${wpGrid(w)}</div>`}
@@ -1314,6 +1318,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
  {v:'5.15',d:'10/26',t:'手機畫面等比適配測試中，目前畫面不變',b:['加入不同尺寸手機的畫面等比適配：以 390 寬為準，360～440 寬的手機版型一致、只調整顯示比例','目前只在測試模式開啟，一般玩家的畫面沒有變化']},
+ {v:'5.14',d:'10/26',t:'交易所換上道具欄同款外觀',b:['交易所的外框、標題、頁籤、篩選鈕、商品列，都改成跟道具欄同一套煤黑古銅','「我的上架」幾件移到標題右邊，跟道具欄的容量顯示一樣','買賣、上架、領取的規則都沒有改'],g:['mk']},
  {v:'5.12',d:'10/25',t:'小卡和頁面不再跳動、不再左右多出一截',b:['同款武器有好幾把時，按「熔解」小卡也不會變矮（窄手機也一樣）','手機很窄時，交易所的篩選列和村莊的「預估秒數」不會再把頁面撐寬、可以左右滑','武器小卡「下一級」說明換行時不會把「攻擊力」拆成兩半'],g:['bag']},
  {v:'5.11',d:'10/25',t:'強化、附魔頁的叉叉改回原本圓形',b:['強化頁、附魔頁上方的返回、說明、叉叉按鈕，改回原本的圓形圖示（v5.10 誤變成八角形）'],g:['enh','ench']},
  {v:'5.10',d:'10/25',t:'武器小卡換上道具欄同款外觀',b:['點武器跳出的小卡、強化頁、附魔頁，外框、底紋、數值格、按鈕都改成跟道具欄同一套煤黑古銅','小卡裡的武器大圖改用道具欄的格子與品階框（+9 以上一樣有裂痕呼吸燈）'],g:['bag']},
@@ -2691,6 +2696,7 @@ function viewShop(){
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
  {v:'5.15',t:'手機 UI 等比適配（第 1 階段，預設關）：以 390 寬排版、最多放大 1.1 倍，360～440 手機版型一致',b:[['uifit','手機適配 開／關'],['uifitinfo','顯示裝置寬、排版寬與比例']]},
+ {v:'5.14',t:'交易所換成道具欄母版（外框、頁籤、小膠囊篩選、橫列卡）',b:[['mk514','打開交易所（購買分頁，看新外觀）'],['mk514m','打開交易所「我的上架」'],['mkclaimt','待領取測試（2 賣出＋1 退回）']]},
  {v:'5.12',t:'畫面穩定永久測試 UI1～UI8；同款多把按熔解不變矮；320 寬不再撐出水平捲動',b:[['uitest','執行畫面穩定測試（UI1～UI8）'],['stk508','給 3 把同款 +0 並打開小卡（按熔解，高度不變）']]},
  {v:'5.11',t:'強化／附魔頁上方的返回、說明、叉叉改回原本圓形圖示',b:[['k2enh','打開強化頁（看上方三顆圓鈕）'],['k2ench','打開附魔頁（看上方三顆圓鈕）']]},
  {v:'5.10',t:'UI 母版延伸第 1 批：武器小卡、強化、附魔改用道具欄的外框、格子、按鈕',b:[['k2pop','打開 +10 武器小卡（看外框、品階框、按鈕）'],['k2enh','打開 +6 強化頁（危險區）'],['k2ench','打開附魔頁']]},
@@ -2862,6 +2868,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='cpull'){cloudPull().then(()=>toast('已從雲端下載','ok')).catch(e=>toast('下載失敗：'+SB_ERR(e.message),'bad'));return}
   if(k==='clogout'){ui.sheet=null;return cloudLogout()}
   if(k==='maintprev'){ui.sheet=null;render();return showMaint(null,true)}
+  if(k==='mk514'||k==='mk514m'){ui.sheet=null;ui.tab='market';MK.tab=k==='mk514m'?'mine':'buy';mkLoad();scrollTo(0,0);return render()}
   if(k==='mkopen'){ui.sheet=null;ui.tab='market';mkLoad();return render()}
   if(k==='mksettle'){mkSettle(false).then(()=>mkLoad());return}
   if(k==='mkisell'){S.items[STONE]=stones()+50;save();ui.mkPrice='';ui.mkQty=1;ui.sheet={t:'mksi',k:STONE};render();return toast('強化石 +50；填單價和數量後按確認上架','ok')}

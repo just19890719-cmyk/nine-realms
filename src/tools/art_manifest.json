@@ -1905,6 +1905,16 @@
    "status": "baseline",
    "sha256": "29e5388701cf48211bc68aebe2699bab257e852a5ef3fad6944b041015e79b06"
   },
+  "art/ui/bag2/bag2_chip.webp": {
+   "status": "pending",
+   "note": "v5.14 交易所：B-03 小膠囊（10/26 補生驗收）",
+   "sha256": "69eea54d2396570e6babbb39b6921442a1b74c197210fcd82afecd37ec7af3ea"
+  },
+  "art/ui/bag2/bag2_chip_on.webp": {
+   "status": "pending",
+   "note": "v5.14 交易所：B-03 小膠囊（10/26 補生驗收）",
+   "sha256": "99fd0c2767f337ab44334e87c7f4cc7052984b278349507bcfbc5c5891ba63b2"
+  },
   "art/ui/bag2/bag2_crk_l3.webp": {
    "status": "approved",
    "sha256": "8527d9f35b99f38e947817795f76ea454d7aebdf567c7734c9be123b0938aeae",
@@ -2036,6 +2046,16 @@
   "art/ui/bag2/bag2_rim_l6.webp": {
    "status": "baseline",
    "sha256": "07b55d5f83e78e639d8eb3d08426cc47bf17114957b4a5d67ad826f4e6daa3b3"
+  },
+  "art/ui/bag2/bag2_row.webp": {
+   "status": "pending",
+   "note": "v5.14 交易所：G 橫列卡（10/25 新元件 G 合圖）",
+   "sha256": "6941d963aecaeb6ffa9e2e1e7c5f8817225ebaac39307ec271795b55c4c314c7"
+  },
+  "art/ui/bag2/bag2_row_on.webp": {
+   "status": "pending",
+   "note": "v5.14 交易所：G 橫列卡（10/25 新元件 G 合圖）",
+   "sha256": "ff794310d6b9972bb6a809e74450e815243f1a638075d3d06f5f7d20e1cf4637"
   },
   "art/ui/bag2/bag2_rule_line.webp": {
    "status": "baseline",
