@@ -2702,6 +2702,7 @@ function migrateV2(o){
   return s;
 }
 function sanitize(s){
+  s=s&&typeof s==='object'&&!Array.isArray(s)?s:fresh();{const f=fresh();for(const k in f){const a=f[k],b=s[k];if(a!==null&&typeof a==='object'&&(b===null||typeof b!=='object'||Array.isArray(a)!==Array.isArray(b)))s[k]=a}s.weapons=s.weapons.filter(w=>w&&typeof w==='object');s.jobs=s.jobs.filter(j=>j&&typeof j==='object');s.villages=s.villages.map((v,i)=>v&&typeof v==='object'?v:freshVillage(i))}   // v5.15 BUG-012 存檔缺欄位或型別錯（沒有 jobs、weapons 不是陣列、monthly 不見）時用新存檔的預設值補回，避免整個遊戲白畫面
   {const m=s.mats||{},it=s.items||{};s.mats={};s.items={};for(const k in MATS)s.mats[k]=Math.max(0,Math.floor(+m[k]||0));for(const k in ITEMS)s.items[k]=Math.max(0,Math.floor(+it[k]||0))}   // v4.43 舊材料、道具直接丟掉
   s.gold=Math.max(0,Math.floor(+s.gold||0));s.gems=Math.max(0,Math.floor(+s.gems||0));delete s.slag;
   {const c=s.codex&&typeof s.codex==='object'?s.codex:{};s.codex={};for(const k in c)if(BP[k]&&Array.isArray(c[k]))s.codex[k]=[0,1,2].map(j=>c[k][j]?1:0)}   // v4.72 武器圖鑑
@@ -3724,6 +3725,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
  {v:'5.16',d:'10/26',t:'商城換上道具欄同款外觀',b:['商城的外框、月卡、七日簽到、材料和道具格子，都改成跟道具欄同一套煤黑古銅','簽到的「今天」改用金色光框，已簽到的那天蓋上印記','價格、獎勵、購買方式都沒有改'],g:['shop']},
+ {v:'5.15',d:'10/26',t:'存檔白畫面、紅點重閃修正',b:['存檔資料不完整時，遊戲會自動補回預設值，不會再整個白畫面','提示紅點、收成按鈕的呼吸燈不會再一直重新閃'],g:[]},
  {v:'5.14',d:'10/26',t:'交易所換上道具欄同款外觀',b:['交易所的外框、標題、頁籤、篩選鈕、商品列，都改成跟道具欄同一套煤黑古銅','「我的上架」幾件移到標題右邊，跟道具欄的容量顯示一樣','買賣、上架、領取的規則都沒有改'],g:['mk']},
  {v:'5.12',d:'10/25',t:'小卡和頁面不再跳動、不再左右多出一截',b:['同款武器有好幾把時，按「熔解」小卡也不會變矮（窄手機也一樣）','手機很窄時，交易所的篩選列和村莊的「預估秒數」不會再把頁面撐寬、可以左右滑','武器小卡「下一級」說明換行時不會把「攻擊力」拆成兩半'],g:['bag']},
  {v:'5.11',d:'10/25',t:'強化、附魔頁的叉叉改回原本圓形',b:['強化頁、附魔頁上方的返回、說明、叉叉按鈕，改回原本的圓形圖示（v5.10 誤變成八角形）'],g:['enh','ench']},
@@ -5102,6 +5104,7 @@ function viewShop(){   // v5.16 換成道具欄母版（.b2）：主框、次面
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
  {v:'5.16',t:'商城換成道具欄母版（次面板、橫列卡、物品格、今天光框、已領取印記）',b:[['sh516','打開商城（今天可簽到）'],['sh516d','打開商城（月卡已領、今天已簽到）']]},
+ {v:'5.15',t:'兩個穩定度修正：壞存檔不白畫面、紅點呼吸不重閃',b:[['dot508','紅點呼吸不重閃：產生可交付武器＋收成，開村莊頁看紅點連續呼吸'],['badsave','壞存檔測試：存一份缺欄位的存檔後重新整理（應該正常進遊戲，不會白畫面）']]},
  {v:'5.14',t:'交易所換成道具欄母版（外框、頁籤、小膠囊篩選、橫列卡）',b:[['mk514','打開交易所（購買分頁，看新外觀）'],['mk514m','打開交易所「我的上架」'],['mkclaimt','待領取測試（2 賣出＋1 退回）']]},
  {v:'5.12',t:'畫面穩定永久測試 UI1～UI8；同款多把按熔解不變矮；320 寬不再撐出水平捲動',b:[['uitest','執行畫面穩定測試（UI1～UI8）'],['stk508','給 3 把同款 +0 並打開小卡（按熔解，高度不變）']]},
  {v:'5.11',t:'強化／附魔頁上方的返回、說明、叉叉改回原本圓形圖示',b:[['k2enh','打開強化頁（看上方三顆圓鈕）'],['k2ench','打開附魔頁（看上方三顆圓鈕）']]},
@@ -5353,6 +5356,8 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='affopen'){const c={},t=[0,0,0,0];for(let i=0;i<6000;i++){const x=Object.keys(ELEM)[rnd(0,5)],v=weighted([1,2,3],y=>ELEM_TW[y]);c[x]=(c[x]||0)+1;t[v]++}   // v4.44 屬性附魔
     return toast(`附魔 6000 次：${Object.entries(c).map(([x,n])=>ELEM[x].n+' '+n).join('、')}<br>等級：一級 ${t[1]}、二級 ${t[2]}、三級 ${t[3]}（應約 4200／1500／300）`,'ok')}
   if(k==='res77'){const wi=makeWeapon('dev_sword',2,6,[],[{k:'ice',v:3},null,null,null]),wf=makeWeapon('dev_sword',2,6,[],[{k:'fire',v:3},null,null,null]);save();ui.sheet={t:'w',id:wf.id,m:'ench'};render();return toast(`1-9 火焰騎兵：永凍之霜 ×${weakMul(8,wi)}（應 1.1）、滅世之焰 ×${weakMul(8,wf)}（應 0.9）`)}
+  if(k==='dot508'){const b=BPS.find(x=>!x.dev&&!x.unlock);if(b){makeWeapon(b.id,0,6);const w=makeWeapon(b.id,0,6);const i=S.villages.findIndex(v=>v.status!=='locked'&&v.weaponId==null);if(i>=0){deliverCore(i,w.id);const st=S.villages[i];st.cycleStart-=dur(i,w)*3+10;tick()}}ui.sheet=null;ui.tab='village';save();render();scrollTo(0,0);return toast('紅點、收成按鈕應該平順呼吸，不會每隔一下就重新閃')}
+  if(k==='badsave'){if(CLOUD_ONLY)return toast('正式網站只用雲端存檔，請在測試版用','bad');const o=JSON.parse(JSON.stringify(S));delete o.jobs;delete o.monthly;o.weapons=[null,...o.weapons];toast('已存一份缺欄位的存檔，重新整理中…');QUIET=true;try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}setTimeout(()=>location.reload(),500);return}
   if(k==='bag98'){const b=(BPS.find(x=>!x.dev&&!x.unlock)||BPS[0]);if(b)for(let n=0;n<60;n++)makeWeapon(b.id,0,1+n%12);ui.tab='armory';ui.atab='w';ui.acat='all';ui.ast='all';ui.aq='all';ui.sheet=null;save();render();scrollTo(0,0);return toast('往下捲，上方應該固定不動')}
   if(k==='bag96'){S.weapons=S.weapons||[];devdo('flvtest');const ts=S.weapons.filter(x=>x.test);if(ts[1])ts[1].lock=true;{const c=ts.find(x=>x.lv===7);if(c)c.ench=[{k:'broken',v:1},null,null,null]}const b=(BPS.find(x=>!x.dev&&!x.unlock)||BPS[0]);if(b){const n0=S.nextId;for(let n=0;n<3;n++)makeWeapon(b.id,0,0);makeWeapon(b.id,0,6);makeWeapon(b.id,0,6);S.seenW=n0-1}ui.tab='armory';ui.atab='w';ui.acat='all';ui.ast='all';ui.aq='all';ui.sheet=null;save();render();return toast('左上：駐／咒；右上：鎖頭／NEW；左下：強化等級；右下：數量')}
   if(k==='k2pop'||k==='k2enh'||k==='k2ench'){devdo('bag96');document.getElementById('toasts').innerHTML='';const lv=k==='k2pop'?10:6,w=S.weapons.find(x=>x.test&&x.lv===lv&&!isBroken(x))||S.weapons.find(x=>x.test);if(w){ui.sheet={t:'w',id:w.id,m:k==='k2pop'?'main':k==='k2enh'?'enh':'ench'};render()}return}
@@ -5518,8 +5523,12 @@ function render(){
   document.body.classList.toggle('bpc',!!V.querySelector(':scope > section.hero.ft-bp.fv-1,:scope > section.hero.ft-bp.fv-2'));   // v3.56 取代 CSS :has()（:has 掛在 body 上，每次 DOM 變動都要整頁重算）
   if(Math.abs(scrollY-y)>2)scrollTo(0,y); // 切換篩選時保持捲動位置
   {const els=[...document.querySelectorAll('#view .hscroll,#view .catbar')];if(els.length===hs.length)els.forEach((e,i)=>e.scrollLeft=hs[i])}
-  if(!ui.busy)renderLayer();updateLive();fitNames();chatBarPaint();
+  if(!ui.busy)renderLayer();updateLive();fitNames();chatBarPaint();animSync();
 }
+// v5.15 BUG-013 render() 每次重建 DOM，新元素上的循環動畫（紅點呼吸、收成按鈕脈動）會從頭播 → 看起來一直閃。
+// 這裡把這些循環動畫的起點對齊到頁面時間軸 0，重畫前後相位一樣。新增會被 render() 重建的循環動畫：把動畫名稱加進 ANIM_SYNC（或像 +9 裂縫用負的 animation-delay），run_tests.js 會檢查。
+const ANIM_SYNC=new Set(['givePulse','pulseO','pulse']);
+function animSync(){if(!document.getAnimations)return;for(const a of document.getAnimations())if(a.animationName&&ANIM_SYNC.has(a.animationName)&&a.playState==='running'&&a.startTime!==0)a.startTime=0}   // 只對齊正在播的；被暫停的（測試截圖凍結畫面）不要重新啟動
 // 武器名稱過長時逐步縮小字級（最小 11px），讓 +N 與完整名稱都顯示，不用「…」截斷
 // v3.56 效能：先全部讀、再全部寫（舊版每個名稱各自觸發好幾次版面重算，道具欄一多就卡）
 function fitNames(){const els=[...document.querySelectorAll('.wt-name')];if(!els.length)return;els.forEach(el=>{if(el.style.fontSize)el.style.fontSize=''});
@@ -5537,7 +5546,7 @@ function renderLayer(){stkFollow();
   {const rk=r?JSON.stringify([r.t,r.title,r.html]):'';if(r&&rk===ui._lastRes)h=h.replace('<div class="ui-modal modal-card">','<div class="ui-modal modal-card still">');ui._lastRes=rk}   // v4.74 小卡內容沒變就不重播彈出動畫（每 250ms 的 render 會讓小卡像一直重新打開）
   const fa=document.activeElement,fid=fa&&fa.id&&L.contains(fa)?fa.id:null,cxl=document.getElementById('cxList'),cxs=cxl?cxl.scrollTop:null;   // v3.88 重畫時保留聊天輸入框焦點與訊息捲動位置
   L.innerHTML=h;ui._lastSheet=JSON.stringify(s);ui._lastSheetW=s&&s.t==='w'?s.id:null;{const n=fid&&document.getElementById(fid);if(n)n.focus({preventScroll:true});const c=document.getElementById('cxList');if(c)c.scrollTop=cxs==null?c.scrollHeight:cxs}document.documentElement.classList.toggle('scrimmed',!!s);
-  if(same){const n=document.querySelector('.sheet');if(n)n.scrollTop=st};fitNames()
+  if(same){const n=document.querySelector('.sheet');if(n)n.scrollTop=st};fitNames();animSync()
 }
 function updateLive(){
   if(QUIET)return;const t=NOW();renderRes();chTick();
