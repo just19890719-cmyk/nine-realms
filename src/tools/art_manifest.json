@@ -1845,6 +1845,11 @@
    "status": "baseline",
    "sha256": "9465b5050ddffe1e7a4afbb2c7e0eab4dc001d942110997ce31a32ea7b0b48ec"
   },
+  "art/ui/bag2/bag2_bp_stand.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：S-02 已選擇圖紙展示台，已驗收、畫面尚未使用",
+   "sha256": "cb7571b704e4fc29462fd7b89d5767b487fe8eb2073883f76172cbafb19e9554"
+  },
   "art/ui/bag2/bag2_btn_dan.webp": {
    "status": "baseline",
    "sha256": "02201e4becb52ea8676a5355e9eb6590c36675595461908347fa2e30fa52366b"
@@ -1905,6 +1910,21 @@
    "status": "baseline",
    "sha256": "29e5388701cf48211bc68aebe2699bab257e852a5ef3fad6944b041015e79b06"
   },
+  "art/ui/bag2/bag2_chest1.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：B-02 活躍度寶箱 1 階，已驗收、畫面尚未使用",
+   "sha256": "0fcbe4a95f436410382aea96ca395c410589bcbb4089a243d7b299072069d7db"
+  },
+  "art/ui/bag2/bag2_chest2.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：B-02 活躍度寶箱 2 階，已驗收、畫面尚未使用",
+   "sha256": "7b4467aff76703c943e5f4d26bf59f3284cfc050a253b24bf0ba4091a7ddc679"
+  },
+  "art/ui/bag2/bag2_chest3.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：B-02 活躍度寶箱 3 階，已驗收、畫面尚未使用",
+   "sha256": "eb4f792c662d0bc8cc4f5599bd92e5a2fab252c30b352d670c8405c17756391e"
+  },
   "art/ui/bag2/bag2_chip.webp": {
    "status": "pending",
    "note": "v5.14 交易所：B-03 小膠囊（10/26 補生驗收）",
@@ -1914,6 +1934,11 @@
    "status": "pending",
    "note": "v5.14 交易所：B-03 小膠囊（10/26 補生驗收）",
    "sha256": "99fd0c2767f337ab44334e87c7f4cc7052984b278349507bcfbc5c5891ba63b2"
+  },
+  "art/ui/bag2/bag2_count.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：B-03 數字提醒紅圓，已驗收、畫面尚未使用",
+   "sha256": "1e4ad963057e170a863b39de7606e3b9dbe279335e6640a693149a2570739be0"
   },
   "art/ui/bag2/bag2_crk_l3.webp": {
    "status": "approved",
@@ -1938,6 +1963,51 @@
   "art/ui/bag2/bag2_field.webp": {
    "status": "baseline",
    "sha256": "44fa861f895b2528f4eddebd936a66f9f4fd93b58b72e3d1d2f81a78442e93ac"
+  },
+  "art/ui/bag2/bag2_gate_frame.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：S-03 登入／維護城門框，已驗收、畫面尚未使用",
+   "sha256": "d2ed9d7423dab7d72cd778cec45f220245b155291f48d1613d94f1f18f589427"
+  },
+  "art/ui/bag2/bag2_gr_a.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：B-01 評級 A 底板，已驗收、畫面尚未使用",
+   "sha256": "8a5d9b51e3b614927602b66b23396b8a863bcabf1051f1a8f96c039872530399"
+  },
+  "art/ui/bag2/bag2_gr_b.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：B-01 評級 B 底板，已驗收、畫面尚未使用",
+   "sha256": "bc0200d56f0ebcc0cfc36546cb39b99026adfa1e4ccd6f4626c17389c3c95e5b"
+  },
+  "art/ui/bag2/bag2_gr_c.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：B-01 評級 C 底板，已驗收、畫面尚未使用",
+   "sha256": "1c2802ea94c61468a1daef993f2a8347b4c047de5c9ea7d5ef7bb98ecdc856e2"
+  },
+  "art/ui/bag2/bag2_gr_s.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：B-01 評級 S 底板，已驗收、畫面尚未使用",
+   "sha256": "726d825949530083bdce6e1ccfe1c7ac0ba8474b2b41929fea4413c951dccb24"
+  },
+  "art/ui/bag2/bag2_gr_ss.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：B-01 評級 SS 底板，已驗收、畫面尚未使用",
+   "sha256": "46345dcc54a13dec810da7d287227d3bd25f895527790c2b7b1d308f767c0f3f"
+  },
+  "art/ui/bag2/bag2_guild.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：S-04 公會紋章預設圖，已驗收、畫面尚未使用",
+   "sha256": "53926a2f26ae674330c94610c2cc8c41bf415fef36b9cd9123b27da17176c879"
+  },
+  "art/ui/bag2/bag2_hp_fill.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：B-04 血條填充，已驗收、畫面尚未使用",
+   "sha256": "22fe89cd7e2a91110fcbe810d5b53b1e2a880a12a32708a14b33d3a11bc6584e"
+  },
+  "art/ui/bag2/bag2_hp_frame.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：B-04 血條外框，已驗收、畫面尚未使用",
+   "sha256": "ea240bcbe8de5ee58dd24ec608e1b2386767039a66c331c8a0ca31ee01f23dcd"
   },
   "art/ui/bag2/bag2_ic_all.webp": {
    "status": "baseline",
@@ -1983,6 +2053,16 @@
    "status": "baseline",
    "sha256": "7f459fc2b63cded0c06298a78d4ad49d1bc3dc7e6d5ff895450834e2a7b16ac8"
   },
+  "art/ui/bag2/bag2_knob.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：B-03 音量把手，已驗收、畫面尚未使用",
+   "sha256": "27277769404d1d191f5b50ef2ce4fd1ae5283f26199157ae619bca13202a1359"
+  },
+  "art/ui/bag2/bag2_lv_badge.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：B-03 等級徽章，已驗收、畫面尚未使用",
+   "sha256": "dad6b429d833fd775ed57b6262eed45a774b1c8d5c050e099dd1a5becded61cb"
+  },
   "art/ui/bag2/bag2_main_frame.webp": {
    "status": "baseline",
    "sha256": "e73df1d0b00b64d3bf0a77e7584bd0030449e6ab357ab80be43f16921ece1eee"
@@ -1991,9 +2071,79 @@
    "status": "baseline",
    "sha256": "e31d64ae23a39634e20a232a97ba52d04245f016d398e025fa774069508cfc6d"
   },
+  "art/ui/bag2/bag2_nav_bar.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：S2 底部導覽底板，已驗收、畫面尚未使用",
+   "sha256": "833f1d5279ad32d14d58de535396bcc95ce304d0e87faebbef52b50bb8bac293"
+  },
+  "art/ui/bag2/bag2_nav_glow.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：H 導覽選中光（黑底，screen 疊加），已驗收、畫面尚未使用",
+   "sha256": "d18ef11f6d32d562c4937a286945ff4a7a9ee7cc7fa06c452433599035714a34"
+  },
   "art/ui/bag2/bag2_new.webp": {
    "status": "baseline",
    "sha256": "ecd9ed7e5e8885040e40e5ab3908fc8dbd99f1ed50c1d8633eb8575983f34593"
+  },
+  "art/ui/bag2/bag2_notice.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：G 通知條，已驗收、畫面尚未使用",
+   "sha256": "fb6635968ea8dd98e73d5b6cfe59f55a03849fb5b357cca20c1750061d25017d"
+  },
+  "art/ui/bag2/bag2_q_enhance.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：B-02 任務圖示：強化，已驗收、畫面尚未使用",
+   "sha256": "2fd3f02a6e333e1aeb7b8a50c5516d40e806bf1e31ac35a65de8ac4c1e9f398c"
+  },
+  "art/ui/bag2/bag2_q_forge.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：B-02 任務圖示：鍛造，已驗收、畫面尚未使用",
+   "sha256": "31f74e463f0034baa862c2125bd7d972a0b7e9d30782cd76da45156765d2a7e2"
+  },
+  "art/ui/bag2/bag2_q_harvest.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：B-02 任務圖示：收成，已驗收、畫面尚未使用",
+   "sha256": "27b2c0443271fac76ca0744c3358e3c14882631d23ce3a73afb3e34056b26053"
+  },
+  "art/ui/bag2/bag2_q_login.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：B-02 任務圖示：登入，已驗收、畫面尚未使用",
+   "sha256": "e997f7f2ddcc42ac6de90a0987bccf50312b87415ba0d59fafdc86b7fb3a8f63"
+  },
+  "art/ui/bag2/bag2_q_melt.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：B-02 任務圖示：熔解，已驗收、畫面尚未使用",
+   "sha256": "188baf298e318904b2f3826ca75a7c8759656ef05c370344db1d94fdca0641cf"
+  },
+  "art/ui/bag2/bag2_rank1.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：B-01 第 1 名底板，已驗收、畫面尚未使用",
+   "sha256": "0297d6a38b25aa90b05c70b4aa4731827555b72e1a148d2be88a085d7a7a18d8"
+  },
+  "art/ui/bag2/bag2_rank2.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：B-01 第 2 名底板，已驗收、畫面尚未使用",
+   "sha256": "d7937265ce7410e6f6aa54365fe6498ccc7d171e6a707668268b12cc02fc8251"
+  },
+  "art/ui/bag2/bag2_rank3.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：B-01 第 3 名底板，已驗收、畫面尚未使用",
+   "sha256": "693732b14691bc2b296bcbd5d8f58fdadea9a00f09977884752eb3a343432542"
+  },
+  "art/ui/bag2/bag2_res_cap.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：B-03 資源膠囊，已驗收、畫面尚未使用",
+   "sha256": "9cb3383f810e9bd777daf50f84229f89b1d29883bd1b01a6dc506dd07f3f40e2"
+  },
+  "art/ui/bag2/bag2_rib_fail.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：G 失敗結果橫幅，已驗收、畫面尚未使用",
+   "sha256": "2ade36462fe45687cf783c1c5135956f690c3434e7f679c29cb071c728ba264a"
+  },
+  "art/ui/bag2/bag2_rib_ok.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：G 成功結果橫幅，已驗收、畫面尚未使用",
+   "sha256": "a85611534725002a246f2fa7872f9c1539154850e399c1896b7fcf05c078128f"
   },
   "art/ui/bag2/bag2_rim9_l3.webp": {
    "status": "approved",
@@ -2052,6 +2202,11 @@
    "note": "v5.14 交易所：G 橫列卡（10/25 新元件 G 合圖）",
    "sha256": "6941d963aecaeb6ffa9e2e1e7c5f8817225ebaac39307ec271795b55c4c314c7"
   },
+  "art/ui/bag2/bag2_row_lock.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：G 上鎖橫列卡，已驗收、畫面尚未使用",
+   "sha256": "bcfdf6419eac680e7c002c0121cba9dcf76b4545d811b8593b128350215b35a9"
+  },
   "art/ui/bag2/bag2_row_on.webp": {
    "status": "pending",
    "note": "v5.14 交易所：G 橫列卡（10/25 新元件 G 合圖）",
@@ -2090,6 +2245,26 @@
    "note": "v5.17 商城：H 已領取印記（10/25 新元件 H 合圖 k_stamp）",
    "sha256": "e6e00b9671fe5f2548ee0c42b78faccb4836cc0b838306f8cd85a2e017d8fee8"
   },
+  "art/ui/bag2/bag2_stamp_first.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：B-04 首次收復印記，已驗收、畫面尚未使用",
+   "sha256": "ef91521fc3774ef0516771d0d1edb50c6cc268d1e91db57145c705d28d44078d"
+  },
+  "art/ui/bag2/bag2_stamp_record.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：B-04 新紀錄印記，已驗收、畫面尚未使用",
+   "sha256": "23cd4436b2f132ea5b6b39d3417f1a1ef298e35bef39e2e5c9b6556000f6251c"
+  },
+  "art/ui/bag2/bag2_step_minus.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：H 數量－，已驗收、畫面尚未使用",
+   "sha256": "7cece15b64cc6fa66092be8800793231660f75f33dee869c007fa351c050cf96"
+  },
+  "art/ui/bag2/bag2_step_plus.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：H 數量＋，已驗收、畫面尚未使用",
+   "sha256": "23f528f13964cab55b2a58fb3987b336ab2a2f8196446634bcf0ebc399d725d0"
+  },
   "art/ui/bag2/bag2_sub.webp": {
    "status": "baseline",
    "sha256": "9eb02ef0dfb4e5f36d1236d94a03e4cda4d105b9a01f81f69255d8cfcc4052ff"
@@ -2110,6 +2285,16 @@
    "status": "baseline",
    "sha256": "f63f6d6ab731a85c16bd6a38a0d5544c2cb246abfd7e164e2b171b7232097673"
   },
+  "art/ui/bag2/bag2_tag_harvest.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：B-04 可收成小標，已驗收、畫面尚未使用",
+   "sha256": "da350d3f0fb4ddc4a2a6fb70ec6fde1fe30160778d2acf03b0f68f03d4344005"
+  },
+  "art/ui/bag2/bag2_tag_next.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：B-04 下一個挑戰緞帶，已驗收、畫面尚未使用",
+   "sha256": "bd5ac9ed69e2253a048881562a5c9d7fc802078686bc65585020a61acb1c6d8e"
+  },
   "art/ui/bag2/bag2_tag_post.webp": {
    "status": "baseline",
    "sha256": "bc1111c4666edf363b37b7545b42f742db9e164bad7373859dc44c45c364481c"
@@ -2117,6 +2302,16 @@
   "art/ui/bag2/bag2_tgl.webp": {
    "status": "baseline",
    "sha256": "115de1c969646fe0ee5278b08ddc87267e6e1c712e064682fb07093c434f3233"
+  },
+  "art/ui/bag2/bag2_tgl_off.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：H 開關（關），已驗收、畫面尚未使用",
+   "sha256": "3638338bbd1596c5fb52b498c4f756e2a6f42bfe7b541296e635d68cf58b954e"
+  },
+  "art/ui/bag2/bag2_tgl_on.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：H 開關（開），已驗收、畫面尚未使用",
+   "sha256": "7a707ee66832d3b70f9425acee12f1ef91adb20922b66400a431d1f69761203e"
   },
   "art/ui/bag2/bag2_title_l.webp": {
    "status": "baseline",
@@ -2130,6 +2325,11 @@
    "status": "pending",
    "note": "v5.17 商城：H 簽到「今天」光框（10/25 新元件 H 合圖 k_today）",
    "sha256": "bf082d36f085d254abdc7339596096f9b2242fdb5fcbecf740a0de6cb01fc824"
+  },
+  "art/ui/bag2/bag2_tut_box.webp": {
+   "status": "pending",
+   "note": "預先放入（Mochi 2026-10-26 「全部放進遊戲」）：S-01 新手導覽說明框，已驗收、畫面尚未使用",
+   "sha256": "8b021371c4d8925ed5a0e978a8f459bdc663bb3f62387928eeda3f33041be7aa"
   },
   "art/ui/fp_blue.webp": {
    "status": "baseline",
