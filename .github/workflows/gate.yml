@@ -1,0 +1,84 @@
+# 諸神鐵匠 強制驗收關卡（v5.12）：每個要合併到 main 的 PR 都自動跑 node src/tools/gate.js
+# main 的分支規則把「gate」設成必須通過，這一項沒過，合併按鈕就是灰的（管理員也不能略過）。
+# 同時維護四個狀態標籤：程式完成／測試通過／視覺驗收通過／正式合併完成（推新 commit 會自動撤掉「測試通過」和「視覺驗收通過」）。
+name: gate
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, reopened, synchronize, edited, ready_for_review, converted_to_draft, closed]
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+concurrency:
+  group: gate-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  gate:
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: 狀態標籤（開始）
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request, n = pr.number, a = context.payload.action;
+            const COLORS = { '程式完成': '6f42c1', '測試通過': '2da44e', '視覺驗收通過': 'bf8700', '正式合併完成': '0969da', '流程檔變更': 'd1242f' };
+            for (const [name, color] of Object.entries(COLORS)) { try { await github.rest.issues.createLabel({ ...context.repo, name, color }) } catch (e) {} }
+            const rm = async name => { try { await github.rest.issues.removeLabel({ ...context.repo, issue_number: n, name }) } catch (e) {} };
+            await rm('測試通過');
+            if (a === 'synchronize') await rm('視覺驗收通過');
+            if (pr.draft) await rm('程式完成'); else await github.rest.issues.addLabels({ ...context.repo, issue_number: n, labels: ['程式完成'] });
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: 安裝 Playwright
+        run: |
+          npm i --no-save --no-package-lock playwright@1.63.0
+          npx playwright install --with-deps chromium
+          sudo apt-get install -y -q fonts-noto-cjk   # 中文字型，截圖和對照圖上的字才不會變方塊
+      - name: 跑關卡
+        id: gate
+        run: |
+          node src/tools/gate.js --base=origin/${{ github.base_ref }}
+      - name: 上傳報告和對照圖
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate-report-${{ github.event.pull_request.number }}
+          path: |
+            test-out/gate-report.md
+            test-out/report.md
+            test-out/compare/
+            test-out/shots/
+          if-no-files-found: warn
+      - name: 狀態標籤（結果）＋PR 留言
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs'), n = context.payload.pull_request.number, ok = '${{ steps.gate.outcome }}' === 'success';
+            if (ok) await github.rest.issues.addLabels({ ...context.repo, issue_number: n, labels: ['測試通過'] });
+            let r = {}; try { r = JSON.parse(fs.readFileSync('test-out/gate-result.json', 'utf8')) } catch (e) {}
+            if ((r.warn || []).some(w => w.startsWith('流程檔有修改'))) await github.rest.issues.addLabels({ ...context.repo, issue_number: n, labels: ['流程檔變更'] });
+            else { try { await github.rest.issues.removeLabel({ ...context.repo, issue_number: n, name: '流程檔變更' }) } catch (e) {} }
+            let md = '關卡沒有產生報告（gate.js 中途停止），請看 Actions 紀錄。'; try { md = fs.readFileSync('test-out/gate-report.md', 'utf8') } catch (e) {}
+            const run = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const body = `<!-- gate-report -->\n${md.slice(0, 60000)}\n\n對照圖和完整報告：[下載這次的關卡結果](${run})（頁面最下面 Artifacts）`;
+            const cs = await github.paginate(github.rest.issues.listComments, { ...context.repo, issue_number: n });
+            const old = cs.find(c => c.body && c.body.startsWith('<!-- gate-report -->'));
+            if (old) await github.rest.issues.updateComment({ ...context.repo, comment_id: old.id, body });
+            else await github.rest.issues.createComment({ ...context.repo, issue_number: n, body });
+  merged:
+    if: github.event.action == 'closed' && github.event.pull_request.merged
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            try { await github.rest.issues.createLabel({ ...context.repo, name: '正式合併完成', color: '0969da' }) } catch (e) {}
+            await github.rest.issues.addLabels({ ...context.repo, issue_number: context.payload.pull_request.number, labels: ['正式合併完成'] });
