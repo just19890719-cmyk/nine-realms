@@ -567,12 +567,8 @@ function withTestBps(f){const keep=BPS.slice(),add=TEST_BPS.filter(b=>!BP[b.id])
 var TEST_LAST=null;
 function runTests0(mode,bd){
   if(mode==='econ')return econHtml(12)+econHtml(8);
-<<<<<<< HEAD
-  const r=runAll({N:100000});r.res.push(...bd,...frameLvTests(),...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...storyTests(),...curveTests(),...vNeedTests(),...vPickTests(),...bsTglTests(),...godWordTests(),...hitTests(),...enchTests(),...wsTests(),...wpnTests(),...stackTests());const pass=r.res.filter(x=>x.pass).length;
-  TEST_LAST={res:r.res,done:true};   // v5.08 統一測試指令（src/tools/run_tests.js）讀這裡的逐項結果
-=======
   const r=runAll({N:100000});r.res.push(...bd,...frameLvTests(),...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...storyTests(),...curveTests(),...vNeedTests(),...vPickTests(),...bsTglTests(),...godWordTests(),...hitTests(),...enchTests(),...wsTests(),...wpnTests(),...stackTests(),...uiStableTests());const pass=r.res.filter(x=>x.pass).length;
->>>>>>> 170f2b4 (v5.08 畫面穩定永久測試 UI1～UI8；同款熔解不變矮；320 寬不撐出水平捲動)
+  TEST_LAST={res:r.res,done:true};   // v5.08 統一測試指令（src/tools/run_tests.js）讀這裡的逐項結果
   return `<div><b>${pass}/${r.res.length} 通過</b>（${r.ms} 毫秒）</div>`+resHtml(r.res);
 }
 // v5.08 永久回歸：v5.01～v5.07 修過的道具欄／小卡畫面問題（BUG_HISTORY 同類問題：小卡多一行字就長高、捲動時上方跳、重畫時動畫重播、開小卡時捲軸消失畫面左右跳）
