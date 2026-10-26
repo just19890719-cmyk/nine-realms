@@ -2216,4 +2216,7 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 @media (max-width:420px){.sh2 .matbox .mb-n{font-size:10.5px;letter-spacing:-.04em}}
 @media (max-width:420px){.sh2 .b2-well{padding:8px 6px}.sh2 .matgrid,.sh2 .sg-grid{gap:4px}.sh2 .matbox.ms-box:not(#_){border-width:4px;border-image-width:4px}.sh2 .sg-day:not(#_){border-width:5px;border-image-width:5px}.sh2 .sg-day .ach-rw img{width:13px;height:13px}.sh2 .sg-day .ach-rw:not(#_){padding:1px 3px;gap:1px}.sh2 .sg-day.today::after{inset:-7px}}
 @media (max-width:380px){.sh2 .matbox .mb-n{font-size:10px}.sh2 .sg-day .ach-rw b{font-size:11px}.sh2 .sg-day .ach-rw:not(#_){padding:1px 4px}.sh2-month b{font-size:14px}.sh2 .sg-panel>.small{font-size:11.5px}}
+/* v5.16 外框本身比 310px 窄（320～340 寬手機、或被放進窄容器）時再縮一級，名字和獎勵數字才不會被切 */
+.sh2{container-type:inline-size}
+@container (max-width:310px){.sh2 .matbox .mb-n{font-size:9px;letter-spacing:-.06em}.sh2 .matbox.ms-box:not(#_){border-width:3px;border-image-width:3px}.sh2 .sg-day .ach-rw b{font-size:10px;letter-spacing:-.04em}.sh2 .sg-day .ach-rw:not(#_){padding:1px 2px;gap:0}.sh2 .sg-day .ach-rw img{width:11px;height:11px}.sh2 .sg-day:not(#_){border-width:4px;border-image-width:4px}}
 </style>
