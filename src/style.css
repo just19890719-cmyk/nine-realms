@@ -2151,4 +2151,35 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 .wp-alt{display:grid;margin-top:8px}.wp-notes .wp-alt:first-child{margin-top:0}.wp-alt>.wp-note{grid-area:1/1;margin-top:0}.wp-alt>.off,.armnote.off{visibility:hidden}
 /* v5.12 320 寬交易所篩選列不撐破畫面：格子項目可以縮、幣別／排序那排放不下就跟分類列一樣左右滑（不換行，375／430 外觀不變） */
 .mk-filter>*{min-width:0}.mk-chips.row{overflow-x:auto;scrollbar-width:none}.mk-chips.row::-webkit-scrollbar{display:none}
+/* ===== v5.14 交易所換成道具欄母版（排程 2-1）：主框／頁首／頁籤沿用 .b2；篩選＝bag2_chip 小膠囊、商品＝bag2_row 橫列卡（新素材，art/ui/bag2/）；只在 .mk2 底下 ===== */
+.mk2 .mk-filter{display:grid;gap:6px;margin:0 0 2px}
+.mk2 .mk-chips{display:flex;gap:4px;align-items:center;margin:0;padding-bottom:2px}
+.mk2 .mk-chips.hscroll{margin-top:0}
+.mk2-chip{flex:none;position:relative;height:30px;padding:0 9px;border:1px solid transparent;background:none;border-image:url(art/ui/bag2/bag2_chip.webp) 0 46 fill / 0 11px stretch;color:#c3c8cf;font-size:12px;line-height:28px;white-space:nowrap;text-shadow:0 1px 0 #000}
+.mk2-chip.on{border-image-source:url(art/ui/bag2/bag2_chip_on.webp);color:var(--b2-gold-hi)}
+.mk2-chip::after{content:"";position:absolute;left:0;right:0;top:-5px;bottom:-5px}   /* 點擊範圍上下各多 5px */
+.mk2 .b2-sec span{display:flex;align-items:center;gap:6px}
+.mk2 .b2-sec .mk-ref:not(#_){width:24px;height:24px;font-size:14px;line-height:1;padding:0;flex:none}
+.mk2 .mk-list{display:grid;gap:6px}
+.b2.mk2 .mk-row:not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_row.webp) 32 fill / 16px stretch;padding:8px 12px 8px 10px;gap:10px;color:var(--b2-text)}
+.b2.mk2 .mk-row.me:not(#_):not(#_){border-image-source:url(art/ui/bag2/bag2_row_on.webp)}
+.b2.mk2 .mk-row:active:not(#_){transform:translateY(1px)}
+.b2.mk2 .mk-art:not(#_){border:0;border-image:none;border-radius:0;background:url(art/ui/bag2/bag2_slot.webp) 0 0/100% 100%;box-shadow:none}
+.b2.mk2 .mk-iart:not(#_){background:url(art/ui/bag2/bag2_slot.webp) 0 0/100% 100%}
+.mk2 .mk-nm{color:var(--b2-text)}.mk2 .mk-mid .small{color:var(--b2-mute)}
+.mk2 .mk-price b{color:var(--b2-num)}.mk2 .mk-pu i{color:var(--b2-mute)}
+.mk2 .mk-empty{padding:28px 0;color:var(--b2-mute)}.mk2 .mk-note{color:var(--b2-mute);margin:10px 2px 2px}
+/* 按鈕：跟武器小卡（.k2）同一套 bag2 按鈕 */
+.mk2 .ui-btn.btn:not(.ui-btn--icon):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_btn_sec2.webp) 0 70 fill / 0 19px stretch;color:var(--b2-text)}
+.mk2 .ui-btn.btn:not(.ui-btn--icon):active:not(:disabled):not(#_){border-image-source:url(art/ui/bag2/bag2_btn_sec2_p.webp)}
+.mk2 .ui-btn--primary.btn:not(.ui-btn--icon):not(#_){border-image:url(art/ui/bag2/bag2_btn_pri.webp) 0 55 fill / 0 16px stretch;color:#ffe7b0}
+.mk2 .ui-btn--primary.btn:not(.ui-btn--icon):active:not(:disabled):not(#_){border-image-source:url(art/ui/bag2/bag2_btn_pri_p.webp)}
+.mk2 .ui-btn.btn:not(.ui-btn--icon):disabled:not(#_){border-image:url(art/ui/bag2/bag2_btn_off2.webp) 0 70 fill / 0 19px stretch;color:var(--b2-dim);opacity:1;filter:none}
+.mk2 .mk-mine>.btn{min-width:64px;height:40px}
+/* 待領取：外框改次面板，不再是金線圓角框 */
+.mk2 .mk-claim:not(#_){position:relative;isolation:isolate;border:0;border-radius:0;background:none;padding:8px 2px 2px;margin:0}
+.mk2 .mk-cl-head .t-gold{color:var(--b2-gold-hi)}
+.mk2 .mk-gate{display:grid;gap:12px;text-align:center;padding:18px 14px}
+@media (max-width:400px){.mk2 .b2-head h2::before,.mk2 .b2-head h2::after{width:34px}.mk2 .b2-cap{font-size:11px;padding-right:8px}}
+@media (max-width:340px){.mk2-chip{padding:0 9px;font-size:11px}.b2.mk2 .mk-row:not(#_):not(#_){padding:7px 9px 7px 8px;gap:8px}}
 </style>
