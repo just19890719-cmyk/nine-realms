@@ -334,7 +334,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='5.16';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='5.18';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1318,7 +1318,8 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
- {v:'5.16',d:'10/26',t:'新增手機畫面等比適配測試',b:['加入不同尺寸手機的畫面等比適配：以 390 寬為準，360～440 寬的手機版型一致、只調整顯示比例','目前只在測試模式開啟，一般玩家的畫面沒有變化']},
+ {v:'5.18',d:'10/26',t:'新增手機畫面等比例適配',b:['加入不同尺寸手機的畫面等比適配：以 390 寬為準，360～440 寬的手機版型一致、只調整顯示比例','目前只在測試模式開啟，一般玩家的畫面沒有變化']},
+ {v:'5.17',d:'10/26',t:'商城換上道具欄同款外觀',b:['商城的外框、月卡、七日簽到、材料和道具格子，都改成跟道具欄同一套煤黑古銅','簽到的「今天」改用金色光框，已簽到的那天蓋上印記','價格、獎勵、購買方式都沒有改'],g:['shop']},
  {v:'5.15',d:'10/26',t:'存檔白畫面、紅點重閃修正',b:['存檔資料不完整時，遊戲會自動補回預設值，不會再整個白畫面','提示紅點、收成按鈕的呼吸燈不會再一直重新閃'],g:[]},
  {v:'5.14',d:'10/26',t:'交易所換上道具欄同款外觀',b:['交易所的外框、標題、頁籤、篩選鈕、商品列，都改成跟道具欄同一套煤黑古銅','「我的上架」幾件移到標題右邊，跟道具欄的容量顯示一樣','買賣、上架、領取的規則都沒有改'],g:['mk']},
  {v:'5.12',d:'10/25',t:'小卡和頁面不再跳動、不再左右多出一截',b:['同款武器有好幾把時，按「熔解」小卡也不會變矮（窄手機也一樣）','手機很窄時，交易所的篩選列和村莊的「預估秒數」不會再把頁面撐寬、可以左右滑','武器小卡「下一級」說明換行時不會把「攻擊力」拆成兩半'],g:['bag']},
@@ -2621,7 +2622,7 @@ function viewDaily(){const pts=dailyPts();
    <div class="small muted center">任務每天 0 點重置，完成後自動加活躍度。</div>`}
 function viewSign(){const rd=signReady(),cur=rd?S.sign.n%SIGN.length:S.sign.n-1;
   return `<div class="sg-grid">${SIGN.map((r,i)=>{const st=i<cur||(!rd&&i===cur)?'done':i===cur?'today':'';
-    return `<div class="sg-day ${st} ${i===SIGN.length-1?'big':''}"><span class="sg-n">第 ${i+1} 天</span><span class="sg-rws">${Object.entries(r).map(([k,n])=>`<span class="ach-rw">${img(rwIcon(k))}<b>×${fmtS(n)}</b></span>`).join('')}</span>${st==='done'?img('ic_check','sg-ok'):''}</div>`}).join('')}</div>
+    return `<div class="sg-day ${st} ${i===SIGN.length-1?'big':''}"><span class="sg-n">第 ${i+1} 天</span><span class="sg-rws">${Object.entries(r).map(([k,n])=>`<span class="ach-rw">${img(rwIcon(k))}<b>×${fmtS(n)}</b></span>`).join('')}</span>${st==='done'?'<i class="sg-ok sg-stamp"></i>':''}</div>`}).join('')}</div>
    ${btn(rd?`簽到領取第 ${cur+1} 天獎勵`:'今天已簽到，明天再來','qsign',{cls:(rd?'btn-primary':'btn-sec')+' big',dis:!rd})}
    <div class="small muted center">漏簽不會歸零；第 7 天領完後從第 1 天重新開始。</div>`}
 function sheetAch(){const v=ui.achV||'A',nDone=ACH.filter(a=>S.ach[a.id]).length,nReady=ACH.filter(a=>achSt(a)==='ready').length;
@@ -2680,24 +2681,25 @@ const INFO={
   sign:()=>({icon:'ic_check',title:'七日簽到',html:'每天可以簽到一次，漏簽不會歸零；第 7 天領完後從第 1 天重新開始。<br><br>每天第一次進遊戲會自動打開商城的簽到。'}),
   monthly:()=>({icon:'it_monthly',title:'北境月卡（免費）',html:'領取後立即獲得 300 鑽石，30 天內每天可以領 50 鑽石。<br><br>封測期間免費。'}),
 };
-function viewShop(){
+function viewShop(){   // v5.17 換成道具欄母版（.b2）：主框、次面板、橫列卡、物品格、今天光框、已領取印記（排程 2-2）
   const on=monthlyOn(),days=Math.ceil((S.monthly.until-NOW())/864e5);
   const info=k=>`<button class="ui-iconbtn info-btn" data-act="info" data-k="${k}" aria-label="說明">${ic('info')}</button>`;
-  const card=(ic,name,sub,price,act,attrs,ik,dis)=>`<div class="ui-card pcard">${info(ik)}${img(ic,'pc-ico')}<b>${name}</b><span class="small muted">${sub}</span><button class="ui-btn ui-btn--secondary btn btn-sec sm pc-buy" data-act="${act}" ${attrs} ${dis?'disabled':''}>${price}</button></div>`;
-  return `<div class="pagehead"><h2>商城</h2></div>
-  ${BETA?'':`<div class="ui-panel panel">\${ptitle('鑽石（試玩版不扣款）')}<div class="gems3">\${[[60,'NT$30'],[330,'NT$150'],[1280,'NT$590']].map(([g,p])=>\`<button class="ui-card gemcard" data-act="topup" data-n="\${g}">\${img('it_gems')}<b>\${g} 鑽</b><span class="price">\${p}</span></button>\`).join('')}</div></div>`}
-  <div class="ui-panel panel month ${on?'on':''}">${info('monthly')}<div class="item">${img('it_monthly')}<div class="grow"><b>北境月卡<span class="nobr">（免費）</span></b><div class="small muted">${on?`剩餘 ${days} 天`:'<span class="nobr">立得 300 鑽</span><span class="nobr">＋每天 50 鑽</span>'}</div></div>
+  const box=(k,ico,nm)=>`<button class="matbox mb-tap ms-box" data-act="shopmat" data-k="${k}">${ico}<span class="mb-n">${nm}</span><span class="ms-p">${img('it_gold')}${fmtS(MAT_COST[k][0])}</span></button>`;
+  return `<section class="b2 sh2"><div class="b2-head"><h2>商城</h2></div><div class="b2-rule"></div>
+  ${BETA?'':`<div class="b2-well"><div class="b2-sec">鑽石<span>試玩版不扣款</span></div><div class="gems3">${[[60,'NT$30'],[330,'NT$150'],[1280,'NT$590']].map(([g,p])=>`<button class="ui-card gemcard" data-act="topup" data-n="${g}">${img('it_gems')}<b>${g} 鑽</b><span class="price">${p}</span></button>`).join('')}</div></div>`}
+  <div class="b2-well"><div class="b2-sec">北境月卡<span>${info('monthly')}</span></div>
+   <div class="sh2-month ${on?'on':''}"><div class="sh2-ico">${img('it_monthly')}</div><div class="grow"><b>北境月卡<span class="nobr">（免費）</span></b><div class="small muted">${on?`剩餘 ${days} 天`:'<span class="nobr">立得 300 鑽</span><span class="nobr">＋每天 50 鑽</span>'}</div></div>
    ${on?btn(S.monthly.last===today()?'今日已領':'領 50 鑽<i class="dot give-dot"></i>','claim',{cls:'btn-primary sm',dis:S.monthly.last===today()}):btn(BETA?'免費領取<i class="dot give-dot"></i>':'NT$150','monthly',{cls:'btn-primary sm'})}</div></div>
-  <div class="ui-panel panel sg-panel">${info('sign')}${ptitle('七日簽到')}${viewSign()}</div>
-  <div class="ui-panel panel">${ptitle('材料')}<div class="matgrid">${MAT_DEF.map(([k])=>`<button class="matbox mb-tap ms-box" data-act="shopmat" data-k="${k}">${img(MATART[k])}<span class="mb-n">${MATS[k]}</span><span class="ms-p">${img('it_gold')}${fmtS(MAT_COST[k][0])}</span></button>`).join('')}</div>
+  <div class="b2-well sg-panel"><div class="b2-sec">七日簽到<span>${info('sign')}</span></div>${viewSign()}</div>
+  <div class="b2-well"><div class="b2-sec">材料<span>點材料選數量</span></div><div class="matgrid">${MAT_DEF.map(([k])=>box(k,img(MATART[k]),MATS[k])).join('')}</div>
    <div class="small muted center ms-tip">點材料選數量，用金幣或鑽石購買</div></div>
-  <div class="ui-panel panel">${ptitle('道具')}<div class="matgrid">${[STONE,ENSTONE,REPAIR].map(k=>`<button class="matbox mb-tap ms-box" data-act="shopmat" data-k="${k}">${itemIco(k)}<span class="mb-n">${shopNm(k)}</span><span class="ms-p">${img('it_gold')}${fmtS(MAT_COST[k][0])}</span></button>`).join('')}</div></div>
-`;
+  <div class="b2-well"><div class="b2-sec">道具</div><div class="matgrid">${[STONE,ENSTONE,REPAIR].map(k=>box(k,itemIco(k),shopNm(k))).join('')}</div></div></section>`;
 }
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
- {v:'5.16',t:'手機 UI 等比適配（第 1 階段，預設關）：以 390 寬排版、最多放大 1.1 倍，360～440 手機版型一致',b:[['uifit','手機適配 開／關'],['uifitinfo','顯示裝置寬、排版寬與比例']]},
+ {v:'5.18',t:'手機 UI 等比適配（第 1 階段，預設關）：以 390 寬排版、最多放大 1.1 倍，360～440 手機版型一致',b:[['uifit','手機適配 開／關'],['uifitinfo','顯示裝置寬、排版寬與比例']]},
+ {v:'5.17',t:'商城換成道具欄母版（次面板、橫列卡、物品格、今天光框、已領取印記）',b:[['sh517','打開商城（今天可簽到）'],['sh517d','打開商城（月卡已領、今天已簽到）']]},
  {v:'5.15',t:'兩個穩定度修正：壞存檔不白畫面、紅點呼吸不重閃',b:[['dot508','紅點呼吸不重閃：產生可交付武器＋收成，開村莊頁看紅點連續呼吸'],['badsave','壞存檔測試：存一份缺欄位的存檔後重新整理（應該正常進遊戲，不會白畫面）']]},
  {v:'5.14',t:'交易所換成道具欄母版（外框、頁籤、小膠囊篩選、橫列卡）',b:[['mk514','打開交易所（購買分頁，看新外觀）'],['mk514m','打開交易所「我的上架」'],['mkclaimt','待領取測試（2 賣出＋1 退回）']]},
  {v:'5.12',t:'畫面穩定永久測試 UI1～UI8；同款多把按熔解不變矮；320 寬不再撐出水平捲動',b:[['uitest','執行畫面穩定測試（UI1～UI8）'],['stk508','給 3 把同款 +0 並打開小卡（按熔解，高度不變）']]},
@@ -2871,6 +2873,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='cpull'){cloudPull().then(()=>toast('已從雲端下載','ok')).catch(e=>toast('下載失敗：'+SB_ERR(e.message),'bad'));return}
   if(k==='clogout'){ui.sheet=null;return cloudLogout()}
   if(k==='maintprev'){ui.sheet=null;render();return showMaint(null,true)}
+  if(k==='sh517'||k==='sh517d'){ui.sheet=null;ui.result=null;ui.tab='shop';if(k==='sh517'){S.sign.last=''}else{if(!monthlyOn())S.monthly.until=NOW()+30*864e5;S.monthly.last=today();S.sign.last=today()}save();scrollTo(0,0);return render()}
   if(k==='mk514'||k==='mk514m'){ui.sheet=null;ui.tab='market';MK.tab=k==='mk514m'?'mine':'buy';mkLoad();scrollTo(0,0);return render()}
   if(k==='mkopen'){ui.sheet=null;ui.tab='market';mkLoad();return render()}
   if(k==='mksettle'){mkSettle(false).then(()=>mkLoad());return}
@@ -2975,7 +2978,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='eagle86b'){devBps();S.villages.forEach((v,i)=>{if(i<=12)v.status='cleared'});const st=S.villages[12],w=makeWeapon('dev_sword',2,6,[]);st.weaponId=w.id;st.cycleStart=NOW()-dur(12,w)*.3;delete MONFX.hp[12];ui.realm=1;ui.tab='village';ui.sheet=null;ui.bsOpen=12;save();render();setTimeout(()=>document.querySelectorAll('#view .vcard')[2]?.scrollIntoView({block:'start'}),50);return}
   if(k==='eagle86'){S.villages.forEach((v,i)=>{if(i<12&&v.status==='locked')v.status='cleared'});if(S.villages[12].status==='locked')S.villages[12].status='open';ui.realm=1;ui.tab='village';ui.sheet={t:'v',i:12};render();return}
   if(k==='stk508'){const b=(BPS.find(x=>!x.dev&&!x.unlock)||BPS[0]);const ws=[0,1,2].map(()=>makeWeapon(b.id,0,0));save();ui.tab='armory';ui.atab='w';ui.meltArm=null;ui.sheet={t:'w',id:ws[0].id,m:'main'};render();return toast('已給 3 把同款 +0：按「熔解」，小卡高度不能變（375 寬也一樣）','ok')}   // v5.08
-  if(k==='uifit'||k==='uifitinfo'){if(k==='uifit'){try{localStorage.setItem(UIFIT_KEY,uiFitOn()?'0':'1')}catch(e){}uiFit()}   // v5.16 手機等比適配開關
+  if(k==='uifit'||k==='uifitinfo'){if(k==='uifit'){try{localStorage.setItem(UIFIT_KEY,uiFitOn()?'0':'1')}catch(e){}uiFit()}   // v5.18 手機等比適配開關
     toast(`手機適配：${uiFitOn()?'開':'關'}｜裝置寬 ${uiDevW()}px → 排版寬 ${innerWidth}px，比例 ${Math.round((uiFitOn()?getUIScale(uiDevW()):1)*1000)/10}%`+(/fit/.test(location.hash)?'（網址有 #fit，固定開）':''),'ok');return}
   if(k==='uitest'){if(typeof uiStableTests!=='function'){const sc=document.createElement('script');sc.src='tests.js?v='+BUILD_ID;sc.charset='utf-8';sc.onload=()=>devdo(k);sc.onerror=()=>toast('測試程式沒有載入。');document.head.appendChild(sc);return}
     const r=uiStableTests(),bad=r.filter(x=>!x.pass);render();return toast(`畫面穩定測試 ${r.length-bad.length}/${r.length} 通過${bad.length?'：'+bad.map(x=>x.name.split(' ')[0]).join('、'):''}`,bad.length?'':'ok')}   // v5.08
@@ -3131,7 +3134,7 @@ function fitNames(){const els=[...document.querySelectorAll('.wt-name')];if(!els
   const base=parseFloat(getComputedStyle(m[0][0]).fontSize)||14;m.forEach(([el,r])=>{el.style.fontSize=Math.max(11,Math.floor(base*r*2)/2)+'px'});
   m.forEach(([el])=>{let f=parseFloat(el.style.fontSize);if(el.scrollWidth>el.clientWidth+.5&&f>11)el.style.fontSize=Math.max(11,f-1)+'px'})}
 if(typeof window!=='undefined')window.addEventListener('resize',()=>fitNames());
-// v5.16 手機 UI 等比適配（規範 V1.0）：以 390 寬排版，交給手機瀏覽器原生等比縮放（上限 1.1 倍）；觸控座標、固定定位、安全區都由瀏覽器處理
+// v5.18 手機 UI 等比適配（規範 V1.0）：以 390 寬排版，交給手機瀏覽器原生等比縮放（上限 1.1 倍）；觸控座標、固定定位、安全區都由瀏覽器處理
 // 第 1 階段只在開發者工具打開（或網址加 #fit）才生效；存在這台裝置的 localStorage，不進存檔。桌機瀏覽器不吃 viewport，維持原樣
 const UI_BASE=390,UI_MAX=1.1,UIFIT_KEY='nr_uifit',VP_DEF='width=device-width,initial-scale=1,viewport-fit=cover';
 function getUIScale(dw){return Math.min(dw/UI_BASE,UI_MAX)}

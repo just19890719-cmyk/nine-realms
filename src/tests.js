@@ -525,7 +525,7 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.44 舊武器刪除：要在放回測試資料前檢查
-  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
+  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),...sh2Tests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
     T('BD2 神明材質階、神格覺醒拿掉',TIERS.length===5&&typeof GOD==='undefined'&&typeof awkN==='undefined',`材質 ${TIERS.length} 階`)];
   return withTestBps(()=>runTests0(mode,bd))}
 // v4.44 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
@@ -572,7 +572,7 @@ function runTests0(mode,bd){
   return `<div><b>${pass}/${r.res.length} 通過</b>（${r.ms} 毫秒）</div>`+resHtml(r.res);
 }
 // v5.08 永久回歸：v5.01～v5.07 修過的道具欄／小卡畫面問題（BUG_HISTORY 同類問題：小卡多一行字就長高、捲動時上方跳、重畫時動畫重播、開小卡時捲軸消失畫面左右跳）
-// v5.16 手機 UI 等比適配：比例公式（規範 V1.0）與排版寬度
+// v5.18 手機 UI 等比適配：比例公式（規範 V1.0）與排版寬度
 function uiFitTests(){if(typeof getUIScale!=='function')return[];const W=[[320,82.1,390],[360,92.3,390],[375,96.2,390],[390,100,390],[402,103.1,390],[430,110,391],[440,110,400]];
   const bad=W.filter(([w,p,l])=>Math.abs(getUIScale(w)*100-p)>0.06||uiLayoutW(w)!==l).map(([w])=>w+'px：'+(getUIScale(w)*100).toFixed(1)+'%／排版 '+uiLayoutW(w));
   return [T('UF1 手機適配比例 360＝92.3%、390＝100%、430 以上上限 110%，360～429 一律用 390 寬排版',!bad.length,bad.length?bad.join('；'):'7 種寬度都正確')]}
@@ -759,6 +759,19 @@ function k2Tests(){const S0=S,sh0=ui.sheet,r0=ui.result;S=JSON.parse(JSON.string
     return out}
   catch(e){return[T('K2 UI 母版延伸測試',false,e.message)]}finally{S=S0;ui.sheet=sh0;ui.result=r0;renderLayer()}}
 // v5.14 交易所換成道具欄母版：外框／頁籤／小膠囊／橫列卡都用 bag2，沒有舊框（重新整理鈕是圓形圖示鈕，維持原本的圖）；標題右邊的上架數不被外框裁掉、頁面不撐寬
+function sh2Tests(){const tab0=ui.tab,sh0=ui.sheet,y0=scrollY,sl0=S.sign.last,sn0=S.sign.n;
+  try{const out=[],bis=e=>getComputedStyle(e).borderImageSource;ui.sheet=null;ui.tab='shop';S.sign.last='';render();const sc=document.querySelector('#view section.b2.sh2');
+    const old=sc?[...sc.querySelectorAll('*:not(.info-btn)')].filter(e=>/ui491_|ui493_/.test(bis(e)+getComputedStyle(e).backgroundImage)).length:-1;
+    const wl=sc?sc.querySelectorAll('.b2-well').length:0,days=sc?[...sc.querySelectorAll('.sg-day')]:[],box=sc?[...sc.querySelectorAll('.matbox.ms-box')]:[],mo=sc&&sc.querySelector('.sh2-month');
+    out.push(T('SH2 商城用道具欄外框、次面板、橫列卡、物品格，沒有舊框',!!sc&&wl>=4&&!!mo&&/bag2_row/.test(bis(mo))&&days.length===7&&days.every(e=>/bag2_sub/.test(bis(e)))&&box.length>0&&box.every(e=>/bag2_slot/.test(bis(e)))&&old===0,`次面板 ${wl}；簽到格 ${days.length}；物品格 ${box.length}；舊框 ${old}`));
+    const td=sc&&sc.querySelector('.sg-day.today');out.push(T('SH2 今天的簽到格有金色光框',!!td&&/bag2_today/.test(getComputedStyle(td,'::after').borderImageSource),td?'有':'找不到今天'));
+    const cut=[...(sc?sc.querySelectorAll('.mb-n,.ach-rw,.sh2-month b'):[])].filter(e=>e.scrollWidth>e.clientWidth+1).length;
+    out.push(T('SH2 商城文字和獎勵沒有被切掉',cut===0,`寬 ${innerWidth}：被切 ${cut} 個`));
+    out.push(T('SH2 商城頁沒有左右多出一截',document.documentElement.scrollWidth<=innerWidth,`頁寬 ${document.documentElement.scrollWidth}／視窗 ${innerWidth}`));
+    S.sign.n=Math.max(2,sn0%7||0);S.sign.last=today();render();const st=document.querySelectorAll('#view .sh2 .sg-stamp').length,nb=[...document.querySelectorAll('#view .sh2 .ui-btn.btn:not(.ui-btn--icon)')].filter(e=>!/bag2_btn/.test(bis(e))).length;
+    out.push(T('SH2 已簽到蓋印記、按鈕都用道具欄按鈕',st>0&&nb===0,`印記 ${st}；非 bag2 按鈕 ${nb}`));
+    return out}
+  catch(e){return[T('SH2 商城母版測試',false,e.message)]}finally{S.sign.last=sl0;S.sign.n=sn0;ui.sheet=sh0;ui.tab=tab0;render();scrollTo(0,y0)}}
 function mk2Tests(){const tab0=ui.tab,mk0={tab:MK.tab,rows:MK.rows,t:MK.t},sh0=ui.sheet,y0=scrollY;
   try{const b=BPS.find(x=>!x.dev)||BPS[0],out=[];MK.rows=[{id:-9514,seller:'npc',seller_nick:'測試賣家',weapon:{b:b.id,q:0,lv:5,traits:[],ench:[null,null,null,null]},bp:b.id,lv:5,q:0,cur:'gold',price:999,expires_at:new Date(Date.now()+864e5).toISOString()},...MK.rows];if(!MK.t)MK.t=Date.now();
     ui.sheet=null;ui.tab='market';MK.tab='buy';render();const sc=document.querySelector('#view section.b2.mk2');
