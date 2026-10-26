@@ -754,12 +754,12 @@ function k2Tests(){const S0=S,sh0=ui.sheet,r0=ui.result;S=JSON.parse(JSON.string
     const h=b2Show(w);out.push(T('K2-show 武器大圖用格子＋品階框，+9 以上有裂痕',h.includes('b2-slot')&&h.includes('bag2_rim9_l6')&&h.includes('bag2_crk_l6')&&b2Show({...w,lv:6}).includes('bag2_rim_l1')));
     return out}
   catch(e){return[T('K2 UI 母版延伸測試',false,e.message)]}finally{S=S0;ui.sheet=sh0;ui.result=r0;renderLayer()}}
-// v5.14 交易所換成道具欄母版：外框／頁籤／小膠囊／橫列卡都用 bag2，沒有舊框；標題右邊的上架數不被外框裁掉、頁面不撐寬
+// v5.14 交易所換成道具欄母版：外框／頁籤／小膠囊／橫列卡都用 bag2，沒有舊框（重新整理鈕是圓形圖示鈕，維持原本的圖）；標題右邊的上架數不被外框裁掉、頁面不撐寬
 function mk2Tests(){const tab0=ui.tab,mk0={tab:MK.tab,rows:MK.rows,t:MK.t},sh0=ui.sheet,y0=scrollY;
   try{const b=BPS.find(x=>!x.dev)||BPS[0],out=[];MK.rows=[{id:-9514,seller:'npc',seller_nick:'測試賣家',weapon:{b:b.id,q:0,lv:5,traits:[],ench:[null,null,null,null]},bp:b.id,lv:5,q:0,cur:'gold',price:999,expires_at:new Date(Date.now()+864e5).toISOString()},...MK.rows];if(!MK.t)MK.t=Date.now();
     ui.sheet=null;ui.tab='market';MK.tab='buy';render();const sc=document.querySelector('#view section.b2.mk2');
     if(!AUTH&&!mkMock())return[T('MK2 交易所頁用道具欄母版（未登入）',!!sc&&!!sc.querySelector('.b2-head h2'),sc?'登入提示':'找不到 .b2.mk2')];
-    const bis=e=>getComputedStyle(e).borderImageSource,old=sc?[...sc.querySelectorAll('*')].filter(e=>/ui491_|ui493_/.test(bis(e)+getComputedStyle(e).backgroundImage)).length:-1;
+    const bis=e=>getComputedStyle(e).borderImageSource,old=sc?[...sc.querySelectorAll('*:not(.mk-ref)')].filter(e=>/ui491_|ui493_/.test(bis(e)+getComputedStyle(e).backgroundImage)).length:-1;
     const tabs=sc?[...sc.querySelectorAll('.b2-tab')]:[],chips=sc?[...sc.querySelectorAll('.mk2-chip')]:[],rows=sc?[...sc.querySelectorAll('.mk-row')]:[];
     out.push(T('MK2 交易所用道具欄外框、頁籤、小膠囊、橫列卡，沒有舊框',!!sc&&tabs.length===3&&chips.length>0&&chips.every(e=>/bag2_chip/.test(bis(e)))&&rows.length>0&&rows.every(e=>/bag2_row/.test(bis(e)))&&old===0,`頁籤 ${tabs.length}；小膠囊 ${chips.length}；商品列 ${rows.length}；舊框 ${old}`));
     const sr=sc&&sc.getBoundingClientRect(),cp=sc&&sc.querySelector('.b2-cap'),cr=cp&&cp.getBoundingClientRect();
