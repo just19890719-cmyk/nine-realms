@@ -2341,4 +2341,35 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 /* 提示訊息：G 通知條（成功／失敗只換字色） */
 .toast:not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:0 6px 18px rgba(0,0,0,.6);border-image:url(art/ui/bag2/bag2_notice.webp) 30 fill / 10px stretch;padding:11px 16px;color:var(--b2-text);text-shadow:0 1px 2px #000}
 .toast.ok:not(#_){color:#c8e6b4}.toast.bad:not(#_){color:#ffc0b8}
+/* ===== v5.23 道具欄—圖鑑內容換成道具欄母版（排程 2-6）：總加成、套裝卡＝bag2_sub 次面板；分區＝bag2_sec 小標；武器列＝bag2_row 橫列卡；子頁籤＝bag2_tab；登錄格＝bag2_slot／slot_empty＋依等級的 bag2_rim；可登錄＝bag2_today 光框；只在 .cx2 底下 ===== */
+.cx2 .cx-sum:not(#_){border:14px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_sub.webp) 44 fill / 14px stretch;padding:0 2px;margin:8px 0 10px}
+.cx2 .cx-sum .small.muted{color:var(--b2-mute)}.cx2 .cx-big{color:var(--b2-gold-hi)}
+.cx2 .cx-bar:not(#_){height:10px;border:0 solid transparent;border-radius:0;background:none;overflow:visible;margin-top:6px;border-image:url(art/ui/bag2/bag2_cap_track.webp) 0 30 fill / 0 6px stretch}
+.cx2 .cx-bar i:not(#_){min-width:10px;border:0 solid transparent;background:none;border-image:url(art/ui/bag2/bag2_cap_fill.webp) 0 25 fill / 0 5px stretch}
+/* 子頁籤：道具欄頁籤 */
+.cx2 .cx-sub{gap:4px}
+.cx2 .cx-sub>button:not(#_){min-height:40px;border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_tab.webp) 0 53 fill / 0 16px stretch;color:#d2d6dc;font-family:var(--display);font-weight:900;letter-spacing:.04em;text-shadow:0 1px 0 #000;white-space:nowrap}
+.cx2 .cx-sub>button.on:not(#_){border-image-source:url(art/ui/bag2/bag2_tab_on.webp);color:var(--b2-gold-hi)}
+/* 分區小標 */
+.cx2 .cx-grp{min-height:24px;align-items:center;margin:14px -2px 6px;padding:0 6px 0 24px;border:1px solid transparent;border-image:url(art/ui/bag2/bag2_sec.webp) 0 224 0 50 fill / 0 91px 0 20px stretch;font-size:13px;color:var(--b2-gold-hi);letter-spacing:.08em}
+.cx2 .cx-grp span{position:relative;z-index:1;color:var(--b2-num)}
+/* 武器列：橫列卡；名稱最多兩行，不再被截成「…」 */
+.cx2 .cx-row:not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_row.webp) 32 fill / 16px stretch;padding:7px 10px 7px 8px;gap:8px}
+.cx2 .cx-row .wart{width:52px;height:52px;background:url(art/ui/bag2/bag2_slot.webp) center/100% 100% no-repeat}
+.cx2 .cx-nm{color:var(--b2-text);white-space:normal;overflow:visible;text-overflow:clip;line-height:1.25;font-size:13.5px;word-break:break-all;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+/* 登錄格：空＝暗格；已登錄＝格子＋該等級外框；可登錄＝金色光框 */
+.cx2 .cx-s:not(#_){border:6px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_slot_empty.webp) 40 fill / 6px stretch;color:var(--b2-dim);width:54px;height:48px}
+.cx2 .cx-s.done:not(#_){border-image-source:url(art/ui/bag2/bag2_slot.webp);color:var(--qc)}
+.cx2 .cx-s.done::before{content:"";position:absolute;inset:-6px;pointer-events:none;background:var(--rim,none) 0 0/100% 100%}
+.cx2 .cx-s.l0b{--rim:url(art/ui/bag2/bag2_rim_l0.webp)}.cx2 .cx-s.l1b{--rim:url(art/ui/bag2/bag2_rim_l1.webp)}.cx2 .cx-s.l3b{--rim:url(art/ui/bag2/bag2_rim_l3.webp)}
+.cx2 .cx-s.can:not(#_){border-image-source:url(art/ui/bag2/bag2_slot.webp);color:var(--b2-gold-hi)}
+.cx2 .cx-s.can::before{content:"";position:absolute;inset:-12px;pointer-events:none;border:14px solid transparent;border-image:url(art/ui/bag2/bag2_today.webp) 30 / 14px stretch}
+.cx2 .cx-s.can::after{z-index:1;background:url(art/ui/bag2/bag2_new.webp) center/contain no-repeat;width:11px;height:11px;border-radius:0}
+/* 套裝卡：次面板；達成＝金色光框 */
+.cx2 .cx-set:not(#_){position:relative;border:12px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_sub.webp) 44 fill / 12px stretch;padding:0 2px 2px}
+.cx2 .cx-set.ok::after{content:"";position:absolute;inset:-14px;pointer-events:none;border:14px solid transparent;border-image:url(art/ui/bag2/bag2_today.webp) 30 / 14px stretch}
+.cx2 .cx-set h4{color:var(--b2-text)}.cx2 .cx-set h4 span{color:var(--b2-gold-hi)}.cx2 .cx-set .small.muted{color:var(--b2-mute)}
+.cx2 .cx-mem .m{color:var(--b2-dim)}.cx2 .cx-mem .m.y{color:var(--qc)}
+.cx2 .cx-mem .m .wart{background:url(art/ui/bag2/bag2_slot.webp) center/100% 100% no-repeat}
+@media (max-width:400px){.cx2 .cx-sl{gap:4px}.cx2 .cx-s:not(#_){width:50px;border-width:5px;border-image-width:5px}.cx2 .cx-row:not(#_){padding:6px 8px 6px 6px;gap:6px}.cx2 .cx-row .wart{width:46px;height:46px}}
 </style>
