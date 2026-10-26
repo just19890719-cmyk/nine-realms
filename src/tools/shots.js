@@ -2,7 +2,7 @@
 //   node src/tools/shots.js [--base=origin/main] [--screens=強化小卡,附魔小卡] [--parts=按鈕]
 // 做的事：
 //   1. 把「修改前」（--base，預設 origin/main）放到暫存資料夾建置，「修改後」用目前的工作區，兩邊各開一個本機伺服器
-//   2. 兩邊用同樣的存檔、同樣的亂數、同樣的時間，在 320／375／430 拍 screens.js 的每個畫面（整頁），動畫停在同一格
+//   2. 兩邊用同樣的存檔、同樣的亂數、同樣的時間，在 360／390／440 拍 screens.js 的每個畫面（整頁），動畫停在同一格
 //   3. 逐像素比較，把不同的地方用紅框圈起來，輸出「修改前｜修改後」左右對照圖到 test-out/compare/，圖上印 commit 編號和拍攝時間
 //   4. 記錄共用元件（圖示鈕、按鈕、導覽列、資源列、道具格、分頁、彈窗、武器名稱）每個畫面的外觀數值，兩邊不一樣就列出
 //   5. 範圍檢查：有變動的畫面不在 --screens、有變動的元件不在 --parts → 失敗（未經同意的外觀變動，例如 v5.10 叉叉變八角形）
@@ -11,7 +11,7 @@ const path=require('path'),fs=require('fs'),cp=require('child_process'),http=req
 const ROOT=path.resolve(__dirname,'..','..'),OUT=path.join(ROOT,'test-out','compare');
 const arg=k=>{const a=process.argv.find(x=>x.startsWith('--'+k+'='));return a?a.slice(k.length+3):null};
 let pw;try{pw=require('playwright')}catch(e){pw=require('/opt/node-tools/node_modules/playwright')}
-const SCREENS=require('./screens.js'),WIDTHS=[320,375,430],H=860;
+const SCREENS=require('./screens.js'),WIDTHS=[360,390,440],H=860;
 // 共用元件：名稱 → CSS 選擇器。改到這些元件的外觀時，PR 的「範圍元件」一定要寫出來
 const PARTS={'圖示鈕':'.ui-btn--icon','按鈕':'button:not(.ui-btn--icon),.btn:not(.ui-btn--icon)','導覽列':'nav,nav button','資源列':'.bar,.bar > *','道具格':'.b2-slot','分頁':'.b2-tab,.ui-tab','彈窗':'.sheet,.sheet-head,.ui-modal','武器名稱':'.wt-name'};
 const PROPS=['border-image-source','border-radius','background-image','background-color','color','font-size','font-weight','width','height','clip-path','box-shadow','opacity','filter','border-top-width','border-top-color'];
@@ -22,7 +22,7 @@ async function serve(dir,port){const s=cp.spawn('python3',['-m','http.server',St
 
 // 同樣的亂數（每頁從同一個種子開始）、同樣的時間：遊戲時鐘、計時器、動畫影格都由測試控制（從 2026-10-25 12:00 UTC 開始，只在我們推進時才走）
 const SEED=()=>{let a=20261025;Math.random=()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}};
-async function openAt(browser,port,w){const ctx=await browser.newContext({viewport:{width:w,height:H},deviceScaleFactor:1,hasTouch:true});
+async function openAt(browser,port,w){const ctx=await browser.newContext({viewport:{width:w,height:H},deviceScaleFactor:1,hasTouch:true,isMobile:true});   // 手機模式：跟 run_tests.js 一樣（Mochi 規則 v2.0）
   await ctx.clock.install({time:new Date('2026-10-25T12:00:00Z')});await ctx.clock.pauseAt(new Date('2026-10-25T12:00:01Z'));   // install 之後時間還會照真實時間走，要 pauseAt 才會停await ctx.addInitScript(SEED);
   await ctx.route(u=>!/^http:\/\/localhost[:/]/.test(u.href),r=>r.abort());   // 擋掉雲端（伺服器時間校正、聊天）和外部字型：兩邊都只用本機檔案，結果才會一樣
   const p=await ctx.newPage();p.errs=[];p.on('pageerror',e=>p.errs.push(e.message));
@@ -96,7 +96,7 @@ async function run({base='origin/main',screens=[],parts=[]}={}){fs.rmSync(OUT,{r
       if(screens.includes(c.screen))info.push('範圍內的畫面變動 '+msg);else fail.push('範圍外的畫面變動 '+msg)}
     for(const [part,list] of Object.entries(partDiff)){const msg=`共用元件「${part}」外觀改變 ${list.length} 處，例：${list.slice(0,2).join('；')}`;
       if(parts.includes(part))info.push('範圍內 '+msg);else fail.push('範圍外 '+msg)}
-    if(!changed.length&&!Object.keys(partDiff).length)info.push(`跟 ${base} 比對：${Object.keys(B.shots).length} 張畫面（${SCREENS.length} 個畫面 × 320／375／430）完全相同`);
+    if(!changed.length&&!Object.keys(partDiff).length)info.push(`跟 ${base} 比對：${Object.keys(B.shots).length} 張畫面（${SCREENS.length} 個畫面 × 360／390／440）完全相同`);
     info.push(`修改前 ${base}@${bsha}，修改後 HEAD@${hsha}；宣告的範圍：畫面［${screens.join('、')||'無'}］元件［${parts.join('、')||'無'}］`);
     await cp2.close()}
   catch(e){fail.push('前後對照沒有跑完：'+e.message.split('\n')[0])}

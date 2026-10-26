@@ -5,7 +5,7 @@
 //   第 2 層 核心流程冒煙：鍛造 → 強化 → 附魔 → 背包 → 駐守村莊 → 狩獵收益 → 回收材料（熔解）→ 存檔 → 重新載入
 //   第 3 層 存檔與讀檔：重新整理後資料一致、壞掉的存檔不會當機、舊欄位會被修正
 //   第 4 層 BUG 回歸：BUG_HISTORY.md 每一筆對應的測試（名稱開頭是 BUG 編號）
-//   第 5 層 手機畫面：320／375／430 寬，每個分頁與小卡檢查橫向溢出、按鈕文字超框、重畫時畫面不動（截圖存在 test-out/）
+//   第 5 層 手機畫面：360／390／440 寬（390 為主要驗收寬度，Mochi 規則 v2.0），另外 390×640 矮螢幕再查一次溢出，每個分頁與小卡檢查橫向溢出、按鈕文字超框、重畫時畫面不動（截圖存在 test-out/）
 // 參數：--only=1,4,5   只跑指定層；--no-build 不重新建置；--keep 跑完不關伺服器（除錯用）
 // Playwright：優先用專案自己的（npm i -D playwright），沒有就用雲端環境的 /opt/node-tools/node_modules/playwright
 const path=require('path'),fs=require('fs'),cp=require('child_process'),http=require('http');
@@ -14,7 +14,7 @@ const arg=k=>{const a=process.argv.find(x=>x.startsWith('--'+k));return a?(a.spl
 const ONLY=arg('only')?String(arg('only')).split(',').map(Number):[0,1,2,3,4,5];
 let pw;try{pw=require('playwright')}catch(e){pw=require('/opt/node-tools/node_modules/playwright')}
 const PORT=+(process.env.PORT||8799),BASE=`http://localhost:${PORT}/index.html`;
-const WIDTHS=[320,375,430];
+const WIDTHS=[360,390,440],MAIN_W=390,SHORT_H=640;   // Mochi 2026-10-26 規則 v2.0：390 主基準、360～440 正式支援；320 不再是每次必測（BUG-014 的 320 回歸測試照舊保留）
 const R=[];let layer='';
 const rec=(id,name,pass,detail='')=>{R.push({layer,id,name,pass:pass===null?null:!!pass,detail:String(detail)});console.log(`${pass===null?'SKIP':pass?'PASS':'FAIL'}  [${layer}] ${id} ${name}${detail?'  — '+detail:''}`)};
 // 載入完成：每天第一次進遊戲會自動切到商城簽到（signAuto），測試時先標記成已切過，避免中途被切走
@@ -24,7 +24,7 @@ function up(){return new Promise(z=>http.get(BASE,r=>{r.resume();z(r.statusCode=
 
 // 進遊戲：乾淨存檔（新的瀏覽器環境沒有 localStorage）＋開發者模式；webdriver 會自動跳過登入和新手導覽
 async function open(browser,w,h=900,opt={}){
-  const ctx=await browser.newContext({viewport:{width:w,height:h},deviceScaleFactor:1,hasTouch:!opt.desktop,isMobile:false,...(opt.ctx||{})});
+  const ctx=await browser.newContext({viewport:{width:w,height:h},deviceScaleFactor:1,hasTouch:!opt.desktop,isMobile:!opt.desktop,...(opt.ctx||{})});
   const p=await ctx.newPage();p.errs=[];p.on('pageerror',e=>p.errs.push(e.message));
   await p.goto(BASE+(opt.hash||''));await boot(p);
   await p.evaluate(()=>{try{localStorage.setItem(DEV_KEY,'1')}catch(e){}devBps&&devBps()});await p.waitForTimeout(300);
@@ -81,7 +81,7 @@ async function L0(browser){layer='0 靜態檢查';
   rec('ST-檔名','art/ 檔名只用小寫英文、數字、底線（避免手機大小寫／中文路徑讀不到）',!bad.length,bad.slice(0,5).join('、'));
   {const crypto=require('crypto'),h={};for(const d of ['art','sfx'])for(const f of fs.readdirSync(path.join(ROOT,d),{recursive:true}).map(String)){const p=path.join(ROOT,d,f);if(!fs.statSync(p).isFile())continue;const k=crypto.createHash('md5').update(fs.readFileSync(p)).digest('hex');(h[k]=h[k]||[]).push(d+'/'+f)}
    const dup=Object.values(h).filter(x=>x.length>1);rec('ST-重複檔','art/、sfx/ 重複的圖檔（只提醒，不算失敗）',true,dup.length?dup.length+' 組：'+dup.slice(0,3).map(x=>x.join(' = ')).join('；'):'沒有')}
-  const p=await open(browser,430);
+  const p=await open(browser,MAIN_W);
   const r=await p.evaluate(()=>({nw:NW_LOG[0]&&NW_LOG[0].v,dv:DEV_LOG[0]&&DEV_LOG[0].v,bid:BUILD_ID,gv:GUIDE_ALL?Math.max(...GUIDE_ALL.map(g=>+g.v||0)):null}));
   rec('ST-公告','更新公告 NW_LOG 最上面一則是這一版',r.nw===r.bid,`NW_LOG ${r.nw}、BUILD_ID ${r.bid}`);
   rec('ST-開發者','開發者工具 DEV_LOG 最上面一段是這一版（新功能要有測試按鈕）',r.dv===r.bid,`DEV_LOG ${r.dv}、BUILD_ID ${r.bid}`);
@@ -97,14 +97,14 @@ async function L0(browser){layer='0 靜態檢查';
   await p.context().close()}
 
 /* ---------- 第 1 層：tests.js 快速測試 ---------- */
-async function L1(browser){layer='1 單元整合';const p=await open(browser,430);
+async function L1(browser){layer='1 單元整合';const p=await open(browser,MAIN_W);
   await p.evaluate(()=>devdo('tquick'));await p.waitForFunction(()=>typeof TEST_LAST!=='undefined'&&TEST_LAST&&TEST_LAST.done,null,{timeout:180000});
   const res=await p.evaluate(()=>TEST_LAST.res.map(x=>({n:x.name,p:x.pass,d:x.detail})));
   for(const x of res)rec(x.n.split(' ')[0],x.n.split(' ').slice(1).join(' '),x.p,x.p?'':String(x.d).replace(/<[^>]+>/g,'').slice(0,160));
   rec('L1-err','快速測試期間沒有 JavaScript 錯誤',!p.errs.length,p.errs.slice(0,2).join('；'));await p.context().close()}
 
 /* ---------- 第 2 層：核心流程冒煙（真的頁面、真的存檔） ---------- */
-async function L2(browser){layer='2 核心流程';const p=await open(browser,430);
+async function L2(browser){layer='2 核心流程';const p=await open(browser,MAIN_W);
   const st=()=>p.evaluate(()=>({gold:S.gold,es:S.items.estone|0,en:S.items.enstone|0,n:S.weapons.length}));
   const bid=await p.evaluate(()=>{S.gold+=200000;S.items.enstone=(S.items.enstone|0)+5;S.items.estone=(S.items.estone|0)+20;save();const b=BPS.find(x=>!x.dev&&!x.unlock);return b&&b.id});
   rec('SM0','有開局可鍛造的正式圖紙',!!bid,bid);if(!bid)return;
@@ -145,7 +145,7 @@ async function L2(browser){layer='2 核心流程';const p=await open(browser,430
   rec('SM-err','整段流程沒有 JavaScript 錯誤',!p.errs.length,p.errs.slice(0,2).join('；'));await p.context().close()}
 
 /* ---------- 第 3 層：存檔與讀檔 ---------- */
-async function L3(browser){layer='3 存檔讀檔';const p=await open(browser,430);
+async function L3(browser){layer='3 存檔讀檔';const p=await open(browser,MAIN_W);
   const key=await p.evaluate(()=>KEY);
   // 壞掉的存檔
   const BAD=[['不是 JSON','{壞掉'],['空物件','{}'],['陣列','[]'],['null','null'],['欄位型別錯',JSON.stringify({gold:'abc',gems:-5,items:{estone:-3},weapons:[{id:1,b:'不存在的圖紙',lv:3}],villages:[{status:'cleared',weaponId:99}]})],
@@ -197,7 +197,8 @@ async function L4(browser){layer='4 BUG 回歸';
      const pos=await p.evaluate(async()=>{const o=[];for(const y of [0,4,12,60,300]){scrollTo(0,y);await new Promise(z=>requestAnimationFrame(()=>requestAnimationFrame(z)));const t=document.querySelector('.b2-top').getBoundingClientRect(),b=document.querySelector('.bar').getBoundingClientRect();o.push([Math.round(t.top*2)/2,Math.round(b.bottom*2)/2])}return o});
      const fixed=pos.every(x=>Math.abs(x[0]-pos[0][0])<.6&&Math.abs(x[0]-x[1])<1.1);
      await p.evaluate(()=>scrollTo(0,0));await p.waitForTimeout(100);const clip=await p.evaluate(()=>{const r=document.querySelector('.b2-top').getBoundingClientRect();return {x:0,y:0,width:innerWidth-20,height:Math.floor(r.bottom)}});
-     const a=await p.screenshot({clip,animations:'disabled'});await p.evaluate(()=>scrollTo(0,300));await p.waitForTimeout(150);const b=await p.screenshot({clip,animations:'disabled'});const df=await pixDiff(p,a,b);
+     const loaded=()=>p.evaluate(()=>Promise.all([document.fonts.ready,...[...document.images].filter(i=>!i.complete).map(i=>new Promise(z=>{i.onload=i.onerror=z;setTimeout(z,3000)}))]));   // 圖片或字型晚一步載入會讓兩張截圖不同（2026-10-26 在 360 寬出現過一次 14.7%）
+     await loaded();const a=await p.screenshot({clip,animations:'disabled'});await p.evaluate(()=>scrollTo(0,300));await p.waitForTimeout(150);await loaded();const b=await p.screenshot({clip,animations:'disabled'});const df=await pixDiff(p,a,b);
      rec('BUG-001@'+w,'道具欄固定區：往下捲 0～300px 都貼在資源列下面、畫面不動（像素差 <0.5%）',fixed&&df<.005,`位置 ${JSON.stringify(pos.map(x=>x[0]))}、像素差 ${(df*100).toFixed(2)}%`)}
     // BUG-004 熔解／危險強化「再按一次確認」：小卡大小、位置不變
     {const r=await p.evaluate(async()=>{const bp=BPS.find(x=>!x.dev&&!x.unlock);const w=makeWeapon(bp.id,0,6);S.items.estone=50;ui.tab='armory';ui.meltArm=null;ui.riskArm=ui.riskOk=null;ui.sheet={t:'w',id:w.id,m:'main'};render();await new Promise(z=>setTimeout(z,450));
@@ -207,13 +208,13 @@ async function L4(browser){layer='4 BUG 回歸';
      rec('BUG-004@'+w,'熔解、危險區強化按第一次只出現確認字樣，小卡高度和位置不變',r.note&&r.armed&&r.a.join()===r.b.join()&&r.c.join()===r.d.join(),JSON.stringify(r))}
     await p.context().close()}
   // BUG-006 開關小卡時捲軸讓畫面左右跳（電腦瀏覽器有實體捲軸）
-  for(const w of [430,1280]){const browser2=await pw.chromium.launch({ignoreDefaultArgs:['--hide-scrollbars']});const p=await open(browser2,w,800,{desktop:true});
+  for(const w of [MAIN_W,1280]){const browser2=await pw.chromium.launch({ignoreDefaultArgs:['--hide-scrollbars']});const p=await open(browser2,w,800,{desktop:true});
     const r=await p.evaluate(async()=>{devdo('bag98');await new Promise(z=>setTimeout(z,150));const x=()=>{const s=document.querySelector('.b2-slot[data-act=wopen]').getBoundingClientRect(),b=document.querySelector('.bar .res,.bar').getBoundingClientRect();return [s.left,b.left,b.width].map(v=>Math.round(v*2)/2)};
       const a=x();const id=+document.querySelector('.b2-slot[data-act=wopen]').dataset.id;ui.sheet={t:'w',id,m:'main'};render();await new Promise(z=>setTimeout(z,450));const b=x();ui.sheet=null;render();await new Promise(z=>setTimeout(z,200));const c=x();
       return {a,b,c,gut:getComputedStyle(document.documentElement).scrollbarGutter,sb:innerWidth-document.documentElement.clientWidth}});
     rec('BUG-006@'+w+(w>500?'桌機':''),'有實體捲軸時，開關小卡畫面不會左右移動',r.a.join()===r.b.join()&&r.a.join()===r.c.join(),JSON.stringify(r));await browser2.close()}
   // BUG-007 上方資源列半透明（捲動時透出底下內容）
-  {const p=await open(browser,430);const bg=await p.evaluate(()=>{const cs=getComputedStyle(document.querySelector('.bar'));return cs.backgroundImage+' '+cs.backgroundColor});
+  {const p=await open(browser,MAIN_W);const bg=await p.evaluate(()=>{const cs=getComputedStyle(document.querySelector('.bar'));return cs.backgroundImage+' '+cs.backgroundColor});
    const alpha=[...bg.matchAll(/rgba\([^)]*,\s*([\d.]+)\)/g)].map(m=>+m[1]).filter(a=>a<1&&a>0);rec('BUG-007','上方資源列背景完全不透明',!alpha.length,bg.slice(0,120));
    // BUG-008 彈窗標題列捲動時往上移
    const r=await p.evaluate(async()=>{ui.sheet={t:'set'};render();await new Promise(z=>setTimeout(z,450));const s=document.querySelector('.sheet'),h=s&&s.querySelector('.sheet-head');if(!h)return null;const a=h.getBoundingClientRect().top;s.scrollTop=60;await new Promise(z=>requestAnimationFrame(()=>requestAnimationFrame(z)));const b=h.getBoundingClientRect().top;ui.sheet=null;render();return [a,b,getComputedStyle(h).position]});
@@ -240,15 +241,17 @@ async function L4(browser){layer='4 BUG 回歸';
    rec('BUG-014','320px：村莊頁、交易所不能左右捲，村莊卡文字不超出卡片',r.village<=0&&r.market<=0&&!r.villageCut,JSON.stringify(r));await p.context().close()}
 }
 
-/* ---------- 第 5 層：手機畫面 320／375／430 ---------- */
+/* ---------- 第 5 層：手機畫面 360／390／440 ---------- */
 async function L5(browser){layer='5 手機畫面';fs.mkdirSync(path.join(OUT,'shots'),{recursive:true});
   const SCREENS=require('./screens.js');   // 畫面清單跟 shots.js（前後對照）共用
   for(const w of WIDTHS){const p=await open(browser,w,860);const miss=new Set();p.on('response',r=>{if(r.status()>=400&&/\/(art|sfx)\//.test(r.url()))miss.add(r.url().replace(/^.*?\/(art|sfx)\//,'$1/').split('?')[0])});
     for(const [n,tab,prep] of SCREENS){await go(p,tab,{atab:'w'});if(prep)await prep(p);await p.waitForTimeout(500);
       const ov=await p.evaluate(OVERFLOW);if(ov.length)await markShot(p,`問題_${n}_${w}.png`);rec(`UI-${n}@${w}`,`${n} ${w}px：不會左右捲、按鈕不超出、字不超出按鈕`,!ov.length,ov.slice(0,3).join('；'));
       const st=await renderStable(p,n);rec(`UI-${n}@${w}-重畫`,`${n} ${w}px：重畫（render）時畫面元素不移動`,st.ok,st.detail);
-      if(w===430){const an=await animStable(p,n);rec(`UI-${n}@${w}-動畫`,`${n}：重畫時動畫不重播、循環動畫不重置`,an.ok,an.detail)}
+      if(w===MAIN_W){const an=await animStable(p,n);rec(`UI-${n}@${w}-動畫`,`${n}：重畫時動畫不重播、循環動畫不重置`,an.ok,an.detail)}
       await p.screenshot({path:path.join(OUT,'shots',`${n}_${w}.png`)})}
+    if(w===MAIN_W){await p.setViewportSize({width:w,height:SHORT_H});   // 矮螢幕（瀏覽器網址列＋鍵盤佔掉高度）：只查溢出，不截圖
+      for(const [n,tab,prep] of SCREENS){await go(p,tab,{atab:'w'});if(prep)await prep(p);await p.waitForTimeout(300);const ov=await p.evaluate(OVERFLOW);if(ov.length)await markShot(p,`問題_${n}_${w}x${SHORT_H}.png`);rec(`UI-${n}@${w}x${SHORT_H}`,`${n} ${w}×${SHORT_H}：不會左右捲、按鈕不超出、字不超出按鈕`,!ov.length,ov.slice(0,3).join('；'))}}
     rec('UI-404@'+w,`${w}px 全部畫面沒有讀不到的圖片／音效`,!miss.size,[...miss].slice(0,5).join('、'));
     rec('UI-err@'+w,`${w}px 全部畫面沒有 JavaScript 錯誤`,!p.errs.length,p.errs.slice(0,2).join('；'));await p.context().close()}}
 
