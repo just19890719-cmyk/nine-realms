@@ -1,15 +1,5 @@
 {
  "_說明": "已驗收／現況凍結的素材雜湊。只能由關卡流程更新：改已登記的檔案要在該筆寫 auth（Mochi 授權日期＋訊息連結）；新檔案加一筆 status:\"pending\"。status：baseline＝v5.11 時的現況凍結、approved＝Mochi 確認過、pending＝新素材未驗收。",
- "art/ui/bag2/bag2_stamp.webp": {
-  "status": "pending",
-  "note": "v5.16 商城：H 已領取印記（10/25 新元件 H 合圖 k_stamp）",
-  "sha256": "e6e00b9671fe5f2548ee0c42b78faccb4836cc0b838306f8cd85a2e017d8fee8"
- },
- "art/ui/bag2/bag2_today.webp": {
-  "status": "pending",
-  "note": "v5.16 商城：H 簽到「今天」光框（10/25 新元件 H 合圖 k_today）",
-  "sha256": "bf082d36f085d254abdc7339596096f9b2242fdb5fcbecf740a0de6cb01fc824"
- },
  "files": {
   "art/bg_fenrir.webp": {
    "status": "baseline",
@@ -2095,6 +2085,11 @@
    "status": "baseline",
    "sha256": "c14c780e61020822b92702986e627661084f4f924b1bd1da33c6e4727ec7c236"
   },
+  "art/ui/bag2/bag2_stamp.webp": {
+   "status": "pending",
+   "note": "v5.17 商城：H 已領取印記（10/25 新元件 H 合圖 k_stamp）",
+   "sha256": "e6e00b9671fe5f2548ee0c42b78faccb4836cc0b838306f8cd85a2e017d8fee8"
+  },
   "art/ui/bag2/bag2_sub.webp": {
    "status": "baseline",
    "sha256": "9eb02ef0dfb4e5f36d1236d94a03e4cda4d105b9a01f81f69255d8cfcc4052ff"
@@ -2130,6 +2125,11 @@
   "art/ui/bag2/bag2_title_r.webp": {
    "status": "baseline",
    "sha256": "2f287f9c01e6dbc2843b4fa10fdaf2f50ff4b443bdb7f9b2a3ff79998a3198d8"
+  },
+  "art/ui/bag2/bag2_today.webp": {
+   "status": "pending",
+   "note": "v5.17 商城：H 簽到「今天」光框（10/25 新元件 H 合圖 k_today）",
+   "sha256": "bf082d36f085d254abdc7339596096f9b2242fdb5fcbecf740a0de6cb01fc824"
   },
   "art/ui/fp_blue.webp": {
    "status": "baseline",
