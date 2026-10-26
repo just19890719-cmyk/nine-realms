@@ -525,7 +525,7 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.44 舊武器刪除：要在放回測試資料前檢查
-  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),...sh2Tests(),...q2Tests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
+  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),...sh2Tests(),...q2Tests(),...s2Tests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
     T('BD2 神明材質階、神格覺醒拿掉',TIERS.length===5&&typeof GOD==='undefined'&&typeof awkN==='undefined',`材質 ${TIERS.length} 階`)];
   return withTestBps(()=>runTests0(mode,bd))}
 // v4.44 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
@@ -755,6 +755,22 @@ function k2Tests(){const S0=S,sh0=ui.sheet,r0=ui.result;S=JSON.parse(JSON.string
     return out}
   catch(e){return[T('K2 UI 母版延伸測試',false,e.message)]}finally{S=S0;ui.sheet=sh0;ui.result=r0;renderLayer()}}
 // v5.14 交易所換成道具欄母版：外框／頁籤／小膠囊／橫列卡都用 bag2，沒有舊框（重新整理鈕是圓形圖示鈕，維持原本的圖）；標題右邊的上架數不被外框裁掉、頁面不撐寬
+function s2Tests(){const sh0=ui.sheet,go0=ui.glOpen,y0=scrollY,nw0=JSON.stringify(S.nwSeen||null),gl0=JSON.stringify(S.glSeen||null);
+  try{const out=[],bis=e=>getComputedStyle(e).borderImageSource;nwInit();S.nwSeen=NW_LOG.slice(1).map(n=>n.v);
+    ui.sheet={t:'set',k:''};render();const sc=document.querySelector('.ui-sheet.s2');
+    const old=sc?[...sc.querySelectorAll('*:not(.icon-btn):not(.icon-btn *)')].filter(e=>/ui491_|ui493_/.test(bis(e)+getComputedStyle(e).backgroundImage)).length:-1;
+    const rows=sc?[...sc.querySelectorAll('.st-row')]:[],secs=sc?[...sc.querySelectorAll('.st-sec')]:[],snd=sc&&sc.querySelector('.st-snd');
+    out.push(T('S2 設定頁用道具欄外框、小標、橫列卡、次面板，沒有舊框',!!sc&&/bag2_main_frame/.test(bis(sc))&&rows.length>=2&&rows.every(e=>/bag2_row/.test(bis(e)))&&secs.length>=2&&secs.every(e=>/bag2_sec/.test(bis(e)))&&!!snd&&/bag2_sub/.test(bis(snd))&&old===0,`橫列卡 ${rows.length}；小標 ${secs.length}；舊框 ${old}`));
+    const mt=sc&&sc.querySelector('[data-act="sndmute"]'),tg=mt&&getComputedStyle(mt,'::before').backgroundImage,fx=sc&&sc.querySelector('[data-act="sndfix"]'),nb=sc&&sc.querySelector('.newb'),sr=sc&&sc.getBoundingClientRect(),mr=mt&&mt.getBoundingClientRect();
+    out.push(T('S2 音效開關用開關圖、修復音效用小膠囊、NEW 不用程式畫的漸層',!!mt&&/bag2_tgl_(on|off)/.test(tg)&&mr.right<=sr.right-10&&mt.offsetHeight<=30&&!!fx&&/bag2_chip/.test(bis(fx))&&!!nb&&/bag2_badge/.test(getComputedStyle(nb).backgroundImage)&&!/gradient/.test(getComputedStyle(nb).backgroundImage),`開關 ${tg?tg.match(/bag2_tgl_\w+/)?.[0]:'無'}；開關右緣 ${mr?Math.round(mr.right):'-'}／外框 ${sr?Math.round(sr.right-10):'-'}；開關高 ${mt?mt.offsetHeight:'-'}`));
+    const cut=sc?[...sc.querySelectorAll('.st-row b,.st-row .s,.st-sec')].filter(e=>e.scrollHeight>e.clientHeight+3).length:-1;
+    out.push(T('S2 設定頁每一列都是一行、沒有換行跑版',cut===0,`寬 ${innerWidth}：換行 ${cut} 個`));
+    ui.sheet={t:'set',k:'n'};render();const nc=[...document.querySelectorAll('.ui-sheet.s2 .nwc')],ncOk=nc.every(e=>/bag2_row/.test(bis(e)));
+    ui.glOpen=GUIDE[0][1][0].k;ui.sheet={t:'set',k:'g'};render();const gh=[...document.querySelectorAll('.ui-sheet.s2 .glr-h')],gb=document.querySelector('.ui-sheet.s2 .glr-b');
+    out.push(T('S2 公告卡、玩法項目用橫列卡，展開內文用次面板',nc.length===NW_LOG.length&&ncOk&&gh.length>0&&gh.every(e=>/bag2_row/.test(bis(e)))&&!!gb&&/bag2_sub/.test(bis(gb)),`公告卡 ${nc.length}；玩法項目 ${gh.length}；內文 ${gb?'次面板':'無'}`));
+    out.push(T('S2 設定頁沒有左右多出一截',document.documentElement.scrollWidth<=innerWidth,`頁寬 ${document.documentElement.scrollWidth}／視窗 ${innerWidth}`));
+    return out}
+  catch(e){return[T('S2 設定頁母版測試',false,e.message)]}finally{S.nwSeen=JSON.parse(nw0);S.glSeen=JSON.parse(gl0);ui.glOpen=go0;ui.sheet=sh0;render();scrollTo(0,y0)}}
 function q2Tests(){const tab0=ui.tab,sh0=ui.sheet,qt0=ui.qTab,y0=scrollY,dl0=JSON.stringify(S.daily);
   try{const out=[],bis=e=>getComputedStyle(e).borderImageSource;dailyRoll();const b=S.daily.b;b.harvest=S.stats.harvest-5;b.forged=forgedN()-3;b.enhTry=S.stats.enhTry-5;S.daily.box=[0];
     ui.qTab='d';ui.sheet={t:'a'};render();const sc=document.querySelector('.ui-sheet.q2');
