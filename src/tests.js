@@ -525,7 +525,7 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.44 舊武器刪除：要在放回測試資料前檢查
-  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),...sh2Tests(),...q2Tests(),...s2Tests(),...m2Tests(),...cx2Tests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
+  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),...sh2Tests(),...q2Tests(),...s2Tests(),...m2Tests(),...cx2Tests(),...v2Tests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
     T('BD2 神明材質階、神格覺醒拿掉',TIERS.length===5&&typeof GOD==='undefined'&&typeof awkN==='undefined',`材質 ${TIERS.length} 階`)];
   return withTestBps(()=>runTests0(mode,bd))}
 // v4.44 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
@@ -771,6 +771,24 @@ function s2Tests(){const sh0=ui.sheet,go0=ui.glOpen,y0=scrollY,nw0=JSON.stringif
     out.push(T('S2 設定頁沒有左右多出一截',document.documentElement.scrollWidth<=innerWidth,`頁寬 ${document.documentElement.scrollWidth}／視窗 ${innerWidth}`));
     return out}
   catch(e){return[T('S2 設定頁母版測試',false,e.message)]}finally{S.nwSeen=JSON.parse(nw0);S.glSeen=JSON.parse(gl0);ui.glOpen=go0;ui.sheet=sh0;render();scrollTo(0,y0)}}
+function v2Tests(){const tab0=ui.tab,sh0=ui.sheet,r0=ui.result,y0=scrollY,vs0=JSON.stringify(S.villages[0]),wn0=S.weapons.length,ni0=S.nextId;
+  try{const out=[],bis=e=>getComputedStyle(e).borderImageSource,bs=BPS.filter(x=>!x.dev&&!x.unlock),st=S.villages[0];
+    if(st.weaponId!=null)recallCore(0);st.status='open';makeWeapon(bs[0].id,0,6);makeWeapon(bs[1].id,0,3);
+    ui.result=null;ui.tab='village';ui.sheet={t:'v',i:0};render();let c=document.querySelector('.ui-sheet.v2');
+    const old=e=>e?[...e.querySelectorAll('*:not(.icon-btn):not(.icon-btn *):not(.md-arr)')].filter(x=>/ui491_|ui493_/.test(bis(x)+getComputedStyle(x).backgroundImage)).length:-1;
+    const nb=e=>e?[...e.querySelectorAll('.ui-btn.btn:not(.ui-btn--icon)')].filter(x=>!/bag2_btn/.test(bis(x))).length:-1;
+    const pn=c?[...c.querySelectorAll('.ui-panel.panel,.mon-dex')]:[],mb=c?[...c.querySelectorAll('.matbox')]:[],gc=c?[...c.querySelectorAll('.gr-c')]:[];
+    out.push(T('V2 村莊詳情用道具欄外框、次面板、掉落格、評級格，沒有舊框',!!c&&/bag2_main_frame/.test(bis(c))&&pn.length>=4&&pn.every(e=>/bag2_sub/.test(bis(e)))&&mb.length>0&&mb.every(e=>/bag2_slot/.test(bis(e)))&&gc.length===GRADES.length&&gc.every(e=>/bag2_slot_empty/.test(bis(e)))&&old(c)===0,`面板 ${pn.length}；掉落格 ${mb.length}；評級格 ${gc.length}；舊框 ${old(c)}`));
+    const pk=c?[...c.querySelectorAll('.ch-pick')]:[];
+    out.push(T('V2 選武器用道具欄格子＋名稱＋預估、新手導覽找得到 .ch-pick',pk.length>=2&&pk.every(e=>e.querySelector('.b2-slot[data-act="chgo"]')&&e.querySelector('.ch-nm')&&e.querySelector('.small'))&&!!document.querySelector('.sheet .ch-pick'),`武器格 ${pk.length}`));
+    st.status='cleared';st.gr=2;st.bank.cycles=3;st.bank.gold=420;render();c=document.querySelector('.ui-sheet.v2');const on=c&&c.querySelector('.gr-c.on'),hc=c?[...c.querySelectorAll('.hico')]:[];
+    out.push(T('V2 已收復：目前評級有金色光框、收成格用道具欄格子、按鈕都用道具欄按鈕',!!on&&/bag2_today/.test(getComputedStyle(on,'::after').borderImageSource)&&hc.length>0&&hc.every(e=>/bag2_slot/.test(bis(e)))&&nb(c)===0,`評級光框 ${on?'有':'無'}；收成格 ${hc.length}；非 bag2 按鈕 ${nb(c)}`));
+    const w=S.weapons.find(x=>x.b===bs[0].id&&where(x)<0);deliverCore(0,w.id);render();c=document.querySelector('.ui-sheet.v2');const vs=c&&c.querySelector('.vw-pick .b2-slot'),ab=c?[...c.querySelectorAll('.vw-acts .ui-btn')]:[];
+    const cut=ab.filter(e=>e.scrollWidth>e.clientWidth+1).length,gcut=c?[...c.querySelectorAll('.gr-c')].filter(e=>{const r=e.getBoundingClientRect(),p=e.closest('.panel').getBoundingClientRect();return r.right>p.right+1||[...e.querySelectorAll('.small')].some(x=>x.scrollWidth>x.clientWidth+1)}).length:-1;   // 不用 gr-c 自己的 scrollWidth：目前評級的金色光框（::after）會撐大它
+    out.push(T('V2 駐守中小卡：武器用道具欄格子、三顆按鈕和評級格的字沒有超出',!!vs&&ab.length===3&&cut===0&&gcut===0&&nb(c)===0&&old(c)===0,`寬 ${innerWidth}：按鈕超出 ${cut}；評級格超出 ${gcut}`));
+    out.push(T('V2 村莊詳情沒有左右多出一截',document.documentElement.scrollWidth<=innerWidth,`頁寬 ${document.documentElement.scrollWidth}／視窗 ${innerWidth}`));
+    return out}
+  catch(e){return[T('V2 村莊詳情母版測試',false,e.message)]}finally{S.villages[0]=JSON.parse(vs0);S.weapons.length=wn0;S.nextId=ni0;ui.sheet=sh0;ui.result=r0;ui.tab=tab0;render();scrollTo(0,y0)}}
 function cx2Tests(){const tab0=ui.tab,at0=ui.atab,cs0=ui.cxs,sh0=ui.sheet,r0=ui.result,y0=scrollY,cx0=JSON.stringify(S.codex||{}),wn0=S.weapons.length;
   try{const out=[],bis=e=>getComputedStyle(e).borderImageSource,bs=cxBps();S.codex={};S.codex[bs[0].id]=[1,1,0];const tw=makeWeapon(bs[1].id,0,6);
     ui.sheet=null;ui.result=null;ui.tab='armory';ui.atab='c';ui.cxs='w';render();const c=document.querySelector('#view .cx2');
