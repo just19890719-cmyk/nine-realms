@@ -60,7 +60,7 @@
 - 所有結果都要根據實際執行紀錄，不得猜測或虛報。
 
 ## 強制驗收關卡（v5.12，Mochi 2026-10-25 決定；機器會擋，不是只靠記得）
-- **合併只由 Mochi 自己在 GitHub 上按。** Claude 不能合併、不能開自動合併、不能推到 main（`.claude/settings.json` 封鎖這些工具；main 的分支規則要求 PR＋`gate` 檢查通過，管理員也不能略過）。Mochi 說「修 BUG」「做功能」「好」都**不是**合併授權；交付時只附 PR 連結，請 Mochi 自己按。
+- **合併由 Mochi 在專案討論串裡按按鈕決定（Mochi 2026-10-26 12:37 改：「合併直在這裡由我親自按 不要我再去GitHub」）。** 關卡通過後，在討論串最後放「合併上線／先不要」按鈕卡（request_decision）；**Mochi 按了「合併上線」，Claude 才可以用 GitHub 工具合併該 PR**，合併後回報上線狀態。Claude 不能自己決定合併、不能開自動合併、不能推到 main（`.claude/settings.json` 仍封鎖自動合併和推送到 main；main 的分支規則要求 PR＋`gate` 檢查通過，管理員也不能略過）。Mochi 說「修 BUG」「做功能」「好」都**不是**合併授權，只有按鈕卡上的「合併上線」或 Mochi 明確寫「合併 #編號」才算。
 - **交付前一定要跑關卡**：先 commit，再 `node src/tools/gate.js --files=<Mochi 授權要改的檔案> --screens=<這次要改的畫面> --parts=<這次要改的共用元件> [--bug]`（約 3～5 分鐘）。PR 說明一定要寫四行（GitHub 上的關卡從這裡讀範圍）：
   `範圍檔案：src/game.js、src/style.css`（Mochi 授權要改的檔案；資料夾寫 `art/ui/`，可用 `*`；建置產物 index.html 等不用寫）
   `範圍畫面：強化小卡、附魔小卡`（畫面名稱看 `src/tools/screens.js`；沒有就寫「無」）
@@ -104,7 +104,7 @@ BUG_HISTORY.md          BUG 永久紀錄（新 BUG 先查這裡）
 docs/rules/             Mochi 的四份永久規範原文
 test-out/               測試報告與截圖（不進 git）
 .github/workflows/gate.yml  每個 PR 自動跑關卡、維護四個狀態標籤
-.claude/settings.json   封鎖 Claude 的合併工具和推送到 main
+.claude/settings.json   封鎖 Claude 的自動合併和推送到 main（合併要等 Mochi 在討論串按「合併上線」）
 ```
 
 ## 建置與發佈
