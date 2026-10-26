@@ -11,7 +11,7 @@
 //   4. 流程檔（關卡程式、測試指令、GitHub 工作流程、Claude 權限設定）只要有改，就在報告最上面用紅字列出。
 const fs=require('fs'),path=require('path'),cp=require('child_process'),crypto=require('crypto');
 const ROOT=path.resolve(__dirname,'..','..'),MAN='src/tools/art_manifest.json',DIRS=['art','sfx'];
-const PROTECTED=['src/tools/gate.js','src/tools/integrity.js','src/tools/shots.js','src/tools/screens.js','src/tools/run_tests.js','src/tools/known_failures.json',MAN,'.github/workflows/','.claude/settings.json','CLAUDE.md','docs/rules/'];
+const PROTECTED=['src/tools/gate.js','src/tools/integrity.js','src/tools/shots.js','src/tools/screens.js','src/tools/run_tests.js','src/tools/known_failures.json','src/tools/locked.js','src/tools/locked.json',MAN,'.github/workflows/','.claude/settings.json','CLAUDE.md','docs/rules/'];
 const sha=f=>crypto.createHash('sha256').update(fs.readFileSync(path.join(ROOT,f))).digest('hex');
 const git=a=>cp.execFileSync('git',a,{cwd:ROOT,encoding:'utf8',stdio:['ignore','pipe','ignore']});
 function walk(d){const out=[];if(!fs.existsSync(path.join(ROOT,d)))return out;for(const e of fs.readdirSync(path.join(ROOT,d),{withFileTypes:true})){const f=d+'/'+e.name;if(e.isDirectory())out.push(...walk(f));else if(!e.name.startsWith('.'))out.push(f)}return out}
