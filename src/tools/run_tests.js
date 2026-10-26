@@ -194,6 +194,7 @@ async function L4(browser){layer='4 BUG 回歸';
     rec('BUG-005@'+w,'body 上方沒有瀏覽器預設的 8px 空隙；捲動 1～40px 時上方資源列不動',await p.evaluate(async()=>{ui.tab='armory';devdo('bag98');await new Promise(z=>setTimeout(z,100));const m=getComputedStyle(document.body).marginTop;const t=[];for(const y of [0,1,8,40]){scrollTo(0,y);await new Promise(z=>requestAnimationFrame(()=>z()));t.push(document.querySelector('.bar').getBoundingClientRect().top)}return m==='0px'&&t.every(x=>Math.abs(x-t[0])<.5)}));
     // BUG-001 道具欄上方固定區：從最上面往下捲，標題／頁籤／分類位置與畫面都不動
     {await p.evaluate(()=>{ui.sheet=null;render();scrollTo(0,0)});await p.waitForTimeout(150);
+     await p.addStyleTag({content:'#toasts{display:none!important}'});   // 頂端通知是暫時的，拍第一張時還在、第二張已消失就會被當成畫面不同（2026-10-26 在 360 寬出現過 14.7%，跟 shots.js 一樣藏起來）
      const pos=await p.evaluate(async()=>{const o=[];for(const y of [0,4,12,60,300]){scrollTo(0,y);await new Promise(z=>requestAnimationFrame(()=>requestAnimationFrame(z)));const t=document.querySelector('.b2-top').getBoundingClientRect(),b=document.querySelector('.bar').getBoundingClientRect();o.push([Math.round(t.top*2)/2,Math.round(b.bottom*2)/2])}return o});
      const fixed=pos.every(x=>Math.abs(x[0]-pos[0][0])<.6&&Math.abs(x[0]-x[1])<1.1);
      await p.evaluate(()=>scrollTo(0,0));await p.waitForTimeout(100);const clip=await p.evaluate(()=>{const r=document.querySelector('.b2-top').getBoundingClientRect();return {x:0,y:0,width:innerWidth-20,height:Math.floor(r.bottom)}});

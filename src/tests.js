@@ -580,9 +580,9 @@ function uiStableTests(){if(typeof document==='undefined'||typeof b2Slot==='unde
   // UI2／UI3 +9 以上：裂痕框＋只有裂痕呼吸；重畫時動畫接著上次的進度（負的 animation-delay 跟時間同步）
   const lv=[8,9,10,11,12].map(l=>{const w=makeWeapon(b,0,l);return[l,b2Slot(w,'')]}),
     crkOk=lv.every(([l,h])=>l<9?!/crk/.test(h)&&h.includes('bag2_rim_l'+FLV(l)):h.includes('bag2_rim9_l'+FLV(l))&&h.includes('bag2_crk_l'+FLV(l))&&/class="rim crk"/.test(h));
-  const d=+((lv[1][1].match(/--crkd:(-?[\d.]+)s/)||[])[1]),now=(Date.now()%6000)/1000,phOk=d<=0&&Math.abs(-d-now)<.5||Math.abs(-d-now)>5.5;
+  const phOk=typeof ANIM_SYNC!=='undefined'&&ANIM_SYNC.has('b2crk')&&!/--crkd/.test(lv[1][1]);   // v5.18 改用 ANIM_SYNC 對齊動畫時間軸（舊的負延遲會受畫面卡頓影響）
   res.push(T('UI2 +9～+12 用裂痕框＋裂痕發光層，+8 以下沒有',crkOk,lv.map(([l,h])=>'+'+l+(/crk/.test(h)?'裂痕':'一般')).join('・')));
-  res.push(T('UI3 裂痕呼吸燈重畫不重播：延遲＝-(現在時間 mod 6 秒)',phOk,`延遲 ${d}s、應約 -${now.toFixed(2)}s`));
+  res.push(T('UI3 裂痕呼吸燈重畫不重播：b2crk 在 ANIM_SYNC 裡、格子不再帶 --crkd 負延遲',phOk,phOk?'正常':`ANIM_SYNC 有 b2crk：${typeof ANIM_SYNC!=='undefined'&&ANIM_SYNC.has('b2crk')}`));
   // 小卡放到畫面外量高度（跟遊戲同樣的外框 class）
   const box=document.createElement('div');box.style.cssText='position:absolute;left:-10000px;top:0;width:430px;height:900px;visibility:hidden;transform:translateZ(0)';document.body.appendChild(box);
   const hOf=html=>{let o='';for(const w of[320,375,430]){box.style.width=w+'px';box.innerHTML=`<div class="scrim wpopc still"><div class="ui-sheet sheet wpop still">${html}</div></div>`;o+=box.querySelector('.sheet').getBoundingClientRect().height.toFixed(1)+'/'}return o};

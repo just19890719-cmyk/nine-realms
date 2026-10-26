@@ -334,7 +334,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='5.17';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='5.18';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1318,6 +1318,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'5.18',d:'10/26',t:'裂縫呼吸燈不再小閃一下',b:['+9 以上武器的裂縫呼吸燈、小卡跑框，手機卡頓時不會再往前跳、小閃一下'],g:[]},
  {v:'5.17',d:'10/26',t:'商城換上道具欄同款外觀',b:['商城的外框、月卡、七日簽到、材料和道具格子，都改成跟道具欄同一套煤黑古銅','簽到的「今天」改用金色光框，已簽到的那天蓋上印記','價格、獎勵、購買方式都沒有改'],g:['shop']},
  {v:'5.15',d:'10/26',t:'存檔白畫面、紅點重閃修正',b:['存檔資料不完整時，遊戲會自動補回預設值，不會再整個白畫面','提示紅點、收成按鈕的呼吸燈不會再一直重新閃'],g:[]},
  {v:'5.14',d:'10/26',t:'交易所換上道具欄同款外觀',b:['交易所的外框、標題、頁籤、篩選鈕、商品列，都改成跟道具欄同一套煤黑古銅','「我的上架」幾件移到標題右邊，跟道具欄的容量顯示一樣','買賣、上架、領取的規則都沒有改'],g:['mk']},
@@ -1586,7 +1587,7 @@ function devAllWeapons(ids){const L=[0,1,6,7,9,10,15],q=ui.devAllQ??-1,lv=ui.dev
   ids.forEach((id,i)=>{const w=makeWeapon(id,q<0?i%5:q,lv<0?L[i%L.length]:lv,[]);w.lv=lv<0?L[i%L.length]:lv;w.test=true});
   ui.sheet=null;ui.tab='armory';ui.acat='all';ui.aq='all';ui.ast='test';scrollTo(0,0);toast('已產生 '+ids.length+' 把測試武器（道具欄已篩選「測試」）')}
 function wArt(id,{frame=null,cls=''}={}){const bp=frame==='bp',k=(frame!=null?(WFIT[ART_WAIT[id]||id]||.65):.8)*100,o=(100-k)/2;   // frame:'bp'＝圖紙底圖（墊在武器下面，安全距離同外框）
-  return `<span class="wart ${cls}">${bp?`<img class="wart-bg" src="${A('bp_paper2')}" alt="">`:''}<img class="wart-w" src="${A(id+'_disp')}" alt="" style="left:${o}%;top:${o}%;width:${k}%;height:${k}%">${frame!=null&&!bp?`<img class="wart-f" src="${A('frame'+frame)}" alt="">${/^_lv[3-6]$/.test(frame)?(d=>`<span class="wart-run" style="animation-delay:${d}ms"><img src="${A('frame'+frame)}" alt="" style="animation-delay:${d}ms"></span>`)(-Math.round(performance.now()%2200)):''}`:''}</span>`}
+  return `<span class="wart ${cls}">${bp?`<img class="wart-bg" src="${A('bp_paper2')}" alt="">`:''}<img class="wart-w" src="${A(id+'_disp')}" alt="" style="left:${o}%;top:${o}%;width:${k}%;height:${k}%">${frame!=null&&!bp?`<img class="wart-f" src="${A('frame'+frame)}" alt="">${/^_lv[3-6]$/.test(frame)?`<span class="wart-run"><img src="${A('frame'+frame)}" alt=""></span>`:''}`:''}</span>`}
 const cutArt=src=>src.replace(/\.webp$/,'_disp.webp'+ART_V); // 去背版武器圖（暗色底轉透明），特效才能包住武器
 // 預先載入特效圖，避免第一次播放時閃白
 function preloadVfx(){setTimeout(()=>{for(const k in VFX)for(let i=1;i<=VFX[k].N;i++){const im=new Image();im.src=vfxSrc(VFX[k],i)}},1500)}
@@ -2028,12 +2029,12 @@ const b2Head=()=>{const n=S.weapons.length,full=n>=CAP_WEAPONS;
 // 武器圖照 wArt 的安全距離（WFIT），只是不疊等級框，改用格子的品階框
 const b2W=id=>{const k=(WFIT[ART_WAIT[id]||id]||.65)*100,o=(100-k)/2;return `<img class="w" src="${A(id+'_disp')}" alt="" style="left:${o}%;top:${o}%;width:${k}%;height:${k}%">`};
 function b2Slot(w,act,dot,n=1,nw=wNew(w)){const b=bpOf(w),i=where(w),bs=bossSlotOf(w),brk=isBroken(w),on=ui.sheet&&ui.sheet.t==='w'&&ui.sheet.id===w.id;
-  return `<button class="b2-slot ${on?'sel':''} ${brk?'brk':''} ${i>=0||bs>=0?'posted':''}" style="--rim:url(art/ui/bag2/bag2_rim${w.lv>=9?'9':''}_l${FLV(w.lv)}.webp)${w.lv>=9?`;--crk:url(art/ui/bag2/bag2_crk_l${FLV(w.lv)}.webp)`:''}" ${act} aria-label="${b.n} +${w.lv}"><span class="rim${w.lv>=9?' crk':''}"${w.lv>=9?` style="--crkd:-${(Date.now()%6000)/1000}s"`:''}></span>${b2W(b.id)}${brk?'<span class="chain"></span>':''}
+  return `<button class="b2-slot ${on?'sel':''} ${brk?'brk':''} ${i>=0||bs>=0?'posted':''}" style="--rim:url(art/ui/bag2/bag2_rim${w.lv>=9?'9':''}_l${FLV(w.lv)}.webp)${w.lv>=9?`;--crk:url(art/ui/bag2/bag2_crk_l${FLV(w.lv)}.webp)`:''}" ${act} aria-label="${b.n} +${w.lv}"><span class="rim${w.lv>=9?' crk':''}"></span>${b2W(b.id)}${brk?'<span class="chain"></span>':''}
    ${i>=0?`<span class="post">駐 ${vNo(i)}</span>`:bs>=0?'<span class="post">首領</span>':''}${w.lock?b2Img('ic_lock','lk','已鎖定'):nw?'<i class="nw"></i>':''}
    ${w.lv?`<span class="lv">+${w.lv}</span>`:n>1?`<span class="x">${fmt(n)}</span>`:''}</button>`}
 // v5.10 UI 母版：彈窗裡的武器大圖也用道具欄的格子＋品階框（跟 b2Slot 同一套，只是不能點）
 function b2Show(w,cls=''){const hi=w.lv>=9,f=FLV(w.lv),brk=isBroken(w);
-  return `<span class="b2-slot b2-show ${cls} ${brk?'brk':''}" style="--rim:url(art/ui/bag2/bag2_rim${hi?'9':''}_l${f}.webp)${hi?`;--crk:url(art/ui/bag2/bag2_crk_l${f}.webp)`:''}"><span class="rim${hi?' crk':''}"${hi?` style="--crkd:-${(Date.now()%6000)/1000}s"`:''}></span>${b2W(bpOf(w).id)}${brk?'<span class="chain"></span>':''}</span>`}
+  return `<span class="b2-slot b2-show ${cls} ${brk?'brk':''}" style="--rim:url(art/ui/bag2/bag2_rim${hi?'9':''}_l${f}.webp)${hi?`;--crk:url(art/ui/bag2/bag2_crk_l${f}.webp)`:''}"><span class="rim${hi?' crk':''}"></span>${b2W(bpOf(w).id)}${brk?'<span class="chain"></span>':''}</span>`}
 const b2Fill=(n,cols=5)=>'<span class="b2-slot empty"></span>'.repeat((cols-n%cols)%cols+cols);
 // v4.72 武器圖鑑頁：上方總加成，下面分「武器（每把 3 格）／套裝」
 function viewCodex(){const p=cxPct(),n=cxN(),tot=cxBps().length*3,sub=ui.cxs||'w';
@@ -2697,6 +2698,7 @@ function viewShop(){   // v5.17 換成道具欄母版（.b2）：主框、次面
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'5.18',t:'+9 裂縫呼吸燈、小卡跑框改用動畫時間軸對齊，卡頓時不再跳',b:[['bag96','產生 +0～+12 武器並打開道具欄（看 +9 以上裂縫連續呼吸）'],['k2pop','打開 +10 武器小卡（看跑框連續轉）']]},
  {v:'5.17',t:'商城換成道具欄母版（次面板、橫列卡、物品格、今天光框、已領取印記）',b:[['sh517','打開商城（今天可簽到）'],['sh517d','打開商城（月卡已領、今天已簽到）']]},
  {v:'5.15',t:'兩個穩定度修正：壞存檔不白畫面、紅點呼吸不重閃',b:[['dot508','紅點呼吸不重閃：產生可交付武器＋收成，開村莊頁看紅點連續呼吸'],['badsave','壞存檔測試：存一份缺欄位的存檔後重新整理（應該正常進遊戲，不會白畫面）']]},
  {v:'5.14',t:'交易所換成道具欄母版（外框、頁籤、小膠囊篩選、橫列卡）',b:[['mk514','打開交易所（購買分頁，看新外觀）'],['mk514m','打開交易所「我的上架」'],['mkclaimt','待領取測試（2 賣出＋1 退回）']]},
@@ -3121,7 +3123,7 @@ function render(){
 }
 // v5.15 BUG-013 render() 每次重建 DOM，新元素上的循環動畫（紅點呼吸、收成按鈕脈動）會從頭播 → 看起來一直閃。
 // 這裡把這些循環動畫的起點對齊到頁面時間軸 0，重畫前後相位一樣。新增會被 render() 重建的循環動畫：把動畫名稱加進 ANIM_SYNC（或像 +9 裂縫用負的 animation-delay），run_tests.js 會檢查。
-const ANIM_SYNC=new Set(['givePulse','pulseO','pulse']);
+const ANIM_SYNC=new Set(['givePulse','pulseO','pulse','b2crk','frun']);   // v5.18 +9 裂縫呼吸（b2crk）、+9 小卡跑框（frun）也改用這裡對齊（原本用產生畫面時的時間算負延遲，手機卡頓時會往前跳 0.1～0.6 秒）
 function animSync(){if(!document.getAnimations)return;for(const a of document.getAnimations())if(a.animationName&&ANIM_SYNC.has(a.animationName)&&a.playState==='running'&&a.startTime!==0)a.startTime=0}   // 只對齊正在播的；被暫停的（測試截圖凍結畫面）不要重新啟動
 // 武器名稱過長時逐步縮小字級（最小 11px），讓 +N 與完整名稱都顯示，不用「…」截斷
 // v3.56 效能：先全部讀、再全部寫（舊版每個名稱各自觸發好幾次版面重算，道具欄一多就卡）
