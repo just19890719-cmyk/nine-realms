@@ -1,5 +1,15 @@
 {
  "_說明": "已驗收／現況凍結的素材雜湊。只能由關卡流程更新：改已登記的檔案要在該筆寫 auth（Mochi 授權日期＋訊息連結）；新檔案加一筆 status:\"pending\"。status：baseline＝v5.11 時的現況凍結、approved＝Mochi 確認過、pending＝新素材未驗收。",
+ "art/ui/bag2/bag2_stamp.webp": {
+  "status": "pending",
+  "note": "v5.16 商城：H 已領取印記（10/25 新元件 H 合圖 k_stamp）",
+  "sha256": "e6e00b9671fe5f2548ee0c42b78faccb4836cc0b838306f8cd85a2e017d8fee8"
+ },
+ "art/ui/bag2/bag2_today.webp": {
+  "status": "pending",
+  "note": "v5.16 商城：H 簽到「今天」光框（10/25 新元件 H 合圖 k_today）",
+  "sha256": "bf082d36f085d254abdc7339596096f9b2242fdb5fcbecf740a0de6cb01fc824"
+ },
  "files": {
   "art/bg_fenrir.webp": {
    "status": "baseline",
