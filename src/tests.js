@@ -525,7 +525,7 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.44 舊武器刪除：要在放回測試資料前檢查
-  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),...sh2Tests(),...q2Tests(),...s2Tests(),...m2Tests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
+  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),...sh2Tests(),...q2Tests(),...s2Tests(),...m2Tests(),...cx2Tests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
     T('BD2 神明材質階、神格覺醒拿掉',TIERS.length===5&&typeof GOD==='undefined'&&typeof awkN==='undefined',`材質 ${TIERS.length} 階`)];
   return withTestBps(()=>runTests0(mode,bd))}
 // v4.44 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
@@ -771,6 +771,21 @@ function s2Tests(){const sh0=ui.sheet,go0=ui.glOpen,y0=scrollY,nw0=JSON.stringif
     out.push(T('S2 設定頁沒有左右多出一截',document.documentElement.scrollWidth<=innerWidth,`頁寬 ${document.documentElement.scrollWidth}／視窗 ${innerWidth}`));
     return out}
   catch(e){return[T('S2 設定頁母版測試',false,e.message)]}finally{S.nwSeen=JSON.parse(nw0);S.glSeen=JSON.parse(gl0);ui.glOpen=go0;ui.sheet=sh0;render();scrollTo(0,y0)}}
+function cx2Tests(){const tab0=ui.tab,at0=ui.atab,cs0=ui.cxs,sh0=ui.sheet,r0=ui.result,y0=scrollY,cx0=JSON.stringify(S.codex||{}),wn0=S.weapons.length;
+  try{const out=[],bis=e=>getComputedStyle(e).borderImageSource,bs=cxBps();S.codex={};S.codex[bs[0].id]=[1,1,0];const tw=makeWeapon(bs[1].id,0,6);
+    ui.sheet=null;ui.result=null;ui.tab='armory';ui.atab='c';ui.cxs='w';render();const c=document.querySelector('#view .cx2');
+    const old=c?[...c.querySelectorAll('*')].filter(e=>/ui491_|ui493_/.test(bis(e)+getComputedStyle(e).backgroundImage)).length:-1;
+    const sum=c&&c.querySelector('.cx-sum'),tabs=c?[...c.querySelectorAll('.cx-sub>button')]:[],grp=c?[...c.querySelectorAll('.cx-grp')]:[],rows=c?[...c.querySelectorAll('.cx-row')]:[];
+    out.push(T('CXU 圖鑑用道具欄次面板、頁籤、分區小標、武器橫列卡，沒有舊框',!!sum&&/bag2_sub/.test(bis(sum))&&tabs.length===2&&tabs.every(e=>/bag2_tab/.test(bis(e)))&&grp.length>0&&grp.every(e=>/bag2_sec/.test(bis(e)))&&rows.length===bs.length&&rows.every(e=>/bag2_row/.test(bis(e)))&&old===0,`頁籤 ${tabs.length}；小標 ${grp.length}；武器列 ${rows.length}；舊框 ${old}`));
+    const r0w=rows[0],r1w=rows[1],dn=r0w&&r0w.querySelector('.cx-s.done'),cn=r1w&&r1w.querySelector('.cx-s.can'),em=c&&c.querySelector('.cx-s:not(.done):not(.can)');
+    out.push(T('CXU 登錄格：已登錄＝格子＋等級外框、可登錄＝金色光框、空格＝暗格',!!dn&&/bag2_slot/.test(bis(dn))&&/bag2_rim_l/.test(getComputedStyle(dn,'::before').backgroundImage)&&!!cn&&/bag2_today/.test(getComputedStyle(cn,'::before').borderImageSource)&&!!em&&/bag2_slot_empty/.test(bis(em)),`已登錄 ${dn?'有':'無'}；可登錄 ${cn?'有':'無'}；空格 ${em?'有':'無'}`));
+    const cut=rows.filter(e=>{const n=e.querySelector('.cx-nm');return n&&(n.scrollHeight>n.clientHeight+2||getComputedStyle(n).textOverflow==='ellipsis')}).length,rr=c&&c.getBoundingClientRect(),ov=c?[...c.querySelectorAll('.cx-s,.cx-sub>button')].filter(e=>{const q=e.getBoundingClientRect();return q.right>rr.right+1||q.left<rr.left-1}).length:-1;
+    out.push(T('CXU 武器名稱完整顯示（不截成…）、登錄格沒有超出',cut===0&&ov===0,`寬 ${innerWidth}：名稱被截 ${cut}；超出 ${ov}`));
+    S.codex={};CX_SETS[0].ks.forEach(q=>{S.codex[q]=[1,0,0]});ui.cxs='s';render();const sets=[...document.querySelectorAll('#view .cx2 .cx-set')],ok=document.querySelector('#view .cx2 .cx-set.ok');
+    out.push(T('CXU 套裝卡用次面板、達成的有金色光框',sets.length===CX_SETS.length&&sets.every(e=>/bag2_sub/.test(bis(e)))&&!!ok&&/bag2_today/.test(getComputedStyle(ok,'::after').borderImageSource),`套裝卡 ${sets.length}；達成 ${ok?'有':'無'}`));
+    out.push(T('CXU 圖鑑頁沒有左右多出一截',document.documentElement.scrollWidth<=innerWidth,`頁寬 ${document.documentElement.scrollWidth}／視窗 ${innerWidth}`));
+    S.weapons=S.weapons.filter(w=>w!==tw);return out}
+  catch(e){return[T('CXU 圖鑑母版測試',false,e.message)]}finally{S.codex=JSON.parse(cx0);if(S.weapons.length>wn0)S.weapons.length=wn0;ui.cxs=cs0;ui.atab=at0;ui.tab=tab0;ui.sheet=sh0;ui.result=r0;render();scrollTo(0,y0)}}
 function m2Tests(){const tab0=ui.tab,sh0=ui.sheet,r0=ui.result,y0=scrollY;
   try{const out=[],bis=e=>getComputedStyle(e).borderImageSource,mk=Object.keys(MATS),card=()=>document.querySelector('.modal-card.m2'),
       oldN=c=>c?[...c.querySelectorAll('*:not(.icon-btn):not(.icon-btn *)')].filter(e=>/ui491_|ui493_/.test(bis(e)+getComputedStyle(e).backgroundImage)).length:-1,

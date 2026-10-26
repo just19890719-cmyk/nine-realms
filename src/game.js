@@ -334,7 +334,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='5.22';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='5.23';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1318,6 +1318,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'5.23',d:'10/27',t:'圖鑑分頁換上道具欄同款外觀',b:['道具欄裡的圖鑑：總加成、武器列、套裝卡、武器／套裝頁籤都改成跟道具欄同一套煤黑古銅','+0／+6／+9 登錄格換成道具欄格子：已登錄有該等級的外框，可登錄的有金色光框','武器名稱不再被截成「鐵爐村…」，會完整顯示','圖鑑加成、登錄規則和套裝都沒有改'],g:[]},
  {v:'5.22',d:'10/27',t:'說明小卡、結果小卡、提示訊息換上道具欄同款外觀',b:['點道具、收成、看等級、讀故事書、買材料時跳出來的小卡，外框、標題、按鈕和物品格都改成跟道具欄同一套煤黑古銅','收成結果加上金色橫幅，奧丁之咒加上紅色橫幅','畫面上方的提示訊息換成新的通知條','小卡內容和功能都沒有改'],g:[]},
  {v:'5.21',d:'10/26',t:'設定頁換上道具欄同款外觀',b:['右上角齒輪打開的設定、更新公告、玩法說明，外框和每一列都改成跟道具欄同一套煤黑古銅','音效開關、音量拉桿換上新的開關和把手圖','公告、玩法內容和音效功能都沒有改'],g:[]},
  {v:'5.20',d:'10/26',t:'任務換上道具欄同款外觀',b:['任務小卡的外框、頁籤、每日任務、活躍度寶箱、委託成就，都改成跟道具欄同一套煤黑古銅','每日任務換上新的任務圖示，活躍度寶箱換上 1～3 階寶箱圖，已領取的寶箱蓋上印記','任務內容、活躍度、獎勵都沒有改'],g:[]},
@@ -2044,12 +2045,12 @@ function viewCodex(){const p=cxPct(),n=cxN(),tot=cxBps().length*3,sub=ui.cxs||'w
   const head=`<section class="b2 b2-cx">${b2Head()}</section>
   <div class="cx-sum">${img('nav_armory')}<div class="grow"><div class="small muted">圖鑑加成・所有武器攻擊力</div><b class="cx-big">+${p}%</b><div class="small muted">已登錄 ${n}／${tot} 格・登錄後武器會消失</div><div class="cx-bar"><i style="width:${tot?n/tot*100:0}%"></i></div></div></div>
   <div class="cx-sub">${[['w','武器（每把 3 格）'],['s',`套裝 ${CX_SETS.filter(cxSetOk).length}／${CX_SETS.length}`]].map(([k,t])=>`<button class="${sub===k?'on':''}" data-act="cxsub" data-k="${k}">${t}</button>`).join('')}</div>`;
-  if(sub==='s')return head+CX_SETS.map(x=>{const ok=cxSetOk(x),c=x.ks.filter(k=>cxHas(k,x.j)).length,L=CX_LV[x.j];
-    return `<div class="cx-set ${ok?'ok':''}"><h4>${x.n}<span>${ok?'✓ ':''}攻擊力 +${x.v}%</span></h4><div class="small muted">${x.d}（${c}／${x.ks.length}）</div><div class="cx-mem">${x.ks.filter(k=>BP[k]).map(k=>`<div class="m ${cxHas(k,x.j)?'y l'+FLV(L):'no'}">${wArt(k,{frame:'_lv'+FLV(L)})}+${L}</div>`).join('')}</div></div>`}).join('');
-  return head+CX_GRP.map(([g,f])=>{const bs=cxBps().filter(f);if(!bs.length)return'';
+  if(sub==='s')return head.replace('<div class="cx-sum">','<div class="cx2"><div class="cx-sum">')+CX_SETS.map(x=>{const ok=cxSetOk(x),c=x.ks.filter(k=>cxHas(k,x.j)).length,L=CX_LV[x.j];
+    return `<div class="cx-set ${ok?'ok':''}"><h4>${x.n}<span>${ok?'✓ ':''}攻擊力 +${x.v}%</span></h4><div class="small muted">${x.d}（${c}／${x.ks.length}）</div><div class="cx-mem">${x.ks.filter(k=>BP[k]).map(k=>`<div class="m ${cxHas(k,x.j)?'y l'+FLV(L):'no'}">${wArt(k,{frame:'_lv'+FLV(L)})}+${L}</div>`).join('')}</div></div>`}).join('')+'</div>';
+  return head.replace('<div class="cx-sum">','<div class="cx2"><div class="cx-sum">')+CX_GRP.map(([g,f])=>{const bs=cxBps().filter(f);if(!bs.length)return'';
     return `<div class="cx-grp">${g}<span>${bs.reduce((a,b)=>a+CX_LV.filter((L,j)=>cxHas(b.id,j)).length,0)}／${bs.length*3}</span></div>`+bs.map(b=>{const top=[2,1,0].find(j=>cxHas(b.id,j));
       return `<div class="cx-row">${wArt(b.id,{frame:'_lv'+(top==null?0:FLV(CX_LV[top]))})}<div class="cx-nm">${b.n}</div><div class="cx-sl">${CX_LV.map((L,j)=>{const d=cxHas(b.id,j),c=!d&&cxCan(b.id,j);
-        return `<button class="cx-s ${d?'done l'+FLV(L)+'b':c?'can':''}" data-act="cxreg" data-k="${b.id}" data-j="${j}"><b>+${L}</b>${d?'✓ '+CX_V[j]+'%':c?'可登錄':'+'+CX_V[j]+'%'}</button>`}).join('')}</div></div>`}).join('')}).join('')}
+        return `<button class="cx-s ${d?'done l'+FLV(L)+'b':c?'can':''}" data-act="cxreg" data-k="${b.id}" data-j="${j}"><b>+${L}</b>${d?'✓ '+CX_V[j]+'%':c?'可登錄':'+'+CX_V[j]+'%'}</button>`}).join('')}</div></div>`}).join('')}).join('')+'</div>'}
 // 點格子：已登錄／沒有武器就說明，有武器就跳確認（登錄後武器消失）
 function cxAsk(k,j){const b=BP[k],L=CX_LV[j];if(!b)return;
   if(cxHas(k,j))return toast(`${b.n} +${L} 已登錄：所有武器攻擊力 +${CX_V[j]}%`,'ok');
@@ -2701,6 +2702,7 @@ function viewShop(){   // v5.17 換成道具欄母版（.b2）：主框、次面
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'5.23',t:'道具欄圖鑑換成道具欄母版（總加成、分區小標、武器橫列卡、子頁籤、登錄格、套裝卡），武器名稱不截斷',b:[['c523','打開圖鑑武器頁（有已登錄、可登錄的格子）'],['c523s','打開圖鑑套裝頁（第一套達成）']]},
  {v:'5.22',t:'說明／結果小卡、提示訊息換成道具欄母版（主框、標題飾條、結果橫幅、物品格、按鈕、小膠囊、通知條）',b:[['m522','道具說明小卡（強化石）'],['m522h','收成結果（金色橫幅）'],['m522c','奧丁之咒（紅色橫幅）'],['m522s','商城購買小卡'],['m522t','跳兩則提示訊息']]},
  {v:'5.21',t:'設定／公告／玩法換成道具欄母版（主框、小標、橫列卡、音效開關與把手、NEW 標籤）',b:[['s521','打開設定（公告、玩法有 NEW）'],['s521n','打開更新公告'],['s521g','打開玩法說明（展開第一項）']]},
  {v:'5.20',t:'任務小卡換成道具欄母版（主框、頁籤、寶箱、任務橫列卡、成就橫列卡）',b:[['q520','打開每日任務（第 1 箱已領、第 2 箱可領）'],['q520o','打開委託成就（有 1 項可領取）']]},
@@ -2879,6 +2881,9 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='cpull'){cloudPull().then(()=>toast('已從雲端下載','ok')).catch(e=>toast('下載失敗：'+SB_ERR(e.message),'bad'));return}
   if(k==='clogout'){ui.sheet=null;return cloudLogout()}
   if(k==='maintprev'){ui.sheet=null;render();return showMaint(null,true)}
+  if(/^c523/.test(k)){const bs=cxBps();S.codex=S.codex||{};S.codex[bs[0].id]=[1,1,0];S.codex[bs[2].id]=[1,1,1];if(!S.weapons.some(w=>w.b===bs[1].id&&w.lv>=6))makeWeapon(bs[1].id,0,6);
+    if(k==='c523s')CX_SETS.filter(x=>x.j===0).slice(0,1).forEach(x=>x.ks.forEach(q=>{S.codex[q]=S.codex[q]||[0,0,0];S.codex[q][0]=1}));
+    ui.sheet=null;ui.result=null;ui.tab='armory';ui.atab='c';ui.cxs=k==='c523s'?'s':'w';save();render();return scrollTo(0,0)}
   if(/^m522/.test(k)){ui.sheet=null;const q=k.slice(4),mk=Object.keys(MATS);
     if(q==='t'){ui.result=null;render();toast('購買 強化石 ×10','ok');return toast('金幣不夠。','bad')}
     if(q==='h')ui.result={t:'h',title:'鐵爐村 收成 5 輪',got:{gold:1234,[mk[0]]:12,[mk[1]]:3},ev:0};
