@@ -197,7 +197,8 @@ async function L4(browser){layer='4 BUG 回歸';
      const pos=await p.evaluate(async()=>{const o=[];for(const y of [0,4,12,60,300]){scrollTo(0,y);await new Promise(z=>requestAnimationFrame(()=>requestAnimationFrame(z)));const t=document.querySelector('.b2-top').getBoundingClientRect(),b=document.querySelector('.bar').getBoundingClientRect();o.push([Math.round(t.top*2)/2,Math.round(b.bottom*2)/2])}return o});
      const fixed=pos.every(x=>Math.abs(x[0]-pos[0][0])<.6&&Math.abs(x[0]-x[1])<1.1);
      await p.evaluate(()=>scrollTo(0,0));await p.waitForTimeout(100);const clip=await p.evaluate(()=>{const r=document.querySelector('.b2-top').getBoundingClientRect();return {x:0,y:0,width:innerWidth-20,height:Math.floor(r.bottom)}});
-     const a=await p.screenshot({clip,animations:'disabled'});await p.evaluate(()=>scrollTo(0,300));await p.waitForTimeout(150);const b=await p.screenshot({clip,animations:'disabled'});const df=await pixDiff(p,a,b);
+     const loaded=()=>p.evaluate(()=>Promise.all([document.fonts.ready,...[...document.images].filter(i=>!i.complete).map(i=>new Promise(z=>{i.onload=i.onerror=z;setTimeout(z,3000)}))]));   // 圖片或字型晚一步載入會讓兩張截圖不同（2026-10-26 在 360 寬出現過一次 14.7%）
+     await loaded();const a=await p.screenshot({clip,animations:'disabled'});await p.evaluate(()=>scrollTo(0,300));await p.waitForTimeout(150);await loaded();const b=await p.screenshot({clip,animations:'disabled'});const df=await pixDiff(p,a,b);
      rec('BUG-001@'+w,'道具欄固定區：往下捲 0～300px 都貼在資源列下面、畫面不動（像素差 <0.5%）',fixed&&df<.005,`位置 ${JSON.stringify(pos.map(x=>x[0]))}、像素差 ${(df*100).toFixed(2)}%`)}
     // BUG-004 熔解／危險強化「再按一次確認」：小卡大小、位置不變
     {const r=await p.evaluate(async()=>{const bp=BPS.find(x=>!x.dev&&!x.unlock);const w=makeWeapon(bp.id,0,6);S.items.estone=50;ui.tab='armory';ui.meltArm=null;ui.riskArm=ui.riskOk=null;ui.sheet={t:'w',id:w.id,m:'main'};render();await new Promise(z=>setTimeout(z,450));
