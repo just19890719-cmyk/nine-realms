@@ -525,7 +525,7 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.44 舊武器刪除：要在放回測試資料前檢查
-  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),...sh2Tests(),...q2Tests(),...s2Tests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
+  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),...sh2Tests(),...q2Tests(),...s2Tests(),...m2Tests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
     T('BD2 神明材質階、神格覺醒拿掉',TIERS.length===5&&typeof GOD==='undefined'&&typeof awkN==='undefined',`材質 ${TIERS.length} 階`)];
   return withTestBps(()=>runTests0(mode,bd))}
 // v4.44 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
@@ -771,6 +771,26 @@ function s2Tests(){const sh0=ui.sheet,go0=ui.glOpen,y0=scrollY,nw0=JSON.stringif
     out.push(T('S2 設定頁沒有左右多出一截',document.documentElement.scrollWidth<=innerWidth,`頁寬 ${document.documentElement.scrollWidth}／視窗 ${innerWidth}`));
     return out}
   catch(e){return[T('S2 設定頁母版測試',false,e.message)]}finally{S.nwSeen=JSON.parse(nw0);S.glSeen=JSON.parse(gl0);ui.glOpen=go0;ui.sheet=sh0;render();scrollTo(0,y0)}}
+function m2Tests(){const tab0=ui.tab,sh0=ui.sheet,r0=ui.result,y0=scrollY;
+  try{const out=[],bis=e=>getComputedStyle(e).borderImageSource,mk=Object.keys(MATS),card=()=>document.querySelector('.modal-card.m2'),
+      oldN=c=>c?[...c.querySelectorAll('*:not(.icon-btn):not(.icon-btn *)')].filter(e=>/ui491_|ui493_/.test(bis(e)+getComputedStyle(e).backgroundImage)).length:-1,
+      nbN=c=>c?[...c.querySelectorAll('.ui-btn.btn:not(.ui-btn--icon)')].filter(e=>!/bag2_btn/.test(bis(e))).length:-1,
+      outN=c=>{if(!c)return -1;const r=c.getBoundingClientRect();return[...c.querySelectorAll('.ptitle span,.ui-btn,.chipbtn,.hico,.kv b')].filter(e=>{const q=e.getBoundingClientRect();return q.left<r.left||q.right>r.right||e.scrollWidth>e.clientWidth+1}).length};
+    ui.sheet=null;const r=itemInfo(STONE);ui.result={t:'info',...r,acts:(r.acts||'')+mkSellBtn(STONE)};render();let c=card();
+    out.push(T('M2 說明小卡用道具欄主框、標題飾條、道具欄按鈕，沒有舊框',!!c&&/bag2_main_frame/.test(bis(c))&&/bag2_title_l/.test(getComputedStyle(c.querySelector('.ptitle'),'::before').backgroundImage)&&nbN(c)===0&&oldN(c)===0,`主框 ${c?bis(c).match(/bag2_\w+|ui\w+/)?.[0]:'無'}；非 bag2 按鈕 ${nbN(c)}；舊框 ${oldN(c)}`));
+    ui.result={t:'h',title:'鐵爐村 收成 5 輪',got:{gold:1234,[mk[0]]:12,[mk[1]]:3},ev:0};render();c=card();const hs=c?[...c.querySelectorAll('.hico')]:[],rb=c&&c.querySelector('.m2-rib');
+    out.push(T('M2 收成結果有金色橫幅、物品格用道具欄格子',!!rb&&/bag2_rib_ok/.test(bis(rb))&&hs.length===3&&hs.every(e=>/bag2_slot/.test(bis(e)))&&oldN(c)===0&&outN(c)===0,`橫幅 ${rb?'有':'無'}；物品格 ${hs.length}；超出 ${outN(c)}`));
+    ui.result={t:'info',rib:'fail',title:'奧丁之咒！',html:'<div class="center">測試</div>',ok:'知道了'};render();c=card();const rf=c&&c.querySelector('.m2-rib.fail');
+    out.push(T('M2 奧丁之咒有紅色橫幅',!!rf&&/bag2_rib_fail/.test(bis(rf)),rf?'有':'無'));
+    ui.tab='shop';ui.shopN=10;shopMatCard(STONE);c=card();const ch=c?[...c.querySelectorAll('.chipbtn')]:[],on=c&&c.querySelector('.chipbtn.on');
+    out.push(T('M2 商城購買小卡數量鈕用小膠囊、選中的用亮版，按鈕和字沒有超出',ch.length===8&&ch.every(e=>/bag2_chip/.test(bis(e)))&&!!on&&/bag2_chip_on/.test(bis(on))&&nbN(c)===0&&outN(c)===0,`小膠囊 ${ch.length}；超出 ${outN(c)}`));
+    ui.tab=tab0;ui.result=null;sndSettings();c=card();const mt=c&&c.querySelector('[data-act="sndmute"]');
+    out.push(T('M2 音效設定小卡開關用開關圖（跟設定頁同一套）',!!mt&&/bag2_tgl_(on|off)/.test(getComputedStyle(mt,'::before').backgroundImage)&&oldN(c)===0,mt?getComputedStyle(mt,'::before').backgroundImage.match(/bag2_tgl_\w+/)?.[0]||'無':'找不到開關'));
+    ui.result=null;render();const QQ=QUIET;QUIET=false;toast('M2 測試','ok');QUIET=QQ;const t=document.querySelector('#toasts .toast:last-child');
+    out.push(T('M2 提示訊息用通知條',!!t&&/bag2_notice/.test(bis(t)),t?bis(t).match(/bag2_\w+|ui\w+/)?.[0]||'無':'沒有提示'));if(t)t.remove();
+    out.push(T('M2 小卡打開時沒有左右多出一截',document.documentElement.scrollWidth<=innerWidth,`頁寬 ${document.documentElement.scrollWidth}／視窗 ${innerWidth}`));
+    return out}
+  catch(e){return[T('M2 小卡母版測試',false,e.message)]}finally{ui.result=r0;ui.sheet=sh0;ui.tab=tab0;render();scrollTo(0,y0)}}
 function q2Tests(){const tab0=ui.tab,sh0=ui.sheet,qt0=ui.qTab,y0=scrollY,dl0=JSON.stringify(S.daily);
   try{const out=[],bis=e=>getComputedStyle(e).borderImageSource;dailyRoll();const b=S.daily.b;b.harvest=S.stats.harvest-5;b.forged=forgedN()-3;b.enhTry=S.stats.enhTry-5;S.daily.box=[0];
     ui.qTab='d';ui.sheet={t:'a'};render();const sc=document.querySelector('.ui-sheet.q2');

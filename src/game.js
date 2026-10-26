@@ -334,7 +334,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='5.21';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='5.22';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1318,6 +1318,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'5.22',d:'10/27',t:'說明小卡、結果小卡、提示訊息換上道具欄同款外觀',b:['點道具、收成、看等級、讀故事書、買材料時跳出來的小卡，外框、標題、按鈕和物品格都改成跟道具欄同一套煤黑古銅','收成結果加上金色橫幅，奧丁之咒加上紅色橫幅','畫面上方的提示訊息換成新的通知條','小卡內容和功能都沒有改'],g:[]},
  {v:'5.21',d:'10/26',t:'設定頁換上道具欄同款外觀',b:['右上角齒輪打開的設定、更新公告、玩法說明，外框和每一列都改成跟道具欄同一套煤黑古銅','音效開關、音量拉桿換上新的開關和把手圖','公告、玩法內容和音效功能都沒有改'],g:[]},
  {v:'5.20',d:'10/26',t:'任務換上道具欄同款外觀',b:['任務小卡的外框、頁籤、每日任務、活躍度寶箱、委託成就，都改成跟道具欄同一套煤黑古銅','每日任務換上新的任務圖示，活躍度寶箱換上 1～3 階寶箱圖，已領取的寶箱蓋上印記','任務內容、活躍度、獎勵都沒有改'],g:[]},
  {v:'5.18',d:'10/26',t:'裂縫呼吸燈不再小閃一下',b:['+9 以上武器的裂縫呼吸燈、小卡跑框，手機卡頓時不會再往前跳、小閃一下'],g:[]},
@@ -1535,7 +1536,7 @@ function enhance(id){
   res.id=id;res.guarded=!!r.usedScroll;
   if(!r.danger){ui.busy=false;ui.lockUntil=Date.now()+150;ui.enhLast={id,k:res.k,t:res.t,d:res.d,test:false};snd(ENH_SND[res.k],1,.7);renderLayer();return greenFlash()}   // v4.58 +1～+6 不播動畫，直接出結果（Mochi）
   playFx(r.danger,r.before,r.next,res)}
-function enchant(id,slot){const r=enchantCore(id,slot);if(r.err)return toast(r.err,'bad');if(r.k==='broken'){snd('enh_break');ui.result={t:'info',title:'奧丁之咒！',html:'<div class="center">符文之主奧丁不許凡人動祂的符文，降下了詛咒。<br>這把武器<b class="t-danger">完全不能使用</b>，<br>要用<b>矮人解咒石</b>破除，解咒後變回無屬性。</div>',ok:'知道了'};return render()}snd(r.v>=3?'enh_ok':'enchant');render()}
+function enchant(id,slot){const r=enchantCore(id,slot);if(r.err)return toast(r.err,'bad');if(r.k==='broken'){snd('enh_break');ui.result={t:'info',rib:'fail',title:'奧丁之咒！',html:'<div class="center">符文之主奧丁不許凡人動祂的符文，降下了詛咒。<br>這把武器<b class="t-danger">完全不能使用</b>，<br>要用<b>矮人解咒石</b>破除，解咒後變回無屬性。</div>',ok:'知道了'};return render()}snd(r.v>=3?'enh_ok':'enchant');render()}
 // v4.83 故事書（Mochi：附魔系統旁邊放一本書，裡面一張圖＋故事，讓遊戲有劇情）。圖 art/ic_lore、art/story_ench 還沒到時先放待生圖框
 const LORE_ART={ic_lore:true,story_ench:true,story_enh:true};   // v4.83 Mochi AI 生圖已到
 const loreArt=(n,cls)=>LORE_ART[n]?img(n,cls):`<span class="ph-ico ${cls}">待生圖</span>`;
@@ -2700,6 +2701,7 @@ function viewShop(){   // v5.17 換成道具欄母版（.b2）：主框、次面
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'5.22',t:'說明／結果小卡、提示訊息換成道具欄母版（主框、標題飾條、結果橫幅、物品格、按鈕、小膠囊、通知條）',b:[['m522','道具說明小卡（強化石）'],['m522h','收成結果（金色橫幅）'],['m522c','奧丁之咒（紅色橫幅）'],['m522s','商城購買小卡'],['m522t','跳兩則提示訊息']]},
  {v:'5.21',t:'設定／公告／玩法換成道具欄母版（主框、小標、橫列卡、音效開關與把手、NEW 標籤）',b:[['s521','打開設定（公告、玩法有 NEW）'],['s521n','打開更新公告'],['s521g','打開玩法說明（展開第一項）']]},
  {v:'5.20',t:'任務小卡換成道具欄母版（主框、頁籤、寶箱、任務橫列卡、成就橫列卡）',b:[['q520','打開每日任務（第 1 箱已領、第 2 箱可領）'],['q520o','打開委託成就（有 1 項可領取）']]},
  {v:'5.18',t:'+9 裂縫呼吸燈、小卡跑框改用動畫時間軸對齊，卡頓時不再跳',b:[['bag96','產生 +0～+12 武器並打開道具欄（看 +9 以上裂縫連續呼吸）'],['k2pop','打開 +10 武器小卡（看跑框連續轉）']]},
@@ -2877,6 +2879,13 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='cpull'){cloudPull().then(()=>toast('已從雲端下載','ok')).catch(e=>toast('下載失敗：'+SB_ERR(e.message),'bad'));return}
   if(k==='clogout'){ui.sheet=null;return cloudLogout()}
   if(k==='maintprev'){ui.sheet=null;render();return showMaint(null,true)}
+  if(/^m522/.test(k)){ui.sheet=null;const q=k.slice(4),mk=Object.keys(MATS);
+    if(q==='t'){ui.result=null;render();toast('購買 強化石 ×10','ok');return toast('金幣不夠。','bad')}
+    if(q==='h')ui.result={t:'h',title:'鐵爐村 收成 5 輪',got:{gold:1234,[mk[0]]:12,[mk[1]]:3},ev:0};
+    else if(q==='c')ui.result={t:'info',rib:'fail',title:'奧丁之咒！',html:'<div class="center">符文之主奧丁不許凡人動祂的符文，降下了詛咒。<br>這把武器<b class="t-danger">完全不能使用</b>，<br>要用<b>矮人解咒石</b>破除，解咒後變回無屬性。</div>',ok:'知道了'};
+    else if(q==='s'){ui.tab='shop';return shopMatCard(STONE)}
+    else{const r=itemInfo(STONE);ui.result={t:'info',...r,acts:(r.acts||'')+mkSellBtn(STONE)}}
+    return render()}
   if(/^s521/.test(k)){ui.result=null;nwInit();S.nwSeen=NW_LOG.slice(2).map(n=>n.v);S.glSeen={};GUIDE_ALL.forEach((g,i)=>{if(i)S.glSeen[g.k]=g.v});ui.glOpen=k==='s521g'?GUIDE[0][1][0].k:null;ui.sheet={t:'set',k:k.slice(4)};save();return render()}
   if(k==='q520'||k==='q520o'){ui.result=null;dailyRoll();const b=S.daily.b;b.harvest=S.stats.harvest-5;b.forged=forgedN()-3;b.enhTry=S.stats.enhTry-5;S.daily.box=[0];if(k==='q520o'){S.stats.harvest=Math.max(S.stats.harvest,100);b.harvest=S.stats.harvest-5;delete S.ach.h100}ui.qTab=k==='q520'?'d':'o';ui.sheet={t:'a'};save();return render()}
   if(k==='sh517'||k==='sh517d'){ui.sheet=null;ui.result=null;ui.tab='shop';if(k==='sh517'){S.sign.last=''}else{if(!monthlyOn())S.monthly.until=NOW()+30*864e5;S.monthly.last=today();S.sign.last=today()}save();scrollTo(0,0);return render()}
@@ -3143,8 +3152,8 @@ function renderLayer(){stkFollow();
   const sc=document.querySelector('.sheet'),st=sc?sc.scrollTop:0,same=sc&&ui._lastSheet===JSON.stringify(s),keep=same||sc&&s&&s.t==='w'&&ui._lastSheetW===s.id;   // v4.91 同一把武器的小卡切換（武器⇄強化⇄附魔）不重播彈出動畫
   if(s){const pop=s.t==='w'&&((s.m==='main'||s.m==='ench')&&!!W(s.id)||s.m==='enh'),full=!pop&&(s.t==='w'||s.t==='fxt');h+=`<div class="scrim ${pop?'wpopc':''} ${keep?'still':''}" data-act="scrim"><div class="ui-sheet sheet ${full?'full':''} ${pop?'wpop k2':''} ${s.t==='a'?'q2':''} ${s.t==='set'?'s2':''} ${s.t==='chat'?'cx-sheet':''} ${keep?'still':''}">${s.t==='w'?sheetWeapon(s.id,s.m):s.t==='v'?sheetVillage(s.i):s.t==='ch'&&ui.ch?sheetCh():s.t==='chr'&&ui.chr?sheetChr():s.t==='a'?sheetAch():s.t==='fk'?sheetFk(s.i):s.t==='lb'?sheetLb(s.i):s.t==='lbw'?sheetLbW(s.i,s.k):s.t==='ws'?sheetWorkshop(s.k):s.t==='evt'?sheetEvt():s.t==='chat'?sheetChat():s.t==='gd'?sheetGuild():s.t==='fr'?sheetFriend():s.t==='bw'?sheetBossW(s.r,s.j):s.t==='fxt'?sheetFxTest(s):s.t==='set'?sheetSet(s.k):/^mk/.test(s.t)?sheetMk(s):sheetDev()}</div></div>`}
   const r=ui.result;
-  if(r&&r.t==='h')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card">${ptitle(r.title)}${r.ev?`<div class="small t-danger center">其中 ${r.ev} 輪受襲：沒有材料、金幣減半</div>`:''}<div class="hgrid">${harvestIcons(r.got)}</div>${btn('確定','rclose',{cls:'btn-primary big'})}</div></div>`;
-  if(r&&r.t==='info')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card">${r.ico?`<div class="info-ico">${r.ico}</div>`:r.icon?`<div class="info-ico">${img(r.icon)}</div>`:''}${ptitle(r.title)}<div class="info-body">${r.html}</div>${r.acts||''}${btn(r.ok||'知道了','rclose',{cls:r.ok?'btn-sec big':'btn-primary big'})}</div></div>`;
+  if(r&&r.t==='h')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card m2"><div class="m2-rib ok">${ptitle(r.title)}</div>${r.ev?`<div class="small t-danger center">其中 ${r.ev} 輪受襲：沒有材料、金幣減半</div>`:''}<div class="hgrid">${harvestIcons(r.got)}</div>${btn('確定','rclose',{cls:'btn-primary big'})}</div></div>`;
+  if(r&&r.t==='info')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card m2">${r.ico?`<div class="info-ico">${r.ico}</div>`:r.icon?`<div class="info-ico">${img(r.icon)}</div>`:''}${r.rib?`<div class="m2-rib ${r.rib}">${ptitle(r.title)}</div>`:ptitle(r.title)}<div class="info-body">${r.html}</div>${r.acts||''}${btn(r.ok||'知道了','rclose',{cls:r.ok?'btn-sec big':'btn-primary big'})}</div></div>`;
   {const rk=r?JSON.stringify([r.t,r.title,r.html]):'';if(r&&rk===ui._lastRes)h=h.replace('<div class="ui-modal modal-card">','<div class="ui-modal modal-card still">');ui._lastRes=rk}   // v4.74 小卡內容沒變就不重播彈出動畫（每 250ms 的 render 會讓小卡像一直重新打開）
   const fa=document.activeElement,fid=fa&&fa.id&&L.contains(fa)?fa.id:null,cxl=document.getElementById('cxList'),cxs=cxl?cxl.scrollTop:null;   // v3.88 重畫時保留聊天輸入框焦點與訊息捲動位置
   L.innerHTML=h;ui._lastSheet=JSON.stringify(s);ui._lastSheetW=s&&s.t==='w'?s.id:null;{const n=fid&&document.getElementById(fid);if(n)n.focus({preventScroll:true});const c=document.getElementById('cxList');if(c)c.scrollTop=cxs==null?c.scrollHeight:cxs}document.documentElement.classList.toggle('scrimmed',!!s);

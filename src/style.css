@@ -2294,18 +2294,51 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 .s2 .newb:not(#_){background:url(art/ui/bag2/bag2_new.webp) 4px center/11px no-repeat,url(art/ui/bag2/bag2_badge.webp) center/100% 100% no-repeat;border-radius:0;padding:1px 7px 1px 18px;color:#ffb08a;box-shadow:none}
 /* 音效區：次面板、開關圖、小膠囊、容量條＋把手 */
 .s2 .st-snd:not(#_){border:14px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_sub.webp) 44 fill / 14px stretch;padding:0 4px}
-.s2 .snd-set .kv{align-items:center;border-bottom-color:rgba(162,119,74,.25)}
-.s2 .snd-set .kv span{color:var(--b2-mute)}
-.s2 .chipbtn[data-act="sndmute"]:not(#_){display:inline-flex;flex-direction:row;align-items:center;gap:8px;width:auto;min-width:0;min-height:0;height:30px;white-space:nowrap;padding:0;border:0;border-image:none;border-radius:0;background:none;box-shadow:none;color:var(--b2-mute);font-size:13px}
-.s2 [data-act="sndmute"]::before{content:"";order:2;position:static;flex:none;width:58px;height:21px;background:url(art/ui/bag2/bag2_tgl_off.webp) center/100% 100% no-repeat}
-.s2 .chipbtn[data-act="sndmute"].on:not(#_){color:var(--b2-gold-hi)}
-.s2 [data-act="sndmute"].on::before{background-image:url(art/ui/bag2/bag2_tgl_on.webp)}
-.s2 .chipbtn[data-act="sndfix"]:not(#_){height:30px;padding:0 14px;border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_chip.webp) 0 45 fill / 0 13px stretch;color:var(--b2-text);font-size:13px}
-.s2 #sndvol{-webkit-appearance:none;appearance:none;width:100%;height:28px;margin:0;background:none;accent-color:var(--b2-gold)}
-.s2 #sndvol::-webkit-slider-runnable-track{height:10px;border:0 solid transparent;border-image:url(art/ui/bag2/bag2_cap_track.webp) 0 30 fill / 0 6px stretch;background:none}
-.s2 #sndvol::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:26px;height:26px;margin-top:-8px;border:0;background:url(art/ui/bag2/bag2_knob.webp) center/contain no-repeat;filter:drop-shadow(0 1px 2px #000)}
-.s2 #sndvol::-moz-range-track{height:10px;border:0;background:url(art/ui/bag2/bag2_cap_track.webp) center/100% 100% no-repeat}
-.s2 #sndvol::-moz-range-thumb{width:26px;height:26px;border:0;border-radius:0;background:url(art/ui/bag2/bag2_knob.webp) center/contain no-repeat}
-.s2 #sndvol:disabled{opacity:.45}
+:is(.s2,.m2) .snd-set .kv{align-items:center;border-bottom-color:rgba(162,119,74,.25)}
+:is(.s2,.m2) .snd-set .kv span{color:var(--b2-mute)}
+:is(.s2,.m2) .chipbtn[data-act="sndmute"]:not(#_){display:inline-flex;flex-direction:row;align-items:center;gap:8px;width:auto;min-width:0;min-height:0;height:30px;white-space:nowrap;padding:0;border:0;border-image:none;border-radius:0;background:none;box-shadow:none;color:var(--b2-mute);font-size:13px}
+:is(.s2,.m2) [data-act="sndmute"]::before{content:"";order:2;position:static;flex:none;width:58px;height:21px;background:url(art/ui/bag2/bag2_tgl_off.webp) center/100% 100% no-repeat}
+:is(.s2,.m2) .chipbtn[data-act="sndmute"].on:not(#_){color:var(--b2-gold-hi)}
+:is(.s2,.m2) [data-act="sndmute"].on::before{background-image:url(art/ui/bag2/bag2_tgl_on.webp)}
+:is(.s2,.m2) .chipbtn[data-act="sndfix"]:not(#_){height:30px;padding:0 14px;border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_chip.webp) 0 45 fill / 0 13px stretch;color:var(--b2-text);font-size:13px}
+:is(.s2,.m2) #sndvol{-webkit-appearance:none;appearance:none;width:100%;height:28px;margin:0;background:none;accent-color:var(--b2-gold)}
+:is(.s2,.m2) #sndvol::-webkit-slider-runnable-track{height:10px;border:0 solid transparent;border-image:url(art/ui/bag2/bag2_cap_track.webp) 0 30 fill / 0 6px stretch;background:none}
+:is(.s2,.m2) #sndvol::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:26px;height:26px;margin-top:-8px;border:0;background:url(art/ui/bag2/bag2_knob.webp) center/contain no-repeat;filter:drop-shadow(0 1px 2px #000)}
+:is(.s2,.m2) #sndvol::-moz-range-track{height:10px;border:0;background:url(art/ui/bag2/bag2_cap_track.webp) center/100% 100% no-repeat}
+:is(.s2,.m2) #sndvol::-moz-range-thumb{width:26px;height:26px;border:0;border-radius:0;background:url(art/ui/bag2/bag2_knob.webp) center/contain no-repeat}
+:is(.s2,.m2) #sndvol:disabled{opacity:.45}
 @media (max-width:400px){.sheet.s2:not(#_){padding:20px 14px 14px}}
+/* ===== v5.22 說明小卡／結果小卡／提示訊息換成道具欄母版（排程 2-5）：所有 ui.result 小卡（.m2）＝bag2 主框＋標題飾條；收成／奧丁之咒＝G 結果橫幅；物品格＝bag2_slot；按鈕＝bag2 按鈕；小膠囊＝bag2_chip；toast＝G 通知條 ===== */
+.modal-card.m2:not(#_){border:1px solid transparent;border-radius:0;border-image:url(art/ui/bag2/bag2_main_frame.webp) 150 / 24px stretch;
+  background:linear-gradient(#555,#555),url(art/ui/bag2/bag2_main_tex.webp) center top/cover no-repeat,#0b0d10;background-blend-mode:color-dodge,normal,normal;
+  padding:22px 18px 16px;box-shadow:0 12px 40px rgba(0,0,0,.8);color:var(--b2-text)}
+.m2 .ptitle{justify-content:center;gap:6px;font-size:17px;letter-spacing:.1em;color:var(--b2-gold-hi);text-align:center;text-shadow:0 1px 2px #000,0 0 6px #000}
+.m2 .ptitle::before,.m2 .ptitle::after{flex:none;width:30px;height:9px;background:url(art/ui/bag2/bag2_title_l.webp) center/contain no-repeat}
+.m2 .ptitle::after{background-image:url(art/ui/bag2/bag2_title_r.webp)}
+/* 結果橫幅：成功＝金、失敗＝紅（標題字壓在橫幅上） */
+.m2-rib{margin:0 -6px;min-height:40px;display:flex;align-items:center;justify-content:center;padding:0 34px;border:1px solid transparent;border-image:url(art/ui/bag2/bag2_rib_ok.webp) 0 60 fill / 0 30px stretch}
+.m2-rib.fail{border-image-source:url(art/ui/bag2/bag2_rib_fail.webp)}
+.m2-rib .ptitle{color:#ffe7b0;text-shadow:0 1px 2px #000,0 0 6px #000}.m2-rib .ptitle::before,.m2-rib .ptitle::after{display:none}
+.m2-rib.fail .ptitle{color:#ffd0c8}
+.m2 .info-body{color:var(--b2-text)}
+.m2 .kv{border-bottom-color:rgba(162,119,74,.25)}.m2 .kv span,.m2 .small.muted{color:var(--b2-mute)}
+/* 收成物品格、故事書贈品 */
+.m2 .hico:not(#_){border:8px solid transparent;border-radius:0;background:none;border-image:url(art/ui/bag2/bag2_slot.webp) 40 fill / 8px stretch;padding:0 0 2px;color:var(--b2-num)}
+.m2 .lore-gift:not(#_){border:12px solid transparent;border-radius:0;background:none;border-image:url(art/ui/bag2/bag2_sub.webp) 44 fill / 12px stretch;padding:0 2px}
+.m2 .lore-art img,.m2 .lore-art .lore-img{border-radius:0}
+/* 按鈕：同任務小卡 .q2 */
+.m2 .ui-btn.btn:not(.ui-btn--icon):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_btn_sec2.webp) 0 70 fill / 0 19px stretch;color:var(--b2-text)}
+.m2 .ui-btn.btn:not(.ui-btn--icon):active:not(:disabled):not(#_){border-image-source:url(art/ui/bag2/bag2_btn_sec2_p.webp)}
+.m2 .ui-btn--primary.btn:not(.ui-btn--icon):not(#_){border-image:url(art/ui/bag2/bag2_btn_pri.webp) 0 55 fill / 0 16px stretch;color:#ffe7b0}
+.m2 .ui-btn--primary.btn:not(.ui-btn--icon):active:not(:disabled):not(#_){border-image-source:url(art/ui/bag2/bag2_btn_pri_p.webp)}
+.m2 .ui-btn--danger.btn:not(.ui-btn--icon):not(#_){border-image:url(art/ui/bag2/bag2_btn_dan.webp) 0 55 fill / 0 16px stretch;color:#ffd0c8}
+.m2 .ui-btn.btn:not(.ui-btn--icon):disabled:not(#_){border-image:url(art/ui/bag2/bag2_btn_off2.webp) 0 70 fill / 0 19px stretch;color:var(--b2-dim);opacity:1;filter:none}
+/* 小膠囊（數量、改名、顯示…）；音效開關另外用開關圖 */
+.m2 .chipbtn:not([data-act="sndmute"]):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_chip.webp) 0 45 fill / 0 13px stretch;color:var(--b2-text)}
+.m2 .chipbtn.on:not([data-act="sndmute"]):not(#_){border-image-source:url(art/ui/bag2/bag2_chip_on.webp);color:var(--b2-gold-hi)}
+.m2 .ms-step .chipbtn:not(#_){min-width:44px}
+@media (max-width:400px){.modal-card.m2:not(#_){padding:20px 14px 14px}}
+/* 提示訊息：G 通知條（成功／失敗只換字色） */
+.toast:not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:0 6px 18px rgba(0,0,0,.6);border-image:url(art/ui/bag2/bag2_notice.webp) 30 fill / 10px stretch;padding:11px 16px;color:var(--b2-text);text-shadow:0 1px 2px #000}
+.toast.ok:not(#_){color:#c8e6b4}.toast.bad:not(#_){color:#ffc0b8}
 </style>
