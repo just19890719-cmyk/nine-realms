@@ -3,13 +3,13 @@
 //   在 GitHub Actions 上：範圍從 PR 說明讀（「範圍檔案：…」「範圍畫面：…」「範圍元件：…」「類型：BUG」四行），不用帶參數
 // 依序：
 //   1. 工作區要乾淨（報告一定對應一個 commit，不能拿沒提交的東西當證明）
-//   2. 統一測試 run_tests.js（靜態檢查、快速測試、核心流程冒煙、存讀檔、BUG 回歸、320／375／430 畫面）
+//   2. 統一測試 run_tests.js（靜態檢查、快速測試、核心流程冒煙、存讀檔、BUG 回歸、360／390／440 畫面）
 //   3. 建置產物（index.html 等）要跟 src 一致；改到遊戲本體要升 BUILD_ID
 //   4. 失敗項目只能是 known_failures.json 列出的 main 既有問題，而且這份清單只能變短
 //   5. 類型是 BUG 時，BUG_HISTORY.md 一定要新增紀錄
 //   6. 素材雜湊（已登記素材不能被偷改）、流程檔變更提醒
 //   6b. 改到的檔案都要在「範圍檔案」內（Mochi 授權的範圍）；禁改區塊（強化率、爆裝、安全距離、符文時間軸…，見 locked.json）不能被改
-//   7. 320／375／430 修改前後對照：範圍外的畫面或共用元件有變動就失敗
+//   7. 360／390／440 修改前後對照：範圍外的畫面或共用元件有變動就失敗
 // 結果：test-out/gate-report.md（給人看）、test-out/gate-result.json；有任何失敗結束碼 1。
 // 這個檔案沒有「跳過」開關，也不准加：沒跑到的項目一律算失敗。
 const path=require('path'),fs=require('fs'),cp=require('child_process');
@@ -61,7 +61,7 @@ function scope(){let body='',labels=[];try{const ev=JSON.parse(fs.readFileSync(p
   const lk=require('./locked.js').check(base);add('禁改區塊沒有被修改（強化率、爆裝、安定值、武器安全距離、符文時間軸）',!lk.fail.length,lk.fail.join('\n'));notes.push(...lk.info);
   // 7. 前後對照
   const sh=await require('./shots.js').run({base,screens:S.screens,parts:S.parts});
-  add('320／375／430 前後對照：沒有範圍外的畫面或共用元件變動',!sh.fail.length,sh.fail.slice(0,12).join('\n'));warn.push(...sh.warn);notes.push(...sh.info);
+  add('360／390／440 前後對照：沒有範圍外的畫面或共用元件變動',!sh.fail.length,sh.fail.slice(0,12).join('\n'));warn.push(...sh.warn);notes.push(...sh.info);
   // 報告
   const ok=items.every(i=>i.ok),time=new Date().toISOString().slice(0,16).replace('T',' ')+' UTC';
   const vis=sh.changed.length?`等 Mochi 看對照圖（有變動的畫面 ${sh.changed.length} 張）`:'不需要（跟 main 比對畫面完全相同）';
