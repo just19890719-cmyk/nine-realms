@@ -1,0 +1,11 @@
+{
+ "_說明": "禁改區塊指紋（CLAUDE.md「不可以改的規則」）：關卡把每一項從 main 和這個分支各抓一次比對，有任何不同、或在這個分支找不到，就失敗。比對用的是 main 上的這份清單，在分支裡改清單蓋不掉。re＝正規表示式（字串或陣列），all＝抓全部符合的地方；行尾 // 註解不算。要改這份清單或這些數值，一定要 Mochi 明確授權。",
+ "items": [
+  {"id": "RATE", "name": "強化成功率表", "file": "src/game.js", "re": "const RATE=\\[[^\\]]*\\];"},
+  {"id": "MAX_LV", "name": "強化上限", "file": "src/game.js", "re": "const MAX_LV=\\d+"},
+  {"id": "breakChance", "name": "爆裝公式", "file": "src/game.js", "re": ["function breakChance\\([^\\n]*", "function rollEnhance\\([^\\n]*", "let r=RATE\\[next\\];const bc=breakChance\\(w,next\\);"]},
+  {"id": "stable", "name": "安定值", "file": "src/game.js", "re": "stable:\\s*\\d+", "all": true},
+  {"id": "WFIT", "name": "武器圖安全距離", "file": "src/game.js", "re": ["const WFIT=\\{[^}]*\\};", "Object\\.assign\\(WFIT,\\{[^}]*\\}\\);", "for\\(const b of BPS\\)if[^\\n]*?WFIT\\[b\\.id\\]=[^;]*;", "for\\(const k in ART_WAIT\\)if[^\\n]*?WFIT\\[id\\]=WFIT\\[src\\]\\}", "\\(WFIT\\[ART_WAIT\\[id\\]\\|\\|id\\]\\|\\|[^)]*\\):[\\d.]+\\)\\*100"]},
+  {"id": "rune", "name": "符文時間軸", "file": "src/game.js", "re": ["T=\\d+;REV=\\d+;", "const S0=\\d+,DT=\\d+", "if\\(k==='ok'\\)\\{REV=ts\\+\\d+;T=REV\\+\\d+\\}else\\{[^}]*\\}", "const lit=[^;]*;"]}
+ ]
+}

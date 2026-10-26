@@ -61,17 +61,18 @@
 
 ## 強制驗收關卡（v5.12，Mochi 2026-10-25 決定；機器會擋，不是只靠記得）
 - **合併只由 Mochi 自己在 GitHub 上按。** Claude 不能合併、不能開自動合併、不能推到 main（`.claude/settings.json` 封鎖這些工具；main 的分支規則要求 PR＋`gate` 檢查通過，管理員也不能略過）。Mochi 說「修 BUG」「做功能」「好」都**不是**合併授權；交付時只附 PR 連結，請 Mochi 自己按。
-- **交付前一定要跑關卡**：先 commit，再 `node src/tools/gate.js --screens=<這次要改的畫面> --parts=<這次要改的共用元件> [--bug]`（約 3～5 分鐘）。PR 說明一定要寫三行（GitHub 上的關卡從這裡讀範圍）：
+- **交付前一定要跑關卡**：先 commit，再 `node src/tools/gate.js --files=<Mochi 授權要改的檔案> --screens=<這次要改的畫面> --parts=<這次要改的共用元件> [--bug]`（約 3～5 分鐘）。PR 說明一定要寫四行（GitHub 上的關卡從這裡讀範圍）：
+  `範圍檔案：src/game.js、src/style.css`（Mochi 授權要改的檔案；資料夾寫 `art/ui/`，可用 `*`；建置產物 index.html 等不用寫）
   `範圍畫面：強化小卡、附魔小卡`（畫面名稱看 `src/tools/screens.js`；沒有就寫「無」）
   `範圍元件：按鈕`（圖示鈕／按鈕／導覽列／資源列／道具格／分頁／彈窗／武器名稱，看 `shots.js` 的 PARTS；沒有就寫「無」）
   `類型：BUG` 或 `類型：一般`
-- 關卡內容：工作區乾淨 → 統一測試五層 → 建置產物一致、改遊戲本體要升版 → 失敗只能是 `known_failures.json` 的既有問題（清單只能變短）→ BUG 要寫 `BUG_HISTORY.md` → 素材雜湊 `art_manifest.json` → 320／375／430 修改前後對照（`test-out/compare/`，紅框＝不同處，圖上印 commit 編號）。**範圍外的畫面或共用元件有任何變動就失敗**（v5.10 叉叉變八角形就是這種）。
+- 關卡內容：工作區乾淨 → 統一測試五層 → 建置產物一致、改遊戲本體要升版 → 失敗只能是 `known_failures.json` 的既有問題（清單只能變短）→ BUG 要寫 `BUG_HISTORY.md` → **改到範圍檔案以外的檔案就失敗** → **禁改區塊**（強化率、爆裝、安定值、武器安全距離、符文時間軸，清單 `locked.json`）跟 main 不同就失敗 → 素材雜湊 `art_manifest.json` → 320／375／430 修改前後對照（`test-out/compare/`，紅框＝不同處，圖上印 commit 編號）。**範圍外的畫面或共用元件有任何變動就失敗**（v5.10 叉叉變八角形就是這種）。
 - **已登記素材**（`src/tools/art_manifest.json`，art/、sfx/ 全部）：沒有 Mochi 明確授權不能改、換、刪、重生。有授權時在該筆加 `"auth":"Mochi 日期 原話"` 並更新 sha256；新素材加一筆 `"status":"pending"`。
-- **流程檔**（gate.js、integrity.js、shots.js、screens.js、run_tests.js、known_failures.json、art_manifest.json、.github/workflows/、.claude/settings.json、CLAUDE.md、docs/rules/）有改，關卡報告最上面會紅字列出、PR 會貼「流程檔變更」標籤；改這些要先問 Mochi。
+- **流程檔**（gate.js、integrity.js、shots.js、screens.js、run_tests.js、known_failures.json、locked.js、locked.json、art_manifest.json、.github/workflows/、.claude/settings.json、CLAUDE.md、docs/rules/）有改，關卡報告最上面會紅字列出、PR 會貼「流程檔變更」標籤；改這些要先問 Mochi。
 - **四個狀態分開寫**，每次回報第一行：`程式完成：是／否｜測試通過：是／否（附 gate-report）｜視覺驗收通過：是／否／不需要｜正式合併完成：是／否`。「測試通過」只能根據最新 commit 的關卡結果；推新 commit 後之前的「測試通過」「視覺驗收通過」都作廢（GitHub 標籤會自動撤掉）。「視覺驗收通過」只能是 Mochi 看過對照圖後說的。
 - **誠實回報**：測試結果只能引用 `test-out/gate-report.md`；沒跑的寫「未執行＋原因」。附給 Mochi 的截圖只能用這次關卡產生、印有最新 commit 編號的圖。發現自己或其他討論串之前沒照規則做，下一則訊息就如實回報、保留現狀，等 Mochi 決定，不准自己偷偷補救。說過「先不要」的事，要 Mochi 重新確認才能做。列違規前先找到 Mochi 的原話確認。
 
-## 不可以改的規則
+## 不可以改的規則（關卡用 `src/tools/locked.json` 自動比對）
 - 強化成功率表 `RATE` 與爆裝公式。
 - 符文時間軸。
 - 武器圖的安全距離。
@@ -93,6 +94,7 @@ src/                    ← 原始碼（只改這裡）
   tools/screens.js      測試用畫面清單（run_tests 第 5 層和 shots.js 共用）
   tools/integrity.js    素材雜湊與流程檔檢查；清單在 tools/art_manifest.json
   tools/known_failures.json  main 上已知、未修好的失敗測試（只能變短）
+  tools/locked.js       禁改區塊指紋檢查；清單在 tools/locked.json
   tools/fixtures/       各版本的真實存檔（save_v版本.json，_expect＝載入後應有的數值），只能加不能刪
   tools/ui_test.js      舊版（v3.x）Playwright 介面測試，流程已過時，保留不刪、不在統一指令內
   docs/                 UI 元件架構說明
@@ -119,7 +121,7 @@ git add -A && git commit -m "v3.57 …" && git push    # GitHub Pages 約 1 分�
 ```bash
 node src/tools/run_tests.js            # 自動建置＋開本機伺服器＋跑全部（約 75 秒），結果在 test-out/report.md，截圖在 test-out/shots/
 node src/tools/run_tests.js --only=4,5 # 只跑某幾層（除錯用；交付前一定要跑全部，沒跑的層報告會寫「未執行」）
-node src/tools/gate.js --screens=… --parts=…  # 交付前的強制關卡（包含上面全部，再加素材雜湊和 320／375／430 前後對照），見「強制驗收關卡」
+node src/tools/gate.js --files=… --screens=… --parts=…  # 交付前的強制關卡（包含上面全部，再加素材雜湊和 320／375／430 前後對照），見「強制驗收關卡」
 ```
 - Playwright：雲端環境用 `/opt/node-tools/node_modules/playwright`（自動找）；自己電腦 `npm i -D playwright && npx playwright install chromium`。
 - 第 0 層 靜態檢查：語法、version.json＝BUILD_ID、NW_LOG／DEV_LOG 最上面是這一版、程式寫死的圖檔都存在、道具／材料／介面小圖示四角透明、art 檔名、重複檔（只提醒）、沒有 secret 金鑰。
