@@ -525,7 +525,7 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.44 舊武器刪除：要在放回測試資料前檢查
-  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),...sh2Tests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
+  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),...sh2Tests(),...q2Tests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
     T('BD2 神明材質階、神格覺醒拿掉',TIERS.length===5&&typeof GOD==='undefined'&&typeof awkN==='undefined',`材質 ${TIERS.length} 階`)];
   return withTestBps(()=>runTests0(mode,bd))}
 // v4.44 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
@@ -755,6 +755,20 @@ function k2Tests(){const S0=S,sh0=ui.sheet,r0=ui.result;S=JSON.parse(JSON.string
     return out}
   catch(e){return[T('K2 UI 母版延伸測試',false,e.message)]}finally{S=S0;ui.sheet=sh0;ui.result=r0;renderLayer()}}
 // v5.14 交易所換成道具欄母版：外框／頁籤／小膠囊／橫列卡都用 bag2，沒有舊框（重新整理鈕是圓形圖示鈕，維持原本的圖）；標題右邊的上架數不被外框裁掉、頁面不撐寬
+function q2Tests(){const tab0=ui.tab,sh0=ui.sheet,qt0=ui.qTab,y0=scrollY,dl0=JSON.stringify(S.daily);
+  try{const out=[],bis=e=>getComputedStyle(e).borderImageSource;dailyRoll();const b=S.daily.b;b.harvest=S.stats.harvest-5;b.forged=forgedN()-3;b.enhTry=S.stats.enhTry-5;S.daily.box=[0];
+    ui.qTab='d';ui.sheet={t:'a'};render();const sc=document.querySelector('.ui-sheet.q2');
+    const old=sc?[...sc.querySelectorAll('*:not(.icon-btn):not(.icon-btn *)')].filter(e=>/ui491_|ui493_/.test(bis(e)+getComputedStyle(e).backgroundImage)).length:-1;
+    const tabs=sc?[...sc.querySelectorAll('.b2-tab')]:[],box=sc?[...sc.querySelectorAll('.dq-box')]:[],rows=sc?[...sc.querySelectorAll('.dq-row')]:[];
+    out.push(T('Q2 任務小卡用道具欄外框、頁籤、寶箱次面板、任務橫列卡，沒有舊框',!!sc&&/bag2_main_frame/.test(bis(sc))&&tabs.length===2&&box.length===3&&box.every(e=>/bag2_sub/.test(bis(e)))&&rows.length===DAILY.length&&rows.every(e=>/bag2_row/.test(bis(e)))&&old===0,`頁籤 ${tabs.length}；寶箱 ${box.length}；任務列 ${rows.length}；舊框 ${old}`));
+    const ch=sc?sc.querySelectorAll('.dq-chest').length:0,st=sc?sc.querySelectorAll('.dq-box.done .dq-stamp').length:0,rd=sc&&sc.querySelector('.dq-box.ready'),ic=sc?[...sc.querySelectorAll('.dq-ic')].filter(e=>/bag2_q_/.test(e.src)).length:0;
+    out.push(T('Q2 寶箱圖、任務圖示、已領取印記、可領取光框都在',ch===3&&st===1&&ic===DAILY.length&&!!rd&&/bag2_today/.test(getComputedStyle(rd,'::after').borderImageSource),`寶箱圖 ${ch}；任務圖示 ${ic}；印記 ${st}；可領取光框 ${rd?'有':'無'}`));
+    const sr=sc&&sc.getBoundingClientRect(),cut=sc?[...sc.querySelectorAll('.dq-row,.dq-box .ach-rw,.dq-box .btn')].filter(e=>{const r=e.getBoundingClientRect();return r.left<sr.left||r.right>sr.right||e.scrollWidth>e.clientWidth+1}).length:-1;
+    out.push(T('Q2 每日任務的字、獎勵、按鈕沒有被切掉或超出外框',cut===0,`寬 ${innerWidth}：超出 ${cut} 個`));
+    ui.qTab='o';render();const s2=document.querySelector('.ui-sheet.q2'),ach=s2?[...s2.querySelectorAll('.ach-a')]:[],nb=s2?[...s2.querySelectorAll('.ui-btn.btn:not(.ui-btn--icon)')].filter(e=>!/bag2_btn/.test(bis(e))).length:-1;
+    out.push(T('Q2 委託成就用橫列卡、按鈕都用道具欄按鈕',ach.length===ACH.length&&ach.every(e=>/bag2_row/.test(bis(e)))&&nb===0,`成就列 ${ach.length}；非 bag2 按鈕 ${nb}`));
+    return out}
+  catch(e){return[T('Q2 任務母版測試',false,e.message)]}finally{S.daily=JSON.parse(dl0);ui.qTab=qt0;ui.sheet=sh0;ui.tab=tab0;render();scrollTo(0,y0)}}
 function sh2Tests(){const tab0=ui.tab,sh0=ui.sheet,y0=scrollY,sl0=S.sign.last,sn0=S.sign.n;
   try{const out=[],bis=e=>getComputedStyle(e).borderImageSource;ui.sheet=null;ui.tab='shop';S.sign.last='';render();const sc=document.querySelector('#view section.b2.sh2');
     const old=sc?[...sc.querySelectorAll('*:not(.info-btn)')].filter(e=>/ui491_|ui493_/.test(bis(e)+getComputedStyle(e).backgroundImage)).length:-1;
