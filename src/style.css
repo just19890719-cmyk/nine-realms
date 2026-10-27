@@ -2491,4 +2491,10 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 /* v5.29 底部聊天列換成道具欄母版（Mochi 選「照預覽做」）：底板＝bag2_row 橫列卡、「世界」小標＝bag2_chip；位置、高度、文字、未讀紅點不變 */
 .cbar-in:not(#_):not(#_){border:0 solid transparent;border-radius:0;background:none;box-shadow:0 4px 14px rgba(0,0,0,.6);border-image:url(art/ui/bag2/bag2_row.webp) 32 fill / 12px stretch;padding:0 12px}
 .cbar-ch:not(#_):not(#_){border:0 solid transparent;border-radius:0;background:none;border-image:url(art/ui/bag2/bag2_chip.webp) 0 45 fill / 0 9px stretch;padding:0 9px;line-height:20px}
+/* v5.30 鐵匠鋪「目前委託」條換成道具欄母版（Mochi 選「照預覽做」）：外框＝bag2 橫列卡（可交付＝亮框）、村莊小圖＝bag2 道具格方框、「前往」＝bag2 次要按鈕；位置、高度、功能不變 */
+.hf-rib:not(#_):not(#_){border:0 solid transparent;border-radius:0;background:none;box-shadow:0 4px 14px rgba(0,0,0,.6);border-image:url(art/ui/bag2/bag2_row.webp) 32 fill / 12px stretch;padding:6px 8px 6px 6px;color:var(--b2-text)}
+.hf-rib.ok:not(#_):not(#_){border-image-source:url(art/ui/bag2/bag2_row_on.webp)}
+.hf-rib .hf-img:not(#_){width:36px;height:36px;border-radius:0;border:3px solid transparent;border-image:url(art/ui/bag2/bag2_slot.webp) 30 fill / 3px stretch;object-fit:cover;padding:0;box-sizing:border-box}
+.hf-rib .hf-t .small:not(#_){color:var(--b2-mute)}
+.hf-rib .hf-go:not(#_){height:28px;line-height:28px;padding:0 13px;border:0 solid transparent;border-image:url(art/ui/bag2/bag2_btn_sec2.webp) 0 70 fill / 0 15px stretch;color:var(--b2-gold-hi);font-size:12.5px;white-space:nowrap}
 </style>
