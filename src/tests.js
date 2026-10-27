@@ -525,7 +525,7 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.44 舊武器刪除：要在放回測試資料前檢查
-  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),...sh2Tests(),...q2Tests(),...s2Tests(),...m2Tests(),...cx2Tests(),...v2Tests(),...v3Tests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
+  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),...sh2Tests(),...q2Tests(),...s2Tests(),...m2Tests(),...cx2Tests(),...v2Tests(),...v3Tests(),...f2Tests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
     T('BD2 神明材質階、神格覺醒拿掉',TIERS.length===5&&typeof GOD==='undefined'&&typeof awkN==='undefined',`材質 ${TIERS.length} 階`)];
   return withTestBps(()=>runTests0(mode,bd))}
 // v4.44 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
@@ -808,6 +808,21 @@ function v3Tests(){const tab0=ui.tab,sh0=ui.sheet,r0=ui.result,y0=scrollY,rl0=ui
     out.push(T('V3 村莊頁按鈕、緞帶的字沒有超出，卡片沒有超出清單，血條填滿時不超出外框',cut===0&&ov===0&&hin&&document.documentElement.scrollWidth<=innerWidth,`寬 ${innerWidth}：字超出 ${cut}；元素超出 ${ov}；血條 ${hin?'在框內':'超出'}；頁寬 ${document.documentElement.scrollWidth}`));
     return out}
   catch(e){return[T('V3 村莊列表頁母版測試',false,e.message)]}finally{JSON.parse(vs0).forEach((v,i)=>S.villages[i]=v);S.weapons.length=wn0;S.nextId=ni0;ui.realm=rl0;ui.bsOpen=bo0;ui.sheet=sh0;ui.result=r0;ui.tab=tab0;render();scrollTo(0,y0)}}
+function f2Tests(){const tab0=ui.tab,ft0=ui.ftab,bp0=ui.bp,cat0=ui.cat,sh0=ui.sheet,r0=ui.result,y0=scrollY,g0=S.gold,m0=JSON.stringify(S.mats),j0=JSON.stringify(S.jobs);
+  try{const out=[],bis=e=>getComputedStyle(e).borderImageSource,b=BPS.find(x=>!x.dev&&!bpLock(x));S.jobs=[];S.gold=99999;for(const k in recipe(b))S.mats[k]=99;
+    ui.sheet=null;ui.result=null;ui.tab='forge';ui.ftab='bp';ui.cat='all';ui.bp=b.id;render();const F=()=>document.querySelector('#view .fg2');let f=F();
+    const old=e=>e?[...e.querySelectorAll('*')].filter(x=>/ui491_|ui493_/.test(bis(x)+getComputedStyle(x).backgroundImage)).length:-1;
+    const cats=f?[...f.querySelectorAll('.catbar>button')]:[],tiles=f?[...f.querySelectorAll('.hscroll .wt.bp')]:[],on=f&&f.querySelector('.hscroll .wt.bp.on'),sel=f&&f.querySelector('.sel-bp'),mb=f?[...f.querySelectorAll('.sel-bp .matbox')]:[];
+    out.push(T('F2 鐵匠鋪：分類＝道具欄分類鈕、圖紙卡＝道具欄格子（選中有金色光框）、已選擇＝次面板、材料格＝道具欄格子，沒有舊框',cats.length>1&&cats.every(e=>e.classList.contains('b2-cat')&&/bag2_cat/.test(bis(e)))&&tiles.length>0&&tiles.every(e=>/bag2_slot/.test(bis(e)))&&!!on&&/bag2_today/.test(getComputedStyle(on,'::after').borderImageSource)&&!!sel&&/bag2_sub/.test(bis(sel))&&mb.length>0&&mb.every(e=>/bag2_slot/.test(bis(e)))&&old(f)===0,`分類 ${cats.length}；圖紙 ${tiles.length}；材料格 ${mb.length}；舊框 ${old(f)}`));
+    const go=f&&f.querySelector('.forge-go'),pb=f&&f.querySelector('.powbox');
+    out.push(T('F2 開始鍛造可以按＝道具欄主按鈕、基礎攻擊力＝膠囊',!!go&&!go.classList.contains('is-disabled')&&/bag2_btn_pri\.webp/.test(bis(go))&&!!pb&&/bag2_chip/.test(bis(pb)),`開始鍛造 ${go?bis(go).split('/').pop():'找不到'}`));
+    S.jobs=[{b:b.id,qty:1,start:NOW(),end:NOW()+5000,bp:false,cost:{mats:{},gold:0}}];render();f=F();const qr=f&&f.querySelector('.qrow'),pr=qr&&qr.querySelector('.prog'),cb=qr&&qr.querySelector('.ui-btn'),go2=f&&f.querySelector('.forge-go');
+    out.push(T('F2 鍛造中：進度列＝橫列卡＋道具欄進度條、取消＝道具欄按鈕、開始鍛造變停用外觀',!!qr&&/bag2_row/.test(bis(qr))&&!!pr&&/bag2_cap_track/.test(bis(pr))&&/bag2_cap_fill/.test(bis(pr.querySelector('i')))&&!!cb&&/bag2_btn_sec2/.test(bis(cb))&&!!go2&&/bag2_btn_off2/.test(bis(go2)),`進度列 ${qr?'有':'無'}`));
+    S.jobs=[];S.gold=1;for(const k in recipe(b))S.mats[k]=0;render();f=F();const ll=f&&f.querySelector('.lack-line');
+    const cut=f?[...f.querySelectorAll('.b2-cat,.qchip,.forge-go,.ui-btn')].filter(e=>e.scrollWidth>e.clientWidth+1).length:-1,fr=f&&f.getBoundingClientRect(),ov=f?[...f.querySelectorAll('.sel-bp,.sel-bp .matbox,.forge-go,.lack-line')].filter(e=>{const q=e.getBoundingClientRect();return q.right>fr.right+1||q.left<fr.left-1}).length:-1;
+    out.push(T('F2 缺材料提示＝道具欄提示框；按鈕字沒有超出、面板沒有超出頁面',!!ll&&/bag2_notice/.test(bis(ll))&&cut===0&&ov===0&&document.documentElement.scrollWidth<=innerWidth,`寬 ${innerWidth}：字超出 ${cut}；元素超出 ${ov}；頁寬 ${document.documentElement.scrollWidth}`));
+    return out}
+  catch(e){return[T('F2 鐵匠鋪母版測試',false,e.message)]}finally{S.gold=g0;S.mats=JSON.parse(m0);S.jobs=JSON.parse(j0);ui.bp=bp0;ui.cat=cat0;ui.ftab=ft0;ui.sheet=sh0;ui.result=r0;ui.tab=tab0;render();scrollTo(0,y0)}}
 function cx2Tests(){const tab0=ui.tab,at0=ui.atab,cs0=ui.cxs,sh0=ui.sheet,r0=ui.result,y0=scrollY,cx0=JSON.stringify(S.codex||{}),wn0=S.weapons.length;
   try{const out=[],bis=e=>getComputedStyle(e).borderImageSource,bs=cxBps();S.codex={};S.codex[bs[0].id]=[1,1,0];const tw=makeWeapon(bs[1].id,0,6);
     ui.sheet=null;ui.result=null;ui.tab='armory';ui.atab='c';ui.cxs='w';render();const c=document.querySelector('#view .cx2');

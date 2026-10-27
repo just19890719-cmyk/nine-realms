@@ -2440,4 +2440,27 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 .v3 .harvest-btn:not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_btn_pri.webp) 40 55 fill / 8px 13px stretch;color:#ffe7b0;text-shadow:0 1px 2px #000}
 .v3 .harvest-btn:active:not(#_):not(#_){border-image-source:url(art/ui/bag2/bag2_btn_pri_p.webp)}
 .v3 .harvest-btn::after{inset:5px 6px;border-radius:0}
+/* v5.26 鐵匠鋪下半部換成道具欄母版（Mochi 選「鐵匠鋪」）：分類＝道具欄 b2-cat、圖紙卡＝bag2 格子＋選中金色光框、已選擇＝bag2 次面板、材料格＝bag2 格子、數量＝bag2 膠囊、按鈕＝bag2、鍛造中＝橫列卡＋道具欄進度條；只套在 #view .fg2 */
+.fg2 .catbar{gap:4px}
+.fg2 .b2-cat{flex:none;width:54px;max-width:none;height:54px}
+.fg2 .hscroll .wt.bp:not(#_):not(#_){border:6px solid transparent;border-radius:0;background:none;box-shadow:none;outline:none;border-image:url(art/ui/bag2/bag2_slot.webp) 40 fill / 6px stretch;padding:0 0 3px}
+.fg2 .hscroll .wt.bp.on::after{content:"";position:absolute;inset:-12px;pointer-events:none;border:1px solid transparent;border-image:url(art/ui/bag2/bag2_today.webp) 30 / 14px stretch}
+.fg2 .hscroll .wt.bp .wt-art:not(#_){border-radius:0;background:none}
+.fg2 .hscroll{padding-top:12px;padding-left:12px;margin-left:-8px;gap:12px}
+.fg2 .sel-bp.ui-panel:not(#_):not(#_){border:12px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_sub.webp) 44 fill / 12px stretch;padding:4px 2px 2px;color:var(--b2-text)}
+.fg2 .sel-bp .sel-art{border-radius:0}
+.fg2 .powbox.inline:not(#_):not(#_){border:0 solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_chip.webp) 0 45 fill / 0 10px stretch;padding:3px 12px}
+.fg2 .sel-bp .matbox:not(#_):not(#_){border:6px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_slot.webp) 40 fill / 6px stretch;padding:2px 0;color:var(--b2-text)}
+.fg2 .sel-bp .matbox.lack:not(#_):not(#_){border-image-source:url(art/ui/bag2/bag2_slot_empty.webp)}
+.fg2 .qchip:not(#_):not(#_){border:0 solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_chip.webp) 0 45 fill / 0 13px stretch;color:var(--b2-text)}
+.fg2 .qchip.on:not(#_):not(#_){border-image-source:url(art/ui/bag2/bag2_chip_on.webp);color:var(--b2-gold-hi)}
+.fg2 .forge-go:not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_btn_pri.webp) 40 55 fill / 8px 14px stretch;color:#ffe7b0;text-shadow:0 1px 2px #000}
+.fg2 .forge-go:active:not(.is-disabled):not(#_):not(#_){border-image-source:url(art/ui/bag2/bag2_btn_pri_p.webp)}
+.fg2 .forge-go.is-disabled:not(#_):not(#_){border-image:url(art/ui/bag2/bag2_btn_off2.webp) 32 70 fill / 8px 17px stretch;color:var(--b2-dim);opacity:1;filter:none}
+.fg2 .ui-btn.btn-sec:not(.ui-btn--icon):not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_btn_sec2.webp) 0 70 fill / 0 15px stretch;padding:0 15px;color:var(--b2-text)}
+.fg2 .ui-btn.btn-sec:not(.ui-btn--icon):active:not(#_):not(#_){border-image-source:url(art/ui/bag2/bag2_btn_sec2_p.webp)}
+.fg2 .qrow.ui-card:not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_row.webp) 32 fill / 16px stretch;padding:8px 10px}
+.fg2 .qrow .prog:not(#_){height:10px;border:0 solid transparent;border-radius:0;background:none;box-shadow:none;overflow:visible;border-image:url(art/ui/bag2/bag2_cap_track.webp) 0 30 fill / 0 6px stretch}
+.fg2 .qrow .prog i:not(#_){height:100%;max-width:100%;border:0 solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_cap_fill.webp) 0 25 fill / 0 5px stretch}
+.fg2 .lack-line:not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_notice.webp) 30 fill / 10px stretch;padding:8px 12px}
 </style>
