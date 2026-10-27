@@ -2517,4 +2517,40 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 .c2 .cx-gdh:not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_row_on.webp) 32 fill / 14px stretch;padding:6px 10px}
 .c2 .cx-note,.c2 .small.muted{color:var(--b2-mute)}
 .c2 .cx-wb:not(#_):not(#_){width:58px;padding:0 6px;white-space:nowrap;border-image-width:0 13px}
+/* v5.32 公會、排行榜、秒殺榜、交易所商品／上架視窗換成道具欄母版（Mochi 選「三個合成一次做」）：外框／標題同任務小卡、面板＝bag2_sub、列／小格＝bag2_row、按鈕＝bag2、膠囊＝bag2_chip、輸入格＝bag2_field、進度條＝bag2_cap、村莊頁籤＝bag2_slot（選中加 bag2_today）、前三名＝bag2_rank1～3；只套在 .g3（公會另外套 v5.31 的 .c2：頁籤、列、搜尋格） */
+.sheet.g3:not(#_):not(#_){border:1px solid transparent;border-radius:0;border-image:url(art/ui/bag2/bag2_main_frame.webp) 150 / 24px stretch;background:linear-gradient(#555,#555),url(art/ui/bag2/bag2_main_tex.webp) center top/cover no-repeat,#0b0d10;background-blend-mode:color-dodge,normal,normal;padding:22px 18px 16px;box-shadow:0 12px 40px rgba(0,0,0,.8);color:var(--b2-text)}
+.g3 .sheet-head:not(#_):not(#_){background:transparent;box-shadow:none;border:0}
+.g3 .sheet-head h2{display:flex;align-items:center;gap:6px;font-size:20px;letter-spacing:.12em;white-space:nowrap;color:var(--b2-gold-hi)}
+.g3 .sheet-head h2::before,.g3 .sheet-head h2::after{content:"";width:30px;height:9px;background:url(art/ui/bag2/bag2_title_l.webp) center/contain no-repeat}
+.g3 .sheet-head h2::after{background-image:url(art/ui/bag2/bag2_title_r.webp)}
+.g3 .ui-btn.btn:not(.ui-btn--icon):not(.ui-btn--chip):not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_btn_sec2.webp) 0 70 fill / 0 19px stretch;color:var(--b2-text)}
+.g3 .ui-btn--primary.btn:not(.ui-btn--icon):not(#_):not(#_){border-image:url(art/ui/bag2/bag2_btn_pri.webp) 0 55 fill / 0 16px stretch;color:#ffe7b0}
+.g3 .ui-btn--danger.btn:not(.ui-btn--icon):not(#_):not(#_){border-image:url(art/ui/bag2/bag2_btn_dan.webp) 0 55 fill / 0 16px stretch;color:#ffe2da}
+.g3 .ui-btn.btn:not(.ui-btn--icon):not(.ui-btn--chip):disabled:not(#_):not(#_){border-image:url(art/ui/bag2/bag2_btn_off2.webp) 0 70 fill / 0 19px stretch;color:var(--b2-dim);opacity:1;filter:none}
+.g3 .chipbtn:not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_chip.webp) 0 45 fill / 0 13px stretch;color:var(--b2-text)}
+.g3 .chipbtn.on:not(#_):not(#_){border-image-source:url(art/ui/bag2/bag2_chip_on.webp);color:var(--b2-gold-hi)}
+.g3 .ui-panel.panel:not(#_):not(#_),.g3 .gd-head:not(#_):not(#_),.g3 .gd-pts:not(#_):not(#_){border:12px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_sub.webp) 44 fill / 12px stretch;padding:2px}
+.g3 .wp-g>div:not(#_):not(#_),.g3 .gd-don div:not(#_):not(#_),.g3 .lb-rw:not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_row.webp) 32 fill / 10px stretch}
+.g3 .gd-don div.on:not(#_):not(#_){border-image-source:url(art/ui/bag2/bag2_row_on.webp)}
+.g3 .wart:not(.lb-art):not(#_){background:url(art/ui/bag2/bag2_slot.webp) center/100% 100% no-repeat;border:0;border-image:none}
+.g3 input:not([type=checkbox]):not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_field.webp) 0 55 fill / 0 17px stretch;padding:0 14px;color:var(--b2-text)}
+.g3 .gd-emb:not(#_):not(#_){border:0;border-radius:0;background:url(art/ui/bag2/bag2_slot.webp) center/100% 100% no-repeat;box-shadow:none}
+.g3 .gd-note:not(#_):not(#_),.g3 .gd-jm button:not(#_):not(#_),.g3 .lb-me:not(#_):not(#_),.g3 .lbw-owner:not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_row.webp) 32 fill / 14px stretch}
+.g3 .gd-jm button.on:not(#_):not(#_),.g3 .lb-me:not(.empty):not(#_):not(#_){border-image-source:url(art/ui/bag2/bag2_row_on.webp)}
+.g3 .gd-note:not(#_){padding:8px 12px}
+.g3 .gd-bar:not(#_):not(#_){height:10px;border:0 solid transparent;border-radius:0;background:none;box-shadow:none;overflow:visible;border-image:url(art/ui/bag2/bag2_cap_track.webp) 0 30 fill / 0 6px stretch}
+.g3 .gd-bar i:not(#_):not(#_){height:100%;border:0 solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_cap_fill.webp) 0 25 fill / 0 5px stretch}
+.g3 .gd-buff span:not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;border-image:url(art/ui/bag2/bag2_chip.webp) 0 45 fill / 0 9px stretch;padding:2px 10px}
+.g3 .gd-m b.r:not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;border-image:url(art/ui/bag2/bag2_badge.webp) 0 32 fill / 0 6px stretch;padding:0 6px;color:var(--b2-num)}
+.g3 .gd-m:not(#_){border-bottom:0;background:url(art/ui/bag2/bag2_rule_line.webp) center bottom/100% 6px no-repeat;padding-bottom:9px}
+.g3 .gd-create:not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_btn_pri.webp) 40 55 fill / 8px 16px stretch;color:#ffe7b0}
+.g3 .lb-tab:not(#_):not(#_){border:0;border-radius:0;background:url(art/ui/bag2/bag2_slot.webp) center/100% 100% no-repeat;box-shadow:none;color:var(--b2-mute);padding:6px}
+.g3 .lb-tab.on:not(#_):not(#_){background-image:url(art/ui/bag2/bag2_today.webp),url(art/ui/bag2/bag2_slot.webp);background-size:100% 100%,100% 100%;color:var(--b2-gold-hi)}
+.g3 .lb-tab.lk:not(#_):not(#_){background-image:url(art/ui/bag2/bag2_slot_empty.webp)}
+.g3 .lb-no:not(#_):not(#_){border-radius:0;background:none;color:var(--b2-mute)}
+.g3 .lb-no:is(.r1,.r2,.r3):not(#_):not(#_){width:26px;flex-basis:26px;height:31px;padding-bottom:6px;box-sizing:border-box;background:url(art/ui/bag2/bag2_rank1.webp) center/contain no-repeat;color:#ffe7b0;text-shadow:0 1px 2px #000;font-size:13px}
+.g3 .lb-no.r2:not(#_):not(#_){background-image:url(art/ui/bag2/bag2_rank2.webp);color:#f2f4f7}
+.g3 .lb-no.r3:not(#_):not(#_){background-image:url(art/ui/bag2/bag2_rank3.webp);color:#ffd9b8}
+.g3 .label,.g3 .small.muted,.g3 .gd-row{color:var(--b2-mute)}
+.g3 .mk-form input:not(#_):not(#_){height:34px;font-size:15px}
 </style>
