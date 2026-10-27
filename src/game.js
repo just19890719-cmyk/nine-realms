@@ -334,7 +334,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='5.28';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='5.29';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1318,6 +1318,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'5.29',d:'10/27',t:'底部聊天列換上道具欄同款外觀',b:['每一頁底部的聊天列換成道具欄同款的橫列底板，「世界」小標換成小膠囊','位置、文字和功能都沒有改'],g:[]},
  {v:'5.28',d:'10/27',t:'登入畫面、新手導覽換上道具欄同款外觀',b:['登入、取名、維護公告的框換成古銅城門框，輸入格和按鈕也換成道具欄同款','新手導覽和提示的說明框換成古銅說明框，尖角會指向正在發亮的地方','位置、文字和功能都沒有改'],g:[]},
  {v:'5.27',d:'10/27',t:'上方資源列、底部導覽換上道具欄同款外觀',b:['金幣、鑽石換成道具欄同款的資源膠囊','上方列改成煤黑底色加古銅分隔線','底部導覽換成煤黑古銅底板，選中的分頁有金色光暈','按鈕位置、大小和功能都沒有改'],g:[]},
  {v:'5.26',d:'10/27',t:'鐵匠鋪的分類、圖紙、鍛造面板換上道具欄同款外觀',b:['武器分類列換成跟道具欄一樣的分類按鈕和圖示','圖紙卡換成道具欄格子框，選中的圖紙有金色光框','已選擇面板、費用材料格、數量按鈕、開始鍛造按鈕和鍛造中進度列都改成同一套煤黑古銅','數值和鍛造規則都沒有改'],g:[]},
@@ -2707,6 +2708,7 @@ function viewShop(){   // v5.17 換成道具欄母版（.b2）：主框、次面
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'5.29',t:'底部聊天列＝bag2_row、「世界」小標＝bag2_chip（舊皮膚 ui491_fl／ui491_cap 不再用在這裡）',b:[['c529','看聊天列（村莊頁，未讀 3 則）'],['c529l','聊天列放很長的訊息（看會不會擠）']]},
  {v:'5.28',t:'登入／取名／維護／讀取框＝bag2_gate_frame（S-03）、輸入格＝bag2_field、按鈕＝bag2 主／次按鈕；新手導覽與提示框＝bag2_tut_box（S-01），尖角指向發亮目標',b:[['gtlogin','看登入畫面'],['cnameprev','看取名畫面'],['maintprev','看維護公告'],['l528l','看讀取畫面（3 秒後關掉）'],['tutrestart','重跑新手導覽（看說明框和尖角）']]},
  {v:'5.27',t:'上方資源列／底部導覽換成道具欄母版（金幣鑽石＝bag2_res_cap、上方列煤黑＋分隔線、導覽底板＝bag2_nav_bar、選中光＝bag2_nav_glow）',b:[['n527','看資源列和導覽列（切到村莊頁）'],['n527g','金幣鑽石變超大數字（看膠囊會不會擠）']]},
  {v:'5.26',t:'鐵匠鋪下半部換成道具欄母版（分類＝b2-cat、圖紙卡＝bag2 格子＋金色光框、已選擇＝次面板、材料格、數量膠囊、bag2 按鈕、鍛造進度列）',b:[['f526','鐵匠鋪：材料夠（可以鍛造）'],['f526j','鐵匠鋪：鍛造中'],['f526l','鐵匠鋪：材料不夠']]},
@@ -2891,6 +2893,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='cpull'){cloudPull().then(()=>toast('已從雲端下載','ok')).catch(e=>toast('下載失敗：'+SB_ERR(e.message),'bad'));return}
   if(k==='clogout'){ui.sheet=null;return cloudLogout()}
   if(k==='maintprev'){ui.sheet=null;render();return showMaint(null,true)}
+  if(/^c529/.test(k)){ui.result=null;ui.sheet=null;ui.tab='village';S.chatBar=true;CHAT.unread=3;if(k==='c529l'){if(chatMock())chatMockInit();CHAT.rows.push({uid:'dev529',nick:'很長名字的鐵匠大師',body:'這是一則很長很長的測試訊息，用來看聊天列會不會被擠爆或換行',mine:false,t:Date.now()})}save();render();chatBarPaint();return scrollTo(0,0)}
   if(k==='l528l'){ui.sheet=null;render();showLoading('讀取雲端存檔…');return setTimeout(gateClose,3000)}
   if(/^n527/.test(k)){ui.result=null;ui.sheet=null;ui.tab='village';if(k==='n527g'){S.gold=Math.max(S.gold,987654321);S.gems=Math.max(S.gems,99999)}save();render();return scrollTo(0,0)}
   if(/^f526/.test(k)){const q=k.slice(4);ui.result=null;ui.sheet=null;ui.tab='forge';ui.ftab='bp';const b=BP[ui.bp]||BPS.find(x=>!x.dev);ui.bp=b.id;

@@ -2488,4 +2488,7 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 .tut-ptr{display:none;position:absolute;left:var(--px,50%);top:calc(100% - 6px);width:44px;height:23px;margin-left:-22px;pointer-events:none;background:url(art/ui/bag2/bag2_tut_box.webp) -141.4px -105.5px/327.4px 128.6px no-repeat}
 #tut.pdn .tut-ptr{display:block}
 #tut.pup .tut-ptr{display:block;top:-17px;transform:scaleY(-1)}
+/* v5.29 底部聊天列換成道具欄母版（Mochi 選「照預覽做」）：底板＝bag2_row 橫列卡、「世界」小標＝bag2_chip；位置、高度、文字、未讀紅點不變 */
+.cbar-in:not(#_):not(#_){border:0 solid transparent;border-radius:0;background:none;box-shadow:0 4px 14px rgba(0,0,0,.6);border-image:url(art/ui/bag2/bag2_row.webp) 32 fill / 12px stretch;padding:0 12px}
+.cbar-ch:not(#_):not(#_){border:0 solid transparent;border-radius:0;background:none;border-image:url(art/ui/bag2/bag2_chip.webp) 0 45 fill / 0 9px stretch;padding:0 9px;line-height:20px}
 </style>
