@@ -525,7 +525,7 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.44 舊武器刪除：要在放回測試資料前檢查
-  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),...sh2Tests(),...q2Tests(),...s2Tests(),...m2Tests(),...cx2Tests(),...v2Tests(),...v3Tests(),...f2Tests(),...n2Tests(),...l2Tests(),...cbTests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
+  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),...sh2Tests(),...q2Tests(),...s2Tests(),...m2Tests(),...cx2Tests(),...v2Tests(),...v3Tests(),...f2Tests(),...n2Tests(),...l2Tests(),...cbTests(),...frTests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
     T('BD2 神明材質階、神格覺醒拿掉',TIERS.length===5&&typeof GOD==='undefined'&&typeof awkN==='undefined',`材質 ${TIERS.length} 階`)];
   return withTestBps(()=>runTests0(mode,bd))}
 // v4.44 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
@@ -808,6 +808,12 @@ function v3Tests(){const tab0=ui.tab,sh0=ui.sheet,r0=ui.result,y0=scrollY,rl0=ui
     out.push(T('V3 村莊頁按鈕、緞帶的字沒有超出，卡片沒有超出清單，血條填滿時不超出外框',cut===0&&ov===0&&hin&&document.documentElement.scrollWidth<=innerWidth,`寬 ${innerWidth}：字超出 ${cut}；元素超出 ${ov}；血條 ${hin?'在框內':'超出'}；頁寬 ${document.documentElement.scrollWidth}`));
     return out}
   catch(e){return[T('V3 村莊列表頁母版測試',false,e.message)]}finally{JSON.parse(vs0).forEach((v,i)=>S.villages[i]=v);S.weapons.length=wn0;S.nextId=ni0;ui.realm=rl0;ui.bsOpen=bo0;ui.sheet=sh0;ui.result=r0;ui.tab=tab0;render();scrollTo(0,y0)}}
+function frTests(){const tab0=ui.tab,sh0=ui.sheet,r0=ui.result,y0=scrollY;
+  try{const bis=e=>getComputedStyle(e).borderImageSource;ui.sheet=null;ui.result=null;ui.tab='forge';render();const b=document.querySelector('.hf-rib');if(!b)return[T('FR 目前委託條（沒有開放的村莊，略過）',true,'沒有委託')];
+    const im=b.querySelector('.hf-img'),go=b.querySelector('.hf-go'),nm=b.querySelector('.hf-t b'),r=b.getBoundingClientRect(),old=[b,...b.querySelectorAll('*')].filter(x=>/ui491_|ui493_/.test(bis(x)+getComputedStyle(x).backgroundImage)).length;
+    const on=b.classList.contains('ok')?/bag2_row_on/.test(bis(b)):/bag2_row\.webp/.test(bis(b));
+    return[T('FR 目前委託條＝道具欄橫列卡（可交付＝亮框）、村莊小圖＝道具格方框、前往＝次要按鈕，沒有舊框；沒有超出畫面、字沒有超出按鈕、名字會截斷',on&&!!im&&/bag2_slot/.test(bis(im))&&!!go&&/bag2_btn_sec2/.test(bis(go))&&old===0&&r.left>=0&&r.right<=innerWidth&&go.scrollWidth<=go.clientWidth+1&&go.getBoundingClientRect().right<=r.right&&!!nm&&getComputedStyle(nm).textOverflow==='ellipsis',`寬 ${innerWidth}：高 ${Math.round(r.height)}；外框 ${bis(b).split('/').pop()}；舊框 ${old}`)]}
+  catch(e){return[T('FR 目前委託條母版測試',false,e.message)]}finally{ui.sheet=sh0;ui.result=r0;ui.tab=tab0;render();scrollTo(0,y0)}}
 function cbTests(){const cb0=S.chatBar,tab0=ui.tab,sh0=ui.sheet,u0=CHAT.unread;
   try{const bis=e=>getComputedStyle(e).borderImageSource;S.chatBar=true;CHAT.unread=3;ui.sheet=null;ui.tab='village';render();chatBarPaint();const b=document.querySelector('#cbar .cbar-in'),ch=b&&b.querySelector('.cbar-ch'),tx=b&&b.querySelector('.cbar-tx'),bd=b&&b.querySelector('.badge'),r=b&&b.getBoundingClientRect();
     const old=b?[b,...b.querySelectorAll('*')].filter(x=>/ui491_|ui493_/.test(bis(x)+getComputedStyle(x).backgroundImage)).length:-1;
