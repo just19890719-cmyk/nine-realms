@@ -1987,40 +1987,36 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .fk-me .fk-s{font-size:20px;font-family:var(--display)}
 .kvgrid [class*="elc-"]{color:var(--ec)}   /* v4.76 村莊詳情的屬性、弱點用屬性顏色 */
 
-/* v4.91 Mochi：程式畫的框線看起來廉價 → 沒有皮膚槽位的元件也換成 AI 細線框（素材 art/ui/ui491_*，皮膚槽位設定在 skin.js）
-   框：fr 暗銅／fr_on 金（選中）／fr_red 紅（危險）／fr_off 灰（鎖住、停用），斜切角尖刺一樣大（10px）；fl* 是沒有雕花的細線框，給小元件用；cap* 是膠囊 */
+/* v4.91 舊皮膚 ui491／ui493 的版面設定（v5.33 Mochi 選「照預覽做＋刪舊圖」：舊圖檔已刪掉，畫面都改用道具欄母版 bag2；
+   這裡只留不含圖片的版面規則，避免刪圖後尺寸跑掉；圓形資訊鈕 ui491_info、圓形箭頭鈕 ui491_ring 照舊保留） */
 .sheet,.modal-card,.info-body{scrollbar-width:none}.sheet::-webkit-scrollbar,.modal-card::-webkit-scrollbar,.info-body::-webkit-scrollbar{display:none}   /* 小卡內容稍微超出時不顯示旁邊的捲動條（還是可以滑） */
-.wt:not(#_),.wt:is(.l0b,.l1b,.l2b,.l3b,.l4b,.l5b,.l6b,.posted):not(#_),.sg-day:not(#_),.matbox:not(#_),.wp-g>*:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fr.webp) 40 / 10px stretch;box-shadow:none}
-.wt.on:not(#_),.sg-day.today:not(#_){outline:none;border-image-source:url(art/ui/ui491_fr_on.webp)}
-.ev-st:not(#_),.enh-stage:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fl.webp) 38 / 9px stretch;box-shadow:none}   /* 石碑和上面的數值格不加雕花，避免框裡套框太雜 */
-.ev-st.risk:not(#_),.enh-stage.danger:not(#_){border-image-source:url(art/ui/ui491_fl_red.webp)}
-.ev-warn.risk:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fl_red.webp) 38 / 9px stretch}
-.enh-more:not(#_),.cbar-in:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fl.webp) 38 / 9px stretch;box-shadow:none}
-.vlocked:not(#_){border-style:solid;border-color:transparent;border-image:url(art/ui/ui491_fr_off.webp) 40 / 10px stretch}
-.ach-rw:not(#_),.res .chip:not(#_){border-color:transparent;border-image:url(art/ui/ui491_cap.webp) 55 / 30px stretch;background:#15110d;box-shadow:none}
-.sel select:not(#_){appearance:none;-webkit-appearance:none;border-color:transparent;border-image:url(art/ui/ui491_fl.webp) 38 / 9px stretch;background:url(art/ui/ui491_chev.webp) right 10px center/10px auto no-repeat,#15110d;padding-right:28px}
+.wt:not(#_),.wt:is(.l0b,.l1b,.l2b,.l3b,.l4b,.l5b,.l6b,.posted):not(#_),.sg-day:not(#_),.matbox:not(#_),.wp-g>*:not(#_){border-color:transparent;box-shadow:none}
+.wt.on:not(#_),.sg-day.today:not(#_){outline:none}
+.ev-st:not(#_),.enh-stage:not(#_){border-color:transparent;box-shadow:none}   /* 石碑和上面的數值格不加雕花，避免框裡套框太雜 */
+.ev-warn.risk:not(#_){border-color:transparent}
+.enh-more:not(#_),.cbar-in:not(#_){border-color:transparent;box-shadow:none}
+.vlocked:not(#_){border-style:solid;border-color:transparent}
+.ach-rw:not(#_),.res .chip:not(#_){border-color:transparent;background:#15110d;box-shadow:none}
+.sel select:not(#_){appearance:none;-webkit-appearance:none;border-color:transparent;background:#15110d;padding-right:28px}
 .sel select option{background:#16110d;color:var(--bone)}
 .info-btn:not(#_){border-color:transparent;background:url(art/ui/ui491_info.webp) center/100% 100% no-repeat;box-shadow:none;font-size:0;color:transparent}   /* v4.91 專屬圖示（跟叉叉鈕同一套），原本的 ⓘ 字型藏起來 */
 .wp-g>*:not(#_){padding:9px 13px}
 .ui-panel.panel .ui-card.sel-head.sel-head:not(#_){border-image:none;border-color:transparent;background:none}   /* 面板裡的已選擇區塊不要再套一層框 */
 /* v4.92 剩下的程式框也換成同一套（Mochi 選「繼續換剩下的程式框」）：獨立方塊用 fr，清單列用沒有尖刺的 fl，小標籤用膠囊，空格子用灰框 */
-.dq-box:not(#_),.mon-dex:not(#_),.cx-sum:not(#_),.powbox:not(#_),.toast:not(#_),.cx-card:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fr.webp) 40 / 10px stretch;box-shadow:none}
-.dq-row:not(#_),.lb-rw:not(#_),.st-row:not(#_),.cx-row:not(#_),.gr-c:not(#_),.mk-art:not(#_),.dq-sum:not(#_),.lb-me:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fl.webp) 38 / 9px stretch;box-shadow:none}
-.dq-row.done:not(#_){border-image-source:url(art/ui/ui491_fl_on.webp)}
-.cx-s:not(.done):not(#_){border-style:solid;border-color:transparent;border-image:url(art/ui/ui491_fr_off.webp) 40 / 8px stretch}
-.lb-tab:not(#_),.cx-tab:not(#_),.cx-sub>button:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fr.webp) 40 / 10px stretch;box-shadow:none}
-.lb-tab.on:not(#_),.cx-tab.on:not(#_),.cx-sub>button.on:not(#_){border-image-source:url(art/ui/ui491_fr_on.webp)}
-.lb-tab.lk:not(#_),.cx-tab.lk:not(#_){border-image-source:url(art/ui/ui491_fr_off.webp)}
-.hf-rib:not(#_),.cbar-ch:not(#_),.dq-mk:not(#_){border-color:transparent;border-image:url(art/ui/ui491_cap.webp) 55 / 30px stretch;box-shadow:none}
-.enh-stage .enh-zone:not(#_){border-color:transparent;border-image:url(art/ui/ui491_cap_red.webp) 55 / 30px stretch}
+.dq-box:not(#_),.mon-dex:not(#_),.cx-sum:not(#_),.powbox:not(#_),.toast:not(#_),.cx-card:not(#_){border-color:transparent;box-shadow:none}
+.dq-row:not(#_),.lb-rw:not(#_),.st-row:not(#_),.cx-row:not(#_),.gr-c:not(#_),.mk-art:not(#_),.dq-sum:not(#_),.lb-me:not(#_){border-color:transparent;box-shadow:none}
+.cx-s:not(.done):not(#_){border-style:solid;border-color:transparent}
+.lb-tab:not(#_),.cx-tab:not(#_),.cx-sub>button:not(#_){border-color:transparent;box-shadow:none}
+.hf-rib:not(#_),.cbar-ch:not(#_),.dq-mk:not(#_){border-color:transparent;box-shadow:none}
+.enh-stage .enh-zone:not(#_){border-color:transparent}
 .md-arr:not(#_),.mk-ref:not(#_){border-color:transparent;background:url(art/ui/ui491_ring.webp) center/100% 100% no-repeat;box-shadow:none}
-.mon-dex button.on:not(#_){outline:none;border:1px solid transparent;border-image:url(art/ui/ui491_fr_on.webp) 40 / 8px stretch}
+.mon-dex button.on:not(#_){outline:none;border:1px solid transparent}
 .lb-list:not(:has(*)){display:none}   /* 排行榜沒有資料時不顯示空框 */
-.lore-gift:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fl_on.webp) 38 / 9px stretch}
+.lore-gift:not(#_){border-color:transparent}
 /* v4.93 暗鐵展示台：武器格子與面板統一同一種暗鐵底（Mochi 選 A；鍛造頁的圖紙縮圖保留羊皮紙） */
-.wt-art,.wd-art,.wp-top>.wart,.qimg.wart,.fb-img.wart,.wmini.wart,.cx-row .wart,.lb-me .wart,.vv-w .wart,.matbox .wart.mb-w,.cx-pw .wart,.hico .wart{background:#080605 url(art/ui/ui493_slot.webp) center/cover no-repeat}
+.wt-art,.wd-art,.wp-top>.wart,.qimg.wart,.fb-img.wart,.wmini.wart,.cx-row .wart,.lb-me .wart,.vv-w .wart,.matbox .wart.mb-w,.cx-pw .wart,.hico .wart{background:#080605}
 .wt{background:#0b0807}
-.panel,.sheet,.modal-card{background:#0a0806 url(art/ui/ui493_panel.webp) center top/cover no-repeat}
+.panel,.sheet,.modal-card{background:#0a0806}
 :is(.sheet,.modal-card) .panel,.panel .panel{background:rgba(0,0,0,.28)}
 
 /* ===== v4.96 道具欄新外觀（背包樣板 proto/bag2，Mochi 10/25 確認）：煤黑古銅；美術 art/ui/bag2/，全部只在 .b2 底下 ===== */
@@ -2553,4 +2549,13 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 .g3 .lb-no.r3:not(#_):not(#_){background-image:url(art/ui/bag2/bag2_rank3.webp);color:#ffd9b8}
 .g3 .label,.g3 .small.muted,.g3 .gd-row{color:var(--b2-mute)}
 .g3 .mk-form input:not(#_):not(#_){height:34px;font-size:15px}
+/* v5.33 刪舊皮膚前補換漏掉的 4 處（Mochi 選「照預覽做＋刪舊圖」）：60 秒挑戰視窗套村莊詳情同一套 .v2（場景框＝bag2_slot、血條＝bag2_hp、時間條＝bag2_cap）；聊天公會分頁「找公會」、道具欄空的「前往鐵匠鋪」＝bag2_btn_pri；鍛造中／村莊卡片武器小圖底＝bag2_slot */
+.v2 .ch-fight.ui-card:not(#_):not(#_){border:6px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_slot.webp) 40 / 6px stretch;padding:0}
+.v2 .ch-pan .hpbar:not(#_):not(#_){height:22px;border:0 solid transparent;border-radius:0;background:none;box-shadow:none;overflow:visible;padding:3px 6px;border-image:url(art/ui/bag2/bag2_hp_frame.webp) 0 48 fill / 0 8px stretch}
+.v2 .ch-pan .hpbar i[data-vhp]:not(#_){height:100%;max-width:100%;border:0 solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_hp_fill.webp) 0 22 fill / 0 4px stretch}
+.v2 .ch-tbar:not(#_):not(#_){height:10px;border:0 solid transparent;border-radius:0;background:none;box-shadow:none;overflow:visible;border-image:url(art/ui/bag2/bag2_cap_track.webp) 0 30 fill / 0 6px stretch}
+.v2 .ch-tbar i:not(#_):not(#_){height:100%;max-width:100%;border:0 solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_cap_fill.webp) 0 25 fill / 0 5px stretch}
+.v2 .fk-res .go:not(#_){border:1px solid transparent;border-radius:0;border-image:url(art/ui/bag2/bag2_chip.webp) 0 45 fill / 0 13px stretch;color:var(--b2-text);padding:4px 12px}
+.c2 .ui-btn--primary.btn:not(.ui-btn--icon):not(#_):not(#_),.b2 .empty-state .ui-btn--primary.btn:not(.ui-btn--icon):not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_btn_pri.webp) 0 55 fill / 0 16px stretch;color:#ffe7b0}
+.fg2 .qimg.wart:not(#_),.v3 .wmini.wart:not(#_){background:url(art/ui/bag2/bag2_slot.webp) center/100% 100% no-repeat}
 </style>

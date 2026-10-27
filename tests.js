@@ -525,7 +525,7 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.44 舊武器刪除：要在放回測試資料前檢查
-  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),...sh2Tests(),...q2Tests(),...s2Tests(),...m2Tests(),...cx2Tests(),...v2Tests(),...v3Tests(),...f2Tests(),...n2Tests(),...l2Tests(),...cbTests(),...frTests(),...c2Tests(),...g3Tests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
+  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),...sh2Tests(),...q2Tests(),...s2Tests(),...m2Tests(),...cx2Tests(),...v2Tests(),...v3Tests(),...f2Tests(),...n2Tests(),...l2Tests(),...cbTests(),...frTests(),...c2Tests(),...g3Tests(),...osTests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
     T('BD2 神明材質階、神格覺醒拿掉',TIERS.length===5&&typeof GOD==='undefined'&&typeof awkN==='undefined',`材質 ${TIERS.length} 階`)];
   return withTestBps(()=>runTests0(mode,bd))}
 // v4.44 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
@@ -814,6 +814,26 @@ function frTests(){const tab0=ui.tab,sh0=ui.sheet,r0=ui.result,y0=scrollY;
     const on=b.classList.contains('ok')?/bag2_row_on/.test(bis(b)):/bag2_row\.webp/.test(bis(b));
     return[T('FR 目前委託條＝道具欄橫列卡（可交付＝亮框）、村莊小圖＝道具格方框、前往＝次要按鈕，沒有舊框；沒有超出畫面、字沒有超出按鈕、名字會截斷',on&&!!im&&/bag2_slot/.test(bis(im))&&!!go&&/bag2_btn_sec2/.test(bis(go))&&old===0&&r.left>=0&&r.right<=innerWidth&&go.scrollWidth<=go.clientWidth+1&&go.getBoundingClientRect().right<=r.right&&!!nm&&getComputedStyle(nm).textOverflow==='ellipsis',`寬 ${innerWidth}：高 ${Math.round(r.height)}；外框 ${bis(b).split('/').pop()}；舊框 ${old}`)]}
   catch(e){return[T('FR 目前委託條母版測試',false,e.message)]}finally{ui.sheet=sh0;ui.result=r0;ui.tab=tab0;render();scrollTo(0,y0)}}
+function osTests(){const sh0=ui.sheet,r0=ui.result,tab0=ui.tab,ch0=ui.ch,chr0=ui.chr,gd0=JSON.stringify(GD.d),gt0=GD.tab,ctab0=CHAT.tab,ws0=S.weapons,nid0=S.nextId,wn0=S.weapons.length,st0=S.villages[0].status;
+  try{const out=[],bis=e=>getComputedStyle(e).borderImageSource,has=(e,n)=>!!e&&bis(e).includes(n),bg=(e,n)=>!!e&&getComputedStyle(e).backgroundImage.includes(n),old=e=>e?[e,...e.querySelectorAll('*')].filter(x=>/ui49[13]_(?!info|ring)/.test(bis(x)+getComputedStyle(x).backgroundImage)).length:-1;
+    let w=S.weapons.find(x=>!x.test&&eligible(0,x));if(!w){const b=BPS.find(x=>!x.dev&&!x.unlock);w=makeWeapon(b.id,0,6)}if(S.villages[0].status==='locked')S.villages[0].status='open';
+    ui.result=null;chStart(0,w.id);let sh=document.querySelector('.sheet');const f=sh&&sh.querySelector('.ch-fight'),hp=sh&&sh.querySelector('.ch-hp'),tb=sh&&sh.querySelector('.ch-tbar'),give=sh&&sh.querySelector('.vw-acts .ui-btn');
+    out.push(T('OS 60 秒挑戰（戰鬥中）＝村莊詳情同一套 .v2：大框＝道具欄大框、場景＝道具欄格子框、血條＝村莊血條、時間條＝道具欄進度條、放棄＝次要按鈕，沒有舊框',!!sh&&sh.classList.contains('v2')&&has(sh,'bag2_main_frame')&&has(f,'bag2_slot')&&has(hp,'bag2_hp_frame')&&has(tb,'bag2_cap_track')&&has(give,'bag2_btn_sec2')&&old(sh)===0,`寬 ${innerWidth}：${sh?sh.className.replace(/\s+/g,' '):'無'}；舊框 ${old(sh)}`));
+    ui.ch=null;ui.chr={i:0,id:w.id,win:true,sec:5.2,r:{g:1,first:true,bps:[],fg:600},fk:null};ui.sheet={t:'chr'};render();sh=document.querySelector('.sheet');const bn=sh&&sh.querySelector('.banner'),ps=sh?[...sh.querySelectorAll('.ui-panel.panel')]:[],bs=sh?[...sh.querySelectorAll('.vw-acts .ui-btn')]:[];
+    out.push(T('OS 60 秒挑戰（收復成功）＝.v2：橫幅＝道具欄格子框、面板＝次面板、按鈕＝道具欄按鈕，沒有舊框',!!sh&&sh.classList.contains('v2')&&has(bn,'bag2_slot')&&ps.length>0&&ps.every(e=>has(e,'bag2_sub'))&&bs.length>0&&bs.every(e=>has(e,'bag2_btn_'))&&old(sh)===0,`面板 ${ps.length}；按鈕 ${bs.length}；舊框 ${old(sh)}`));
+    ui.chr={i:0,id:w.id,win:false,left:.3};render();sh=document.querySelector('.sheet');const bs2=sh?[...sh.querySelectorAll('.vw-acts .ui-btn')]:[];
+    out.push(T('OS 60 秒挑戰（時間到）＝.v2，沒有舊框',!!sh&&sh.classList.contains('v2')&&bs2.length>0&&bs2.every(e=>has(e,'bag2_btn_'))&&old(sh)===0,`按鈕 ${bs2.length}；舊框 ${old(sh)}`));
+    ui.chr=null;ui.sheet=null;devdo('gdnone');ui.sheet=null;ui.result=null;chatOpenSheet('g');sh=document.querySelector('.sheet.c2');const gb=sh&&sh.querySelector('.ui-btn--primary[data-act="gdopen"]');
+    out.push(T('OS 聊天→公會分頁「找公會／建立公會」＝道具欄主按鈕',!!gb&&has(gb,'bag2_btn_pri')&&old(sh)===0,gb?bis(gb).slice(-40):'找不到按鈕'));
+    ui.sheet=null;S.weapons=[];ui.tab='armory';render();const eb=document.querySelector('#view .empty-state .ui-btn--primary');
+    out.push(T('OS 道具欄空的時候「前往鐵匠鋪」＝道具欄主按鈕',!!eb&&has(eb,'bag2_btn_pri'),eb?bis(eb).slice(-40):'找不到按鈕'));S.weapons=ws0;
+    const box=document.createElement('div');box.innerHTML='<section class="fg2"><span class="wart qimg"></span></section><section class="v3"><span class="wart wmini"></span></section>';document.body.appendChild(box);const q=box.querySelector('.qimg'),m=box.querySelector('.wmini');
+    out.push(T('OS 鐵匠鋪鍛造中、村莊卡片的武器小圖底＝道具欄格子',bg(q,'bag2_slot')&&bg(m,'bag2_slot'),getComputedStyle(q).backgroundImage.slice(-30)+'／'+getComputedStyle(m).backgroundImage.slice(-30)));box.remove();
+    const bad=[];for(const ss of document.styleSheets){let rs;try{rs=ss.cssRules}catch(e){continue}for(const r of rs){const x=r.cssText.match(/ui49[13]_(?!info|ring)[a-z_]+/);if(x)bad.push(x[0])}}
+    out.push(T('OS 舊皮膚 ui491／ui493 圖檔已刪：所有樣式（含 skin.js 產生的）都不再用到（圓形資訊鈕、圓形箭頭鈕除外）',bad.length===0,bad.length?[...new Set(bad)].join('、'):'0 處'));
+    return out}
+  catch(e){return[T('OS 刪舊皮膚前補換 4 處測試',false,e.message)]}
+  finally{S.weapons=ws0;S.weapons.length=wn0;S.nextId=nid0;S.villages[0].status=st0;GD.d=JSON.parse(gd0);GD.tab=gt0;CHAT.tab=ctab0;ui.ch=ch0;ui.chr=chr0;ui.sheet=sh0;ui.result=r0;ui.tab=tab0;render()}}
 function g3Tests(){const sh0=ui.sheet,r0=ui.result,tab0=ui.tab,gd0=JSON.stringify(GD.d),gt0=GD.tab,gm0=GD.mk,fk0=FK.mock,mr0=MK.rows.slice(),mt0=MK.tab,st0=S.villages[0].status,nid0=S.nextId,wn0=S.weapons.length,it0=S.items[STONE],ad0=CLOUD.admin;
   try{const out=[],bis=e=>getComputedStyle(e).borderImageSource,has=(e,n)=>!!e&&bis(e).includes(n),bg=(e,n)=>!!e&&getComputedStyle(e).backgroundImage.includes(n),old=e=>e?[e,...e.querySelectorAll('*')].filter(x=>!x.closest('.ui-btn--icon,.icon-btn')&&/ui491_|ui493_/.test(bis(x)+getComputedStyle(x).backgroundImage)).length:-1,
       fit=es=>es.every(e=>{const r=e.getBoundingClientRect();if(r.right>innerWidth+.5)return false;if(!e.querySelector('.badge'))return e.scrollWidth<=e.clientWidth+1;const t=[...e.childNodes].find(n=>n.nodeType===3);if(!t)return true;const g=document.createRange();g.selectNodeContents(t);const q=g.getBoundingClientRect();return q.left>=r.left-.5&&q.right<=r.right+.5}),

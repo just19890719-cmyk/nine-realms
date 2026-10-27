@@ -2003,40 +2003,36 @@ body.dpv .hero .dp-firelit{position:absolute;inset:0;z-index:1;pointer-events:no
 .fk-me .fk-s{font-size:20px;font-family:var(--display)}
 .kvgrid [class*="elc-"]{color:var(--ec)}   /* v4.76 村莊詳情的屬性、弱點用屬性顏色 */
 
-/* v4.91 Mochi：程式畫的框線看起來廉價 → 沒有皮膚槽位的元件也換成 AI 細線框（素材 art/ui/ui491_*，皮膚槽位設定在 skin.js）
-   框：fr 暗銅／fr_on 金（選中）／fr_red 紅（危險）／fr_off 灰（鎖住、停用），斜切角尖刺一樣大（10px）；fl* 是沒有雕花的細線框，給小元件用；cap* 是膠囊 */
+/* v4.91 舊皮膚 ui491／ui493 的版面設定（v5.33 Mochi 選「照預覽做＋刪舊圖」：舊圖檔已刪掉，畫面都改用道具欄母版 bag2；
+   這裡只留不含圖片的版面規則，避免刪圖後尺寸跑掉；圓形資訊鈕 ui491_info、圓形箭頭鈕 ui491_ring 照舊保留） */
 .sheet,.modal-card,.info-body{scrollbar-width:none}.sheet::-webkit-scrollbar,.modal-card::-webkit-scrollbar,.info-body::-webkit-scrollbar{display:none}   /* 小卡內容稍微超出時不顯示旁邊的捲動條（還是可以滑） */
-.wt:not(#_),.wt:is(.l0b,.l1b,.l2b,.l3b,.l4b,.l5b,.l6b,.posted):not(#_),.sg-day:not(#_),.matbox:not(#_),.wp-g>*:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fr.webp) 40 / 10px stretch;box-shadow:none}
-.wt.on:not(#_),.sg-day.today:not(#_){outline:none;border-image-source:url(art/ui/ui491_fr_on.webp)}
-.ev-st:not(#_),.enh-stage:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fl.webp) 38 / 9px stretch;box-shadow:none}   /* 石碑和上面的數值格不加雕花，避免框裡套框太雜 */
-.ev-st.risk:not(#_),.enh-stage.danger:not(#_){border-image-source:url(art/ui/ui491_fl_red.webp)}
-.ev-warn.risk:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fl_red.webp) 38 / 9px stretch}
-.enh-more:not(#_),.cbar-in:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fl.webp) 38 / 9px stretch;box-shadow:none}
-.vlocked:not(#_){border-style:solid;border-color:transparent;border-image:url(art/ui/ui491_fr_off.webp) 40 / 10px stretch}
-.ach-rw:not(#_),.res .chip:not(#_){border-color:transparent;border-image:url(art/ui/ui491_cap.webp) 55 / 30px stretch;background:#15110d;box-shadow:none}
-.sel select:not(#_){appearance:none;-webkit-appearance:none;border-color:transparent;border-image:url(art/ui/ui491_fl.webp) 38 / 9px stretch;background:url(art/ui/ui491_chev.webp) right 10px center/10px auto no-repeat,#15110d;padding-right:28px}
+.wt:not(#_),.wt:is(.l0b,.l1b,.l2b,.l3b,.l4b,.l5b,.l6b,.posted):not(#_),.sg-day:not(#_),.matbox:not(#_),.wp-g>*:not(#_){border-color:transparent;box-shadow:none}
+.wt.on:not(#_),.sg-day.today:not(#_){outline:none}
+.ev-st:not(#_),.enh-stage:not(#_){border-color:transparent;box-shadow:none}   /* 石碑和上面的數值格不加雕花，避免框裡套框太雜 */
+.ev-warn.risk:not(#_){border-color:transparent}
+.enh-more:not(#_),.cbar-in:not(#_){border-color:transparent;box-shadow:none}
+.vlocked:not(#_){border-style:solid;border-color:transparent}
+.ach-rw:not(#_),.res .chip:not(#_){border-color:transparent;background:#15110d;box-shadow:none}
+.sel select:not(#_){appearance:none;-webkit-appearance:none;border-color:transparent;background:#15110d;padding-right:28px}
 .sel select option{background:#16110d;color:var(--bone)}
 .info-btn:not(#_){border-color:transparent;background:url(art/ui/ui491_info.webp) center/100% 100% no-repeat;box-shadow:none;font-size:0;color:transparent}   /* v4.91 專屬圖示（跟叉叉鈕同一套），原本的 ⓘ 字型藏起來 */
 .wp-g>*:not(#_){padding:9px 13px}
 .ui-panel.panel .ui-card.sel-head.sel-head:not(#_){border-image:none;border-color:transparent;background:none}   /* 面板裡的已選擇區塊不要再套一層框 */
 /* v4.92 剩下的程式框也換成同一套（Mochi 選「繼續換剩下的程式框」）：獨立方塊用 fr，清單列用沒有尖刺的 fl，小標籤用膠囊，空格子用灰框 */
-.dq-box:not(#_),.mon-dex:not(#_),.cx-sum:not(#_),.powbox:not(#_),.toast:not(#_),.cx-card:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fr.webp) 40 / 10px stretch;box-shadow:none}
-.dq-row:not(#_),.lb-rw:not(#_),.st-row:not(#_),.cx-row:not(#_),.gr-c:not(#_),.mk-art:not(#_),.dq-sum:not(#_),.lb-me:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fl.webp) 38 / 9px stretch;box-shadow:none}
-.dq-row.done:not(#_){border-image-source:url(art/ui/ui491_fl_on.webp)}
-.cx-s:not(.done):not(#_){border-style:solid;border-color:transparent;border-image:url(art/ui/ui491_fr_off.webp) 40 / 8px stretch}
-.lb-tab:not(#_),.cx-tab:not(#_),.cx-sub>button:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fr.webp) 40 / 10px stretch;box-shadow:none}
-.lb-tab.on:not(#_),.cx-tab.on:not(#_),.cx-sub>button.on:not(#_){border-image-source:url(art/ui/ui491_fr_on.webp)}
-.lb-tab.lk:not(#_),.cx-tab.lk:not(#_){border-image-source:url(art/ui/ui491_fr_off.webp)}
-.hf-rib:not(#_),.cbar-ch:not(#_),.dq-mk:not(#_){border-color:transparent;border-image:url(art/ui/ui491_cap.webp) 55 / 30px stretch;box-shadow:none}
-.enh-stage .enh-zone:not(#_){border-color:transparent;border-image:url(art/ui/ui491_cap_red.webp) 55 / 30px stretch}
+.dq-box:not(#_),.mon-dex:not(#_),.cx-sum:not(#_),.powbox:not(#_),.toast:not(#_),.cx-card:not(#_){border-color:transparent;box-shadow:none}
+.dq-row:not(#_),.lb-rw:not(#_),.st-row:not(#_),.cx-row:not(#_),.gr-c:not(#_),.mk-art:not(#_),.dq-sum:not(#_),.lb-me:not(#_){border-color:transparent;box-shadow:none}
+.cx-s:not(.done):not(#_){border-style:solid;border-color:transparent}
+.lb-tab:not(#_),.cx-tab:not(#_),.cx-sub>button:not(#_){border-color:transparent;box-shadow:none}
+.hf-rib:not(#_),.cbar-ch:not(#_),.dq-mk:not(#_){border-color:transparent;box-shadow:none}
+.enh-stage .enh-zone:not(#_){border-color:transparent}
 .md-arr:not(#_),.mk-ref:not(#_){border-color:transparent;background:url(art/ui/ui491_ring.webp) center/100% 100% no-repeat;box-shadow:none}
-.mon-dex button.on:not(#_){outline:none;border:1px solid transparent;border-image:url(art/ui/ui491_fr_on.webp) 40 / 8px stretch}
+.mon-dex button.on:not(#_){outline:none;border:1px solid transparent}
 .lb-list:not(:has(*)){display:none}   /* 排行榜沒有資料時不顯示空框 */
-.lore-gift:not(#_){border-color:transparent;border-image:url(art/ui/ui491_fl_on.webp) 38 / 9px stretch}
+.lore-gift:not(#_){border-color:transparent}
 /* v4.93 暗鐵展示台：武器格子與面板統一同一種暗鐵底（Mochi 選 A；鍛造頁的圖紙縮圖保留羊皮紙） */
-.wt-art,.wd-art,.wp-top>.wart,.qimg.wart,.fb-img.wart,.wmini.wart,.cx-row .wart,.lb-me .wart,.vv-w .wart,.matbox .wart.mb-w,.cx-pw .wart,.hico .wart{background:#080605 url(art/ui/ui493_slot.webp) center/cover no-repeat}
+.wt-art,.wd-art,.wp-top>.wart,.qimg.wart,.fb-img.wart,.wmini.wart,.cx-row .wart,.lb-me .wart,.vv-w .wart,.matbox .wart.mb-w,.cx-pw .wart,.hico .wart{background:#080605}
 .wt{background:#0b0807}
-.panel,.sheet,.modal-card{background:#0a0806 url(art/ui/ui493_panel.webp) center top/cover no-repeat}
+.panel,.sheet,.modal-card{background:#0a0806}
 :is(.sheet,.modal-card) .panel,.panel .panel{background:rgba(0,0,0,.28)}
 
 /* ===== v4.96 道具欄新外觀（背包樣板 proto/bag2，Mochi 10/25 確認）：煤黑古銅；美術 art/ui/bag2/，全部只在 .b2 底下 ===== */
@@ -2569,6 +2565,15 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 .g3 .lb-no.r3:not(#_):not(#_){background-image:url(art/ui/bag2/bag2_rank3.webp);color:#ffd9b8}
 .g3 .label,.g3 .small.muted,.g3 .gd-row{color:var(--b2-mute)}
 .g3 .mk-form input:not(#_):not(#_){height:34px;font-size:15px}
+/* v5.33 刪舊皮膚前補換漏掉的 4 處（Mochi 選「照預覽做＋刪舊圖」）：60 秒挑戰視窗套村莊詳情同一套 .v2（場景框＝bag2_slot、血條＝bag2_hp、時間條＝bag2_cap）；聊天公會分頁「找公會」、道具欄空的「前往鐵匠鋪」＝bag2_btn_pri；鍛造中／村莊卡片武器小圖底＝bag2_slot */
+.v2 .ch-fight.ui-card:not(#_):not(#_){border:6px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_slot.webp) 40 / 6px stretch;padding:0}
+.v2 .ch-pan .hpbar:not(#_):not(#_){height:22px;border:0 solid transparent;border-radius:0;background:none;box-shadow:none;overflow:visible;padding:3px 6px;border-image:url(art/ui/bag2/bag2_hp_frame.webp) 0 48 fill / 0 8px stretch}
+.v2 .ch-pan .hpbar i[data-vhp]:not(#_){height:100%;max-width:100%;border:0 solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_hp_fill.webp) 0 22 fill / 0 4px stretch}
+.v2 .ch-tbar:not(#_):not(#_){height:10px;border:0 solid transparent;border-radius:0;background:none;box-shadow:none;overflow:visible;border-image:url(art/ui/bag2/bag2_cap_track.webp) 0 30 fill / 0 6px stretch}
+.v2 .ch-tbar i:not(#_):not(#_){height:100%;max-width:100%;border:0 solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_cap_fill.webp) 0 25 fill / 0 5px stretch}
+.v2 .fk-res .go:not(#_){border:1px solid transparent;border-radius:0;border-image:url(art/ui/bag2/bag2_chip.webp) 0 45 fill / 0 13px stretch;color:var(--b2-text);padding:4px 12px}
+.c2 .ui-btn--primary.btn:not(.ui-btn--icon):not(#_):not(#_),.b2 .empty-state .ui-btn--primary.btn:not(.ui-btn--icon):not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_btn_pri.webp) 0 55 fill / 0 16px stretch;color:#ffe7b0}
+.fg2 .qimg.wart:not(#_),.v3 .wmini.wart:not(#_){background:url(art/ui/bag2/bag2_slot.webp) center/100% 100% no-repeat}
 </style>
 <div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div><div class="news" id="news" aria-live="polite" data-act="chatsys"></div></div>
 <main class="wrap" id="view"></main>
@@ -2601,35 +2606,36 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
  * 槽位對應的元件請見開發工具 →「UI 元件」分頁，或 UI_元件架構說明.txt。
  * ===================================================================== */
 const UI_SKIN={
+  // v5.33 舊皮膚 ui491 圖檔刪掉，槽位改指道具欄母版 bag2（版面尺寸、文字陰影、左右留白照舊；各頁面另有 bag2 專屬樣式會蓋過這裡）
   // v4.91 Mochi：程式畫的框和按鈕看起來很廉價 → 換成 AI 細線框（拼圖：/mnt/project-files/ui-skin/v4.91/整合版_*）
   //   規則（Mochi：要像叉叉按鈕，不要捲曲繩結）：斜切角＋小金字塔尖刺只在四個角，所有元件的尖刺一樣大（圖框繪製寬度 ÷ 切片 ≈ 0.26）；框中間是空的，保留元件原本的深色底（Mochi：皮革底紋很醜，不用）
-  'btn-primary':{src:'art/ui/ui491_b_pri.webp',slice:[40,40,40,40],width:[11,11,11,11],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:16px;padding-right:16px'},  'btn-primary:pressed':{src:'art/ui/ui491_b_pri_p.webp'},  'btn-primary:disabled':{src:'art/ui/ui491_b_pri_d.webp',css:'filter:none;opacity:1;color:#bdb3a2;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
-  'btn-primary-big':{src:'art/ui/ui491_b_pri.webp',slice:[40,40,40,40],width:[11,11,11,11],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:16px;padding-right:16px'},  'btn-primary-big:pressed':{src:'art/ui/ui491_b_pri_p.webp'},  'btn-primary-big:disabled':{src:'art/ui/ui491_b_pri_d.webp',css:'filter:none;opacity:1;color:#bdb3a2;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
-  'btn-primary-compact':{src:'art/ui/ui491_b_pri.webp',slice:[40,40,40,40],width:[11,11,11,11],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:16px;padding-right:16px'},  'btn-primary-compact:pressed':{src:'art/ui/ui491_b_pri_p.webp'},  'btn-primary-compact:disabled':{src:'art/ui/ui491_b_pri_d.webp',css:'filter:none;opacity:1;color:#bdb3a2;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
-  'btn-secondary':{src:'art/ui/ui491_b_sec.webp',slice:[40,40,40,40],width:[11,11,11,11],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:16px;padding-right:16px'},  'btn-secondary:pressed':{src:'art/ui/ui491_b_sec_p.webp'},  'btn-secondary:disabled':{src:'art/ui/ui491_b_sec_d.webp',css:'filter:none;opacity:1;color:#bdb3a2;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
-  'btn-secondary-big':{src:'art/ui/ui491_b_sec.webp',slice:[40,40,40,40],width:[11,11,11,11],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:16px;padding-right:16px'},  'btn-secondary-big:pressed':{src:'art/ui/ui491_b_sec_p.webp'},  'btn-secondary-big:disabled':{src:'art/ui/ui491_b_sec_d.webp',css:'filter:none;opacity:1;color:#bdb3a2;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
-  'btn-secondary-compact':{src:'art/ui/ui491_b_sec.webp',slice:[40,40,40,40],width:[11,11,11,11],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:16px;padding-right:16px'},  'btn-secondary-compact:pressed':{src:'art/ui/ui491_b_sec_p.webp'},  'btn-secondary-compact:disabled':{src:'art/ui/ui491_b_sec_d.webp',css:'filter:none;opacity:1;color:#bdb3a2;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
-  'btn-danger':{src:'art/ui/ui491_b_dan.webp',slice:[40,40,40,40],width:[11,11,11,11],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:16px;padding-right:16px'},  'btn-danger:pressed':{src:'art/ui/ui491_b_dan_p.webp'},  'btn-danger:disabled':{src:'art/ui/ui491_b_dan_d.webp',css:'filter:none;opacity:1;color:#bdb3a2;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
-  'btn-danger-big':{src:'art/ui/ui491_b_dan.webp',slice:[40,40,40,40],width:[11,11,11,11],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:16px;padding-right:16px'},  'btn-danger-big:pressed':{src:'art/ui/ui491_b_dan_p.webp'},  'btn-danger-big:disabled':{src:'art/ui/ui491_b_dan_d.webp',css:'filter:none;opacity:1;color:#bdb3a2;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
-  'btn-danger-compact':{src:'art/ui/ui491_b_dan.webp',slice:[40,40,40,40],width:[11,11,11,11],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:16px;padding-right:16px'},  'btn-danger-compact:pressed':{src:'art/ui/ui491_b_dan_p.webp'},  'btn-danger-compact:disabled':{src:'art/ui/ui491_b_dan_d.webp',css:'filter:none;opacity:1;color:#bdb3a2;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
-  'btn-chip':{src:'art/ui/ui491_cap.webp',slice:[55,55,55,55],width:[30,30,30,30],fill:false,css:'background:#15110d'},  'btn-chip:on':{src:'art/ui/ui491_cap_on.webp',css:'color:var(--gold-hi)'},
-  'btn-toggle':{src:'art/ui/ui491_fr.webp',slice:[40,40,40,40],width:[10,10,10,10],fill:false,bg:true},  'btn-toggle:on':{src:'art/ui/ui491_fr_on.webp'},
+  'btn-primary':{src:'art/ui/bag2/bag2_btn_pri.webp',slice:[0,55,0,55],width:[0,16,0,16],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:16px;padding-right:16px'},  'btn-primary:pressed':{src:'art/ui/bag2/bag2_btn_pri_p.webp'},  'btn-primary:disabled':{src:'art/ui/bag2/bag2_btn_off2.webp',slice:[0,70,0,70],width:[0,19,0,19],css:'filter:none;opacity:1;color:#bdb3a2;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
+  'btn-primary-big':{src:'art/ui/bag2/bag2_btn_pri.webp',slice:[0,55,0,55],width:[0,16,0,16],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:16px;padding-right:16px'},  'btn-primary-big:pressed':{src:'art/ui/bag2/bag2_btn_pri_p.webp'},  'btn-primary-big:disabled':{src:'art/ui/bag2/bag2_btn_off2.webp',slice:[0,70,0,70],width:[0,19,0,19],css:'filter:none;opacity:1;color:#bdb3a2;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
+  'btn-primary-compact':{src:'art/ui/bag2/bag2_btn_pri.webp',slice:[0,55,0,55],width:[0,16,0,16],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:16px;padding-right:16px'},  'btn-primary-compact:pressed':{src:'art/ui/bag2/bag2_btn_pri_p.webp'},  'btn-primary-compact:disabled':{src:'art/ui/bag2/bag2_btn_off2.webp',slice:[0,70,0,70],width:[0,19,0,19],css:'filter:none;opacity:1;color:#bdb3a2;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
+  'btn-secondary':{src:'art/ui/bag2/bag2_btn_sec2.webp',slice:[0,70,0,70],width:[0,19,0,19],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:16px;padding-right:16px'},  'btn-secondary:pressed':{src:'art/ui/bag2/bag2_btn_sec2_p.webp'},  'btn-secondary:disabled':{src:'art/ui/bag2/bag2_btn_off2.webp',slice:[0,70,0,70],width:[0,19,0,19],css:'filter:none;opacity:1;color:#bdb3a2;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
+  'btn-secondary-big':{src:'art/ui/bag2/bag2_btn_sec2.webp',slice:[0,70,0,70],width:[0,19,0,19],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:16px;padding-right:16px'},  'btn-secondary-big:pressed':{src:'art/ui/bag2/bag2_btn_sec2_p.webp'},  'btn-secondary-big:disabled':{src:'art/ui/bag2/bag2_btn_off2.webp',slice:[0,70,0,70],width:[0,19,0,19],css:'filter:none;opacity:1;color:#bdb3a2;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
+  'btn-secondary-compact':{src:'art/ui/bag2/bag2_btn_sec2.webp',slice:[0,70,0,70],width:[0,19,0,19],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:16px;padding-right:16px'},  'btn-secondary-compact:pressed':{src:'art/ui/bag2/bag2_btn_sec2_p.webp'},  'btn-secondary-compact:disabled':{src:'art/ui/bag2/bag2_btn_off2.webp',slice:[0,70,0,70],width:[0,19,0,19],css:'filter:none;opacity:1;color:#bdb3a2;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
+  'btn-danger':{src:'art/ui/bag2/bag2_btn_dan.webp',slice:[0,55,0,55],width:[0,16,0,16],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:16px;padding-right:16px'},  'btn-danger:pressed':{src:'art/ui/bag2/bag2_btn_dan_p.webp'},  'btn-danger:disabled':{src:'art/ui/bag2/bag2_btn_off2.webp',slice:[0,70,0,70],width:[0,19,0,19],css:'filter:none;opacity:1;color:#bdb3a2;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
+  'btn-danger-big':{src:'art/ui/bag2/bag2_btn_dan.webp',slice:[0,55,0,55],width:[0,16,0,16],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:16px;padding-right:16px'},  'btn-danger-big:pressed':{src:'art/ui/bag2/bag2_btn_dan_p.webp'},  'btn-danger-big:disabled':{src:'art/ui/bag2/bag2_btn_off2.webp',slice:[0,70,0,70],width:[0,19,0,19],css:'filter:none;opacity:1;color:#bdb3a2;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
+  'btn-danger-compact':{src:'art/ui/bag2/bag2_btn_dan.webp',slice:[0,55,0,55],width:[0,16,0,16],css:'text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85);padding-left:16px;padding-right:16px'},  'btn-danger-compact:pressed':{src:'art/ui/bag2/bag2_btn_dan_p.webp'},  'btn-danger-compact:disabled':{src:'art/ui/bag2/bag2_btn_off2.webp',slice:[0,70,0,70],width:[0,19,0,19],css:'filter:none;opacity:1;color:#bdb3a2;text-shadow:0 1px 2px #000,0 0 4px rgba(0,0,0,.85)'},
+  'btn-chip':{src:'art/ui/bag2/bag2_chip.webp',slice:[0,45,0,45],width:[0,13,0,13]},  'btn-chip:on':{src:'art/ui/bag2/bag2_chip_on.webp',css:'color:var(--gold-hi)'},
+  'btn-toggle':{src:'art/ui/bag2/bag2_sub.webp',slice:[44,44,44,44],width:[12,12,12,12],fill:false,bg:true},  'btn-toggle:on':{src:'art/ui/bag2/bag2_sel.webp',slice:[40,40,40,40],width:[3,3,3,3]},
   'btn-accent':null,            'btn-accent:pressed':null,
   'btn-icon':null,              'btn-icon:pressed':null,
-  'tab':{src:'art/ui/ui491_fr.webp',slice:[40,40,40,40],width:[10,10,10,10],fill:false,bg:true},  'tab:on':{src:'art/ui/ui491_fr_on.webp'},
+  'tab':{src:'art/ui/bag2/bag2_tab.webp',slice:[0,53,0,53],width:[0,16,0,16]},  'tab:on':{src:'art/ui/bag2/bag2_tab_on.webp'},
   // 面板與卡片
-  'panel':{src:'art/ui/ui491_fr.webp',slice:[40,40,40,40],width:[10,10,10,10],fill:false,bg:true},
+  'panel':{src:'art/ui/bag2/bag2_sub.webp',slice:[44,44,44,44],width:[12,12,12,12],fill:false,bg:true},
   'title':null,
-  'card':{src:'art/ui/ui491_fr.webp',slice:[40,40,40,40],width:[10,10,10,10],fill:false,bg:true},  'card:on':{src:'art/ui/ui491_fr_on.webp'},
-  'card-compact':{src:'art/ui/ui491_fr.webp',slice:[40,40,40,40],width:[10,10,10,10],fill:false,bg:true},  'card-compact:on':{src:'art/ui/ui491_fr_on.webp'},
+  'card':{src:'art/ui/bag2/bag2_sub.webp',slice:[44,44,44,44],width:[12,12,12,12],fill:false,bg:true},  'card:on':{src:'art/ui/bag2/bag2_sel.webp',slice:[40,40,40,40],width:[3,3,3,3]},
+  'card-compact':{src:'art/ui/bag2/bag2_sub.webp',slice:[44,44,44,44],width:[12,12,12,12],fill:false,bg:true},  'card-compact:on':{src:'art/ui/bag2/bag2_sel.webp',slice:[40,40,40,40],width:[3,3,3,3]},
   'card-feature':null,
-  'card-option':{src:'art/ui/ui491_fr.webp',slice:[40,40,40,40],width:[10,10,10,10],fill:false,bg:true},  'card-option:on':{src:'art/ui/ui491_fr_on.webp'},
-  'card-row':{src:'art/ui/ui491_fr.webp',slice:[40,40,40,40],width:[10,10,10,10],fill:false,bg:true},
+  'card-option':{src:'art/ui/bag2/bag2_sub.webp',slice:[44,44,44,44],width:[12,12,12,12],fill:false,bg:true},  'card-option:on':{src:'art/ui/bag2/bag2_sel.webp',slice:[40,40,40,40],width:[3,3,3,3]},
+  'card-row':{src:'art/ui/bag2/bag2_sub.webp',slice:[44,44,44,44],width:[12,12,12,12],fill:false,bg:true},
   'badge':null,
   'prog':null,                  'prog-fill':null,
   // 視窗與常駐列
-  'sheet':{src:'art/ui/ui491_fr.webp',slice:[40,40,40,40],width:[11,11,11,11],fill:false,bg:true},
-  'modal':{src:'art/ui/ui491_fr.webp',slice:[40,40,40,40],width:[11,11,11,11],fill:false,bg:true},
+  'sheet':{src:'art/ui/bag2/bag2_main_frame.webp',slice:[150,150,150,150],width:[16,16,16,16],fill:false,bg:true},
+  'modal':{src:'art/ui/bag2/bag2_main_frame.webp',slice:[150,150,150,150],width:[16,16,16,16],fill:false,bg:true},
   'toast':null,
   'topbar':null,
   'navbar':null,
@@ -3077,7 +3083,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='5.32';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='5.33';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -4061,6 +4067,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'5.33',d:'10/27',t:'60 秒挑戰視窗換上道具欄同款外觀，舊介面素材全部清掉',b:['60 秒挑戰的戰鬥畫面和結果畫面，換成跟村莊詳情一樣的外框、血條、進度條和按鈕','聊天公會分頁「找公會／建立公會」、道具欄空的時候「前往鐵匠鋪」換成道具欄同款按鈕','清掉不再使用的舊介面素材，文字和功能都沒有改'],g:[]},
  {v:'5.32',d:'10/27',t:'公會、排行榜、秒殺榜、交易所上架視窗換上道具欄同款外觀',b:['公會、排行榜、秒殺榜，還有交易所的商品、上架武器、上架道具視窗，換成道具欄同款的外框、頁籤、按鈕和輸入格','排行榜前三名換成金、銀、銅獎牌','文字和功能都沒有改'],g:[]},
  {v:'5.31',d:'10/27',t:'聊天視窗、好友視窗換上道具欄同款外觀',b:['聊天和好友視窗的外框、頁籤、輸入格、按鈕換成道具欄同款','訊息放進道具欄的次面板，好友列和武器卡換成橫列卡','文字和功能都沒有改'],g:[]},
  {v:'5.30',d:'10/27',t:'鐵匠鋪「目前委託」換上道具欄同款外觀',b:['鐵匠鋪上方的「目前委託」換成道具欄同款的橫列底板，可以交付時換成亮框','村莊小圖改成道具格方框，「前往」換成道具欄同款按鈕','位置、文字和功能都沒有改'],g:[]},
@@ -5454,6 +5461,7 @@ function viewShop(){   // v5.17 換成道具欄母版（.b2）：主框、次面
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'5.33',t:'刪舊皮膚 ui491／ui493（22 個圖檔，留 ui491_info、ui491_ring）前補換 4 處：60 秒挑戰 ch/chr 加 .v2、聊天公會分頁「找公會」與道具欄空的「前往鐵匠鋪」＝bag2_btn_pri、鍛造中 .qimg／村莊卡片 .wmini 底＝bag2_slot；skin.js 槽位改指 bag2',b:[['os533','60 秒挑戰：戰鬥中'],['os533r','60 秒挑戰：收復成功'],['os533l','60 秒挑戰：時間到'],['os533g','聊天→公會分頁（還沒加入公會）'],['os533e','道具欄空的時候'],['os533j','鐵匠鋪：鍛造中小圖']]},
  {v:'5.32',t:'公會（再加 .c2）、排行榜、秒殺榜、交易所商品／上架武器／上架道具視窗加 .g3：外框＝bag2_main_frame、面板＝bag2_sub、列＝bag2_row、輸入格＝bag2_field、膠囊＝bag2_chip、按鈕＝bag2、村莊頁籤＝bag2_slot、前三名＝bag2_rank1～3',b:[['g532','公會（會長、成員頁）'],['g532d','公會（捐獻頁）'],['g532n','公會（還沒加入）'],['g532k','秒殺榜（假資料）'],['g532l','排行榜'],['g532m','交易所商品'],['g532s','上架武器'],['g532i','上架道具']]},
  {v:'5.31',t:'聊天視窗、好友視窗加 .c2：外框＝bag2_main_frame、頁籤＝bag2_tab、訊息區＝bag2_sub、快捷句＝bag2_chip、輸入格＝bag2_field、按鈕＝bag2_btn_pri／sec2、好友列與武器卡＝bag2_row（公會視窗下一塊再換）',b:[['c531','聊天視窗（世界頻道）'],['c531g','聊天視窗（公會頻道）'],['c531w','聊天視窗（分享武器）'],['c531f','好友視窗（申請）']]},
  {v:'5.30',t:'鐵匠鋪「目前委託」條＝bag2_row（可交付＝bag2_row_on）、村莊小圖＝bag2_slot 方框、「前往」＝bag2_btn_sec2（舊皮膚 ui491_cap 不再用在這裡）',b:[['f530','鐵匠鋪：目前委託（一般）'],['f530o','鐵匠鋪：目前委託（有武器可交付，亮框）']]},
@@ -5642,6 +5650,9 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='cpull'){cloudPull().then(()=>toast('已從雲端下載','ok')).catch(e=>toast('下載失敗：'+SB_ERR(e.message),'bad'));return}
   if(k==='clogout'){ui.sheet=null;return cloudLogout()}
   if(k==='maintprev'){ui.sheet=null;render();return showMaint(null,true)}
+  if(/^os533/.test(k)){const q=k.slice(5);ui.result=null;ui.sheet=null;if(q==='g'){devdo('gdnone');ui.sheet=null;return chatOpenSheet('g')}if(q==='e'){if(S.weapons.length)return toast('道具欄還有武器：這個畫面要道具欄空的才看得到（新手剛開始時）','bad');ui.tab='armory';return render()}if(q==='j')return devdo('f526j');
+    let w=S.weapons.find(x=>!x.test&&eligible(0,x));if(!w){const b=BPS.find(x=>!x.dev&&!x.unlock);if(!b||S.weapons.length>=CAP_WEAPONS)return toast('道具欄滿了，先清出一格','bad');w=makeWeapon(b.id,0,6)}if(S.villages[0].status==='locked')S.villages[0].status='open';ui.tab='village';
+    if(q==='')return chStart(0,w.id);ui.ch=null;ui.chr=q==='r'?{i:0,id:w.id,win:true,sec:5.2,r:{g:1,first:true,bps:[],fg:600},fk:null}:{i:0,id:w.id,win:false,left:.3};ui.sheet={t:'chr'};return render()}
   if(/^g532/.test(k)){ui.result=null;ui.sheet=null;const q=k.slice(4);if(q===''||q==='d'||q==='n'){devdo(q==='n'?'gdnone':q==='d'?'gdmem':'gdlead');ui.sheet=null;return gdOpen(q==='n'?undefined:q==='d'?'don':'mem')}if(q==='k'){if(!S.villages.some(v=>v.status==='cleared'))S.villages[0].status='cleared';return devdo('fkfake')}if(q==='l'){ui.sheet={t:'lb',i:0};return render()}if(q==='m')return devdo('mkcard');if(q==='i')return devdo('mkisell');if(q==='s'){let w=S.weapons.find(x=>!x.test&&!x.lock);if(!w){const b=BPS.find(x=>!x.dev);if(!b||S.weapons.length>=CAP_WEAPONS)return toast('道具欄沒有可以上架的武器','bad');w=makeWeapon(b.id,1,3);save()}ui.tab='market';ui.mkPrice='';ui.sheet={t:'mks',id:w.id};return render()}}
   if(/^c531/.test(k)){ui.result=null;ui.sheet=null;if(chatMock())chatMockInit();if(k==='c531f'){FR.tab='in';return frOpen()}if(k==='c531g'){devdo('gdmem');ui.sheet=null;return chatOpenSheet('g')}chatOpenSheet('w');if(k==='c531w'){const b=BPS.find(x=>!x.dev);if(b&&!S.weapons.some(w=>!w.test)&&S.weapons.length<CAP_WEAPONS)makeWeapon(b.id,1,3);CHAT.pick=true;render()}return}
   if(/^f530/.test(k)){ui.result=null;ui.sheet=null;ui.tab='forge';const i=S.villages.findIndex(v=>v.status==='open');if(k==='f530o'&&i>=0&&!S.weapons.some(w=>eligible(i,w))){const b=BPS.find(x=>!x.dev);if(b&&S.weapons.length<CAP_WEAPONS)makeWeapon(b.id,0)}save();render();return scrollTo(0,0)}
@@ -5935,7 +5946,7 @@ if(typeof window!=='undefined')window.addEventListener('resize',()=>fitNames());
 function renderLayer(){stkFollow();
   const L=document.getElementById('layer');const s=ui.sheet;let h='';
   const sc=document.querySelector('.sheet'),st=sc?sc.scrollTop:0,same=sc&&ui._lastSheet===JSON.stringify(s),keep=same||sc&&s&&s.t==='w'&&ui._lastSheetW===s.id;   // v4.91 同一把武器的小卡切換（武器⇄強化⇄附魔）不重播彈出動畫
-  if(s){const pop=s.t==='w'&&((s.m==='main'||s.m==='ench')&&!!W(s.id)||s.m==='enh'),full=!pop&&(s.t==='w'||s.t==='fxt');h+=`<div class="scrim ${pop?'wpopc':''} ${keep?'still':''}" data-act="scrim"><div class="ui-sheet sheet ${full?'full':''} ${pop?'wpop k2':''} ${s.t==='a'?'q2':''} ${s.t==='set'?'s2':''} ${s.t==='v'?'v2':''} ${s.t==='chat'?'cx-sheet':''} ${s.t==='chat'||s.t==='fr'||s.t==='gd'?'c2':''} ${/^(gd|lb|lbw|fk|mkw|mks|mksi)$/.test(s.t)?'g3':''} ${keep?'still':''}">${s.t==='w'?sheetWeapon(s.id,s.m):s.t==='v'?sheetVillage(s.i):s.t==='ch'&&ui.ch?sheetCh():s.t==='chr'&&ui.chr?sheetChr():s.t==='a'?sheetAch():s.t==='fk'?sheetFk(s.i):s.t==='lb'?sheetLb(s.i):s.t==='lbw'?sheetLbW(s.i,s.k):s.t==='ws'?sheetWorkshop(s.k):s.t==='evt'?sheetEvt():s.t==='chat'?sheetChat():s.t==='gd'?sheetGuild():s.t==='fr'?sheetFriend():s.t==='bw'?sheetBossW(s.r,s.j):s.t==='fxt'?sheetFxTest(s):s.t==='set'?sheetSet(s.k):/^mk/.test(s.t)?sheetMk(s):sheetDev()}</div></div>`}
+  if(s){const pop=s.t==='w'&&((s.m==='main'||s.m==='ench')&&!!W(s.id)||s.m==='enh'),full=!pop&&(s.t==='w'||s.t==='fxt');h+=`<div class="scrim ${pop?'wpopc':''} ${keep?'still':''}" data-act="scrim"><div class="ui-sheet sheet ${full?'full':''} ${pop?'wpop k2':''} ${s.t==='a'?'q2':''} ${s.t==='set'?'s2':''} ${s.t==='v'||s.t==='ch'||s.t==='chr'?'v2':''} ${s.t==='chat'?'cx-sheet':''} ${s.t==='chat'||s.t==='fr'||s.t==='gd'?'c2':''} ${/^(gd|lb|lbw|fk|mkw|mks|mksi)$/.test(s.t)?'g3':''} ${keep?'still':''}">${s.t==='w'?sheetWeapon(s.id,s.m):s.t==='v'?sheetVillage(s.i):s.t==='ch'&&ui.ch?sheetCh():s.t==='chr'&&ui.chr?sheetChr():s.t==='a'?sheetAch():s.t==='fk'?sheetFk(s.i):s.t==='lb'?sheetLb(s.i):s.t==='lbw'?sheetLbW(s.i,s.k):s.t==='ws'?sheetWorkshop(s.k):s.t==='evt'?sheetEvt():s.t==='chat'?sheetChat():s.t==='gd'?sheetGuild():s.t==='fr'?sheetFriend():s.t==='bw'?sheetBossW(s.r,s.j):s.t==='fxt'?sheetFxTest(s):s.t==='set'?sheetSet(s.k):/^mk/.test(s.t)?sheetMk(s):sheetDev()}</div></div>`}
   const r=ui.result;
   if(r&&r.t==='h')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card m2"><div class="m2-rib ok">${ptitle(r.title)}</div>${r.ev?`<div class="small t-danger center">其中 ${r.ev} 輪受襲：沒有材料、金幣減半</div>`:''}<div class="hgrid">${harvestIcons(r.got)}</div>${btn('確定','rclose',{cls:'btn-primary big'})}</div></div>`;
   if(r&&r.t==='info')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card m2">${r.ico?`<div class="info-ico">${r.ico}</div>`:r.icon?`<div class="info-ico">${img(r.icon)}</div>`:''}${r.rib?`<div class="m2-rib ${r.rib}">${ptitle(r.title)}</div>`:ptitle(r.title)}<div class="info-body">${r.html}</div>${r.acts||''}${btn(r.ok||'知道了','rclose',{cls:r.ok?'btn-sec big':'btn-primary big'})}</div></div>`;

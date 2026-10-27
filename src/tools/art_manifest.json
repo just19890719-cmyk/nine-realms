@@ -2541,83 +2541,123 @@
   },
   "art/ui/ui491_b_dan.webp": {
    "status": "baseline",
-   "sha256": "450eb4a8d8f33402fa2089ccac164d90a981b46e5d904b8ab86ae17dea07755a"
+   "sha256": "450eb4a8d8f33402fa2089ccac164d90a981b46e5d904b8ab86ae17dea07755a",
+   "deleted": true,
+   "auth": "Mochi 2026-10-27 16:38Z 討論串按「照預覽做+刪舊圖」（卡片：照這個預覽換新，並同時刪掉 22 個舊皮膚圖檔嗎？）"
   },
   "art/ui/ui491_b_dan_d.webp": {
    "status": "baseline",
-   "sha256": "180fb60209cced606db2d85ae4753388bdb2f7068fde61ab983ffb698a513bda"
+   "sha256": "180fb60209cced606db2d85ae4753388bdb2f7068fde61ab983ffb698a513bda",
+   "deleted": true,
+   "auth": "Mochi 2026-10-27 16:38Z 討論串按「照預覽做+刪舊圖」（卡片：照這個預覽換新，並同時刪掉 22 個舊皮膚圖檔嗎？）"
   },
   "art/ui/ui491_b_dan_p.webp": {
    "status": "baseline",
-   "sha256": "3e72e39b7a469aecc343415fb86d80e9b18f7b3b03413e2dc3f87b5ef311731c"
+   "sha256": "3e72e39b7a469aecc343415fb86d80e9b18f7b3b03413e2dc3f87b5ef311731c",
+   "deleted": true,
+   "auth": "Mochi 2026-10-27 16:38Z 討論串按「照預覽做+刪舊圖」（卡片：照這個預覽換新，並同時刪掉 22 個舊皮膚圖檔嗎？）"
   },
   "art/ui/ui491_b_pri.webp": {
    "status": "baseline",
-   "sha256": "5d0bee4f088a76aaad5d913c3060e757ed4aac095d29acc497183e8edd7df782"
+   "sha256": "5d0bee4f088a76aaad5d913c3060e757ed4aac095d29acc497183e8edd7df782",
+   "deleted": true,
+   "auth": "Mochi 2026-10-27 16:38Z 討論串按「照預覽做+刪舊圖」（卡片：照這個預覽換新，並同時刪掉 22 個舊皮膚圖檔嗎？）"
   },
   "art/ui/ui491_b_pri_d.webp": {
    "status": "baseline",
-   "sha256": "ca23afb53d73b090ee42a024d2757278f23590dc2f8b7e0b0a59caec48e4ebc1"
+   "sha256": "ca23afb53d73b090ee42a024d2757278f23590dc2f8b7e0b0a59caec48e4ebc1",
+   "deleted": true,
+   "auth": "Mochi 2026-10-27 16:38Z 討論串按「照預覽做+刪舊圖」（卡片：照這個預覽換新，並同時刪掉 22 個舊皮膚圖檔嗎？）"
   },
   "art/ui/ui491_b_pri_p.webp": {
    "status": "baseline",
-   "sha256": "fb4e4e8f25d52e066cdaf2f86e22a54f05f86a2291ba4ad0041310adaf8dad6a"
+   "sha256": "fb4e4e8f25d52e066cdaf2f86e22a54f05f86a2291ba4ad0041310adaf8dad6a",
+   "deleted": true,
+   "auth": "Mochi 2026-10-27 16:38Z 討論串按「照預覽做+刪舊圖」（卡片：照這個預覽換新，並同時刪掉 22 個舊皮膚圖檔嗎？）"
   },
   "art/ui/ui491_b_sec.webp": {
    "status": "baseline",
-   "sha256": "5873755a0061f9e2e71e08a833eda5651fc20bdbe83757d1997bc218e8be5d51"
+   "sha256": "5873755a0061f9e2e71e08a833eda5651fc20bdbe83757d1997bc218e8be5d51",
+   "deleted": true,
+   "auth": "Mochi 2026-10-27 16:38Z 討論串按「照預覽做+刪舊圖」（卡片：照這個預覽換新，並同時刪掉 22 個舊皮膚圖檔嗎？）"
   },
   "art/ui/ui491_b_sec_d.webp": {
    "status": "baseline",
-   "sha256": "cf65adfcfb0c3352feefbbb5d9962e605fe6054bb23d3447663f358f4d273269"
+   "sha256": "cf65adfcfb0c3352feefbbb5d9962e605fe6054bb23d3447663f358f4d273269",
+   "deleted": true,
+   "auth": "Mochi 2026-10-27 16:38Z 討論串按「照預覽做+刪舊圖」（卡片：照這個預覽換新，並同時刪掉 22 個舊皮膚圖檔嗎？）"
   },
   "art/ui/ui491_b_sec_p.webp": {
    "status": "baseline",
-   "sha256": "c87890fce7bb3ec0f57aa301b882f11571560ab4f1ad55114d8b44dbea9e2317"
+   "sha256": "c87890fce7bb3ec0f57aa301b882f11571560ab4f1ad55114d8b44dbea9e2317",
+   "deleted": true,
+   "auth": "Mochi 2026-10-27 16:38Z 討論串按「照預覽做+刪舊圖」（卡片：照這個預覽換新，並同時刪掉 22 個舊皮膚圖檔嗎？）"
   },
   "art/ui/ui491_cap.webp": {
    "status": "baseline",
-   "sha256": "e819e5c42788761ddf1d2ed80b72e32d0e7ef09501c5fe1ae66f0e46d6833978"
+   "sha256": "e819e5c42788761ddf1d2ed80b72e32d0e7ef09501c5fe1ae66f0e46d6833978",
+   "deleted": true,
+   "auth": "Mochi 2026-10-27 16:38Z 討論串按「照預覽做+刪舊圖」（卡片：照這個預覽換新，並同時刪掉 22 個舊皮膚圖檔嗎？）"
   },
   "art/ui/ui491_cap_on.webp": {
    "status": "baseline",
-   "sha256": "b09420ac56b7beccdc39781adab245a8de6b6998bbf0f338ccd7840e46b345f0"
+   "sha256": "b09420ac56b7beccdc39781adab245a8de6b6998bbf0f338ccd7840e46b345f0",
+   "deleted": true,
+   "auth": "Mochi 2026-10-27 16:38Z 討論串按「照預覽做+刪舊圖」（卡片：照這個預覽換新，並同時刪掉 22 個舊皮膚圖檔嗎？）"
   },
   "art/ui/ui491_cap_red.webp": {
    "status": "baseline",
-   "sha256": "0080c8544a8fb79b85b0a08c094e5c8efeb432aebb7de5c002e4c24278f97b22"
+   "sha256": "0080c8544a8fb79b85b0a08c094e5c8efeb432aebb7de5c002e4c24278f97b22",
+   "deleted": true,
+   "auth": "Mochi 2026-10-27 16:38Z 討論串按「照預覽做+刪舊圖」（卡片：照這個預覽換新，並同時刪掉 22 個舊皮膚圖檔嗎？）"
   },
   "art/ui/ui491_chev.webp": {
    "status": "baseline",
-   "sha256": "b7554f00bc2a7afdc5b3806133fa73115783211c97be18c2875e6855779886fe"
+   "sha256": "b7554f00bc2a7afdc5b3806133fa73115783211c97be18c2875e6855779886fe",
+   "deleted": true,
+   "auth": "Mochi 2026-10-27 16:38Z 討論串按「照預覽做+刪舊圖」（卡片：照這個預覽換新，並同時刪掉 22 個舊皮膚圖檔嗎？）"
   },
   "art/ui/ui491_fl.webp": {
    "status": "baseline",
-   "sha256": "74113f5ba4d45cade565d71b89da34b9b2b2b158af1c75465370f81d1affe16d"
+   "sha256": "74113f5ba4d45cade565d71b89da34b9b2b2b158af1c75465370f81d1affe16d",
+   "deleted": true,
+   "auth": "Mochi 2026-10-27 16:38Z 討論串按「照預覽做+刪舊圖」（卡片：照這個預覽換新，並同時刪掉 22 個舊皮膚圖檔嗎？）"
   },
   "art/ui/ui491_fl_on.webp": {
    "status": "baseline",
-   "sha256": "c5e639ee2deafce18a56376cfeb04e64dfb83a8771d36755f707aff6c1e59e02"
+   "sha256": "c5e639ee2deafce18a56376cfeb04e64dfb83a8771d36755f707aff6c1e59e02",
+   "deleted": true,
+   "auth": "Mochi 2026-10-27 16:38Z 討論串按「照預覽做+刪舊圖」（卡片：照這個預覽換新，並同時刪掉 22 個舊皮膚圖檔嗎？）"
   },
   "art/ui/ui491_fl_red.webp": {
    "status": "baseline",
-   "sha256": "ba6b9eeecff1d8d8fcbdf3a9f3470608bdfe997dc8622b4eb5ffc6cbe2e440cf"
+   "sha256": "ba6b9eeecff1d8d8fcbdf3a9f3470608bdfe997dc8622b4eb5ffc6cbe2e440cf",
+   "deleted": true,
+   "auth": "Mochi 2026-10-27 16:38Z 討論串按「照預覽做+刪舊圖」（卡片：照這個預覽換新，並同時刪掉 22 個舊皮膚圖檔嗎？）"
   },
   "art/ui/ui491_fr.webp": {
    "status": "baseline",
-   "sha256": "3fdf84e07de886fd464bade0d5ec9ad9b85add5bda4aaf34a9940c88f90c0b8c"
+   "sha256": "3fdf84e07de886fd464bade0d5ec9ad9b85add5bda4aaf34a9940c88f90c0b8c",
+   "deleted": true,
+   "auth": "Mochi 2026-10-27 16:38Z 討論串按「照預覽做+刪舊圖」（卡片：照這個預覽換新，並同時刪掉 22 個舊皮膚圖檔嗎？）"
   },
   "art/ui/ui491_fr_off.webp": {
    "status": "baseline",
-   "sha256": "3722e5eae63c952c0b6a7ef01e2184d2fe5d1aa2434f182d922f27932e72ac6c"
+   "sha256": "3722e5eae63c952c0b6a7ef01e2184d2fe5d1aa2434f182d922f27932e72ac6c",
+   "deleted": true,
+   "auth": "Mochi 2026-10-27 16:38Z 討論串按「照預覽做+刪舊圖」（卡片：照這個預覽換新，並同時刪掉 22 個舊皮膚圖檔嗎？）"
   },
   "art/ui/ui491_fr_on.webp": {
    "status": "baseline",
-   "sha256": "794f0f8cebecd902ea34a898d2801e4c7c8f00c94d3d1f12b56ee7e812a93a97"
+   "sha256": "794f0f8cebecd902ea34a898d2801e4c7c8f00c94d3d1f12b56ee7e812a93a97",
+   "deleted": true,
+   "auth": "Mochi 2026-10-27 16:38Z 討論串按「照預覽做+刪舊圖」（卡片：照這個預覽換新，並同時刪掉 22 個舊皮膚圖檔嗎？）"
   },
   "art/ui/ui491_fr_red.webp": {
    "status": "baseline",
-   "sha256": "eb202ab0f79bd52090ee4ba7689563573439da66bb081f7ebbae61779b12cdb8"
+   "sha256": "eb202ab0f79bd52090ee4ba7689563573439da66bb081f7ebbae61779b12cdb8",
+   "deleted": true,
+   "auth": "Mochi 2026-10-27 16:38Z 討論串按「照預覽做+刪舊圖」（卡片：照這個預覽換新，並同時刪掉 22 個舊皮膚圖檔嗎？）"
   },
   "art/ui/ui491_info.webp": {
    "status": "baseline",
@@ -2629,11 +2669,15 @@
   },
   "art/ui/ui493_panel.webp": {
    "status": "baseline",
-   "sha256": "3b1205724535426909246caddca91293a7abe8b9b3ccead544662d15c503a49d"
+   "sha256": "3b1205724535426909246caddca91293a7abe8b9b3ccead544662d15c503a49d",
+   "deleted": true,
+   "auth": "Mochi 2026-10-27 16:38Z 討論串按「照預覽做+刪舊圖」（卡片：照這個預覽換新，並同時刪掉 22 個舊皮膚圖檔嗎？）"
   },
   "art/ui/ui493_slot.webp": {
    "status": "baseline",
-   "sha256": "8693441e920ec47d642d32ca3596a2568c9728259b57387237c1ebf7a4d88fd5"
+   "sha256": "8693441e920ec47d642d32ca3596a2568c9728259b57387237c1ebf7a4d88fd5",
+   "deleted": true,
+   "auth": "Mochi 2026-10-27 16:38Z 討論串按「照預覽做+刪舊圖」（卡片：照這個預覽換新，並同時刪掉 22 個舊皮膚圖檔嗎？）"
   },
   "art/ui/ui_icon_01.webp": {
    "status": "baseline",
