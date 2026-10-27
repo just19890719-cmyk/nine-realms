@@ -334,7 +334,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='5.27';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='5.28';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1318,6 +1318,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'5.28',d:'10/27',t:'登入畫面、新手導覽換上道具欄同款外觀',b:['登入、取名、維護公告的框換成古銅城門框，輸入格和按鈕也換成道具欄同款','新手導覽和提示的說明框換成古銅說明框，尖角會指向正在發亮的地方','位置、文字和功能都沒有改'],g:[]},
  {v:'5.27',d:'10/27',t:'上方資源列、底部導覽換上道具欄同款外觀',b:['金幣、鑽石換成道具欄同款的資源膠囊','上方列改成煤黑底色加古銅分隔線','底部導覽換成煤黑古銅底板，選中的分頁有金色光暈','按鈕位置、大小和功能都沒有改'],g:[]},
  {v:'5.26',d:'10/27',t:'鐵匠鋪的分類、圖紙、鍛造面板換上道具欄同款外觀',b:['武器分類列換成跟道具欄一樣的分類按鈕和圖示','圖紙卡換成道具欄格子框，選中的圖紙有金色光框','已選擇面板、費用材料格、數量按鈕、開始鍛造按鈕和鍛造中進度列都改成同一套煤黑古銅','數值和鍛造規則都沒有改'],g:[]},
  {v:'5.25',d:'10/27',t:'村莊頁的村莊卡、按鈕換上道具欄同款外觀',b:['村莊分頁的村莊卡改成道具欄同款橫列卡：下一個挑戰、可以收成的卡片是金邊，還沒解鎖的是暗灰邊','「下一個挑戰」標籤換成古銅緞帶','全部收成、任務、挑戰、收成按鈕換成道具欄同一套按鈕','怪物血條、駐守武器小標籤也換成同一套煤黑古銅','數值、掉落和狩獵規則都沒有改'],g:[]},
@@ -2706,6 +2707,7 @@ function viewShop(){   // v5.17 換成道具欄母版（.b2）：主框、次面
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'5.28',t:'登入／取名／維護／讀取框＝bag2_gate_frame（S-03）、輸入格＝bag2_field、按鈕＝bag2 主／次按鈕；新手導覽與提示框＝bag2_tut_box（S-01），尖角指向發亮目標',b:[['gtlogin','看登入畫面'],['cnameprev','看取名畫面'],['maintprev','看維護公告'],['l528l','看讀取畫面（3 秒後關掉）'],['tutrestart','重跑新手導覽（看說明框和尖角）']]},
  {v:'5.27',t:'上方資源列／底部導覽換成道具欄母版（金幣鑽石＝bag2_res_cap、上方列煤黑＋分隔線、導覽底板＝bag2_nav_bar、選中光＝bag2_nav_glow）',b:[['n527','看資源列和導覽列（切到村莊頁）'],['n527g','金幣鑽石變超大數字（看膠囊會不會擠）']]},
  {v:'5.26',t:'鐵匠鋪下半部換成道具欄母版（分類＝b2-cat、圖紙卡＝bag2 格子＋金色光框、已選擇＝次面板、材料格、數量膠囊、bag2 按鈕、鍛造進度列）',b:[['f526','鐵匠鋪：材料夠（可以鍛造）'],['f526j','鐵匠鋪：鍛造中'],['f526l','鐵匠鋪：材料不夠']]},
  {v:'5.25',t:'村莊列表頁換成道具欄母版（村莊卡＝橫列卡一般／高亮／上鎖、下一個挑戰緞帶、bag2 按鈕、血條外框＋填充、武器膠囊）',b:[['v525','村莊頁：剛開始（下一個挑戰＋上鎖）'],['v525h','村莊頁：駐守中、可收成'],['v525b','村莊頁：展開戰鬥畫面'],['v525f','村莊頁：達到離線上限']]},
@@ -2889,6 +2891,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='cpull'){cloudPull().then(()=>toast('已從雲端下載','ok')).catch(e=>toast('下載失敗：'+SB_ERR(e.message),'bad'));return}
   if(k==='clogout'){ui.sheet=null;return cloudLogout()}
   if(k==='maintprev'){ui.sheet=null;render();return showMaint(null,true)}
+  if(k==='l528l'){ui.sheet=null;render();showLoading('讀取雲端存檔…');return setTimeout(gateClose,3000)}
   if(/^n527/.test(k)){ui.result=null;ui.sheet=null;ui.tab='village';if(k==='n527g'){S.gold=Math.max(S.gold,987654321);S.gems=Math.max(S.gems,99999)}save();render();return scrollTo(0,0)}
   if(/^f526/.test(k)){const q=k.slice(4);ui.result=null;ui.sheet=null;ui.tab='forge';ui.ftab='bp';const b=BP[ui.bp]||BPS.find(x=>!x.dev);ui.bp=b.id;
     if(q==='l'){S.gold=Math.min(S.gold,3);for(const m in recipe(b))S.mats[m]=0}else{S.gold=Math.max(S.gold,5000);for(const m in recipe(b))S.mats[m]=Math.max(S.mats[m]|0,50)}
@@ -3427,7 +3430,7 @@ function tutStep(n){S.tut=n;const nx=TUT[n];if(nx&&nx.go&&!ui.busy){nx.go();rend
 function tutDraw(force){let o=document.getElementById('tut');document.body.classList.toggle('tutoring',tutOn());
   if(!tutOn()){if(o)o.remove();return}
   const st=TUT[S.tut];if(!st.ok&&st.done&&st.done()){return tutStep(S.tut+1)}
-  if(!o){o=document.createElement('div');o.id='tut';o.innerHTML='<div class="tut-ring"></div><div class="tut-box"><img class="tut-face" src="'+A('sm_1')+'" alt=""><div class="tut-body"><div class="tut-txt"></div><div class="tut-btns"></div></div></div>';document.body.appendChild(o);
+  if(!o){o=document.createElement('div');o.id='tut';o.innerHTML='<div class="tut-ring"></div><div class="tut-box"><i class="tut-ptr"></i><img class="tut-face" src="'+A('sm_1')+'" alt=""><div class="tut-body"><div class="tut-txt"></div><div class="tut-btns"></div></div></div>';document.body.appendChild(o);
     o.addEventListener('click',e=>{const b=e.target.closest('[data-tut]');if(!b)return;e.stopPropagation();snd('ui_click');if(b.dataset.tut==='skip'){S.tut=99;save();tutDraw()}else tutStep(S.tut+1)})}
   if(force||o.dataset.k!==String(S.tut)){o.dataset.k=S.tut;o.querySelector('.tut-txt').innerHTML=st.t;
     o.querySelector('.tut-btns').innerHTML=`<span class="small muted">${S.tut+1}／${TUT.length}</span>${st.ok?`<button class="ui-btn ui-btn--primary btn btn-primary sm" data-tut="next">${st.ok}</button>`:''}${st.end?'':'<button class="tut-skip" data-tut="skip">略過導覽</button>'}`}
@@ -3440,8 +3443,9 @@ function tutDraw(force){let o=document.getElementById('tut');document.body.class
     const sh=el.closest('.sheet'),r0=el.getBoundingClientRect(),rs=sh.getBoundingClientRect(),key=S.tut+'|'+sel;
     if((r0.top<rs.top+60||r0.bottom>rs.bottom-20)&&o.dataset.sc!==key){o.dataset.sc=key;el.scrollIntoView({block:'center'})}}
   if(el){const r=el.getBoundingClientRect(),p=6;Object.assign(ring.style,{display:'block',left:r.left-p+'px',top:r.top-p+'px',width:r.width+p*2+'px',height:r.height+p*2+'px'});
-    const below=r.top+r.height/2<innerHeight/2;box.style.top=below?Math.min(innerHeight-170,r.bottom+14)+'px':'auto';box.style.bottom=below?'auto':Math.max(90,innerHeight-r.top+14)+'px';o.classList.remove('nohole')}
-  else{ring.style.display='none';box.style.top=st.top?'64px':'auto';box.style.bottom=st.top?'auto':'120px';o.classList.add('nohole')}o.classList.toggle('clear',!el&&!!st.top)}   // v4.57 top：說明放上方、不加暗幕（看戰鬥用）
+    const below=r.top+r.height/2<innerHeight/2;box.style.top=below?Math.min(innerHeight-170,r.bottom+14)+'px':'auto';box.style.bottom=below?'auto':Math.max(90,innerHeight-r.top+14)+'px';o.classList.remove('nohole');
+    const bw=box.offsetWidth;box.style.setProperty('--px',Math.round(Math.min(bw-40,Math.max(40,r.left+r.width/2-(innerWidth-bw)/2)))+'px');o.classList.toggle('pup',below);o.classList.toggle('pdn',!below)}   // v5.28 說明框尖角指向目標：框在下面朝上、框在上面朝下，左右跟著目標
+  else{ring.style.display='none';o.classList.remove('pup','pdn');box.style.top=st.top?'64px':'auto';box.style.bottom=st.top?'auto':'120px';o.classList.add('nohole')}o.classList.toggle('clear',!el&&!!st.top)}   // v4.57 top：說明放上方、不加暗幕（看戰鬥用）
 // v3.55 捲動時金框立即跟著移動
 if(typeof window!=='undefined')document.addEventListener('scroll',()=>{if(tutOn()&&!tutDraw._raf)tutDraw._raf=requestAnimationFrame(()=>{tutDraw._raf=0;tutDraw()})},{passive:true,capture:true});
 function tutInit(){if(S.tut==null)S.tut=(!S.weapons.length&&!S.jobs.length&&cleared()===0)?0:99;

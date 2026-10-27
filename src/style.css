@@ -2472,4 +2472,20 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 @media (min-width:421px){.res .chip:not(#_):not(#_){gap:5px}}
 .ui-navbar.nav:not(#_){border-top:0;background:url(art/ui/bag2/bag2_nav_bar.webp) 0 0/100% 100% no-repeat,linear-gradient(#0b0a09,#0b0a09) 0 0/100% 100% no-repeat}
 .nav button.on::before{width:92px;height:52px;margin:-26px 0 0 -46px;border-radius:0;background:url(art/ui/bag2/bag2_nav_glow.webp) center/100% 100% no-repeat;mix-blend-mode:screen}
+/* v5.28 登入／新手導覽換成道具欄母版（Mochi 選「照這個範圍做」）：登入／取名／維護／讀取框＝bag2_gate_frame（S-03，左右各切 255 讓上方銘牌不變形）、輸入格＝bag2_field、按鈕＝bag2 主／次按鈕；導覽與提示框＝bag2_tut_box（S-01）：上半用原圖、下半用上下翻轉的原圖（去掉固定在中間的尖角），尖角另外用 .tut-ptr 畫，跟著目標移動 */
+.gt-box:not(#_){--gw:min(88vw,360px);width:var(--gw);min-height:calc(var(--gw) * .27);border:0 solid transparent;border-radius:0;background:none;backdrop-filter:none;-webkit-backdrop-filter:none;border-image:url(art/ui/bag2/bag2_gate_frame.webp) 115 255 fill / calc(var(--gw) * .1208) 26.79% stretch;padding:calc(var(--gw) * .085) 22px 20px}
+.gt-box input:not(#_){border:0 solid transparent;border-radius:0;background:none;border-image:url(art/ui/bag2/bag2_field.webp) 0 55 fill / 0 17px stretch;padding:0 16px}
+.gt-box .ui-btn.btn:not(#_):not(#_){border:0 solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_btn_sec2.webp) 32 70 fill / 8px 17px stretch;color:var(--b2-text)}
+.gt-box .ui-btn.btn:active:not(:disabled):not(#_):not(#_){border-image-source:url(art/ui/bag2/bag2_btn_sec2_p.webp)}
+.gt-box .ui-btn--primary.btn:not(#_):not(#_){border-image:url(art/ui/bag2/bag2_btn_pri.webp) 40 55 fill / 8px 14px stretch;color:#ffe7b0}
+.gt-box .ui-btn--primary.btn:active:not(:disabled):not(#_):not(#_){border-image-source:url(art/ui/bag2/bag2_btn_pri_p.webp)}
+.gt-box .ui-btn.btn:disabled:not(#_):not(#_){border-image:url(art/ui/bag2/bag2_btn_off2.webp) 32 70 fill / 8px 17px stretch;color:var(--b2-dim);opacity:1;filter:none}
+.gt-load:not(#_){justify-content:center}
+@media(max-height:640px){.gt-box:not(#_){padding:calc(var(--gw) * .075) 18px 14px}}
+.tut-box:not(#_){border:0;border-radius:0;background:none;box-shadow:none;padding:12px 16px;filter:drop-shadow(0 6px 14px rgba(0,0,0,.7))}
+.tut-box::before,.tut-box::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;border:0 solid transparent;border-image:url(art/ui/bag2/bag2_tut_box.webp) 60 60 111 fill / 14px 14px 26px stretch;clip-path:inset(0 0 50% 0)}
+.tut-box::after{transform:scaleY(-1)}
+.tut-ptr{display:none;position:absolute;left:var(--px,50%);top:calc(100% - 6px);width:44px;height:23px;margin-left:-22px;pointer-events:none;background:url(art/ui/bag2/bag2_tut_box.webp) -141.4px -105.5px/327.4px 128.6px no-repeat}
+#tut.pdn .tut-ptr{display:block}
+#tut.pup .tut-ptr{display:block;top:-17px;transform:scaleY(-1)}
 </style>

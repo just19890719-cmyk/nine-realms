@@ -525,7 +525,7 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.44 舊武器刪除：要在放回測試資料前檢查
-  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),...sh2Tests(),...q2Tests(),...s2Tests(),...m2Tests(),...cx2Tests(),...v2Tests(),...v3Tests(),...f2Tests(),...n2Tests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
+  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),...sh2Tests(),...q2Tests(),...s2Tests(),...m2Tests(),...cx2Tests(),...v2Tests(),...v3Tests(),...f2Tests(),...n2Tests(),...l2Tests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
     T('BD2 神明材質階、神格覺醒拿掉',TIERS.length===5&&typeof GOD==='undefined'&&typeof awkN==='undefined',`材質 ${TIERS.length} 階`)];
   return withTestBps(()=>runTests0(mode,bd))}
 // v4.44 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
@@ -808,6 +808,20 @@ function v3Tests(){const tab0=ui.tab,sh0=ui.sheet,r0=ui.result,y0=scrollY,rl0=ui
     out.push(T('V3 村莊頁按鈕、緞帶的字沒有超出，卡片沒有超出清單，血條填滿時不超出外框',cut===0&&ov===0&&hin&&document.documentElement.scrollWidth<=innerWidth,`寬 ${innerWidth}：字超出 ${cut}；元素超出 ${ov}；血條 ${hin?'在框內':'超出'}；頁寬 ${document.documentElement.scrollWidth}`));
     return out}
   catch(e){return[T('V3 村莊列表頁母版測試',false,e.message)]}finally{JSON.parse(vs0).forEach((v,i)=>S.villages[i]=v);S.weapons.length=wn0;S.nextId=ni0;ui.realm=rl0;ui.bsOpen=bo0;ui.sheet=sh0;ui.result=r0;ui.tab=tab0;render();scrollTo(0,y0)}}
+function l2Tests(){const g=document.getElementById('gate'),gc0=g?g.className:'',gh0=g?g.innerHTML:'',gat0=document.body.classList.contains('gating'),tut0=S.tut,tab0=ui.tab,ft0=ui.ftab,sh0=ui.sheet,r0=ui.result,tips0=JSON.stringify(S.tips||{}),y0=scrollY;
+  try{const out=[],bis=e=>getComputedStyle(e).borderImageSource,old=e=>e?[e,...e.querySelectorAll('*')].filter(x=>/ui491_|ui493_/.test(bis(x)+getComputedStyle(x).backgroundImage)).length:-1,box=()=>document.querySelector('#gate .gt-box'),fr=e=>!!e&&/bag2_gate_frame/.test(bis(e));
+    showLogin('測試');let b=box();const ins=b?[...b.querySelectorAll('input')]:[],pri=b&&b.querySelector('[data-gt=login]'),sec=b&&b.querySelector('[data-gt=signup]'),br=b&&b.getBoundingClientRect();
+    out.push(T('L2 登入框＝城門框（S-03）、輸入格＝道具欄輸入格、登入＝主按鈕、註冊＝次按鈕，沒有舊框、沒有超出畫面',fr(b)&&ins.length===2&&ins.every(e=>/bag2_field/.test(bis(e)))&&!!pri&&/bag2_btn_pri\.webp/.test(bis(pri))&&!!sec&&/bag2_btn_sec2\.webp/.test(bis(sec))&&old(b)===0&&br.left>=0&&br.right<=innerWidth&&[pri,sec].every(e=>e.scrollWidth<=e.clientWidth+1),`輸入格 ${ins.length}；登入 ${pri?bis(pri).split('/').pop():'無'}；舊框 ${old(b)}`));
+    showName(true,true);const nf=fr(box());showMaint(null,true);const m=box(),mf=fr(m);showLoading('測試');const l=box(),lf=fr(l);
+    out.push(T('L2 取名、維護公告、讀取框也是城門框',nf&&mf&&lf&&old(document.getElementById('gate'))===0,`取名 ${nf}；維護 ${mf}；讀取 ${lf}`));
+    const gg=document.getElementById('gate');gg.className=gc0||'out';gg.innerHTML=gh0;document.body.classList.toggle('gating',gat0);
+    if(!gat0){S.tut=0;ui.sheet=null;ui.result=null;ui.tab='forge';ui.ftab='bp';render();tutDraw(true);tutDraw();const o=document.getElementById('tut'),tb=o&&o.querySelector('.tut-box'),pt=tb&&tb.querySelector('.tut-ptr'),ring=o&&o.querySelector('.tut-ring');
+      const fb=tb&&/bag2_tut_box/.test(getComputedStyle(tb,'::before').borderImageSource)&&/bag2_tut_box/.test(getComputedStyle(tb,'::after').borderImageSource),pv=pt&&getComputedStyle(pt).display!=='none',pr=pt&&pt.getBoundingClientRect(),rr=ring&&ring.getBoundingClientRect(),dx=pv&&rr?Math.abs((pr.left+pr.width/2)-(rr.left+rr.width/2)):-1,tbr=tb&&tb.getBoundingClientRect();
+      out.push(T('L2 新手導覽框＝道具欄說明框（S-01），尖角指向發亮的目標（左右對齊、方向正確），框沒有超出畫面',!!fb&&!!pv&&dx>=0&&dx<=3&&(o.classList.contains('pdn')?pr.top>=tbr.bottom-8&&pr.bottom<=rr.top+12:pr.bottom<=tbr.top+8&&pr.top>=rr.bottom-12)&&tbr.left>=0&&tbr.right<=innerWidth&&old(tb)===0,`寬 ${innerWidth}：框圖 ${!!fb}；尖角 ${pv?'有':'無'}；左右差 ${dx}px；方向 ${o&&o.classList.contains('pdn')?'朝下':'朝上'}`));
+      S.tut=99;tutDraw();S.tips={};ui.tab='shop';render();tipDraw();const tp=document.querySelector('#tip .tut-box'),tpt=tp&&tp.querySelector('.tut-ptr');
+      out.push(T('L2 提示框也是道具欄說明框，沒有尖角（沒有目標）',!!tp&&/bag2_tut_box/.test(getComputedStyle(tp,'::before').borderImageSource)&&(!tpt||getComputedStyle(tpt).display==='none'),`提示框 ${tp?'有':'無'}`))}
+    return out}
+  catch(e){return[T('L2 登入／導覽母版測試',false,e.message)]}finally{const gg=document.getElementById('gate');if(gg){gg.className=gc0||'out';gg.innerHTML=gh0}document.body.classList.toggle('gating',gat0);S.tut=tut0;S.tips=JSON.parse(tips0);const tp=document.getElementById('tip');if(tp)tp.remove();ui.sheet=sh0;ui.result=r0;ui.ftab=ft0;ui.tab=tab0;render();tutDraw();scrollTo(0,y0)}}
 function n2Tests(){const tab0=ui.tab,sh0=ui.sheet,r0=ui.result,y0=scrollY,g0=S.gold,d0=S.gems;
   try{const out=[],bis=e=>getComputedStyle(e).borderImageSource,bg=e=>getComputedStyle(e).backgroundImage;S.gold=123456;S.gems=100;ui.sheet=null;ui.result=null;ui.tab='village';render();
     const top=document.querySelector('.ui-topbar.bar'),nav=document.querySelector('.ui-navbar.nav'),chips=[...document.querySelectorAll('.res .chip')],on=nav&&nav.querySelector('button.on');
