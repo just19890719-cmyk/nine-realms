@@ -2479,6 +2479,15 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 .fg2 .qrow .prog:not(#_){height:10px;border:0 solid transparent;border-radius:0;background:none;box-shadow:none;overflow:visible;border-image:url(art/ui/bag2/bag2_cap_track.webp) 0 30 fill / 0 6px stretch}
 .fg2 .qrow .prog i:not(#_){height:100%;max-width:100%;border:0 solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_cap_fill.webp) 0 25 fill / 0 5px stretch}
 .fg2 .lack-line:not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_notice.webp) 30 fill / 10px stretch;padding:8px 12px}
+/* v5.27 上方資源列／底部導覽換成道具欄母版（Mochi 選「上方資源列／底部導覽」）：金幣鑽石＝bag2_res_cap（左邊圓座放圖示）、上方列煤黑＋bag2 分隔線、導覽底板＝bag2_nav_bar、選中光＝bag2_nav_glow（黑底圖，screen 疊加）；按鈕位置和大小不變 */
+.ui-topbar.bar:not(#_){background:linear-gradient(#0d0e10,#0d0e10);border-bottom:0}
+.ui-topbar.bar::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:12px;pointer-events:none;background:url(art/ui/bag2/bag2_rule_mid.webp) center/auto 12px no-repeat,url(art/ui/bag2/bag2_rule_line.webp) center/100% 12px no-repeat}
+.res .chip:not(#_):not(#_){border:0 solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_res_cap.webp) 0 60 0 170 fill / 0 13px 0 37px stretch;padding:0 10px 0 11px;gap:2px}
+.res .chip:not(#_):not(#_)>img{width:23px;height:23px}
+.res .chip:has(.plus):not(#_):not(#_){padding-right:5px}
+@media (min-width:421px){.res .chip:not(#_):not(#_){gap:5px}}
+.ui-navbar.nav:not(#_){border-top:0;background:url(art/ui/bag2/bag2_nav_bar.webp) 0 0/100% 100% no-repeat,linear-gradient(#0b0a09,#0b0a09) 0 100%/100% 55% no-repeat}
+.nav button.on::before{width:92px;height:52px;margin:-26px 0 0 -46px;border-radius:0;background:url(art/ui/bag2/bag2_nav_glow.webp) center/100% 100% no-repeat;mix-blend-mode:screen}
 </style>
 <div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div><div class="news" id="news" aria-live="polite" data-act="chatsys"></div></div>
 <main class="wrap" id="view"></main>
@@ -2987,7 +2996,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='5.26';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='5.27';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -3971,6 +3980,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'5.27',d:'10/27',t:'上方資源列、底部導覽換上道具欄同款外觀',b:['金幣、鑽石換成道具欄同款的資源膠囊','上方列改成煤黑底色加古銅分隔線','底部導覽換成煤黑古銅底板，選中的分頁有金色光暈','按鈕位置、大小和功能都沒有改'],g:[]},
  {v:'5.26',d:'10/27',t:'鐵匠鋪的分類、圖紙、鍛造面板換上道具欄同款外觀',b:['武器分類列換成跟道具欄一樣的分類按鈕和圖示','圖紙卡換成道具欄格子框，選中的圖紙有金色光框','已選擇面板、費用材料格、數量按鈕、開始鍛造按鈕和鍛造中進度列都改成同一套煤黑古銅','數值和鍛造規則都沒有改'],g:[]},
  {v:'5.25',d:'10/27',t:'村莊頁的村莊卡、按鈕換上道具欄同款外觀',b:['村莊分頁的村莊卡改成道具欄同款橫列卡：下一個挑戰、可以收成的卡片是金邊，還沒解鎖的是暗灰邊','「下一個挑戰」標籤換成古銅緞帶','全部收成、任務、挑戰、收成按鈕換成道具欄同一套按鈕','怪物血條、駐守武器小標籤也換成同一套煤黑古銅','數值、掉落和狩獵規則都沒有改'],g:[]},
  {v:'5.24',d:'10/27',t:'村莊詳情、駐守小卡換上道具欄同款外觀',b:['點村莊跳出來的詳情：外框、怪物資料、掉落物、挑戰評級、收成區、按鈕都改成跟道具欄同一套煤黑古銅','選武器挑戰／指派駐守的武器格換成道具欄同款格子和等級外框，名稱和預估秒數照樣顯示','駐守中點武器跳出來的小卡也一起換','數值、掉落機率和挑戰規則都沒有改'],g:[]},
@@ -5358,6 +5368,7 @@ function viewShop(){   // v5.17 換成道具欄母版（.b2）：主框、次面
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'5.27',t:'上方資源列／底部導覽換成道具欄母版（金幣鑽石＝bag2_res_cap、上方列煤黑＋分隔線、導覽底板＝bag2_nav_bar、選中光＝bag2_nav_glow）',b:[['n527','看資源列和導覽列（切到村莊頁）'],['n527g','金幣鑽石變超大數字（看膠囊會不會擠）']]},
  {v:'5.26',t:'鐵匠鋪下半部換成道具欄母版（分類＝b2-cat、圖紙卡＝bag2 格子＋金色光框、已選擇＝次面板、材料格、數量膠囊、bag2 按鈕、鍛造進度列）',b:[['f526','鐵匠鋪：材料夠（可以鍛造）'],['f526j','鐵匠鋪：鍛造中'],['f526l','鐵匠鋪：材料不夠']]},
  {v:'5.25',t:'村莊列表頁換成道具欄母版（村莊卡＝橫列卡一般／高亮／上鎖、下一個挑戰緞帶、bag2 按鈕、血條外框＋填充、武器膠囊）',b:[['v525','村莊頁：剛開始（下一個挑戰＋上鎖）'],['v525h','村莊頁：駐守中、可收成'],['v525b','村莊頁：展開戰鬥畫面'],['v525f','村莊頁：達到離線上限']]},
  {v:'5.24',t:'村莊詳情／駐守換成道具欄母版（外框、次面板、掉落格、評級格、秒殺列、武器格＝道具欄格子、按鈕）',b:[['v524','村莊詳情：未收復（選武器挑戰）'],['v524c','村莊詳情：已收復（有收成、評級 A）'],['v524p','村莊詳情：駐守中']]},
@@ -5540,6 +5551,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='cpull'){cloudPull().then(()=>toast('已從雲端下載','ok')).catch(e=>toast('下載失敗：'+SB_ERR(e.message),'bad'));return}
   if(k==='clogout'){ui.sheet=null;return cloudLogout()}
   if(k==='maintprev'){ui.sheet=null;render();return showMaint(null,true)}
+  if(/^n527/.test(k)){ui.result=null;ui.sheet=null;ui.tab='village';if(k==='n527g'){S.gold=Math.max(S.gold,987654321);S.gems=Math.max(S.gems,99999)}save();render();return scrollTo(0,0)}
   if(/^f526/.test(k)){const q=k.slice(4);ui.result=null;ui.sheet=null;ui.tab='forge';ui.ftab='bp';const b=BP[ui.bp]||BPS.find(x=>!x.dev);ui.bp=b.id;
     if(q==='l'){S.gold=Math.min(S.gold,3);for(const m in recipe(b))S.mats[m]=0}else{S.gold=Math.max(S.gold,5000);for(const m in recipe(b))S.mats[m]=Math.max(S.mats[m]|0,50)}
     if(q==='j'&&!S.jobs.length)forgeStart(b.id,1);save();render();return scrollTo(0,0)}
