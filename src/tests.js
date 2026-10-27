@@ -801,6 +801,7 @@ function v3Tests(){const tab0=ui.tab,sh0=ui.sheet,r0=ui.result,y0=scrollY,rl0=ui
     S.villages[0].cycleStart-=dur(0,w)*3+10;tick();render();l=L();
     const cards=l?[...l.querySelectorAll('.vcard')]:[],rd=cards.find(e=>e.querySelector('.harvest-btn')),hunt=cards.find(e=>!e.querySelector('.harvest-btn')&&e.querySelector('.hpbar'));
     const hb=rd&&rd.querySelector('.harvest-btn'),hp=rd&&rd.querySelector('.hpbar'),fill=hp&&hp.querySelector('i[data-vhp]'),wc=rd&&rd.querySelector('.wchip');
+    const ca=document.querySelector('#view .vbar.v3 [data-act="collectAll"]');out.push(T('V3 全部收成可以按時是道具欄主按鈕（金色），不是次按鈕',!!ca&&!ca.disabled&&/bag2_btn_pri\.webp/.test(bis(ca)),`全部收成 ${ca?bis(ca).split('/').pop():'找不到'}`));
     out.push(T('V3 駐守中：可收成卡＝高亮、狩獵中卡＝一般橫列卡、收成鈕＝道具欄主按鈕、血條＝道具欄外框＋填充、武器＝膠囊',!!rd&&/bag2_row_on/.test(bis(rd))&&!!hunt&&/bag2_row\.webp/.test(bis(hunt))&&!!hb&&/bag2_btn_pri/.test(bis(hb))&&!!hp&&/bag2_hp_frame/.test(bis(hp))&&!!fill&&/bag2_hp_fill/.test(bis(fill))&&!!wc&&/bag2_chip/.test(bis(wc)),`可收成 ${rd?'有':'無'}；狩獵中 ${hunt?'有':'無'}；收成鈕 ${hb?'有':'無'}；血條 ${hp?'有':'無'}`));
     const cut=l?[...l.querySelectorAll('.ui-btn,.harvest-btn,.next-tag')].filter(e=>e.scrollWidth>e.clientWidth+1).length:-1,lr=l&&l.getBoundingClientRect(),ov=l?[...l.querySelectorAll('.vcard,.vlocked,.vcard .ui-btn,.harvest-btn')].filter(e=>{const q=e.getBoundingClientRect();return q.right>lr.right+1||q.left<lr.left-1}).length:-1;
     const hin=hp&&fill?fill.getBoundingClientRect().right<=hp.getBoundingClientRect().right+.5:false;

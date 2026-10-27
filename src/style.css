@@ -2433,9 +2433,9 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 .v3 .hpbar .hp-t{padding:0 11px}
 .v3 .ui-btn.btn:not(.ui-btn--icon):not(.harvest-btn):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_btn_sec2.webp) 0 70 fill / 0 19px stretch;color:var(--b2-text)}
 .v3 .ui-btn.btn:not(.ui-btn--icon):not(.harvest-btn):active:not(:disabled):not(#_){border-image-source:url(art/ui/bag2/bag2_btn_sec2_p.webp)}
-.v3 .ui-btn--primary.btn:not(.ui-btn--icon):not(#_){border-image:url(art/ui/bag2/bag2_btn_pri.webp) 0 55 fill / 0 16px stretch;color:#ffe7b0}
-.v3 .ui-btn--primary.btn:not(.ui-btn--icon):active:not(:disabled):not(#_){border-image-source:url(art/ui/bag2/bag2_btn_pri_p.webp)}
-.v3 .ui-btn.btn:not(.ui-btn--icon):disabled:not(#_){border-image:url(art/ui/bag2/bag2_btn_off2.webp) 0 70 fill / 0 19px stretch;color:var(--b2-dim);opacity:1;filter:none}
+.v3 .ui-btn--primary.btn:not(.ui-btn--icon):not(.harvest-btn):not(#_){border-image:url(art/ui/bag2/bag2_btn_pri.webp) 0 55 fill / 0 16px stretch;color:#ffe7b0}
+.v3 .ui-btn--primary.btn:not(.ui-btn--icon):not(.harvest-btn):active:not(:disabled):not(#_){border-image-source:url(art/ui/bag2/bag2_btn_pri_p.webp)}
+.v3 .ui-btn.btn:not(.ui-btn--icon):not(.harvest-btn):disabled:not(#_):not(#_){border-image:url(art/ui/bag2/bag2_btn_off2.webp) 0 70 fill / 0 19px stretch;color:var(--b2-dim);opacity:1;filter:none}
 .v3 .vside .ui-btn.btn.sm:not(#_){border-image-width:0 13px;padding:0 15px;letter-spacing:0}
 .v3 .harvest-btn:not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_btn_pri.webp) 40 55 fill / 8px 13px stretch;color:#ffe7b0;text-shadow:0 1px 2px #000}
 .v3 .harvest-btn:active:not(#_):not(#_){border-image-source:url(art/ui/bag2/bag2_btn_pri_p.webp)}
