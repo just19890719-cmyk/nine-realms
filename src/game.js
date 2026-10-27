@@ -334,7 +334,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='5.24';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='5.25';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1318,6 +1318,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'5.25',d:'10/27',t:'村莊頁的村莊卡、按鈕換上道具欄同款外觀',b:['村莊分頁的村莊卡改成道具欄同款橫列卡：下一個挑戰、可以收成的卡片是金邊，還沒解鎖的是暗灰邊','「下一個挑戰」標籤換成古銅緞帶','全部收成、任務、挑戰、收成按鈕換成道具欄同一套按鈕','怪物血條、駐守武器小標籤也換成同一套煤黑古銅','數值、掉落和狩獵規則都沒有改'],g:[]},
  {v:'5.24',d:'10/27',t:'村莊詳情、駐守小卡換上道具欄同款外觀',b:['點村莊跳出來的詳情：外框、怪物資料、掉落物、挑戰評級、收成區、按鈕都改成跟道具欄同一套煤黑古銅','選武器挑戰／指派駐守的武器格換成道具欄同款格子和等級外框，名稱和預估秒數照樣顯示','駐守中點武器跳出來的小卡也一起換','數值、掉落機率和挑戰規則都沒有改'],g:[]},
  {v:'5.23',d:'10/27',t:'圖鑑分頁換上道具欄同款外觀',b:['道具欄裡的圖鑑：總加成、武器列、套裝卡、武器／套裝頁籤都改成跟道具欄同一套煤黑古銅','+0／+6／+9 登錄格換成道具欄格子：已登錄有該等級的外框，可登錄的有金色光框','武器名稱不再被截成「鐵爐村…」，會完整顯示','圖鑑加成、登錄規則和套裝都沒有改'],g:[]},
  {v:'5.22',d:'10/27',t:'說明小卡、結果小卡、提示訊息換上道具欄同款外觀',b:['點道具、收成、看等級、讀故事書、買材料時跳出來的小卡，外框、標題、按鈕和物品格都改成跟道具欄同一套煤黑古銅','收成結果加上金色橫幅，奧丁之咒加上紅色橫幅','畫面上方的提示訊息換成新的通知條','小卡內容和功能都沒有改'],g:[]},
@@ -2468,8 +2469,8 @@ function viewVillage(){
   const rm=realmNow(),[rn,rs,rbg]=REALM_N[rm],r0=rm*10,r1=r0+10,rOk=i=>i===0||(i===1&&rfOpen());
   return `<section class="realm" style="background-image:url(${A(rbg)})"><div class="realm-in"><button class="arr ${rm>0?'':'off'}" data-act="realm" data-k="${rm-1}" aria-label="上一界">${ic('arrow-left')}</button><div class="center"><h1>${rn}</h1><div class="small">${rs}</div></div><button class="arr ${rm<1&&rfOpen()?'':'off'}" data-act="realm" data-k="${rm+1}" aria-label="下一界">${ic('arrow-right')}</button></div>
    <div class="realms">${REALMS.map((r,i)=>`<div class="rlm ${rOk(i)?'on':'off'} ${i===rm?'cur':''}" ${i<2?`data-act="realm" data-k="${i}" role="button"`:''}>${img('realm_'+(i+1),rOk(i)?'':'locked')}${rOk(i)?'':img('ic_lock','rl')}${i!==rm&&realmHarvest(i)?'<i class="dot give-dot rdot" title="這一界有村莊可以收成"></i>':''}<span>${r}</span></div>`).join('')}</div></section>${evtBanner()}
-  <div class="row vbar ${LB_OFF?'two':''}">${btn(`全部收成${ready?` <span class="ui-badge badge">${ready}</span>`:''}`,'collectAll',{cls:'btn-primary grow',dis:!ready})}${btn(`任務${questDotN()?` <span class="ui-badge badge">${questDotN()}</span>`:''}`,'achopen')}${LB_OFF?'':btn('排行榜','lbopen',{attrs:`data-i="${Math.max(0,cleared()-1)}"`})}</div>
-  <div class="vlist">${VILLAGES.map((v,i)=>{if(i<r0||i>=r1)return'';const[k,lab]=vState(i),st=S.villages[i],w=st.weaponId!=null&&W(st.weaponId);
+  <div class="row vbar v3 ${LB_OFF?'two':''}">${btn(`全部收成${ready?` <span class="ui-badge badge">${ready}</span>`:''}`,'collectAll',{cls:'btn-primary grow',dis:!ready})}${btn(`任務${questDotN()?` <span class="ui-badge badge">${questDotN()}</span>`:''}`,'achopen')}${LB_OFF?'':btn('排行榜','lbopen',{attrs:`data-i="${Math.max(0,cleared()-1)}"`})}</div>
+  <div class="vlist v3">${VILLAGES.map((v,i)=>{if(i<r0||i>=r1)return'';const[k,lab]=vState(i),st=S.villages[i],w=st.weaponId!=null&&W(st.weaponId);
    if(k==='locked'){const first=S.villages.findIndex(x=>x.status==='locked')===i;if(!first)return '';const left=S.villages.slice(r0,r1).filter(x=>x.status==='locked').length;
      return `<div class="vlocked">${img('ic_lock','lk')}<div class="grow"><b>${vNo(i)} ${v.name}</b>${left>1?` 等 ${left} 座村莊`:''}<div class="small muted">完成 ${vNo(i-1)} ${VILLAGES[i-1].name} 的委託後解鎖</div></div></div>`}
    const drops=v.drops.slice(0,3).map(d=>img(MATART[d[0]],'dico')).join('');
@@ -2703,6 +2704,7 @@ function viewShop(){   // v5.17 換成道具欄母版（.b2）：主框、次面
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'5.25',t:'村莊列表頁換成道具欄母版（村莊卡＝橫列卡一般／高亮／上鎖、下一個挑戰緞帶、bag2 按鈕、血條外框＋填充、武器膠囊）',b:[['v525','村莊頁：剛開始（下一個挑戰＋上鎖）'],['v525h','村莊頁：駐守中、可收成'],['v525b','村莊頁：展開戰鬥畫面'],['v525f','村莊頁：達到離線上限']]},
  {v:'5.24',t:'村莊詳情／駐守換成道具欄母版（外框、次面板、掉落格、評級格、秒殺列、武器格＝道具欄格子、按鈕）',b:[['v524','村莊詳情：未收復（選武器挑戰）'],['v524c','村莊詳情：已收復（有收成、評級 A）'],['v524p','村莊詳情：駐守中']]},
  {v:'5.23',t:'道具欄圖鑑換成道具欄母版（總加成、分區小標、武器橫列卡、子頁籤、登錄格、套裝卡），武器名稱不截斷',b:[['c523','打開圖鑑武器頁（有已登錄、可登錄的格子）'],['c523s','打開圖鑑套裝頁（第一套達成）']]},
  {v:'5.22',t:'說明／結果小卡、提示訊息換成道具欄母版（主框、標題飾條、結果橫幅、物品格、按鈕、小膠囊、通知條）',b:[['m522','道具說明小卡（強化石）'],['m522h','收成結果（金色橫幅）'],['m522c','奧丁之咒（紅色橫幅）'],['m522s','商城購買小卡'],['m522t','跳兩則提示訊息']]},
@@ -2883,6 +2885,11 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='cpull'){cloudPull().then(()=>toast('已從雲端下載','ok')).catch(e=>toast('下載失敗：'+SB_ERR(e.message),'bad'));return}
   if(k==='clogout'){ui.sheet=null;return cloudLogout()}
   if(k==='maintprev'){ui.sheet=null;render();return showMaint(null,true)}
+  if(/^v525/.test(k)){const bs=BPS.filter(x=>!x.dev&&!x.unlock),st=S.villages[0],q=k.slice(4);ui.result=null;ui.sheet=null;ui.tab='village';ui.bsOpen=null;ui.realm=0;
+    if(!S.weapons.some(w=>!w.test))makeWeapon(bs[0].id,0,6);
+    if(q){if(st.weaponId==null){const w=S.weapons.find(w=>where(w)<0&&!w.test&&eligible(0,w));if(w)deliverCore(0,w.id)}if(st.status==='open')st.status='cleared';if(S.villages[1].status==='locked')S.villages[1].status='open';
+      const w=W(st.weaponId);if(w){if(q==='h'){st.cycleStart-=dur(0,w)*3+10;tick()}else if(q==='f'){st.cycleStart-=dur(0,w)*400;tick()}else if(q==='b')ui.bsOpen=0}}
+    save();render();return scrollTo(0,0)}
   if(/^v524/.test(k)){const bs=BPS.filter(x=>!x.dev&&!x.unlock),st=S.villages[0],q=k.slice(4);ui.result=null;ui.tab='village';
     if(S.weapons.filter(w=>!w.test).length<2){makeWeapon(bs[0].id,0,6);makeWeapon(bs[1].id,0,3)}
     if(q==='p'){if(st.weaponId==null){const w=S.weapons.find(w=>where(w)<0&&!w.test&&eligible(0,w));if(w)deliverCore(0,w.id)}}

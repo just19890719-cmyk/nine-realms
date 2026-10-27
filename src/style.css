@@ -2417,4 +2417,27 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 .v2 .ui-btn--primary.btn:not(.ui-btn--icon):active:not(:disabled):not(#_){border-image-source:url(art/ui/bag2/bag2_btn_pri_p.webp)}
 .v2 .ui-btn.btn:not(.ui-btn--icon):disabled:not(#_){border-image:url(art/ui/bag2/bag2_btn_off2.webp) 0 70 fill / 0 19px stretch;color:var(--b2-dim);opacity:1;filter:none}
 @media (max-width:400px){.sheet.v2:not(#_){padding:20px 14px 14px}.v2 .ui-panel.panel:not(#_),.v2 .mon-dex:not(#_){border-width:11px;border-image-width:11px}.v2 .gr-c:not(#_){border-width:5px;border-image-width:5px}.v2 .matbox:not(#_){border-width:5px;border-image-width:5px}.v2 .gr-tab{gap:3px}.v2 .gr-c .small{font-size:10.5px;letter-spacing:-.02em}}
+/* v5.25 村莊列表頁換成道具欄母版（Mochi 選「村莊列表頁」）：村莊卡＝bag2 橫列卡（一般／高亮／上鎖）、下一個挑戰＝bag2 緞帶、按鈕＝bag2、血條＝bag2 外框＋填充、駐守武器＝bag2 膠囊；只套在 .vbar.v3／.vlist.v3 */
+.v3 .vcard:not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_row.webp) 32 fill / 16px stretch;padding:7px 8px 7px 7px;color:var(--b2-text)}
+.v3 .vcard:is(.next,.ready,.full):not(#_):not(#_){border-image-source:url(art/ui/bag2/bag2_row_on.webp)}
+.v3 .vcard.tgl:not(#_):not(#_){padding-bottom:22px}
+.v3 .vcard.next:not(#_){margin-top:12px}
+.v3 .next-tag{top:-12px;left:12px;height:20px;line-height:20px;padding:0 15px 0 10px;border-radius:0;background:none;border:0 solid transparent;border-image:url(art/ui/bag2/bag2_tag_next.webp) 0 70 0 50 fill / 0 11px 0 8px stretch;color:#ffe7b0;text-shadow:0 1px 2px #000;font-size:12px;z-index:2}
+.v3 .vlocked:not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_row_lock.webp) 32 fill / 16px stretch;padding:12px 14px;color:var(--b2-dim)}
+.v3 .vlocked b{color:var(--b2-text)}
+.v3 .wchip:not(#_):not(#_){border:0 solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_chip.webp) 0 45 fill / 0 9px stretch;padding:2px 9px 2px 5px}
+.v3 .hpbar:not(#_):not(#_){height:16px;border:0 solid transparent;border-radius:0;background:none;box-shadow:none;overflow:visible;padding:3px 6px;border-image:url(art/ui/bag2/bag2_hp_frame.webp) 0 48 fill / 0 8px stretch}
+.v3 .hpbar i[data-vhp]:not(#_){height:100%;max-width:100%;border:0 solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_hp_fill.webp) 0 22 fill / 0 4px stretch}
+.v3 .hpbar i[data-vhp].full:not(#_){filter:grayscale(1) brightness(.7)}
+.v3 .hpbar i.hp-g:not(#_){left:6px;top:3px;bottom:3px;height:auto;max-width:calc(100% - 12px)}
+.v3 .hpbar .hp-t{padding:0 11px}
+.v3 .ui-btn.btn:not(.ui-btn--icon):not(.harvest-btn):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_btn_sec2.webp) 0 70 fill / 0 19px stretch;color:var(--b2-text)}
+.v3 .ui-btn.btn:not(.ui-btn--icon):not(.harvest-btn):active:not(:disabled):not(#_){border-image-source:url(art/ui/bag2/bag2_btn_sec2_p.webp)}
+.v3 .ui-btn--primary.btn:not(.ui-btn--icon):not(.harvest-btn):not(#_){border-image:url(art/ui/bag2/bag2_btn_pri.webp) 0 55 fill / 0 16px stretch;color:#ffe7b0}
+.v3 .ui-btn--primary.btn:not(.ui-btn--icon):not(.harvest-btn):active:not(:disabled):not(#_){border-image-source:url(art/ui/bag2/bag2_btn_pri_p.webp)}
+.v3 .ui-btn.btn:not(.ui-btn--icon):not(.harvest-btn):disabled:not(#_):not(#_){border-image:url(art/ui/bag2/bag2_btn_off2.webp) 0 70 fill / 0 19px stretch;color:var(--b2-dim);opacity:1;filter:none}
+.v3 .vside .ui-btn.btn.sm:not(#_){border-image-width:0 13px;padding:0 15px;letter-spacing:0}
+.v3 .harvest-btn:not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_btn_pri.webp) 40 55 fill / 8px 13px stretch;color:#ffe7b0;text-shadow:0 1px 2px #000}
+.v3 .harvest-btn:active:not(#_):not(#_){border-image-source:url(art/ui/bag2/bag2_btn_pri_p.webp)}
+.v3 .harvest-btn::after{inset:5px 6px;border-radius:0}
 </style>
