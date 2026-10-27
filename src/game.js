@@ -334,7 +334,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='5.30';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='5.31';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1318,6 +1318,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'5.31',d:'10/27',t:'聊天視窗、好友視窗換上道具欄同款外觀',b:['聊天和好友視窗的外框、頁籤、輸入格、按鈕換成道具欄同款','訊息放進道具欄的次面板，好友列和武器卡換成橫列卡','文字和功能都沒有改'],g:[]},
  {v:'5.30',d:'10/27',t:'鐵匠鋪「目前委託」換上道具欄同款外觀',b:['鐵匠鋪上方的「目前委託」換成道具欄同款的橫列底板，可以交付時換成亮框','村莊小圖改成道具格方框，「前往」換成道具欄同款按鈕','位置、文字和功能都沒有改'],g:[]},
  {v:'5.29',d:'10/27',t:'底部聊天列換上道具欄同款外觀',b:['每一頁底部的聊天列換成道具欄同款的橫列底板，「世界」小標換成小膠囊','位置、文字和功能都沒有改'],g:[]},
  {v:'5.28',d:'10/27',t:'登入畫面、新手導覽換上道具欄同款外觀',b:['登入、取名、維護公告的框換成古銅城門框，輸入格和按鈕也換成道具欄同款','新手導覽和提示的說明框換成古銅說明框，尖角會指向正在發亮的地方','位置、文字和功能都沒有改'],g:[]},
@@ -2709,6 +2710,7 @@ function viewShop(){   // v5.17 換成道具欄母版（.b2）：主框、次面
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'5.31',t:'聊天視窗、好友視窗加 .c2：外框＝bag2_main_frame、頁籤＝bag2_tab、訊息區＝bag2_sub、快捷句＝bag2_chip、輸入格＝bag2_field、按鈕＝bag2_btn_pri／sec2、好友列與武器卡＝bag2_row（公會視窗下一塊再換）',b:[['c531','聊天視窗（世界頻道）'],['c531g','聊天視窗（公會頻道）'],['c531w','聊天視窗（分享武器）'],['c531f','好友視窗（申請）']]},
  {v:'5.30',t:'鐵匠鋪「目前委託」條＝bag2_row（可交付＝bag2_row_on）、村莊小圖＝bag2_slot 方框、「前往」＝bag2_btn_sec2（舊皮膚 ui491_cap 不再用在這裡）',b:[['f530','鐵匠鋪：目前委託（一般）'],['f530o','鐵匠鋪：目前委託（有武器可交付，亮框）']]},
  {v:'5.29',t:'底部聊天列＝bag2_row、「世界」小標＝bag2_chip（舊皮膚 ui491_fl／ui491_cap 不再用在這裡）',b:[['c529','看聊天列（村莊頁，未讀 3 則）'],['c529l','聊天列放很長的訊息（看會不會擠）']]},
  {v:'5.28',t:'登入／取名／維護／讀取框＝bag2_gate_frame（S-03）、輸入格＝bag2_field、按鈕＝bag2 主／次按鈕；新手導覽與提示框＝bag2_tut_box（S-01），尖角指向發亮目標',b:[['gtlogin','看登入畫面'],['cnameprev','看取名畫面'],['maintprev','看維護公告'],['l528l','看讀取畫面（3 秒後關掉）'],['tutrestart','重跑新手導覽（看說明框和尖角）']]},
@@ -2895,6 +2897,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='cpull'){cloudPull().then(()=>toast('已從雲端下載','ok')).catch(e=>toast('下載失敗：'+SB_ERR(e.message),'bad'));return}
   if(k==='clogout'){ui.sheet=null;return cloudLogout()}
   if(k==='maintprev'){ui.sheet=null;render();return showMaint(null,true)}
+  if(/^c531/.test(k)){ui.result=null;ui.sheet=null;if(chatMock())chatMockInit();if(k==='c531f'){FR.tab='in';return frOpen()}if(k==='c531g'){devdo('gdmem');ui.sheet=null;return chatOpenSheet('g')}chatOpenSheet('w');if(k==='c531w'){const b=BPS.find(x=>!x.dev);if(b&&!S.weapons.some(w=>!w.test)&&S.weapons.length<CAP_WEAPONS)makeWeapon(b.id,1,3);CHAT.pick=true;render()}return}
   if(/^f530/.test(k)){ui.result=null;ui.sheet=null;ui.tab='forge';const i=S.villages.findIndex(v=>v.status==='open');if(k==='f530o'&&i>=0&&!S.weapons.some(w=>eligible(i,w))){const b=BPS.find(x=>!x.dev);if(b&&S.weapons.length<CAP_WEAPONS)makeWeapon(b.id,0)}save();render();return scrollTo(0,0)}
   if(/^c529/.test(k)){ui.result=null;ui.sheet=null;ui.tab='village';S.chatBar=true;CHAT.unread=3;if(k==='c529l'){if(chatMock())chatMockInit();CHAT.rows.push({uid:'dev529',nick:'很長名字的鐵匠大師',body:'這是一則很長很長的測試訊息，用來看聊天列會不會被擠爆或換行',mine:false,t:Date.now()})}save();render();chatBarPaint();return scrollTo(0,0)}
   if(k==='l528l'){ui.sheet=null;render();showLoading('讀取雲端存檔…');return setTimeout(gateClose,3000)}
@@ -3186,7 +3189,7 @@ if(typeof window!=='undefined')window.addEventListener('resize',()=>fitNames());
 function renderLayer(){stkFollow();
   const L=document.getElementById('layer');const s=ui.sheet;let h='';
   const sc=document.querySelector('.sheet'),st=sc?sc.scrollTop:0,same=sc&&ui._lastSheet===JSON.stringify(s),keep=same||sc&&s&&s.t==='w'&&ui._lastSheetW===s.id;   // v4.91 同一把武器的小卡切換（武器⇄強化⇄附魔）不重播彈出動畫
-  if(s){const pop=s.t==='w'&&((s.m==='main'||s.m==='ench')&&!!W(s.id)||s.m==='enh'),full=!pop&&(s.t==='w'||s.t==='fxt');h+=`<div class="scrim ${pop?'wpopc':''} ${keep?'still':''}" data-act="scrim"><div class="ui-sheet sheet ${full?'full':''} ${pop?'wpop k2':''} ${s.t==='a'?'q2':''} ${s.t==='set'?'s2':''} ${s.t==='v'?'v2':''} ${s.t==='chat'?'cx-sheet':''} ${keep?'still':''}">${s.t==='w'?sheetWeapon(s.id,s.m):s.t==='v'?sheetVillage(s.i):s.t==='ch'&&ui.ch?sheetCh():s.t==='chr'&&ui.chr?sheetChr():s.t==='a'?sheetAch():s.t==='fk'?sheetFk(s.i):s.t==='lb'?sheetLb(s.i):s.t==='lbw'?sheetLbW(s.i,s.k):s.t==='ws'?sheetWorkshop(s.k):s.t==='evt'?sheetEvt():s.t==='chat'?sheetChat():s.t==='gd'?sheetGuild():s.t==='fr'?sheetFriend():s.t==='bw'?sheetBossW(s.r,s.j):s.t==='fxt'?sheetFxTest(s):s.t==='set'?sheetSet(s.k):/^mk/.test(s.t)?sheetMk(s):sheetDev()}</div></div>`}
+  if(s){const pop=s.t==='w'&&((s.m==='main'||s.m==='ench')&&!!W(s.id)||s.m==='enh'),full=!pop&&(s.t==='w'||s.t==='fxt');h+=`<div class="scrim ${pop?'wpopc':''} ${keep?'still':''}" data-act="scrim"><div class="ui-sheet sheet ${full?'full':''} ${pop?'wpop k2':''} ${s.t==='a'?'q2':''} ${s.t==='set'?'s2':''} ${s.t==='v'?'v2':''} ${s.t==='chat'?'cx-sheet':''} ${s.t==='chat'||s.t==='fr'?'c2':''} ${keep?'still':''}">${s.t==='w'?sheetWeapon(s.id,s.m):s.t==='v'?sheetVillage(s.i):s.t==='ch'&&ui.ch?sheetCh():s.t==='chr'&&ui.chr?sheetChr():s.t==='a'?sheetAch():s.t==='fk'?sheetFk(s.i):s.t==='lb'?sheetLb(s.i):s.t==='lbw'?sheetLbW(s.i,s.k):s.t==='ws'?sheetWorkshop(s.k):s.t==='evt'?sheetEvt():s.t==='chat'?sheetChat():s.t==='gd'?sheetGuild():s.t==='fr'?sheetFriend():s.t==='bw'?sheetBossW(s.r,s.j):s.t==='fxt'?sheetFxTest(s):s.t==='set'?sheetSet(s.k):/^mk/.test(s.t)?sheetMk(s):sheetDev()}</div></div>`}
   const r=ui.result;
   if(r&&r.t==='h')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card m2"><div class="m2-rib ok">${ptitle(r.title)}</div>${r.ev?`<div class="small t-danger center">其中 ${r.ev} 輪受襲：沒有材料、金幣減半</div>`:''}<div class="hgrid">${harvestIcons(r.got)}</div>${btn('確定','rclose',{cls:'btn-primary big'})}</div></div>`;
   if(r&&r.t==='info')h+=`<div class="modal" data-act="rclose"><div class="ui-modal modal-card m2">${r.ico?`<div class="info-ico">${r.ico}</div>`:r.icon?`<div class="info-ico">${img(r.icon)}</div>`:''}${r.rib?`<div class="m2-rib ${r.rib}">${ptitle(r.title)}</div>`:ptitle(r.title)}<div class="info-body">${r.html}</div>${r.acts||''}${btn(r.ok||'知道了','rclose',{cls:r.ok?'btn-sec big':'btn-primary big'})}</div></div>`;

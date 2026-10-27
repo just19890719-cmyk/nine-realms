@@ -2497,4 +2497,24 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 .hf-rib .hf-img:not(#_){width:36px;height:36px;border-radius:0;border:3px solid transparent;border-image:url(art/ui/bag2/bag2_slot.webp) 30 fill / 3px stretch;object-fit:cover;padding:0;box-sizing:border-box}
 .hf-rib .hf-t .small:not(#_){color:var(--b2-mute)}
 .hf-rib .hf-go:not(#_){height:28px;line-height:28px;padding:0 13px;border:0 solid transparent;border-image:url(art/ui/bag2/bag2_btn_sec2.webp) 0 70 fill / 0 15px stretch;color:var(--b2-gold-hi);font-size:12.5px;white-space:nowrap}
+/* v5.31 聊天視窗、好友視窗換成道具欄母版（Mochi 選「照預覽做」）：外框／標題同任務小卡、頁籤＝bag2_tab、訊息區＝bag2_sub、等級／稱號＝bag2_badge、快捷句＝bag2_chip、輸入格＝bag2_field、主／次按鈕＝bag2、好友列與武器卡＝bag2_row；只套在 .c2（公會視窗不在範圍內） */
+.sheet.c2:not(#_):not(#_){border:1px solid transparent;border-radius:0;border-image:url(art/ui/bag2/bag2_main_frame.webp) 150 / 24px stretch;background:linear-gradient(#555,#555),url(art/ui/bag2/bag2_main_tex.webp) center top/cover no-repeat,#0b0d10;background-blend-mode:color-dodge,normal,normal;padding:22px 18px 16px;box-shadow:0 12px 40px rgba(0,0,0,.8);color:var(--b2-text)}
+.c2 .sheet-head:not(#_):not(#_){background:transparent;box-shadow:none;border:0}
+.c2 .sheet-head h2{display:flex;align-items:center;gap:6px;font-size:20px;letter-spacing:.12em;white-space:nowrap;color:var(--b2-gold-hi)}
+.c2 .sheet-head h2::before,.c2 .sheet-head h2::after{content:"";width:30px;height:9px;background:url(art/ui/bag2/bag2_title_l.webp) center/contain no-repeat}
+.c2 .sheet-head h2::after{background-image:url(art/ui/bag2/bag2_title_r.webp)}
+.c2 .cx-tab:not(#_):not(#_),.c2 .gd-tabs button:not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_tab.webp) 0 53 fill / 0 16px stretch;color:#d2d6dc;font-family:var(--display);font-weight:900;letter-spacing:.08em;text-shadow:0 1px 0 #000}
+.c2 .cx-tab.on:not(#_):not(#_),.c2 .gd-tabs button.on:not(#_):not(#_){border-image-source:url(art/ui/bag2/bag2_tab_on.webp);color:var(--b2-gold-hi)}
+.c2 .cx-list:not(#_){border:12px solid transparent;border-image:url(art/ui/bag2/bag2_sub.webp) 44 fill / 12px stretch;padding:0 2px}
+.c2 .cx-m{color:var(--b2-text)}
+.c2 .cx-m .lv:not(#_):not(#_),.c2 .cx-m .tt:not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;border-image:url(art/ui/bag2/bag2_badge.webp) 0 32 fill / 0 6px stretch;padding:0 6px;color:var(--b2-num)}
+.c2 .cx-m .tm{color:var(--b2-dim)}
+.c2 .cx-q:not(#_):not(#_){border:0 solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_chip.webp) 0 45 fill / 0 9px stretch;padding:0 12px;color:var(--b2-text)}
+.c2 .cx-in input:not(#_):not(#_),.c2 .gd-search input:not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_field.webp) 0 55 fill / 0 17px stretch;padding:0 14px;color:var(--b2-text)}
+.c2 .cx-wb:not(#_):not(#_),.c2 .gd-hb:not(#_):not(#_),.c2 .gd-l>button.off:not(#_):not(#_),.c2 .gd-search button:not(#_):not(#_),.c2 .cx-card .go:not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_btn_sec2.webp) 0 70 fill / 0 15px stretch;color:var(--b2-text);padding:0 12px}
+.c2 .cx-send:not(#_):not(#_),.c2 .gd-l>button:not(.off):not(#_):not(#_),.c2 .cx-wb.on:not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_btn_pri.webp) 0 55 fill / 0 16px stretch;color:#ffe7b0;padding:0 14px}
+.c2 .gd-l:not(#_):not(#_),.c2 .cx-card:not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_row.webp) 32 fill / 14px stretch;padding:8px 10px 8px 12px}
+.c2 .cx-gdh:not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_row_on.webp) 32 fill / 14px stretch;padding:6px 10px}
+.c2 .cx-note,.c2 .small.muted{color:var(--b2-mute)}
+.c2 .cx-wb:not(#_):not(#_){width:58px;padding:0 6px;white-space:nowrap;border-image-width:0 13px}
 </style>
