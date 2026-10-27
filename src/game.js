@@ -334,7 +334,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='5.25';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='5.26';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1318,6 +1318,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'5.26',d:'10/27',t:'鐵匠鋪的分類、圖紙、鍛造面板換上道具欄同款外觀',b:['武器分類列換成跟道具欄一樣的分類按鈕和圖示','圖紙卡換成道具欄格子框，選中的圖紙有金色光框','已選擇面板、費用材料格、數量按鈕、開始鍛造按鈕和鍛造中進度列都改成同一套煤黑古銅','數值和鍛造規則都沒有改'],g:[]},
  {v:'5.25',d:'10/27',t:'村莊頁的村莊卡、按鈕換上道具欄同款外觀',b:['村莊分頁的村莊卡改成道具欄同款橫列卡：下一個挑戰、可以收成的卡片是金邊，還沒解鎖的是暗灰邊','「下一個挑戰」標籤換成古銅緞帶','全部收成、任務、挑戰、收成按鈕換成道具欄同一套按鈕','怪物血條、駐守武器小標籤也換成同一套煤黑古銅','數值、掉落和狩獵規則都沒有改'],g:[]},
  {v:'5.24',d:'10/27',t:'村莊詳情、駐守小卡換上道具欄同款外觀',b:['點村莊跳出來的詳情：外框、怪物資料、掉落物、挑戰評級、收成區、按鈕都改成跟道具欄同一套煤黑古銅','選武器挑戰／指派駐守的武器格換成道具欄同款格子和等級外框，名稱和預估秒數照樣顯示','駐守中點武器跳出來的小卡也一起換','數值、掉落機率和挑戰規則都沒有改'],g:[]},
  {v:'5.23',d:'10/27',t:'圖鑑分頁換上道具欄同款外觀',b:['道具欄裡的圖鑑：總加成、武器列、套裝卡、武器／套裝頁籤都改成跟道具欄同一套煤黑古銅','+0／+6／+9 登錄格換成道具欄格子：已登錄有該等級的外框，可登錄的有金色光框','武器名稱不再被截成「鐵爐村…」，會完整顯示','圖鑑加成、登錄規則和套裝都沒有改'],g:[]},
@@ -2134,7 +2135,7 @@ function viewForge(){
     const lacks=lackList(need,g),ok=!lock&&free&&!lacks.length&&!full;const est=Math.round(b.base*TIERS[b.t].mult*bossE(b));
     const why=lock||(!free?'正在鍛造中，稍等幾秒':full?'道具欄已滿':lacks.length?'缺 '+lackStr(lacks):'');
     const lackTxt=lacks.map(([k,n])=>`<b>${k==='gold'?'金幣':MATS[k]} ×${fmt(n)}</b>${matWhere(k)?`<span class="small muted">（${matWhere(k)}掉）</span>`:''}`).join('、'),lackT1=lacks.some(([k])=>MATS[k]);   // v4.59 缺材料可以到商城買
-    body=`<div class="catbar">${cats.map(k=>`<button class="ui-btn ui-btn--toggle cat ${ui.cat===k?'on':''}" data-act="cat" data-k="${k}">${img(k==='all'?'nav_armory':CAT_ICON[k])}<span>${k==='all'?'全部':CATS[k]}</span></button>`).join('')}</div>
+    body=`<div class="catbar">${cats.map(k=>`<button class="b2-cat ${ui.cat===k?'on':''}" data-act="cat" data-k="${k}">${B2_CAT[k]?b2Img(B2_CAT[k]):img(CAT_ICON[k])}<span>${k==='all'?'全部':CATS[k]}</span></button>`).join('')}</div>
      <div class="hscroll">${list.map(x=>bpTile(x,x.id===ui.bp)).join('')}</div>
      <div class="ui-panel panel sel-bp">
       <div class="ui-card sel-head"><div class="sel-art">${wArt(b.id,{frame:'bp'})}</div>
@@ -2161,7 +2162,7 @@ function viewForge(){
   const fv=ui.forgeV||'O';   // v3.19 鐵匠鋪內容頁預覽：O 原版／1 主畫面縮成橫條／2 主畫面收起（只在鍛造中分頁顯示）
   return `<section class="hero hv-${hv} fv-${fv} ft-${ui.ftab}"><img class="dp dp-far" src="${D('forge_far')}" alt=""><img class="dp dp-glow" src="${D('forge_fireglow')}" alt=""><img class="dp dp-glow g2" src="${D('forge_fireglow')}" alt=""><img class="dp dp-barrel" src="${D('prop_barrel')}" alt=""><img class="dp dp-steam" src="${D('fx_smoke_wisp')}" alt="">${smFr('smith','鐵匠')}<div class="dp dp-firelit"></div><div class="dp dp-fog"></div><div class="dp dp-embers">${dpEmb}</div><div class="dp dp-grade"></div><img class="dp dp-fg dp-chains" src="${D('prop_chains')}" alt=""><img class="dp dp-fg dp-coal" src="${D('prop_coal')}" alt=""><img class="dp dp-fg dp-hammer" src="${D('prop_hammer')}" alt="">
    ${hv==='C'||hv==='E'||hv==='F'?'':sideH}${hv==='C'||hv==='E'||hv==='F'?'':hv==='B'?commBadge():commissionCard()}${hv==='E'?heroScene():''}${hv==='F'?heroRibbon():''}</section>${hv==='C'?`<div class="hero-info">${sideH}${commissionCard()}</div>`:''}
-  ${tabs.length<2?'':`<div class="subtabs">${tabs.map(([k,n])=>`<button class="ui-tab ${ui.ftab===k?'on':''}" data-act="ftab" data-k="${k}">${n}${k==='queue'&&done||k==='bp'&&BPS.some(bpNew)?'<i class="dot"></i>':''}</button>`).join('')}</div>`}${body}`;
+  ${tabs.length<2?'':`<div class="subtabs">${tabs.map(([k,n])=>`<button class="ui-tab ${ui.ftab===k?'on':''}" data-act="ftab" data-k="${k}">${n}${k==='queue'&&done||k==='bp'&&BPS.some(bpNew)?'<i class="dot"></i>':''}</button>`).join('')}</div>`}<div class="fg2">${body}</div>`;
 }
 function sheetWorkshop(kind){
   const head=t=>`<div class="sheet-head"><h2>${t}</h2>${btn(img('ic_close'),'close',{cls:'icon-btn img',attrs:'aria-label="關閉"'})}</div>`;
@@ -2704,6 +2705,7 @@ function viewShop(){   // v5.17 換成道具欄母版（.b2）：主框、次面
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'5.26',t:'鐵匠鋪下半部換成道具欄母版（分類＝b2-cat、圖紙卡＝bag2 格子＋金色光框、已選擇＝次面板、材料格、數量膠囊、bag2 按鈕、鍛造進度列）',b:[['f526','鐵匠鋪：材料夠（可以鍛造）'],['f526j','鐵匠鋪：鍛造中'],['f526l','鐵匠鋪：材料不夠']]},
  {v:'5.25',t:'村莊列表頁換成道具欄母版（村莊卡＝橫列卡一般／高亮／上鎖、下一個挑戰緞帶、bag2 按鈕、血條外框＋填充、武器膠囊）',b:[['v525','村莊頁：剛開始（下一個挑戰＋上鎖）'],['v525h','村莊頁：駐守中、可收成'],['v525b','村莊頁：展開戰鬥畫面'],['v525f','村莊頁：達到離線上限']]},
  {v:'5.24',t:'村莊詳情／駐守換成道具欄母版（外框、次面板、掉落格、評級格、秒殺列、武器格＝道具欄格子、按鈕）',b:[['v524','村莊詳情：未收復（選武器挑戰）'],['v524c','村莊詳情：已收復（有收成、評級 A）'],['v524p','村莊詳情：駐守中']]},
  {v:'5.23',t:'道具欄圖鑑換成道具欄母版（總加成、分區小標、武器橫列卡、子頁籤、登錄格、套裝卡），武器名稱不截斷',b:[['c523','打開圖鑑武器頁（有已登錄、可登錄的格子）'],['c523s','打開圖鑑套裝頁（第一套達成）']]},
@@ -2885,6 +2887,9 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
   if(k==='cpull'){cloudPull().then(()=>toast('已從雲端下載','ok')).catch(e=>toast('下載失敗：'+SB_ERR(e.message),'bad'));return}
   if(k==='clogout'){ui.sheet=null;return cloudLogout()}
   if(k==='maintprev'){ui.sheet=null;render();return showMaint(null,true)}
+  if(/^f526/.test(k)){const q=k.slice(4);ui.result=null;ui.sheet=null;ui.tab='forge';ui.ftab='bp';const b=BP[ui.bp]||BPS.find(x=>!x.dev);ui.bp=b.id;
+    if(q==='l'){S.gold=Math.min(S.gold,3);for(const m in recipe(b))S.mats[m]=0}else{S.gold=Math.max(S.gold,5000);for(const m in recipe(b))S.mats[m]=Math.max(S.mats[m]|0,50)}
+    if(q==='j'&&!S.jobs.length)forgeStart(b.id,1);save();render();return scrollTo(0,0)}
   if(/^v525/.test(k)){const bs=BPS.filter(x=>!x.dev&&!x.unlock),st=S.villages[0],q=k.slice(4);ui.result=null;ui.sheet=null;ui.tab='village';ui.bsOpen=null;ui.realm=0;
     if(!S.weapons.some(w=>!w.test))makeWeapon(bs[0].id,0,6);
     if(q){if(st.weaponId==null){const w=S.weapons.find(w=>where(w)<0&&!w.test&&eligible(0,w));if(w)deliverCore(0,w.id)}if(st.status==='open')st.status='cleared';if(S.villages[1].status==='locked')S.villages[1].status='open';
