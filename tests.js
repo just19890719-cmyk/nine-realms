@@ -525,7 +525,7 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.44 舊武器刪除：要在放回測試資料前檢查
-  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),...sh2Tests(),...q2Tests(),...s2Tests(),...m2Tests(),...cx2Tests(),...v2Tests(),...v3Tests(),...f2Tests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
+  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),...sh2Tests(),...q2Tests(),...s2Tests(),...m2Tests(),...cx2Tests(),...v2Tests(),...v3Tests(),...f2Tests(),...n2Tests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
     T('BD2 神明材質階、神格覺醒拿掉',TIERS.length===5&&typeof GOD==='undefined'&&typeof awkN==='undefined',`材質 ${TIERS.length} 階`)];
   return withTestBps(()=>runTests0(mode,bd))}
 // v4.44 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
@@ -808,6 +808,16 @@ function v3Tests(){const tab0=ui.tab,sh0=ui.sheet,r0=ui.result,y0=scrollY,rl0=ui
     out.push(T('V3 村莊頁按鈕、緞帶的字沒有超出，卡片沒有超出清單，血條填滿時不超出外框',cut===0&&ov===0&&hin&&document.documentElement.scrollWidth<=innerWidth,`寬 ${innerWidth}：字超出 ${cut}；元素超出 ${ov}；血條 ${hin?'在框內':'超出'}；頁寬 ${document.documentElement.scrollWidth}`));
     return out}
   catch(e){return[T('V3 村莊列表頁母版測試',false,e.message)]}finally{JSON.parse(vs0).forEach((v,i)=>S.villages[i]=v);S.weapons.length=wn0;S.nextId=ni0;ui.realm=rl0;ui.bsOpen=bo0;ui.sheet=sh0;ui.result=r0;ui.tab=tab0;render();scrollTo(0,y0)}}
+function n2Tests(){const tab0=ui.tab,sh0=ui.sheet,r0=ui.result,y0=scrollY,g0=S.gold,d0=S.gems;
+  try{const out=[],bis=e=>getComputedStyle(e).borderImageSource,bg=e=>getComputedStyle(e).backgroundImage;S.gold=123456;S.gems=100;ui.sheet=null;ui.result=null;ui.tab='village';render();
+    const top=document.querySelector('.ui-topbar.bar'),nav=document.querySelector('.ui-navbar.nav'),chips=[...document.querySelectorAll('.res .chip')],on=nav&&nav.querySelector('button.on');
+    const old=e=>e?[e,...e.querySelectorAll('*')].filter(x=>/ui491_|ui493_/.test(bis(x)+bg(x))).length:-1;
+    out.push(T('N2 上方資源列：金幣鑽石＝道具欄資源膠囊、底下＝道具欄分隔線，沒有舊框',!!top&&chips.length===2&&chips.every(e=>/bag2_res_cap/.test(bis(e)))&&/bag2_rule_line/.test(getComputedStyle(top,'::after').backgroundImage)&&old(top)===0,`膠囊 ${chips.length}；舊框 ${old(top)}`));
+    out.push(T('N2 底部導覽：底板＝道具欄導覽底板、選中＝道具欄選中光，沒有舊框',!!nav&&/bag2_nav_bar/.test(bg(nav))&&!!on&&/bag2_nav_glow/.test(getComputedStyle(on,'::before').backgroundImage)&&old(nav)===0,`選中 ${on?'有':'無'}；舊框 ${old(nav)}`));
+    const nm=document.querySelector('.res .pname b'),cut=nm&&nm.offsetParent?nm.scrollWidth>nm.clientWidth:false,co=chips.filter(e=>{const q=e.getBoundingClientRect();return[...e.children].some(x=>{const z=x.getBoundingClientRect();return z.right>q.right+1||z.left<q.left-1||x.tagName==="B"&&x.scrollWidth>x.clientWidth+1})}).length,ov=[...(nav?nav.querySelectorAll('button'):[]),...chips].filter(e=>{const q=e.getBoundingClientRect();return q.right>innerWidth+1||q.left<-1}).length;
+    out.push(T('N2 名字沒有被截成…、數字沒有超出膠囊、按鈕沒有超出畫面',!cut&&co===0&&ov===0&&document.documentElement.scrollWidth<=innerWidth,`寬 ${innerWidth}：名字被截 ${cut}；數字超出 ${co}；超出畫面 ${ov}`));
+    return out}
+  catch(e){return[T('N2 資源列／導覽母版測試',false,e.message)]}finally{S.gold=g0;S.gems=d0;ui.sheet=sh0;ui.result=r0;ui.tab=tab0;render();scrollTo(0,y0)}}
 function f2Tests(){const tab0=ui.tab,ft0=ui.ftab,bp0=ui.bp,cat0=ui.cat,sh0=ui.sheet,r0=ui.result,y0=scrollY,g0=S.gold,m0=JSON.stringify(S.mats),j0=JSON.stringify(S.jobs);
   try{const out=[],bis=e=>getComputedStyle(e).borderImageSource,b=BPS.find(x=>!x.dev&&!bpLock(x));S.jobs=[];S.gold=99999;for(const k in recipe(b))S.mats[k]=99;
     ui.sheet=null;ui.result=null;ui.tab='forge';ui.ftab='bp';ui.cat='all';ui.bp=b.id;render();const F=()=>document.querySelector('#view .fg2');let f=F();

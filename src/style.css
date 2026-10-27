@@ -2463,4 +2463,13 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 .fg2 .qrow .prog:not(#_){height:10px;border:0 solid transparent;border-radius:0;background:none;box-shadow:none;overflow:visible;border-image:url(art/ui/bag2/bag2_cap_track.webp) 0 30 fill / 0 6px stretch}
 .fg2 .qrow .prog i:not(#_){height:100%;max-width:100%;border:0 solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_cap_fill.webp) 0 25 fill / 0 5px stretch}
 .fg2 .lack-line:not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_notice.webp) 30 fill / 10px stretch;padding:8px 12px}
+/* v5.27 上方資源列／底部導覽換成道具欄母版（Mochi 選「上方資源列／底部導覽」）：金幣鑽石＝bag2_res_cap（左邊圓座放圖示）、上方列煤黑＋bag2 分隔線、導覽底板＝bag2_nav_bar、選中光＝bag2_nav_glow（黑底圖，screen 疊加）；按鈕位置和大小不變 */
+.ui-topbar.bar:not(#_){background:linear-gradient(#0d0e10,#0d0e10);border-bottom:0}
+.ui-topbar.bar::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:12px;pointer-events:none;background:url(art/ui/bag2/bag2_rule_mid.webp) center/auto 12px no-repeat,url(art/ui/bag2/bag2_rule_line.webp) center/100% 12px no-repeat}
+.res .chip:not(#_):not(#_){border:0 solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_res_cap.webp) 0 60 0 170 fill / 0 13px 0 37px stretch;padding:0 10px 0 11px;gap:2px}
+.res .chip:not(#_):not(#_)>img{width:23px;height:23px}
+.res .chip:has(.plus):not(#_):not(#_){padding-right:5px}
+@media (min-width:421px){.res .chip:not(#_):not(#_){gap:5px}}
+.ui-navbar.nav:not(#_){border-top:0;background:url(art/ui/bag2/bag2_nav_bar.webp) 0 0/100% 100% no-repeat,linear-gradient(#0b0a09,#0b0a09) 0 0/100% 100% no-repeat}
+.nav button.on::before{width:92px;height:52px;margin:-26px 0 0 -46px;border-radius:0;background:url(art/ui/bag2/bag2_nav_glow.webp) center/100% 100% no-repeat;mix-blend-mode:screen}
 </style>
