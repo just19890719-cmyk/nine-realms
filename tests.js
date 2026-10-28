@@ -525,7 +525,7 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.44 舊武器刪除：要在放回測試資料前檢查
-  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),...sh2Tests(),...q2Tests(),...s2Tests(),...m2Tests(),...cx2Tests(),...v2Tests(),...v3Tests(),...f2Tests(),...n2Tests(),...l2Tests(),...cbTests(),...frTests(),...c2Tests(),...g3Tests(),...osTests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
+  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),...sh2Tests(),...q2Tests(),...s2Tests(),...m2Tests(),...cx2Tests(),...v2Tests(),...v3Tests(),...f2Tests(),...n2Tests(),...l2Tests(),...cbTests(),...frTests(),...c2Tests(),...g3Tests(),...osTests(),...shdTests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
     T('BD2 神明材質階、神格覺醒拿掉',TIERS.length===5&&typeof GOD==='undefined'&&typeof awkN==='undefined',`材質 ${TIERS.length} 階`)];
   return withTestBps(()=>runTests0(mode,bd))}
 // v4.44 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
@@ -678,7 +678,11 @@ function chTests0(){const mk=(id,lv)=>({id:-1,b:id,q:0,lv,ench:[null,null,null,n
   // v5.34 方案三：收復門檻 1-1 開局武器 +0、1-10 要 +7、2-10 要 +8（用當時最好的一般武器）
   const top=i=>BPS.filter(b=>!b.dev&&!b.k&&(b.unlock||0)<=i).sort((a,b)=>b.base-a.base)[0].id,ok60=(i,lv)=>chEst(i,mk(top(i),lv))<=CH_SEC;
   const gate=[ok60(0,0),!ok60(9,6),ok60(9,7),!ok60(19,7),ok60(19,8)],gateOk=gate.every(Boolean);
+  // v5.34 舊秒殺紀錄（舊血量打的）載入時清掉；新存檔不會再清
+  const fo=JSON.parse(JSON.stringify(S));delete fo.fkv;fo.villages[0].fk=9.9;fo.villages[0].fkw={id:1,b:'w0_sword',q:0,lv:6,ench:[]};fo.villages[0].fku=9.9;const fx=sanitize(fo),fn=JSON.parse(JSON.stringify(fx));fn.villages[0].fk=8.8;const fy=sanitize(fn);
+  const fkOk=fx.fkv===FK_HPV&&fx.villages[0].fk==null&&fx.villages[0].fkw==null&&fx.villages[0].fku==null&&fy.villages[0].fk===8.8&&fresh().fkv===FK_HPV;
   return[T('CH1 v5.34 怪物血量＝需求每秒傷害（偏難表）× 50 秒',hpOk,`1-1 ${VHP(0)}、1-10 ${VHP(9)}、2-10 ${VHP(19)}`),
+   T('CH8 v5.34 舊血量的秒殺紀錄載入時清掉，新紀錄保留',fkOk,fkOk?'正常':'錯誤'),
    T('CH7 v5.34 收復門檻：1-1 +0 打得過、1-10 要 +7、2-10 要 +8',gateOk,gate.map(x=>x?'對':'錯').join('・')),
    T('CH2 預估秒數＝血量÷攻擊力，掛機一輪＝打倒一隻',durOk,`1-1 開局劍 +6 ${sec.toFixed(1)} 秒`),
    T('CH3 60 秒內打倒才收復：+6 幾乎都拿 A 以上，+0 打 1-10 一定輸，傷害照時間排',win>=98&&gA>=95&&lose===0&&tOk,`1-1 +6 贏 ${win}/100（A 以上 ${gA}）、1-10 +0 贏 ${lose}/100`),
@@ -986,3 +990,18 @@ function mk2Tests(){const tab0=ui.tab,mk0={tab:MK.tab,rows:MK.rows,t:MK.t},sh0=u
     out.push(T('MK2 交易所按鈕都用道具欄按鈕',mb===0,`非 bag2 按鈕 ${mb} 個`));
     return out}
   catch(e){return[T('MK2 交易所母版測試',false,e.message)]}finally{MK.tab=mk0.tab;MK.rows=mk0.rows;MK.t=mk0.t;ui.sheet=sh0;ui.tab=tab0;render();scrollTo(0,y0)}}
+
+// v5.34 BUG-019 母版彈窗（標題列透明）往下捲時，內容疊在標題上：捲動後標題列要有底（.shd），沒捲動時維持透明
+function shdTests(){const tab0=ui.tab,sh0=ui.sheet,y0=scrollY,vs=JSON.stringify(S.villages[9]);
+  try{const head=n=>n&&n.querySelector('.sheet-head'),bg=e=>e?getComputedStyle(e).backgroundImage:'',out=[];
+    S.villages[9].status='open';ui.tab='village';ui.sheet={t:'v',i:9};render();let n=document.querySelector('.sheet');
+    const rest=n&&!n.classList.contains('shd')&&!/bag2_main_tex/.test(bg(head(n)));
+    n.scrollTop=200;n.dispatchEvent(new Event('scroll'));const on=n.scrollTop>2&&n.classList.contains('shd')&&/bag2_main_tex/.test(bg(head(n)))&&getComputedStyle(head(n)).boxShadow!=='none';
+    render();n=document.querySelector('.sheet');const kept=n.scrollTop>2&&n.classList.contains('shd');
+    n.scrollTop=0;n.dispatchEvent(new Event('scroll'));const off=!n.classList.contains('shd');
+    out.push(T('BUG-019 村莊詳情往下捲：標題列補上底色、重畫後還在、捲回最上面恢復透明',rest&&on&&kept&&off,`沒捲 ${rest?'透明':'錯'}・捲動 ${on?'有底':'錯'}・重畫 ${kept?'保留':'錯'}・回頂 ${off?'透明':'錯'}`));
+    // 同類：六種母版彈窗都要吃到同一條規則
+    const cls=['k2','q2','s2','v2','c2','g3'],bad=cls.filter(c=>{n.className='ui-sheet sheet '+c+' shd';return !/bag2_main_tex/.test(bg(head(n)))});
+    out.push(T('BUG-019b 同類彈窗（武器小卡、任務、設定、村莊、聊天好友、公會排行交易所）捲動時標題列都有底',!bad.length,bad.length?'沒吃到：'+bad.join('、'):'6 種都有'));
+    return out}catch(e){return[T('BUG-019 標題列捲動底色',false,e.message)]}
+  finally{S.villages[9]=JSON.parse(vs);ui.tab=tab0;ui.sheet=sh0;render();scrollTo(0,y0)}}

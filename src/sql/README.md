@@ -17,3 +17,4 @@ M. `15_stable6_v4.00.sql`：v4.00 安定值全部改成 +6，只換掉 `ac_stabl
 18. `18_element_v4.45.sql`：v4.45 屬性附魔與怪物弱點（lb_power 不再算附魔和天生詞條、boss_weak 改成屬性、boss_pw 依屬性等級 ×1.2／1.4／1.6）。最後一行的 select 應該顯示 4.45、418、4320。要先跑過 08、09、10、14、16。
 19. `19_market_items_v4.56.sql`：v4.56 交易所賣道具（market 多 kind／item／grp／qty／left_qty 欄位、新表 market_fill；market_list_item／market_buy_item／market_cancel_item／market_item_pending／market_item_claim 直接改雲端存檔；舊的 market_buy／market_cancel／market_pending 只處理武器）。不改 save_game。最後一行的 select 應該顯示 4.56。要先跑過 01、03、08。
 20. `20_fastkill_v4.73.sql`：v4.73 秒殺榜（fk 每人每關最快 1 筆、fk_feed 王關首殺／刷新第 1 名公告、fk_submit 核對雲端存檔已收復＋武器在存檔、fk_board 前 50 名、fk_feed_list）。不改 save_game、不改 ac_version。最後一行的 select 應該顯示 4.73。
+23. `23_fastkill_reset_v5.34.sql`：v5.34 怪物血量改成「偏難」表，秒殺榜重新開始（舊紀錄先備份到 fk_old_v473，再清空 fk、fk_feed）。不改 save_game、不改 ac_version。最後一行的 select 應該顯示 5.34、0、0、備份筆數。要先跑過 20。

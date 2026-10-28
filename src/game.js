@@ -154,6 +154,7 @@ const CH_SEC=60,VHP_K=i=>i%10>=8?1:.8;   // VHP_K 只剩 5 關以後每隻金幣
 // v5.34 怪物血量（Mochi 選方案三「偏難＋放寬評級」）：血量＝該關需求每秒傷害（VREQ，武器系統定案 9-5「偏難」表）× HP_SEC 秒
 // 需求剛好的武器實際約 55 秒打倒；1-1 開局武器 +0 就能收復，一界最後一關要 +7、二界最後一關要 +8（v4.71 的「+6 打 38 秒、每關 +2.5%」作廢）
 const HP_SEC=50;
+const FK_HPV=534;   // 秒殺紀錄的血量版本：存檔的 S.fkv 跟這個不同就清掉本機秒殺紀錄（舊血量打的不公平；伺服器那邊由 sql/23 清掉）
 let VHP_OLD=false;   // 快速測試換成舊圖紙時（withTestBps）照舊公式：需求 × 60 秒 × 0.8
 const VHP=i=>Math.round(VILLAGES[i].req*(VHP_OLD?CH_SEC*VHP_K(i):HP_SEC));
 // 評級：照打倒秒數（v5.34 放寬：SS 30 秒、S 37 秒，大約每多強化一級升一個評級），記這一關挑戰過的最好成績（S.villages[i].gr＝GRADES 的索引），掛機每隻的金幣和掉落機率 ×m，首次收復獎勵 ×f（之後打到更高評級補差額）
@@ -284,7 +285,7 @@ const GAME_SPEED=1;    // v3.69 原本的封測 10 倍速已直接寫進狩獵�
 const OFFLINE_H=12;    // v3.69 離線累積上限（真實時間 12 小時）
 function fresh(){return{v:VERSION,gold:500,fcRw:true,gems:100,speed:GAME_SPEED,capH:OFFLINE_H,pity:0,
   mats:Object.fromEntries(Object.keys(MATS).map(k=>[k,0])),items:{relic_g:0,relic_b:0,relic_r:0,relic_y:0,estone:10,enstone:3,repair:0},furnace:1,anvil:1,slots:1,weapons:[],nextId:1,jobs:[],
-  villages:VILLAGES.map((v,i)=>freshVillage(i)),monthly:{until:0,last:''},daily:null,sign:{n:0,last:''},stats:freshStats(),ach:{},best:{},lbRw:{},rep:{lv:1,xp:0,t:{}},lastSeen:NOW(),clockWarn:false}}
+  villages:VILLAGES.map((v,i)=>freshVillage(i)),monthly:{until:0,last:''},daily:null,sign:{n:0,last:''},stats:freshStats(),ach:{},best:{},lbRw:{},rep:{lv:1,xp:0,t:{}},lastSeen:NOW(),clockWarn:false,fkv:FK_HPV}}
 function migrateV2(o){
   const s=fresh();s.gold=o.gold||0;s.gems=o.gems||0;Object.assign(s.mats,o.mats||{});Object.assign(s.items,o.items||{});
   s.mute=!!o.mute;s.furnace=o.furnace||1;s.anvil=o.anvil||1;s.slots=o.slots||1;s.monthly=o.monthly||s.monthly;
@@ -312,6 +313,7 @@ function sanitize(s){
   s.villages.forEach(v=>{if(v.weaponId!=null&&(!s.weapons.some(w=>w.id===v.weaponId)||used.has(v.weaponId))){v.weaponId=null;v.cycleStart=null}if(v.weaponId!=null)used.add(v.weaponId);
     v.strat='normal';v.bank=v.bank||{cycles:0,gold:0,mats:{},events:0}});
   s.villages.forEach((v,i)=>{const w=v.weaponId!=null&&s.weapons.find(x=>x.id===v.weaponId);if(w)lbRecord(s,i,w)});
+  if(s.fkv!==FK_HPV){s.villages.forEach(v=>{delete v.fk;delete v.fkw;delete v.fku});s.fkv=FK_HPV}   // v5.34 怪物血量改了，舊的秒殺紀錄作廢
   if(!s.fcRw){s.fcRw=true;const g=s.villages.reduce((a,v,i)=>a+(v.status==='cleared'?FIRST_GOLD[i]||0:0),0);if(g){s.gold+=g;s._fcMsg=g}}   // v3.50 補發已收復村莊的首破獎勵
   return s;
 }
@@ -1316,7 +1318,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
- {v:'5.34',d:'10/28',t:'調整怪物血量和挑戰評級',b:['怪物血量照關卡難度重新設定：前幾關比較好打（開局武器 +0 就能打 1-1），後面越來越難，第一界最後一關大約要 +7、第二界最後一關大約要 +8 才收復得了','評級放寬：SS 改成 30 秒內、S 改成 37 秒內（A、B、C 不變），大約每多強化一級就能升一個評級','強化、附魔、武器攻擊力都沒有改'],g:['vil']},
+ {v:'5.34',d:'10/28',t:'調整怪物血量和挑戰評級',b:['怪物血量照關卡難度重新設定：前幾關比較好打（開局武器 +0 就能打 1-1），後面越來越難，第一界最後一關大約要 +7、第二界最後一關大約要 +8 才收復得了','評級放寬：SS 改成 30 秒內、S 改成 37 秒內（A、B、C 不變），大約每多強化一級就能升一個評級','秒殺榜重新開始：之前的紀錄是用舊血量打的，全部清空重新計算','彈窗往下捲的時候，標題列會補上底色，內容不會再疊在標題上','強化、附魔、武器攻擊力都沒有改'],g:['vil']},
  {v:'5.33',d:'10/27',t:'60 秒挑戰視窗換上道具欄同款外觀，舊介面素材全部清掉',b:['60 秒挑戰的戰鬥畫面和結果畫面，換成跟村莊詳情一樣的外框、血條、進度條和按鈕','聊天公會分頁「找公會／建立公會」、道具欄空的時候「前往鐵匠鋪」換成道具欄同款按鈕','清掉不再使用的舊介面素材，文字和功能都沒有改'],g:[]},
  {v:'5.32',d:'10/27',t:'公會、排行榜、秒殺榜、交易所上架視窗換上道具欄同款外觀',b:['公會、排行榜、秒殺榜，還有交易所的商品、上架武器、上架道具視窗，換成道具欄同款的外框、頁籤、按鈕和輸入格','排行榜前三名換成金、銀、銅獎牌','文字和功能都沒有改'],g:[]},
  {v:'5.31',d:'10/27',t:'聊天視窗、好友視窗換上道具欄同款外觀',b:['聊天和好友視窗的外框、頁籤、輸入格、按鈕換成道具欄同款','訊息放進道具欄的次面板，好友列和武器卡換成橫列卡','文字和功能都沒有改'],g:[]},
@@ -2711,7 +2713,7 @@ function viewShop(){   // v5.17 換成道具欄母版（.b2）：主框、次面
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
- {v:'5.34',t:'怪物血量＝VREQ（偏難表）× 50 秒；評級 SS 30／S 37／A 45／B 52／C 60 秒',b:[['hp534','血量與評級模擬表（每關最好一般武器，各評級要強化到幾級）']]},
+ {v:'5.34',t:'怪物血量＝VREQ（偏難表）× 50 秒；評級 SS 30／S 37／A 45／B 52／C 60 秒；秒殺紀錄 S.fkv 版本不同就清（sql/23 清伺服器）；母版彈窗捲動時標題列 .shd 補暗底',b:[['hp534','血量與評級模擬表（每關最好一般武器，各評級要強化到幾級）'],['fk534','模擬舊存檔：1-1 有舊秒殺紀錄 → 載入後被清掉'],['shd534','打開 1-10 村莊詳情並往下捲（看標題列底色）']]},
  {v:'5.33',t:'刪舊皮膚 ui491／ui493（22 個圖檔，留 ui491_info、ui491_ring）前補換 4 處：60 秒挑戰 ch/chr 加 .v2、聊天公會分頁「找公會」與道具欄空的「前往鐵匠鋪」＝bag2_btn_pri、鍛造中 .qimg／村莊卡片 .wmini 底＝bag2_slot；skin.js 槽位改指 bag2',b:[['os533','60 秒挑戰：戰鬥中'],['os533r','60 秒挑戰：收復成功'],['os533l','60 秒挑戰：時間到'],['os533g','聊天→公會分頁（還沒加入公會）'],['os533e','道具欄空的時候'],['os533j','鐵匠鋪：鍛造中小圖']]},
  {v:'5.32',t:'公會（再加 .c2）、排行榜、秒殺榜、交易所商品／上架武器／上架道具視窗加 .g3：外框＝bag2_main_frame、面板＝bag2_sub、列＝bag2_row、輸入格＝bag2_field、膠囊＝bag2_chip、按鈕＝bag2、村莊頁籤＝bag2_slot、前三名＝bag2_rank1～3',b:[['g532','公會（會長、成員頁）'],['g532d','公會（捐獻頁）'],['g532n','公會（還沒加入）'],['g532k','秒殺榜（假資料）'],['g532l','排行榜'],['g532m','交易所商品'],['g532s','上架武器'],['g532i','上架道具']]},
  {v:'5.31',t:'聊天視窗、好友視窗加 .c2：外框＝bag2_main_frame、頁籤＝bag2_tab、訊息區＝bag2_sub、快捷句＝bag2_chip、輸入格＝bag2_field、按鈕＝bag2_btn_pri／sec2、好友列與武器卡＝bag2_row（公會視窗下一塊再換）',b:[['c531','聊天視窗（世界頻道）'],['c531g','聊天視窗（公會頻道）'],['c531w','聊天視窗（分享武器）'],['c531f','好友視窗（申請）']]},
@@ -3103,6 +3105,8 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
    offline:()=>S.villages.forEach(st=>{if(st.cycleStart!=null)st.cycleStart-=OFFLINE_H*3600000/S.speed}),
    forge:()=>S.jobs.forEach(j=>j.end=NOW()),unlock:()=>S.villages.forEach(st=>{if(st.status!=='cleared')st.status='cleared'}),
    maxup:()=>{S.furnace=5;S.anvil=5},wsgate:()=>{S.furnace=1;S.anvil=1;S.gold+=200000;ui.sheet={t:'ws',k:'w'};toast(`工坊改回 Lv1。目前收復 ${cleared()} 座，按升級看哪一級會鎖住`,'ok')},f5:()=>{if(S.jobs.length)return toast('還有武器在鍛造中','bad');const b=BPS.filter(x=>!bpLock(x)).sort((x,y)=>y.t-x.t)[0],c=recipe(b);for(const k in c)S.mats[k]=(S.mats[k]||0)+c[k];S.gold+=goldOf(b);const j=forgeStart(b.id,1,false);if(typeof j==='string')return toast(j,'bad');ui.sheet=null;ui.tab='forge';ui.ftab='queue';toast(`開始鍛造 ${b.n}：應該 ${Math.round((j.end-j.start)/1000)} 秒後完成`,'ok')},w6:()=>give('dev_sword',2,6),nw17:()=>{BPS.filter(b=>!b.dev).forEach(b=>give(b.id,0,0));toast('已給 17 把新武器（+0），到道具欄看','ok')},
+   fk534:()=>{const o=JSON.parse(JSON.stringify(S));o.fkv=undefined;o.villages[0].fk=12.3;o.villages[0].fkw={id:1,b:'w0_sword',q:0,lv:6,ench:[]};o.villages[0].fku=12.3;const x=sanitize(o);toast(x.villages[0].fk==null&&x.fkv===FK_HPV?'舊秒殺紀錄已清掉（fkv '+x.fkv+'）':'沒有清掉（錯誤）',x.villages[0].fk==null?'ok':'bad')},
+   shd534:()=>{S.villages.forEach((v,i)=>{if(i<9&&v.status!=='cleared')v.status='cleared'});if(S.villages[9].status==='locked')S.villages[9].status='open';ui.tab='village';ui.realm=0;ui.sheet={t:'v',i:9};render();setTimeout(()=>{const n=document.querySelector('.sheet');if(n)n.scrollTop=260},300)},
    hp534:()=>{const mk=(id,lv)=>({id:-1,b:id,q:0,lv,ench:[null,null,null,null],traits:[]});ui.testOut='<b>v5.34 血量與評級模擬（每關用當時能做的最好一般武器，chEst 15 場中位數；SS 30／S 37／A 45／B 52／C 60 秒）</b><br>'+VILLAGES.map((v,i)=>{const b=BPS.filter(x=>!x.dev&&!x.k&&(x.unlock||0)<=i).sort((x,y)=>y.base-x.base)[0];
      const need=[...GRADES].reverse().map(g=>{for(let lv=0;lv<=MAX_LV;lv++)if(chEst(i,mk(b.id,lv))<=g.t)return g.n+' +'+lv;return g.n+' —'}).join('・');
      return `${vNo(i)} 血量 ${fmt(VHP(i))}・${b.n}：${need}`}).join('<br>')},
@@ -3185,6 +3189,9 @@ function render(){
 // v5.15 BUG-013 render() 每次重建 DOM，新元素上的循環動畫（紅點呼吸、收成按鈕脈動）會從頭播 → 看起來一直閃。
 // 這裡把這些循環動畫的起點對齊到頁面時間軸 0，重畫前後相位一樣。新增會被 render() 重建的循環動畫：把動畫名稱加進 ANIM_SYNC（或像 +9 裂縫用負的 animation-delay），run_tests.js 會檢查。
 const ANIM_SYNC=new Set(['givePulse','pulseO','pulse','b2crk','frun']);   // v5.18 +9 裂縫呼吸（b2crk）、+9 小卡跑框（frun）也改用這裡對齊（原本用產生畫面時的時間算負延遲，手機卡頓時會往前跳 0.1～0.6 秒）
+// v5.34 彈窗往下捲時標題列加暗底（.shd），內容不會從透明標題後面透出來；沒捲動時跟原本一樣
+function shdSync(n=document.querySelector('.sheet')){if(n)n.classList.toggle('shd',n.scrollTop>2)}
+if(typeof document!=='undefined')document.addEventListener('scroll',e=>{const t=e.target;if(t&&t.classList&&t.classList.contains('sheet'))shdSync(t)},{capture:true,passive:true});
 function animSync(){if(!document.getAnimations)return;for(const a of document.getAnimations())if(a.animationName&&ANIM_SYNC.has(a.animationName)&&a.playState==='running'&&a.startTime!==0)a.startTime=0}   // 只對齊正在播的；被暫停的（測試截圖凍結畫面）不要重新啟動
 // 武器名稱過長時逐步縮小字級（最小 11px），讓 +N 與完整名稱都顯示，不用「…」截斷
 // v3.56 效能：先全部讀、再全部寫（舊版每個名稱各自觸發好幾次版面重算，道具欄一多就卡）
@@ -3203,7 +3210,7 @@ function renderLayer(){stkFollow();
   {const rk=r?JSON.stringify([r.t,r.title,r.html]):'';if(r&&rk===ui._lastRes)h=h.replace('<div class="ui-modal modal-card">','<div class="ui-modal modal-card still">');ui._lastRes=rk}   // v4.74 小卡內容沒變就不重播彈出動畫（每 250ms 的 render 會讓小卡像一直重新打開）
   const fa=document.activeElement,fid=fa&&fa.id&&L.contains(fa)?fa.id:null,cxl=document.getElementById('cxList'),cxs=cxl?cxl.scrollTop:null;   // v3.88 重畫時保留聊天輸入框焦點與訊息捲動位置
   L.innerHTML=h;ui._lastSheet=JSON.stringify(s);ui._lastSheetW=s&&s.t==='w'?s.id:null;{const n=fid&&document.getElementById(fid);if(n)n.focus({preventScroll:true});const c=document.getElementById('cxList');if(c)c.scrollTop=cxs==null?c.scrollHeight:cxs}document.documentElement.classList.toggle('scrimmed',!!s);
-  if(same){const n=document.querySelector('.sheet');if(n)n.scrollTop=st};fitNames();animSync()
+  if(same){const n=document.querySelector('.sheet');if(n)n.scrollTop=st};shdSync();fitNames();animSync()
 }
 function updateLive(){
   if(QUIET)return;const t=NOW();renderRes();chTick();
