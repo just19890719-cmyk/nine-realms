@@ -2558,4 +2558,6 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 .v2 .fk-res .go:not(#_){border:1px solid transparent;border-radius:0;border-image:url(art/ui/bag2/bag2_chip.webp) 0 45 fill / 0 13px stretch;color:var(--b2-text);padding:4px 12px}
 .c2 .ui-btn--primary.btn:not(.ui-btn--icon):not(#_):not(#_),.b2 .empty-state .ui-btn--primary.btn:not(.ui-btn--icon):not(#_):not(#_){border:1px solid transparent;border-radius:0;background:none;box-shadow:none;border-image:url(art/ui/bag2/bag2_btn_pri.webp) 0 55 fill / 0 16px stretch;color:#ffe7b0}
 .fg2 .qimg.wart:not(#_),.v3 .wmini.wart:not(#_){background:url(art/ui/bag2/bag2_slot.webp) center/100% 100% no-repeat}
+/* v5.34 道具欄母版彈窗（標題列透明）往下捲時：標題列補上暗底，上方留白也蓋住，內容不會疊在標題上 */
+.sheet.shd:is(.k2,.q2,.s2,.v2,.c2,.g3) .sheet-head:not(#_):not(#_):not(#_){background:linear-gradient(#555,#555),url(art/ui/bag2/bag2_main_tex.webp) center top/100% auto no-repeat,#0b0d10;background-blend-mode:color-dodge,normal,normal;box-shadow:0 -40px 0 #0b0d10,0 8px 10px -4px rgba(0,0,0,.85)}
 </style>
