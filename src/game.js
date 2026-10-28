@@ -335,7 +335,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='5.38';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='5.39';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1333,6 +1333,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'5.39',d:'10/28',t:'戰鬥畫面：怪物被打倒會倒下',b:['展開村莊的戰鬥畫面或限時挑戰時，怪物被打倒會往後倒、沉下去消失，下一隻再從後方走進來（原本只是閃一下就在原地出現）','只改畫面，收成、掉落、挑戰秒數和評級都沒有改'],g:[]},
  {v:'5.38',d:'10/28',t:'秒殺榜加上伺服器檢查',b:['上傳秒殺紀錄時，伺服器會用那把武器（強化等級、屬性附魔、圖鑑加成）算出「運氣最好也不可能更快」的秒數，比這個還快的紀錄不會上榜','正常打出來的紀錄運氣再好也不會被擋；被擋的話結算畫面會顯示原因','挑戰、評級、獎勵都沒有改'],g:['vil']},
  {v:'5.37',d:'10/28',t:'七日簽到獎勵換新',b:['七日簽到改成以道具為主：第 1 天 3,000 金幣、第 2 天強化石 ×5、第 3 天附魔石 ×3、第 4 天綠光遺物 ×3、第 5 天強化石 ×10、第 6 天藍光遺物 ×2、第 7 天 100 鑽石＋紅光遺物 ×1','漏簽不會歸零、第 7 天領完從第 1 天重新開始，規則不變'],g:['shop']},
  {v:'5.35',d:'10/28',t:'可以自己登出、忘記密碼可以重設',b:['設定頁（右上角齒輪）多了「帳號」：可以看到登入的 Email，按「登出」再確認一次就會登出，進度會先存到雲端','登入畫面多了「忘記密碼？」：輸入 Email 後會寄一封重設信，點信裡的連結回到遊戲就能設定新密碼，設定完直接登入'],g:[]},
@@ -2731,6 +2732,7 @@ function viewShop(){   // v5.17 換成道具欄母版（.b2）：主框、次面
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'5.39',t:'戰鬥畫面擊倒演出：.bs-mon.kill 改用 bsDie（1.1 秒：後倒沉下淡出→從後方淡入，跟血條 refill 1.1 秒對齊），卡片小圖 .vmon.kill 不變',b:[['bskill','1-1 展開戰鬥畫面，約 1 秒後擊倒（再按換下一種武器）']]},
  {v:'5.38',t:'秒殺榜伺服器檢查：fk_submit 用雲端存檔的武器算最快可能秒數（附加效果全中 ×2.5、Boss 特效 ×1.3、+2%＋1 誤差），比它快 0.3 秒以上回 fast 並記 ac_log（sql/26）；遊戲端 fkMin 同算法，被擋時結算畫面顯示原因',b:[['fkmin538','每關最快可能秒數表（最好一般武器 +0／+6／+12，跟 chEst 比）'],['fkfast538','模擬伺服器擋下：1-1 結算畫面顯示「沒有上榜」']]},
  {v:'5.37',t:'七日簽到 SIGN 改成道具為主（3000 金幣／強化石×5／附魔石×3／綠光遺物×3／強化石×10／藍光遺物×2／100 鑽＋紅光遺物×1），GUIDE shop v5.37',b:[['shopsg','打開商城（今天可簽到）'],['sg_d7','跳到第 7 天（看兩樣獎勵的格子）'],['sg_reset','今天可以再簽到一次']]},
  {v:'5.35',t:'玩家自己登出（設定頁「帳號」→ 登出確認小卡）、忘記密碼（登入畫面 → 寄 Supabase 重設信 → 信裡連結帶 #type=recovery 回來設定新密碼並登入）；sql/24 重新開放前清空進度（先備份到 bak_v535）',b:[['acct535','設定頁「帳號」區塊（假 Email 預覽）'],['logoutask','登出確認小卡'],['pwforgot','忘記密碼畫面（預覽，不會真的寄信）'],['pwreset','設定新密碼畫面（預覽，不會真的改）'],['pwhash','解析重設連結網址（正常／過期／一般網址）']]},
@@ -3116,6 +3118,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
    bsmon:()=>{const n=KN_FULL.length,k=ui.bsMonK=((ui.bsMonK??-1)+1)%n,i=KN_FULL[k],st=S.villages[i],b=BPS.filter(x=>x.cat==='hammer').sort((x,y)=>x.t-y.t)[0];   // v4.32 用錘（打退最大）看最壞情況
      S.villages.forEach((v,j)=>{if(j<=i&&v.status!=='cleared')v.status='cleared'});const w=makeWeapon(b.id,2,6);st.weaponId=w.id;st.cycleStart=NOW()-dur(i,w)*.3;delete MONFX.hp[i];
      ui.sheet=null;ui.tab='village';ui.realm=i>=10?1:0;ui.bsOpen=i;toast(`${k+1}/${n}：${Math.floor(i/10)+1}-${i%10+1} ${MONS[i]}（錘 +6）`,'ok');render();setTimeout(()=>document.querySelector('.bs')?.scrollIntoView({block:'center'}),50)},
+   bskill:()=>{if(ui.bsOpen!==0||ui.tab!=='village')devdo('bsall');else devdo('bs11');const st=S.villages[0],w=W(st.weaponId);if(w){st.cycleStart=NOW()-dur(0,w)+1200;delete MONFX.hp[0]}render();setTimeout(()=>document.querySelector('.bs')?.scrollIntoView({block:'center'}),50);toast('1-1 約 1 秒後擊倒，看怪物倒下再換下一隻進場','ok')},   // v5.39
    bs11:()=>{const ks=Object.keys(KN),st=S.villages[0],cur=st.weaponId!=null&&W(st.weaponId),c=ks[(ks.indexOf(cur?bpOf(cur).cat:'')+1)%ks.length],b=BPS.filter(x=>x.cat===c).sort((x,y)=>x.t-y.t)[0];
      const w=makeWeapon(b.id,2,6);if(st.status!=='cleared')st.status='cleared';st.weaponId=w.id;st.cycleStart=NOW()-dur(0,w)*.3;delete MONFX.hp[0];
      ui.sheet=null;ui.tab='village';ui.realm=0;ui.bsOpen=0;toast('1-1 換成 '+CATS[c]+'（+6）','ok')},
