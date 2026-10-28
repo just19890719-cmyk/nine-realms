@@ -662,8 +662,8 @@ function stackTests(){return withSandbox(()=>{const S0=S;S=fresh();const b=(BPS.
    T('ST3 一鍵安定值後小卡換到下一把同款 +0，按鈕叫「一鍵安定值」',fol&&/一鍵安定值/.test(sh),fol?'有換':'沒換')]})}
 function chTests(){return withSandbox(chTests0)}
 function chTests0(){const mk=(id,lv)=>({id:-1,b:id,q:0,lv,ench:[null,null,null,null],traits:[]}),w0=mk('w0_sword',0);
-  const P6=b=>b*enhMult(6)*procE(6),hpOk=VHP(0)===Math.round(P6(12)*HP_SEC)&&VHP(1)===VHP(0)&&VHP(2)===Math.round(P6(15)*HP_SEC)&&VHP(9)===Math.round(P6(15)*HP_SEC*Math.pow(1.025,7))&&VHP(19)===Math.round(P6(15)*HP_SEC*Math.pow(1.025,17));
-  const w6=mk('w0_sword',6),sec=vSec(0,w6),durOk=Math.abs(sec-HP_SEC)<3&&Math.abs(gameDur(0,w6,'normal')-sec*1000*STRATS.normal.time)<1;
+  const hpOk=HP_SEC===50&&VILLAGES.every((v,i)=>VHP(i)===Math.round(VREQ[i]*50))&&VHP(0)===600&&VHP(9)===1750&&VHP(19)===2200;
+  const w6=mk('w0_sword',6),sec=vSec(0,w6),durOk=Math.abs(sec-VHP(0)/vPow(0,w6))<1e-9&&Math.abs(gameDur(0,w6,'normal')-sec*1000*STRATS.normal.time)<1;
   let win=0,lose=0,gA=0;for(let n=0;n<100;n++){const q=chPlan(0,w6);if(q.win!=null){win++;if(grOf(q.win/1000)<=2)gA++}if(chPlan(9,w0).win!=null)lose++}
   const p=chPlan(0,w6),tOk=p.win!=null&&p.win<=CH_SEC*1000&&p.ev.every((e,k)=>!k||e[0]>=p.ev[k-1][0])&&p.ev.reduce((a,e)=>a+e[1],0)>=p.hp;
   const S0=S;S=fresh();S.villages[0].status='open';const g0=S.gold,r1=chWinCore(0),g1=S.gold,r2=chWinCore(0),g2=S.gold,once=r1.first&&!r2.first&&g1-g0===(FIRST_GOLD[0]||0)&&g2===g1&&S.villages[0].status==='cleared'&&S.villages[1].status==='open';
@@ -672,13 +672,17 @@ function chTests0(){const mk=(id,lv)=>({id:-1,b:id,q:0,lv,ench:[null,null,null,n
   const se=stoneE(0)===.002&&Math.abs(stoneE(89)-.002*1.89)<1e-12;
   // v4.71 評級：只記最好成績，首次收復獎勵 ×評級倍率，評級提升補差額；掛機金幣和掉落乘評級倍率
   S=fresh();S.villages[0].status='open';const F=FIRST_GOLD[0],q0=S.gold,a1=chWinCore(0,40),q1=S.gold,a2=chWinCore(0,15),q2=S.gold,a3=chWinCore(0,55),q3=S.gold;
-  const grOk=a1.g===2&&q1-q0===F&&a2.better&&a2.g===0&&q2-q1===F*(GRADES[0].f-1)&&!a3.better&&q3===q2&&S.villages[0].gr===0&&grMul(0)===1.5&&grOf(18)===0&&grOf(18.1)===1&&grOf(60)===4&&grOf(60.1)==null;
+  const grOk=a1.g===2&&q1-q0===F&&a2.better&&a2.g===0&&q2-q1===F*(GRADES[0].f-1)&&!a3.better&&q3===q2&&S.villages[0].gr===0&&grMul(0)===1.5&&grOf(30)===0&&grOf(30.1)===1&&grOf(37)===1&&grOf(37.1)===2&&grOf(45)===2&&grOf(60)===4&&grOf(60.1)==null;
   const gsum=()=>{const sb={strat:'normal',bank:{cycles:0,gold:0,mats:{},events:0}};for(let c=0;c<3000;c++)rollCycle(0,null,sb,NOW());return sb.bank.gold};const gSS=gsum();S.villages[0].gr=4;const gC=gsum();const dOk=dropChance(0,null,VILLAGES[0].drops[0],'normal')<VILLAGES[0].drops[0][1]+1e-9;S=S0;
   const ratio=gSS/gC,mulOk=Math.abs(ratio-1.5/.7)<.25&&dOk;
-  return[T('CH1 v4.71 怪物血量＝最好一般武器 +6 × 38 秒，1-3 起每關 +2.5%',hpOk,`1-1 ${VHP(0)}、1-3 ${VHP(2)}、1-10 ${VHP(9)}、2-10 ${VHP(19)}`),
-   T('CH2 +6 預估約 38 秒打倒（實際約 40 多秒，A），掛機一輪＝打倒一隻',durOk,`1-1 開局劍 +6 ${sec.toFixed(1)} 秒`),
+  // v5.34 方案三：收復門檻 1-1 開局武器 +0、1-10 要 +7、2-10 要 +8（用當時最好的一般武器）
+  const top=i=>BPS.filter(b=>!b.dev&&!b.k&&(b.unlock||0)<=i).sort((a,b)=>b.base-a.base)[0].id,ok60=(i,lv)=>chEst(i,mk(top(i),lv))<=CH_SEC;
+  const gate=[ok60(0,0),!ok60(9,6),ok60(9,7),!ok60(19,7),ok60(19,8)],gateOk=gate.every(Boolean);
+  return[T('CH1 v5.34 怪物血量＝需求每秒傷害（偏難表）× 50 秒',hpOk,`1-1 ${VHP(0)}、1-10 ${VHP(9)}、2-10 ${VHP(19)}`),
+   T('CH7 v5.34 收復門檻：1-1 +0 打得過、1-10 要 +7、2-10 要 +8',gateOk,gate.map(x=>x?'對':'錯').join('・')),
+   T('CH2 預估秒數＝血量÷攻擊力，掛機一輪＝打倒一隻',durOk,`1-1 開局劍 +6 ${sec.toFixed(1)} 秒`),
    T('CH3 60 秒內打倒才收復：+6 幾乎都拿 A 以上，+0 打 1-10 一定輸，傷害照時間排',win>=98&&gA>=95&&lose===0&&tOk,`1-1 +6 贏 ${win}/100（A 以上 ${gA}）、1-10 +0 贏 ${lose}/100`),
-   T('CH6 評級 SS/S/A/B/C：只記最好、首次獎勵 ×倍率、提升補差額；掛機收益 SS 比 C 多 1.5/0.7 倍',grOk&&mulOk,`補發 ${q2-q1}・SS/C 金幣比 ${ratio.toFixed(2)}`),
+   T('CH6 評級 SS 30／S 37／A 45／B 52／C 60 秒：只記最好、首次獎勵 ×倍率、提升補差額；掛機收益 SS 比 C 多 1.5/0.7 倍',grOk&&mulOk,`補發 ${q2-q1}・SS/C 金幣比 ${ratio.toFixed(2)}`),
    T('CH4 收復獎勵只發一次、開下一關',!!once,`首次 ${r1&&r1.fg} 金幣、第二次 ${r2&&r2.first?'又發(錯誤)':'不再發'}`),
    T('CH5 村莊卡片不顯示弱點和「限時挑戰」，只有挑戰按鈕；強化石每隻 0.2% 往後遞增（v4.65 減半）',cardOk&&se,cardOk?'正常':'卡片還有弱點或限時挑戰')]}
 // v4.66 打怪直接掉武器、1-1～1-5 每隻金幣範圍
