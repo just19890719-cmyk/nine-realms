@@ -743,8 +743,17 @@ function fkTests(){const S0=S;S=JSON.parse(JSON.stringify(S0));const mk0=FK.mock
     return[T('FK1 秒殺紀錄只留最快一次、到 0.1 秒、記當時的武器',ok1,`最快 ${st.fk}`),
       T('FK2 跑馬燈只給每界第 9、10 關的王',boss==='8,9,18,19',boss),
       T('FK3 秒殺榜有名次、秒數、評級、我的名次；村莊詳情有我的最快和全服最快',h.includes('霜狼')&&h.includes('9.2')&&h.includes('lb-row me')&&h.includes('gr-')&&row.includes('18.0 秒')&&row.includes('第 2 名')&&row.includes('9.2')),
-      T('FK4 公告文字：首殺、刷新紀錄都有怪物名字和秒數',t1.includes(MONS[9])&&t1.includes('12.4')&&t2.includes(MONS[19])&&t2.includes('+12')&&t2.includes('8.9'))]}
+      T('FK4 公告文字：首殺、刷新紀錄都有怪物名字和秒數',t1.includes(MONS[9])&&t1.includes('12.4')&&t2.includes(MONS[19])&&t2.includes('+12')&&t2.includes('8.9')),
+      fk5(),fk6(st)]}
   catch(e){return[T('FK 秒殺榜測試',false,e.message)]}finally{S=S0;FK.mock=mk0}}
+
+// v5.38 秒殺榜伺服器檢查：真的打出來的秒數一定不會比 fkMin（伺服器 fk_min 同算法）快 FK_TOL 以上；被擋時結算畫面顯示原因
+function fk5(){const S0c=S.codex;S.codex={};CX_MEMO=null;let bad=[],n=0;
+  for(const b of BPS.filter(x=>!x.dev))for(const lv of [0,7,12])for(let i=0;i<VILLAGES.length;i++){const w={id:-9,b:b.id,q:0,lv,ench:i%3?[]:[{k:ELEM_OPP[MON_EL[i]],v:3}]},m=fkMin(i,w);
+    for(let k=0;k<6;k++){const q=chPlan(i,w);if(q.win==null)continue;n++;if(fkSec(q.win/1000)<m-FK_TOL)bad.push(`${b.id}+${lv}@${i}:${fkSec(q.win/1000)}<${m.toFixed(1)}`)}}
+  S.codex=S0c;CX_MEMO=null;return T('FK5 模擬挑戰打出來的秒數都不會比伺服器的最快可能秒數還快（正常玩家不會被擋）',!bad.length&&n>500,bad.length?bad.slice(0,3).join('、'):`${n} 場`)}
+function fk6(st){st.fk=1;st.fku=1;FK.mock=()=>({err:fkErr('fast'),fast:true});const h=fkResLine(0,{sec:1,prev:null,better:true});
+  return T('FK6 伺服器擋下（fast）時結算畫面顯示「沒有上榜」',h.includes('沒有上榜'),h.replace(/<[^>]+>/g,'').slice(0,60))}
 
 // v5.10 UI 母版延伸：武器小卡／強化／附魔都用道具欄素材（外框、格子品階框、按鈕），裡面不能再出現舊的 ui491 框
 function k2Tests(){const S0=S,sh0=ui.sheet,r0=ui.result;S=JSON.parse(JSON.stringify(S0));
