@@ -334,14 +334,14 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='5.34';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='5.35';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
 let AUTH=null;try{AUTH=JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(e){}
 function authSave(a){AUTH=a;try{a?localStorage.setItem(AUTH_KEY,JSON.stringify(a)):localStorage.removeItem(AUTH_KEY)}catch(e){}}
 function authFrom(r){return{access_token:r.access_token,refresh_token:r.refresh_token,expires_at:Date.now()+((r.expires_in||3600)-60)*1000,user:{id:r.user?.id,email:r.user?.email}}}
-const SB_ERR=m=>{m=String(m||'');return /signups? (are )?(not allowed|disabled)/i.test(m)?'目前暫停開放註冊，請聯絡遊戲管理員':/duplicate key|unique|23505/i.test(m)?'這個暱稱已經有人用了，換一個吧':/invalid login/i.test(m)?'Email 或密碼錯誤':/already registered|already exists/i.test(m)?'這個 Email 已經註冊過，請直接登入':/at least 6|password should/i.test(m)?'密碼至少要 6 碼':/invalid.*email|email.*invalid|unable to validate email/i.test(m)?'Email 格式不正確':/rate limit|too many/i.test(m)?'嘗試太多次，請稍後再試':/failed to fetch|network/i.test(m)?'連不上伺服器，請檢查網路':m||'發生錯誤，請再試一次'};
+const SB_ERR=m=>{m=String(m||'');return /signups? (are )?(not allowed|disabled)/i.test(m)?'目前暫停開放註冊，請聯絡遊戲管理員':/duplicate key|unique|23505/i.test(m)?'這個暱稱已經有人用了，換一個吧':/invalid login/i.test(m)?'Email 或密碼錯誤':/already registered|already exists/i.test(m)?'這個 Email 已經註冊過，請直接登入':/should be different|same.*password/i.test(m)?'新密碼不能跟舊密碼一樣':/only request this after|security purposes/i.test(m)?'寄信太頻繁，請等一分鐘再試':/at least 6|password should/i.test(m)?'密碼至少要 6 碼':/invalid.*email|email.*invalid|unable to validate email/i.test(m)?'Email 格式不正確':/rate limit|too many/i.test(m)?'嘗試太多次，請稍後再試':/failed to fetch|network/i.test(m)?'連不上伺服器，請檢查網路':m||'發生錯誤，請再試一次'};
 async function sbAuth(path,body){const r=await fetch(SB_URL+'/auth/v1/'+path,{method:'POST',headers:{apikey:SB_KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
   const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.msg||j.error_description||j.message||j.error||('HTTP '+r.status));return j}
 async function sbToken(){if(!AUTH)return null;if(Date.now()<AUTH.expires_at)return AUTH.access_token;
@@ -356,6 +356,14 @@ async function cloudSignup(email,pw){const j=await sbAuth('signup',{email,passwo
 async function cloudLogin(email,pw){authSave(authFrom(await sbAuth('token?grant_type=password',{email,password:pw})));return cloudAfterLogin()}
 function cloudLogout(){cloudPush(true).finally(()=>{authSave(null);CLOUD.ready=false;CLOUD.state='off';CLOUD.admin=false;
   if(CLOUD_ONLY){S=sanitize(fresh());ui.sheet=null;ui.result=null;render();showLogin()}else{toast('已登出。');render()}})}
+// v5.35 忘記密碼（Supabase 重設信）：寄信 → 玩家點信裡的連結回到遊戲（網址帶 #access_token=…&type=recovery）→ 設定新密碼後直接登入
+function authHash(h){const s=String(h||'').replace(/^#/,'');if(!/(^|&)(access_token|error_code)=/.test(s))return null;const q=new URLSearchParams(s);
+  if(q.get('error_code'))return{err:q.get('error_code')};
+  return q.get('type')==='recovery'&&q.get('access_token')?{access_token:q.get('access_token'),refresh_token:q.get('refresh_token')||'',expires_in:+q.get('expires_in')||3600}:null}
+async function sbUser(token,method='GET',body){const r=await fetch(SB_URL+'/auth/v1/user',{method,headers:{apikey:SB_KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});
+  const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(r.status===401?'reset expired':j.msg||j.error_description||j.message||j.error||('HTTP '+r.status));return j}
+const cloudForgot=email=>sbAuth('recover?redirect_to='+encodeURIComponent(location.origin+location.pathname),{email});
+async function cloudSetPw(rec,pw){const u=await sbUser(rec.access_token,'PUT',{password:pw});authSave(authFrom({...rec,user:u}));return cloudAfterLogin()}
 // 登入後：讀雲端存檔（雲端為準）；新帳號建立全新進度。並登記這支手機的連線代碼（同帳號只能一支手機）
 async function cloudAfterLogin(){const uid=AUTH.user.id;SID=Math.random().toString(36).slice(2)+Date.now().toString(36);CLOUD.kicked=false;
   LBR.rows={};LBR.t=0;MK.rows=[];MK.mine=[];MK.t=0;Object.assign(CHAT,{rows:[],last:0,g:[],glast:0,gunread:0,sys:[],sysLast:0,unread:0,t:0,err:''});Object.assign(GD,{d:null,list:null,t:0,mk:false,edit:false});Object.assign(FR,{d:null,find:null,t:0});
@@ -1318,6 +1326,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'5.35',d:'10/28',t:'可以自己登出、忘記密碼可以重設',b:['設定頁（右上角齒輪）多了「帳號」：可以看到登入的 Email，按「登出」再確認一次就會登出，進度會先存到雲端','登入畫面多了「忘記密碼？」：輸入 Email 後會寄一封重設信，點信裡的連結回到遊戲就能設定新密碼，設定完直接登入'],g:[]},
  {v:'5.34',d:'10/28',t:'調整怪物血量和挑戰評級',b:['怪物血量照關卡難度重新設定：前幾關比較好打（開局武器 +0 就能打 1-1），後面越來越難，第一界最後一關大約要 +7、第二界最後一關大約要 +8 才收復得了','評級放寬：SS 改成 30 秒內、S 改成 37 秒內（A、B、C 不變），大約每多強化一級就能升一個評級','秒殺榜重新開始：之前的紀錄是用舊血量打的，全部清空重新計算','彈窗往下捲的時候，標題列會補上底色，內容不會再疊在標題上','強化、附魔、武器攻擊力都沒有改'],g:['vil']},
  {v:'5.33',d:'10/27',t:'60 秒挑戰視窗換上道具欄同款外觀，舊介面素材全部清掉',b:['60 秒挑戰的戰鬥畫面和結果畫面，換成跟村莊詳情一樣的外框、血條、進度條和按鈕','聊天公會分頁「找公會／建立公會」、道具欄空的時候「前往鐵匠鋪」換成道具欄同款按鈕','清掉不再使用的舊介面素材，文字和功能都沒有改'],g:[]},
  {v:'5.32',d:'10/27',t:'公會、排行榜、秒殺榜、交易所上架視窗換上道具欄同款外觀',b:['公會、排行榜、秒殺榜，還有交易所的商品、上架武器、上架道具視窗，換成道具欄同款的外框、頁籤、按鈕和輸入格','排行榜前三名換成金、銀、銅獎牌','文字和功能都沒有改'],g:[]},
@@ -1487,7 +1496,7 @@ function sheetSet(k){const back=k?btn(img('ic_back'),'setk',{cls:'icon-btn img',
     return `<div class="glr ${o?'open':''}"><button class="glr-h" data-act="gltog" data-k="${g.k}">${img(g.ic)}<span class="grow"><b>${g.n}</b>${nw?newB(1):''}<span class="s">${g.s}</span></span><span class="go">${o?'收起':'›'}</span></button>${o?`<div class="glr-b">${g.h}<div class="glr-v">v${g.v} 更新</div></div>`:''}</div>`}).join('')).join('');
   const nn=nwNewN(),gn=glNewN(),row=(act,ic,t,s,n,attrs='')=>`<button class="st-row" data-act="${act}" ${attrs}>${img(ic)}<span class="grow"><b>${t}</b><span class="s">${s}</span></span>${n?newB(n):''}<span class="go">›</span></button>`;
   return head('設定')+`<div class="st-sec">遊戲資訊</div>`+row('setk','ic_news','更新公告',`最新 v${NW_LOG[0].v}・${NW_LOG[0].t}`,nn,'data-k="n"')+row('setk','ic_guide','玩法說明','每個系統怎麼玩，一次看懂',gn,'data-k="g"')
-   +`<div class="st-sec">音效</div><div class="ui-panel panel st-snd">${sndHtml()}</div>`+(devMode()?`<div class="st-sec">開發者</div>`+row('dev','ic_gear','開發者工具','只有開發者模式看得到',0):'')}
+   +`<div class="st-sec">音效</div><div class="ui-panel panel st-snd">${sndHtml()}</div>`+(AUTH&&AUTH.user||ui.acctPrev?`<div class="st-sec">帳號</div>`+row('logoutask','ui_player_emblem','登出',esc(AUTH&&AUTH.user?AUTH.user.email||'':'smith@example.com')):'')+(devMode()?`<div class="st-sec">開發者</div>`+row('dev','ic_gear','開發者工具','只有開發者模式看得到',0):'')}
 function showLevel(){const c=cleared(),lv=smithLv();
   const row=(k,v,m)=>`<div class="kv"><span>${k}</span><b>${v}${m?` <span class="small muted">／${m}</span>`:''}</b></div>`;
   const nb=BPS.filter(b=>b.unlock===c+1),nx=VILLAGES[c],nt=TIERS.find(t=>t.furnace>S.furnace);
@@ -2713,6 +2722,7 @@ function viewShop(){   // v5.17 換成道具欄母版（.b2）：主框、次面
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'5.35',t:'玩家自己登出（設定頁「帳號」→ 登出確認小卡）、忘記密碼（登入畫面 → 寄 Supabase 重設信 → 信裡連結帶 #type=recovery 回來設定新密碼並登入）；sql/24 重新開放前清空進度（先備份到 bak_v535）',b:[['acct535','設定頁「帳號」區塊（假 Email 預覽）'],['logoutask','登出確認小卡'],['pwforgot','忘記密碼畫面（預覽，不會真的寄信）'],['pwreset','設定新密碼畫面（預覽，不會真的改）'],['pwhash','解析重設連結網址（正常／過期／一般網址）']]},
  {v:'5.34',t:'怪物血量＝VREQ（偏難表）× 50 秒；評級 SS 30／S 37／A 45／B 52／C 60 秒；秒殺紀錄 S.fkv 版本不同就清（sql/23 清伺服器）；母版彈窗捲動時標題列 .shd 補暗底',b:[['hp534','血量與評級模擬表（每關最好一般武器，各評級要強化到幾級）'],['fk534','模擬舊存檔：1-1 有舊秒殺紀錄 → 載入後被清掉'],['shd534','打開 1-10 村莊詳情並往下捲（看標題列底色）']]},
  {v:'5.33',t:'刪舊皮膚 ui491／ui493（22 個圖檔，留 ui491_info、ui491_ring）前補換 4 處：60 秒挑戰 ch/chr 加 .v2、聊天公會分頁「找公會」與道具欄空的「前往鐵匠鋪」＝bag2_btn_pri、鍛造中 .qimg／村莊卡片 .wmini 底＝bag2_slot；skin.js 槽位改指 bag2',b:[['os533','60 秒挑戰：戰鬥中'],['os533r','60 秒挑戰：收復成功'],['os533l','60 秒挑戰：時間到'],['os533g','聊天→公會分頁（還沒加入公會）'],['os533e','道具欄空的時候'],['os533j','鐵匠鋪：鍛造中小圖']]},
  {v:'5.32',t:'公會（再加 .c2）、排行榜、秒殺榜、交易所商品／上架武器／上架道具視窗加 .g3：外框＝bag2_main_frame、面板＝bag2_sub、列＝bag2_row、輸入格＝bag2_field、膠囊＝bag2_chip、按鈕＝bag2、村莊頁籤＝bag2_slot、前三名＝bag2_rank1～3',b:[['g532','公會（會長、成員頁）'],['g532d','公會（捐獻頁）'],['g532n','公會（還沒加入）'],['g532k','秒殺榜（假資料）'],['g532l','排行榜'],['g532m','交易所商品'],['g532s','上架武器'],['g532i','上架道具']]},
@@ -2902,6 +2912,12 @@ if(k.startsWith('evt')){const v=evtSt();
 if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?'上傳失敗：'+CLOUD.err:'已上傳到雲端',CLOUD.err?'bad':'ok');render()});return}
   if(k==='cpull'){cloudPull().then(()=>toast('已從雲端下載','ok')).catch(e=>toast('下載失敗：'+SB_ERR(e.message),'bad'));return}
   if(k==='clogout'){ui.sheet=null;return cloudLogout()}
+  if(k==='acct535'){ui.acctPrev=true;ui.result=null;ui.sheet={t:'set'};render();return toast('預覽：沒登入時用假 Email；關掉設定頁就恢復')}
+  if(k==='logoutask'){ui.sheet=null;ui.acctPrev=false;ui.result={t:'info',k:'logout',icon:'ui_player_emblem',title:'登出帳號',html:'<div class="center">登出後要重新輸入 Email 和密碼才能繼續玩。<br>你的進度已自動存在雲端，不會遺失。</div>',acts:btn('確定登出','logout',{cls:'btn-primary big'}),ok:'取消'};return render()}
+  if(k==='pwforgot'){ui.sheet=null;render();return showForgot(AUTH&&AUTH.user?AUTH.user.email:'',true)}
+  if(k==='pwreset'){ui.sheet=null;render();return showResetPw(null,true)}
+  if(k==='pwhash'){const a=authHash('#access_token=abc&expires_in=3600&refresh_token=r1&token_type=bearer&type=recovery'),b=authHash('#error=access_denied&error_code=otp_expired&error_description=x'),c=authHash('#cloudonly');
+    return toast(`正常：${a&&a.access_token==='abc'?'OK':'錯'}・過期：${b&&b.err==='otp_expired'?'OK':'錯'}・一般網址：${c===null?'OK':'錯'}`,a&&b&&c===null?'ok':'bad')}
   if(k==='maintprev'){ui.sheet=null;render();return showMaint(null,true)}
   if(/^os533/.test(k)){const q=k.slice(5);ui.result=null;ui.sheet=null;if(q==='g'){devdo('gdnone');ui.sheet=null;return chatOpenSheet('g')}if(q==='e'){if(S.weapons.length)return toast('道具欄還有武器：這個畫面要道具欄空的才看得到（新手剛開始時）','bad');ui.tab='armory';return render()}if(q==='j')return devdo('f526j');
     let w=S.weapons.find(x=>!x.test&&eligible(0,x));if(!w){const b=BPS.find(x=>!x.dev&&!x.unlock);if(!b||S.weapons.length>=CAP_WEAPONS)return toast('道具欄滿了，先清出一格','bad');w=makeWeapon(b.id,0,6)}if(S.villages[0].status==='locked')S.villages[0].status='open';ui.tab='village';
@@ -3248,7 +3264,7 @@ document.addEventListener('click',e=>{
   if(!['enhance','fxskip','devdo','mute','sndtest','sndfix','sfxalt'].includes(a)&&Date.now()-PD_SND>700)snd(uiSndOf(a));
   if((a==='scrim'||a==='rclose')&&e.target!==b&&!e.target.matches('button'))return;
   if(a!=='melt')ui.meltArm=null;
-  ({tab:()=>{if(ui.busy&&ui.fxDone)ui.fxDone();ui.pickV=null;if(ui.tab==='armory'&&d.k!=='armory'&&S.weapons.some(wNew)){S.seenW=S.nextId-1;save()}if(d.k==='market'&&S.mkNew){S.mkNew=0;save()}ui.tab=d.k;if(d.k==='market'&&(AUTH||mkMock())&&Date.now()-MK.t>20000)setTimeout(mkLoad,0);ui.sheet=null;ui.enhLast=null;render();warmTabs();d.k==='village'?scrollToNextVillage():scrollTo(0,0)},close:()=>{if(ui.busy)return;ui.sheet=null;ui.enhLast=null;ui.riskArm=null;ui.riskOk=null;render()},scrim:()=>{if(ui.busy||ui.ch)return;ui.sheet=null;ui.enhLast=null;render()},dev:()=>{ui.sheet={t:'d'};render()},achopen:()=>{ui.qTab=boxReadyN()||!achReadyN()?'d':'o';ui.sheet={t:'a'};render()},
+  ({tab:()=>{if(ui.busy&&ui.fxDone)ui.fxDone();ui.pickV=null;if(ui.tab==='armory'&&d.k!=='armory'&&S.weapons.some(wNew)){S.seenW=S.nextId-1;save()}if(d.k==='market'&&S.mkNew){S.mkNew=0;save()}ui.tab=d.k;if(d.k==='market'&&(AUTH||mkMock())&&Date.now()-MK.t>20000)setTimeout(mkLoad,0);ui.sheet=null;ui.enhLast=null;render();warmTabs();d.k==='village'?scrollToNextVillage():scrollTo(0,0)},close:()=>{if(ui.busy)return;ui.sheet=null;ui.acctPrev=false;ui.enhLast=null;ui.riskArm=null;ui.riskOk=null;render()},scrim:()=>{if(ui.busy||ui.ch)return;ui.sheet=null;ui.enhLast=null;render()},dev:()=>{ui.sheet={t:'d'};render()},achopen:()=>{ui.qTab=boxReadyN()||!achReadyN()?'d':'o';ui.sheet={t:'a'};render()},
    set:()=>{ui.result=null;ui.sheet={t:'set'};render()},setk:()=>{ui.sheet={t:'set',k:d.k||null};ui.glOpen=null;render();const sc=document.querySelector('.sheet');if(sc)sc.scrollTop=0},
    nwtog:()=>{ui.nwOpen=ui.nwOpen===d.k?null:d.k;render()},gltog:()=>{ui.glOpen=ui.glOpen===d.k?null:d.k;if(ui.glOpen)glMark(d.k);render()},
    sheetW:()=>{ui.sheet={t:'ws',k:'w'};render()},sheetM:()=>{ui.sheet={t:'ws',k:'m'};render()},sheetT:()=>{ui.sheet={t:'ws',k:'t'};render()},evtopen:()=>{if(BOSS_OFF)return;ui.sheet={t:'evt'};render()},bossw:()=>{ui.sheet={t:'bw',r:+d.r,j:+d.j};render()},
@@ -3295,6 +3311,8 @@ document.addEventListener('click',e=>{
    mksellit:()=>{ui.result=null;ui.mkPrice='';ui.mkQty=1;ui.sheet={t:'mksi',k:d.k};render()},mkiqall:()=>{ui.mkQty=mkHave(d.k);render()},mkbqall:()=>{const r=MK.rows.find(x=>x.id===+d.id);if(r)ui.mkBq=r.left_qty;render()},
    mkselli:()=>{const v=id=>{const e=document.getElementById(id);return e?e.value:''};ui.mkPrice=v('mkiprice');ui.mkQty=v('mkiqty');mkListItem(d.k,MK.sellCur,ui.mkPrice,ui.mkQty)},mkbuyi:()=>{const e=document.getElementById('mkbq');mkBuyItem(+d.id,e?e.value:1)},
    rename:()=>{ui.result=null;render();showName(!S.nick)},
+   logoutask:()=>{ui.result={t:'info',k:'logout',icon:'ui_player_emblem',title:'登出帳號',html:'<div class="center">登出後要重新輸入 Email 和密碼才能繼續玩。<br>你的進度已自動存在雲端，不會遺失。</div>',acts:btn('確定登出','logout',{cls:'btn-primary big'}),ok:'取消'};render()},
+   logout:()=>{ui.result=null;ui.sheet=null;render();if(AUTH)cloudLogout();else toast('目前沒有登入帳號')},
    player:()=>{const t=Date.now();ui.tapN=(t-(ui.tapT||0)<1500?(ui.tapN||0):0)+1;ui.tapT=t;if(ui.tapN>=20&&(!CLOUD_ONLY||CLOUD.admin)){ui.tapN=0;clearTimeout(ui.lvT);ui.result=null;setDev(!devMode());toast(devMode()?'已開啟開發者模式：右上角齒輪裡多了「開發者工具」。':'已關閉開發者模式。')}else{clearTimeout(ui.lvT);const n=ui.tapN;ui.lvT=setTimeout(()=>{if(ui.tapN===n)showLevel()},300)}},
    up:()=>upgrade(d.k),topup:()=>{S.gems+=+d.n;toast('測試儲值：鑽石 +'+d.n,'ok');save();render()},
    monthly,claim:claimMonthly,buyMat:()=>shopBuyMat(d.k,d.v,ui.shopN),shopmat:()=>{ui.shopN=1;shopMatCard(d.k)},shopN:()=>{const v=String(d.v);ui.shopN=v[0]==='='?+v.slice(1):Math.max(1,Math.min(MS_MAX,(ui.shopN|0||1)+(+v)));shopMatCard(d.k,true)}
@@ -3358,28 +3376,58 @@ function showMaint(msg,preview){document.body.classList.add('gating');const g=ga
   g.onclick=e=>{const b=e.target.closest('[data-mt]');if(!b)return;snd('ui_click');if(b.dataset.mt==='close')return gateClose();if(b.dataset.mt==='admin')showLogin()}}
 function showLoading(t){document.body.classList.add('gating');const g=gateEl();g.className='gate-login gate-loading';g.onclick=null;
   g.innerHTML=`<div class="gt-scene"><img class="gt-ly gt-bg" src="${LG('key2_bg')}" alt=""><img class="gt-ly gt-glow" src="${LG('key2_glow')}" alt=""><div class="gt-fog"></div><div class="gt-embers">${gEmb(10)}</div><div class="gt-vig"></div></div><img class="gt-logo" src="${LG('logo2')}" alt="諸神鐵匠"><div class="gt-box gt-load"><div class="gt-ttl">${t}</div></div>`}
-function showLogin(msg){document.body.classList.add('gating');const g=gateEl();g.className='gate-login';
-  g.innerHTML=`<div class="gt-scene">
+const gtHead=()=>`<div class="gt-scene">
     <img class="gt-ly gt-bg" src="${LG('key2_bg')}" alt=""><img class="gt-ly gt-glow" src="${LG('key2_glow')}" alt="">
     <img class="gt-fg" src="${LG('key2_fg')}" alt="">
     <div class="gt-fog"></div><div class="gt-embers">${gEmb(10)}</div><div class="gt-vig"></div></div>
-   <img class="gt-logo" src="${LG('logo2')}" alt="諸神鐵匠">
+   <img class="gt-logo" src="${LG('logo2')}" alt="諸神鐵匠">`;
+function showLogin(msg){document.body.classList.add('gating');const g=gateEl();g.className='gate-login';
+  g.innerHTML=gtHead()+`
    <form class="gt-box" onsubmit="return false">
     <input id="gtMail" type="email" inputmode="email" autocomplete="username" placeholder="Email">
     <input id="gtPw" type="password" autocomplete="current-password" placeholder="密碼">
     <div class="gt-row"><button type="button" class="ui-btn ui-btn--primary btn btn-primary big" data-gt="login">登入</button><button type="button" class="ui-btn ui-btn--secondary btn btn-sec big" data-gt="signup">註冊</button></div>
     <div class="gt-msg small ${msg?'bad':''}">${msg?esc(msg):''}</div>${CLOUD_ONLY?'':'<button type="button" class="gt-guest" data-gt="guest">訪客進入（測試版，存檔只在這支手機）</button>'}
-    <div class="gt-ver small">${MAINT?'<button type="button" class="gt-replay" data-gt="maint">‹ 返回公告</button>':'<button type="button" class="gt-replay" data-gt="story">重看開場故事</button>'}・${typeof BUILD!=='undefined'?BUILD:'v3.20'}</div></form>`;
+    <div class="gt-ver small"><button type="button" class="gt-replay" data-gt="forgot">忘記密碼？</button>・${MAINT?'<button type="button" class="gt-replay" data-gt="maint">‹ 返回公告</button>':'<button type="button" class="gt-replay" data-gt="story">重看開場故事</button>'}・${typeof BUILD!=='undefined'?BUILD:'v3.20'}</div></form>`;
   g.onclick=e=>{const b=e.target.closest('[data-gt]');if(!b)return;const k=b.dataset.gt;snd('ui_click');
     if(k==='guest'){if(!S.introSeen)return showStory();gateClose();return}
     if(k==='story'){return showStory()}
     if(k==='maint'){return showMaint()}
+    if(k==='forgot'){return showForgot((g.querySelector('#gtMail').value||'').trim())}
     if(k==='login'||k==='signup'){const em=(g.querySelector('#gtMail').value||'').trim(),pw=g.querySelector('#gtPw').value||'',msg=g.querySelector('.gt-msg');
       const say=(t,bad)=>{if(msg){msg.textContent=t;msg.className='gt-msg'+(bad?' bad':'')}};
       if(!/^\S+@\S+\.\S+$/.test(em))return say('請輸入正確的 Email',1);if(pw.length<6)return say('密碼至少要 6 碼',1);
       if(g.dataset.busy)return;g.dataset.busy='1';g.querySelectorAll('[data-gt]').forEach(x=>x.disabled=true);say(k==='login'?'登入中…':'建立帳號中…');verCheck();
       (k==='login'?cloudLogin(em,pw):cloudSignup(em,pw)).then(r=>{toast(r==='cloud'?'已讀取雲端進度，歡迎回來！':k==='signup'?'帳號建立完成，進度會自動存到雲端。':'登入成功，進度會自動存到雲端。','ok');afterAuthEnter()})
         .catch(e=>{say(SB_ERR(e.message),1)}).finally(()=>{delete g.dataset.busy;g.querySelectorAll('[data-gt]').forEach(x=>x.disabled=false)});return}}}
+// v5.35 忘記密碼：輸入 Email 寄重設信（不管 Email 有沒有註冊都顯示一樣的結果，不洩漏帳號）
+function showForgot(em,preview){document.body.classList.add('gating');const g=gateEl();g.className='gate-login';
+  g.innerHTML=gtHead()+`
+   <form class="gt-box" onsubmit="return false"><div class="gt-ttl">忘記密碼</div><div class="small muted center">輸入註冊時的 Email，我們會寄一封重設密碼的信給你。</div>
+    <input id="gtMail" type="email" inputmode="email" autocomplete="username" placeholder="Email" value="${esc(em||'')}">
+    <button type="button" class="ui-btn ui-btn--primary btn btn-primary big" data-gt="send">寄送重設信</button>
+    <div class="gt-msg small"></div>
+    <div class="gt-ver small"><button type="button" class="gt-replay" data-gt="back">‹ 返回登入</button>・${BUILD}</div></form>`;
+  g.onclick=e=>{const b=e.target.closest('[data-gt]');if(!b)return;const k=b.dataset.gt;snd('ui_click');if(k==='back')return preview?gateClose():showLogin();if(k!=='send')return;
+    const em=(g.querySelector('#gtMail').value||'').trim(),msg=g.querySelector('.gt-msg'),say=(t,bad)=>{msg.textContent=t;msg.className='gt-msg small'+(bad?' bad':'')};
+    if(!/^\S+@\S+\.\S+$/.test(em))return say('請輸入正確的 Email',1);if(preview)return say('（預覽）重設信已寄出，請到信箱點信裡的連結。沒收到的話看一下垃圾郵件。');
+    if(g.dataset.busy)return;g.dataset.busy='1';b.disabled=true;say('寄送中…');
+    cloudForgot(em).then(()=>say('如果這個 Email 有註冊，重設信已寄出，請到信箱點信裡的連結。沒收到的話看一下垃圾郵件。')).catch(e=>say(SB_ERR(e.message),1)).finally(()=>{delete g.dataset.busy;b.disabled=false})}}
+// v5.35 從重設信的連結回來：設定新密碼 → 直接登入、讀雲端存檔
+function showResetPw(rec,preview){document.body.classList.add('gating');const g=gateEl();g.className='gate-login';
+  g.innerHTML=gtHead()+`
+   <form class="gt-box" onsubmit="return false"><div class="gt-ttl">設定新密碼</div>
+    <input id="gtPw" type="password" autocomplete="new-password" placeholder="新密碼（至少 6 碼）">
+    <input id="gtPw2" type="password" autocomplete="new-password" placeholder="再輸入一次新密碼">
+    <button type="button" class="ui-btn ui-btn--primary btn btn-primary big" data-gt="setpw">確定修改並登入</button>
+    <div class="gt-msg small"></div>
+    <div class="gt-ver small"><button type="button" class="gt-replay" data-gt="back">‹ 返回登入</button>・${BUILD}</div></form>`;
+  g.onclick=e=>{const b=e.target.closest('[data-gt]');if(!b)return;const k=b.dataset.gt;snd('ui_click');if(k==='back')return preview?gateClose():showLogin();if(k!=='setpw')return;
+    const pw=g.querySelector('#gtPw').value||'',pw2=g.querySelector('#gtPw2').value||'',msg=g.querySelector('.gt-msg'),say=(t,bad)=>{msg.textContent=t;msg.className='gt-msg small'+(bad?' bad':'')};
+    if(pw.length<6)return say('密碼至少要 6 碼',1);if(pw!==pw2)return say('兩次輸入的密碼不一樣',1);if(preview)return say('（預覽）密碼已更新');
+    if(g.dataset.busy)return;g.dataset.busy='1';b.disabled=true;say('更新中…');
+    cloudSetPw(rec,pw).then(()=>{toast('密碼已更新，已幫你登入。','ok');afterAuthEnter()})
+      .catch(e=>say(/reset expired/.test(e.message)?'重設連結已過期，請回登入畫面按「忘記密碼？」重新寄一次':SB_ERR(e.message),1)).finally(()=>{delete g.dataset.busy;b.disabled=false})}}
 function showStory(){document.body.classList.add('gating');const list=STORY.filter(s=>STORY_HAS[s[0]]);let i=0;const g=gateEl();g.className='gate-story';
   const draw=()=>{const [img,txt,cls]=list[i];
     g.innerHTML=`<div class="st-scene ${cls}" data-gt="next"><img class="st-bg" src="${LG(img)}" alt=""><div class="st-fx">${cls==='s4'||cls==='s6'?gEmb(10,'big'):cls==='s5'?gEmb(8):cls==='s1'?[0,1,2,3,4,5].map(k=>`<img class="st-mote m${k}" src="${A('dp/'+(k%2?'fx_mote_gold':'fx_dust_gold'))}" alt="">`).join(''):[0,1,2,3,4,5].map(k=>`<img class="st-mote m${k}" src="${A('dp/fx_mote_gold')}" alt="">`).join('')}</div><div class="st-fog"></div><div class="gt-vig"></div>
@@ -3484,6 +3532,8 @@ function start(){try{if(localStorage.getItem('nrs-dpv')!=='0')document.body.clas
   tutInit();
   try{if(/gate/.test(location.hash)||!(navigator.webdriver||/nogate/.test(location.hash))){   // 自動測試（webdriver）預設跳過登入，網址加 #gate 才顯示
     showLoading('檢查版本…');verCheck().then(old=>{if(old)return;
+    const rec=authHash(location.hash);if(rec){try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}   // v5.35 重設密碼連結：網址上的憑證馬上清掉
+      return rec.err?showLogin('重設密碼的連結已失效或過期，請按「忘記密碼？」重新寄一次'):showResetPw(rec)}
     if(MAINT){if(!(AUTH&&AUTH.user))return showMaint();showLoading('檢查帳號…');return adminCheck().then(a=>{if(!a)return showMaint();showLoading('讀取雲端存檔…');cloudAfterLogin().then(()=>afterAuthEnter()).catch(e=>showLogin('讀取雲端存檔失敗：'+SB_ERR(e.message)+'，請重新登入'))})}   // v4.18 維護中：不讀一般玩家的存檔，直接顯示公告
     if(AUTH&&AUTH.user&&!/forcelogin/.test(location.hash)){showLoading('讀取雲端存檔…');cloudAfterLogin().then(()=>afterAuthEnter()).catch(e=>showLogin('讀取雲端存檔失敗：'+SB_ERR(e.message)+'，請重新登入'))}
     else showLogin()})}}catch(e){}
