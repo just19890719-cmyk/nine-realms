@@ -525,7 +525,7 @@ function curveTests(){const rows=VILLAGES.map((v,i)=>diffRow(i)),low=rows.filter
   return[   // v4.37 村莊不限攻擊力：N1 需求曲線、N2 +0 不能直接交付拿掉
     T('N3 10 關新需求和公告一致',!miss.length,miss.length?miss.map(([i])=>VILLAGES[i].name).join('、'):'一致')]}
 function runTests(mode){const real=BPS.filter(b=>!b.dev);   // v4.44 舊武器刪除：要在放回測試資料前檢查
-  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),...sh2Tests(),...q2Tests(),...s2Tests(),...m2Tests(),...cx2Tests(),...v2Tests(),...v3Tests(),...f2Tests(),...n2Tests(),...l2Tests(),...cbTests(),...frTests(),...c2Tests(),...g3Tests(),...osTests(),...shdTests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
+  const bd=[...cxTests(),...wdTests(),...newWpnTests(real),...chTests(),...matTests(real),...tutTests(),...mkCardTests(),...mkItemTests(),...fkTests(),...k2Tests(),...mk2Tests(),...sh2Tests(),...q2Tests(),...s2Tests(),...m2Tests(),...cx2Tests(),...v2Tests(),...v3Tests(),...f2Tests(),...n2Tests(),...l2Tests(),...cbTests(),...frTests(),...c2Tests(),...g3Tests(),...osTests(),...shdTests(),...acctTests(),T('BD1 舊圖紙沒有回來（只剩 v4.51 新武器和開發者測試圖紙）',!BP.t1_woodaxe&&BPS.every(b=>b.dev||b.t===0),`正式圖紙 ${real.length} 張`),
     T('BD2 神明材質階、神格覺醒拿掉',TIERS.length===5&&typeof GOD==='undefined'&&typeof awkN==='undefined',`材質 ${TIERS.length} 階`)];
   return withTestBps(()=>runTests0(mode,bd))}
 // v4.44 正式圖紙全部刪掉了：快速測試期間暫時放回舊圖紙當測試資料（測完還原），新武器上線後再把測試改成新圖紙
@@ -1005,3 +1005,19 @@ function shdTests(){const tab0=ui.tab,sh0=ui.sheet,y0=scrollY,vs=JSON.stringify(
     out.push(T('BUG-019b 同類彈窗（武器小卡、任務、設定、村莊、聊天好友、公會排行交易所）捲動時標題列都有底',!bad.length,bad.length?'沒吃到：'+bad.join('、'):'6 種都有'));
     return out}catch(e){return[T('BUG-019 標題列捲動底色',false,e.message)]}
   finally{S.villages[9]=JSON.parse(vs);ui.tab=tab0;ui.sheet=sh0;render();scrollTo(0,y0)}}
+
+// v5.35 帳號：玩家自己登出（設定頁「帳號」）、忘記密碼（重設信連結 #type=recovery 解析）
+function acctTests(){const sh0=ui.sheet,r0=ui.result,y0=scrollY;
+  try{const out=[],a=authHash('#access_token=abc&expires_in=3600&refresh_token=r1&token_type=bearer&type=recovery'),b=authHash('#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid'),
+      c=[authHash(''),authHash('#cloudonly'),authHash('#gate'),authHash('#access_token=abc&type=signup')];
+    out.push(T('AC1 重設信連結：正常連結拿到憑證、過期連結回報錯誤、一般網址（#cloudonly、#gate）和非重設連結不處理',!!a&&a.access_token==='abc'&&a.refresh_token==='r1'&&a.expires_in===3600&&!!b&&b.err==='otp_expired'&&c.every(x=>x===null),`正常 ${a?'OK':'錯'}・過期 ${b?b.err:'錯'}・其他 ${c.map(x=>x===null?'不處理':'錯').join('／')}`));
+    ui.result=null;ui.acctPrev=false;ui.sheet={t:'set'};render();const no=!AUTH&&!document.querySelector('.sheet [data-act=logoutask]');
+    ui.acctPrev=true;render();const row=document.querySelector('.sheet [data-act=logoutask]');
+    out.push(T('AC2 設定頁「帳號」：沒登入時不顯示；登入時顯示 Email 和「登出」',(AUTH||no)&&!!row&&/登出/.test(row.textContent)&&/@/.test(row.textContent),`沒登入 ${no?'隱藏':'錯'}・有帳號 ${row?'有登出列':'找不到'}`));
+    const sw=document.documentElement.scrollWidth<=innerWidth,rr=row&&row.getBoundingClientRect(),sr=document.querySelector('.sheet').getBoundingClientRect();
+    out.push(T('AC3 「帳號」列在設定頁裡面、不會左右多出一截',sw&&!!rr&&rr.left>=sr.left&&rr.right<=sr.right+0.5,rr?`列 ${Math.round(rr.left)}～${Math.round(rr.right)}／頁 ${Math.round(sr.left)}～${Math.round(sr.right)}`:'找不到'));
+    row.click();const card=document.querySelector('.modal-card'),go=card&&card.querySelector('[data-act=logout]'),cancel=card&&card.querySelector('[data-act=rclose]');
+    out.push(T('AC4 按「登出」先跳確認小卡（確定登出／取消），不會直接登出',!!go&&!!cancel&&/取消/.test(cancel.textContent)&&!!ui.result&&ui.result.k==='logout',card?'有確認小卡':'沒有小卡'));
+    cancel&&cancel.click();out.push(T('AC5 按「取消」關掉小卡、帳號還在',!ui.result&&(AUTH?!!AUTH.user:true),ui.result?'小卡還在':'已關閉'));
+    return out}catch(e){return[T('AC 帳號登出／忘記密碼',false,e.message)]}
+  finally{ui.acctPrev=false;ui.sheet=sh0;ui.result=r0;render();scrollTo(0,y0)}}
