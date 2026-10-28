@@ -19,3 +19,4 @@ M. `15_stable6_v4.00.sql`：v4.00 安定值全部改成 +6，只換掉 `ac_stabl
 20. `20_fastkill_v4.73.sql`：v4.73 秒殺榜（fk 每人每關最快 1 筆、fk_feed 王關首殺／刷新第 1 名公告、fk_submit 核對雲端存檔已收復＋武器在存檔、fk_board 前 50 名、fk_feed_list）。不改 save_game、不改 ac_version。最後一行的 select 應該顯示 4.73。
 23. `23_fastkill_reset_v5.34.sql`：v5.34 怪物血量改成「偏難」表，秒殺榜重新開始（舊紀錄先備份到 fk_old_v473，再清空 fk、fk_feed）。不改 save_game、不改 ac_version。最後一行的 select 應該顯示 5.34、0、0、備份筆數。要先跑過 20。
 24. `24_relaunch_wipe_v5.35.sql`：v5.35 **重新開放前清空所有玩家進度**（只在開放當天、MAINT 改成 false 之前跑一次）。每張遊戲資料表先完整複製到 `bak_v535` 備份區再清空；保留帳號、admins、禁言名單、髒話名單和所有函式。不改 save_game、不改 ac_version。最後的 select 列出每張表的備份筆數和清空後筆數（清空後都要是 0）。重跑也安全（已經有備份就不會覆蓋）。
+25. `25_shop_bucket_v5.36.sql`：v5.36 save_game 的道具／材料額度把「花掉的金幣、鑽石」和「打開的英靈・遺物」算進去（商城一次買很多、一次開很多遺物不再被誤判作弊；同一筆錢不會同時抵道具和材料）。也補上 22 少掉的 `end $$;`（照 22 檔案貼會失敗）。最後的 select 應該顯示 5.36、true。要先跑過 08。
