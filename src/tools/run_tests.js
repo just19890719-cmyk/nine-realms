@@ -244,8 +244,8 @@ async function L4(browser){layer='4 BUG 回歸';
   for(const w of WIDTHS){const p=await open(browser,w,860);const r=await p.evaluate(async()=>{const o={};devdo('bsdot');await new Promise(z=>setTimeout(z,400));const m=document.querySelector('.bs .bs-mon');if(!m)return {err:'沒有戰鬥畫面'};
        m.querySelectorAll('.mon-pop').forEach(e=>e.remove());monPop(m,'poison','<i>中毒</i>-3',22);monPop(m,'poison','-3',22);monPop(m,'poison','-3',22);monPop(m,'bleed','<i>流血</i>-5',22);monPop(m,'hit','-9');monPop(m,'hit','-9');
        const q=k=>[...m.querySelectorAll(':scope>.mon-pop.'+k)];o.poison=q('poison').length;o.label=/中毒/.test(q('poison')[0]?.textContent||'');o.bleed=q('bleed').length;o.hit=q('hit').length;
-       await new Promise(z=>setTimeout(z,900));let mx=0,seen=0;for(let t=0;t<40;t++){const n=q('poison').length+0;mx=Math.max(mx,n);if(n)seen++;await new Promise(z=>setTimeout(z,100))}o.live={mx,seen};return o});
-   rec('BUG-020@'+w,'戰鬥畫面：同一種中毒／流血字只留最新一個（標籤保留），一般命中數字不受影響；雙刀 +12 實打 4 秒同時最多 1 個綠字',!r.err&&r.poison===1&&r.label&&r.bleed===1&&r.hit===2&&r.live.seen>0&&r.live.mx<=1,JSON.stringify(r));await p.context().close()}
+       await new Promise(z=>setTimeout(z,900));let mx=0,seen=0,op=0;for(let t=0;t<80;t++){const ps=q('poison'),n=ps.length;mx=Math.max(mx,n);if(n)seen++;ps.forEach(e=>op=Math.max(op,+getComputedStyle(e).opacity));await new Promise(z=>setTimeout(z,50))}o.live={mx,seen,op:+op.toFixed(2)};return o});
+   rec('BUG-020@'+w,'戰鬥畫面：同一種中毒／流血字只留最新一個（標籤保留），一般命中數字不受影響；雙刀 +12 實打 4 秒同時最多 1 個綠字、而且看得清楚（不透明度到 0.8 以上）',!r.err&&r.poison===1&&r.label&&r.bleed===1&&r.hit===2&&r.live.seen>0&&r.live.mx<=1&&r.live.op>=.8,JSON.stringify(r));await p.context().close()}
 }
 
 /* ---------- 第 5 層：手機畫面 360／390／440 ---------- */
