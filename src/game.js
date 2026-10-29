@@ -335,7 +335,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='5.41';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='5.42';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1333,6 +1333,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'5.42',d:'10/29',t:'戰鬥畫面：中毒、流血的數字不再疊在一起',b:['雙刀中毒、斧頭流血這種連續小傷害，同一種同時只顯示一個數字，會直接換成最新的數字，不會好幾個綠字蓋在一起','傷害、觸發機率、攻擊節奏都沒有改'],g:[]},
  {v:'5.41',d:'10/29',t:'單手劍打狼更有打擊感（先在 1-3、1-4 試）',b:['單手劍舉刀停久一點、砍下更快，砍到時會停一下','狼被砍到先頓一下，再快速往後退、慢慢回原位','狼撲過來的時候被砍，只會閃光跳數字，不會同時往後退','先套在 1-3 哈提、1-4 斯庫爾；傷害、攻速、收成都沒有改'],g:[]},
  {v:'5.40',d:'10/29',t:'戰鬥畫面微調：錘的震動、兩段傷害數字、受擊光',b:['錘只有打出「震碎」時戰鬥畫面才會震，普通錘擊不再每一下都震','長柄「貫穿」這種兩段攻擊，第二個傷害數字會自動往下讓開，不會疊在第一個上面','怪物被打中時改成用自己的顏色變亮，冰狼這種淺色的怪物不會再變成黃白色','只改畫面，傷害、收成、掉落和存檔都沒有改'],g:[]},
  {v:'5.39',d:'10/28',t:'戰鬥畫面：打中有火花、新的傷害數字、怪物被打倒會倒下',b:['展開村莊的戰鬥畫面或限時挑戰時，騎士打中怪物會在怪物身上爆出火花；會心、穿心、震碎等附加效果觸發和錘的重擊，火花更大','傷害數字換成鍛造金屬字：一般是銀白鋼字、會心和重擊是熔金字；怪物受擊時改成被火光照亮的暖色（原本整隻變白）','怪物被打倒會往後倒、沉下去消失，下一隻再從後方走進來（原本只是閃一下就在原地出現）','戰鬥畫面地面多了一層慢慢飄動的霧氣，還有火星往上飄，跟鐵匠鋪同一套','會心時怪物會震一下，錘的重擊會讓整個戰鬥畫面輕震；一般命中和擊倒不震；血條改成只扣血，不再跟著每一下抖','只改畫面，收成、掉落、挑戰秒數和評級都沒有改'],g:[]},
@@ -2420,8 +2421,14 @@ function vMon(i,k,bs){const art=MON_ART.includes(i);return `<div class="vmon ${k
 // v5.39 戰鬥畫面傷害數字美術字（AI 合圖 art/fx_dmg_n 銀白、fx_dmg_c 熔金；一排 0～9 和減號，DMG_W＝每個字的寬／高）
 const DMG_W=[.464,.312,.46,.44,.488,.428,.468,.468,.488,.46,.404];
 const dmgArt=(t,c)=>`<span class="dmg ${c?'c':'n'}">${[...t].map(ch=>{const i=ch==='-'?10:+ch;return `<span style="--i:${i};--w:${DMG_W[i]}"></span>`}).join('')}</span>`;
-function monPop(el,kind,txt,dx,big){if(el.classList.contains('bs-mon')&&/^(hit|crit|buff)$/.test(kind))txt=txt.replace(/-([\d,]+)$/,(x,d)=>dmgArt('-'+d.replace(/,/g,''),big||kind==='crit'));if(!(el.classList.contains('bs-mon')&&/bleed|poison/.test(kind))){el.classList.remove('hit','kill','poise');void el.offsetWidth;el.classList.add(kind==='kill'?'kill':'hit');if(kind!=='kill'&&el.closest('.bs.sv')&&bsLunging(el))el.classList.add('poise')}   // v4.20 戰鬥條：流血／中毒的小傷害不播受擊
-  const n=document.createElement('span');n.className='mon-pop '+kind;n.innerHTML=txt;if(dx)n.style.marginLeft=dx+'px';el.appendChild(n);setTimeout(()=>n.remove(),kind==='kill'?1100:kind==='crit'?1000:800);
+// v5.42 P2-01（BUG-020）：戰鬥框裡同一種持續傷害（中毒／流血）同時只留一個字，標籤（例：中毒）帶到新字上。
+// 原本雙刀 +12 觸發中毒時約 0.1 秒跳一個綠字、每個飄 0.8 秒，最多 8 個疊在一起。
+// 舊字還不到 0.4 秒就直接換成新數字、繼續飄（不重播動畫，不然每 0.1 秒重新淡入會一直看不清楚）；超過 0.4 秒才收掉、跳新的字。只改顯示，傷害、機率、節奏都不變
+function dotMerge(el,kind,txt){if(!el.classList.contains('bs-mon')||!/^(bleed|poison)$/.test(kind))return {txt};const now=performance.now();let keep=null;
+  el.querySelectorAll(':scope>.mon-pop.'+kind).forEach(o=>{const l=o.querySelector('i');if(l&&!/<i>/.test(txt))txt=l.outerHTML+txt;if(!keep&&now-o._t0<400)keep=o;else o.remove()});
+  if(keep)keep.innerHTML=txt;return {txt,keep}}
+function monPop(el,kind,txt,dx,big){const dm=dotMerge(el,kind,txt);txt=dm.txt;if(el.classList.contains('bs-mon')&&/^(hit|crit|buff)$/.test(kind))txt=txt.replace(/-([\d,]+)$/,(x,d)=>dmgArt('-'+d.replace(/,/g,''),big||kind==='crit'));if(!(el.classList.contains('bs-mon')&&/bleed|poison/.test(kind))){el.classList.remove('hit','kill','poise');void el.offsetWidth;el.classList.add(kind==='kill'?'kill':'hit');if(kind!=='kill'&&el.closest('.bs.sv')&&bsLunging(el))el.classList.add('poise')}   // v4.20 戰鬥條：流血／中毒的小傷害不播受擊
+  const n=dm.keep||document.createElement('span');if(!dm.keep){n.className='mon-pop '+kind;n.innerHTML=txt;n._t0=performance.now();if(dx)n.style.marginLeft=dx+'px';el.appendChild(n);setTimeout(()=>n.remove(),kind==='kill'?1100:kind==='crit'?1000:800)}
   if(kind!=='kill'){const sl=document.createElement('i');sl.className='mon-slash';el.appendChild(sl);setTimeout(()=>sl.remove(),350)}
   if(el.classList.contains('bs-mon')&&/^(hit|crit|buff)$/.test(kind)){const c=big||kind==='crit',f=document.createElement('i');f.className='bs-fx'+(c?' big':'');f.style.setProperty('--fx',(dx||0)+'px');f.innerHTML=`<img src="${A(c?'fx_hit_c':'fx_hit_n')}" alt="">`;el.appendChild(f);setTimeout(()=>f.remove(),c?420:360);popAvoid(el,n);bsShake(el,kind==='crit'?(big?2:1):0)}}
 // v5.41 狼正在撲過來（bsLunge 72%～93% 那一段）就回傳 true，被打時只閃光、不後退（方案 3-C）
@@ -2757,6 +2764,7 @@ function viewShop(){   // v5.17 換成道具欄母版（.b2）：主框、次面
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'5.42',t:'P2-01（BUG-020）：dotMerge——.bs-mon 裡同種 bleed／poison 的 .mon-pop 同時只留一個：舊字 <0.4 秒直接換數字（不重播動畫），否則移除再跳新字；<i> 標籤帶到新字；只改顯示',b:[['bsdot','1-3 換成雙刀 +12＋附加效果必定觸發，展開戰鬥畫面看中毒字'],['bsdotax','1-3 換成斧 +12＋附加效果必定觸發，看流血字']]},
  {v:'5.41',t:'單手劍 VS 狼第一階段：.bs.c-sw.sv（BS_SV＝1-3、1-4）用 kn-sv0～11 新節奏（k8 仍 450ms 起、一刀 1000ms），受擊 bsHitSv（70ms 停頓→60ms 退到最遠＋壓扁→慢回，480ms），撲擊中（bsLunge 72%～93%）被打加 .poise 不後退',b:[['bssv','1-3 哈提、1-4 斯庫爾都換成單手劍 +6，展開 1-3 戰鬥畫面'],['bssv4','展開 1-4 斯庫爾（冰狼）戰鬥畫面']]},
  {v:'5.40',t:'受擊光改成怪物自己的顏色加亮（brightness 2.4＋saturate 1.5，高峰 .7，冰狼不變黃）；bsShake 同元素先取消舊的震動；錘只有震碎（kind crit＋hv）才震場景；popAvoid 讓多段傷害數字往下避開重疊；screens.js 加「戰鬥畫面」「限時挑戰」兩個測試畫面',b:[['bsflash','受擊光示範：1-4 冰狼普通受擊＋會心受擊，被打時保持藍色'],['bsshake','震動示範：會心（只有怪物震）→ 普通錘擊（不震）→ 錘震碎（整個戰鬥場景震）'],['bspierce','兩段數字示範：長柄貫穿 6 位數，第二個數字應該在第一個下面、不重疊']]},
  {v:'5.39',t:'戰鬥畫面傷害數字美術字：monPop 在 .bs-mon 的 hit／crit／buff 把「-數字」換成 dmgArt（art/fx_dmg_n 銀、fx_dmg_c 熔金，11 格 0～9 和減號，DMG_W 每字寬；不顯示千分位逗號；流血／中毒維持文字）。受擊光 .bs-hb .fl 由純白剪影改暖色 filter。命中特效：monPop 在 .bs-mon 上的 hit／crit／buff 加 .bs-fx（art/fx_hit_n、fx_hit_c，AI 合圖 6 格 steps(6) 0.3／0.36 秒；會心和錘 hv 用大的；流血／中毒不播）。擊倒演出：.bs-mon.kill 改用 bsDie（1.1 秒：後倒沉下淡出→從後方淡入，跟血條 refill 1.1 秒對齊），卡片小圖 .vmon.kill 不變。震動：bsShake（WAAPI translate，不跟 transform 動畫衝突）會心只震 .bs-hb 0.1 秒、hv 重擊震 .bs-bg／.bs-mon／.bs-kn 0.14 秒，一般命中與擊倒不震；monPaint／chHit 拿掉 .hpbar／.ch-hp 的 shake、shake2（血條不抖）。前景：.bs-fog 霧氣（art/dp/fog_band，transform 往左飄一格）＋4 顆 .bs-em 火星（bsFog／bsEmber 已加進 ANIM_SYNC，重畫不重播）',b:[['bsall','7 種武器各駐守 1-1～1-7（看一般命中）'],['bsproc',()=>`附加效果必定觸發：${ui.bsProc?'開':'關'}（看大火花）`],['bskill','1-1 展開戰鬥畫面，約 1 秒後擊倒（再按換下一種武器）']]},
@@ -2899,6 +2907,8 @@ function sheetDev(){
 }
 
 
+// v5.42 開發者工具：1-3 換成雙刀／斧 +12、附加效果必定觸發，看中毒／流血字有沒有疊在一起（BUG-020）
+function bsDotDemo(c){devdo('bsall');const b=BPS.filter(x=>x.cat===c).sort((x,y)=>x.t-y.t)[0],st=S.villages[2],w=makeWeapon(b.id,2,12);st.weaponId=w.id;st.cycleStart=NOW()-dur(2,w)*.3;delete MONFX.hp[2];ui.bsProc=true;Object.keys(KHIT).forEach(k=>delete KHIT[k]);ui.bsOpen=2;render();setTimeout(()=>document.querySelector('.bs')?.scrollIntoView({block:'center'}),50);toast((c==='dagger'?'雙刀中毒':'斧流血')+'：同一種持續傷害只留最新一個數字（附加效果必定觸發已開）','ok')}
 function devdo(k){if(k.startsWith('gd')||k==='fropen'){ui.sheet=null;   // v3.98 好友＋公會測試
     const mk=['gdnone','gdlead','gdmem','gdlv5'].includes(k);if(mk&&!chatMock()){ui.sheet={t:'d'};render();return toast('模擬按鈕只在本機未登入時可用','bad')}
     if(mk){if(k!=='gdlv5')GD.mock=null;gdMockInit();const m=GD.mock;if(k==='gdnone'){m.g=null;m.me.cd=null}else{m.g=m.g||{id:1,name:'霜狼鍛造會',emb:'霜',notice:'每週日晚上一起衝首領，記得捐獻！',join:'open',exp:3860};m.role=k==='gdlead'?'lead':'mem';if(k==='gdlead')m.mem.forEach(x=>{if(x.role==='lead')x.role='mem'});else if(!m.mem.some(x=>x.role==='lead'))m.mem[0].role='lead';if(k==='gdlv5')m.g.exp=Math.max(m.g.exp,GD_LV[4])}GD.mk=false;GD.edit=false;GD.tab='mem';return gdOpen()}
@@ -3147,6 +3157,8 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
      ui.sheet=null;ui.tab='village';ui.realm=i>=10?1:0;ui.bsOpen=i;toast(`${k+1}/${n}：${Math.floor(i/10)+1}-${i%10+1} ${MONS[i]}（錘 +6）`,'ok');render();setTimeout(()=>document.querySelector('.bs')?.scrollIntoView({block:'center'}),50)},
    bsshake:()=>{if(!document.querySelector('.bs'))devdo('bsall');setTimeout(()=>{const m=document.querySelector('.bs [data-mon]');if(!m)return toast('先展開一個戰鬥畫面','bad');m.closest('.bs').scrollIntoView({block:'center'});monPop(m,'crit','<i>會心</i>-888',0);setTimeout(()=>monPop(m,'hit','-1888',0,1),1000);setTimeout(()=>monPop(m,'crit','<i>震碎</i>-4888',0,1),2000)},300)},   // v5.39，v5.40 加普通錘擊、震碎
    bssv:()=>{devdo('bsall');const b=BPS.filter(x=>x.cat==='sword').sort((x,y)=>x.t-y.t)[0];[2,3].forEach(i=>{const st=S.villages[i],w=makeWeapon(b.id,2,6);st.weaponId=w.id;st.cycleStart=NOW()-dur(i,w)*.3;delete MONFX.hp[i]});Object.keys(KHIT).forEach(k=>delete KHIT[k]);ui.bsOpen=2;render();setTimeout(()=>document.querySelector('.bs')?.scrollIntoView({block:'center'}),50);toast('1-3 哈提、1-4 斯庫爾換成單手劍 +6：看舉刀、砍到停一下、狼先頓再退、撲過來被砍不後退','ok')},   // v5.41
+   bsdot:()=>bsDotDemo('dagger'),
+   bsdotax:()=>bsDotDemo('axe'),
    bssv4:()=>{if(!document.querySelector('.bs.sv'))devdo('bssv');ui.bsOpen=3;render();setTimeout(()=>document.querySelector('.bs')?.scrollIntoView({block:'center'}),50)},
    bsflash:()=>{devdo('bsall');ui.bsOpen=3;render();setTimeout(()=>{const m=document.querySelector('.bs [data-mon]');if(!m)return;m.closest('.bs').scrollIntoView({block:'center'});monPop(m,'hit','-1234',0);setTimeout(()=>monPop(m,'crit','<i>會心</i>-3456',0),1200)},300);toast('1-4 冰狼：普通受擊 → 1.2 秒後會心受擊，被打時要看得出藍色','ok')},   // v5.40
    bspierce:()=>{if(!document.querySelector('.bs'))devdo('bsall');setTimeout(()=>{const m=document.querySelector('.bs [data-mon]');if(!m)return toast('先展開一個戰鬥畫面','bad');m.closest('.bs').scrollIntoView({block:'center'});monPop(m,'hit','-123456',-24);setTimeout(()=>monPop(m,'crit','<i>貫穿</i>-234567',24),150)},300)},   // v5.40
