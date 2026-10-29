@@ -1568,7 +1568,7 @@ html.scrimmed .cbar{display:none}
 .bs-hb img{position:absolute;inset:0;width:100%;height:100%}
 .bs-hb .atk{opacity:0;animation:bsAtk calc(var(--K)*var(--n)) infinite step-end;animation-delay:var(--dp)}
 .bs-hb .idle{animation:bsIdle calc(var(--K)*var(--n)) infinite step-end;animation-delay:var(--dp)}
-.bs-hb .fl{opacity:0;filter:brightness(1.3) sepia(1) saturate(5) hue-rotate(-28deg)}   /* v5.39 受擊光：原本整隻變純白剪影，改成怪物本身被火光照亮的暖色（Mochi 戰鬥視覺計畫） */
+.bs-hb .fl{opacity:0;filter:brightness(2.4) saturate(1.5)}   /* v5.40 受擊光改用怪物自己的顏色加亮（Mochi 視覺驗收：冰狼不可變黃白）：不再轉成暖色，冰狼保持藍色、紋理看得到；深色怪物變亮的幅度跟原本暖色光差不多 */
 .bs-mon.pt .fl{filter:brightness(2.2)}
 .bs-hb .tn{opacity:0;transition:opacity .25s}
 .bs-mon.t-bleed .tn{opacity:.45;filter:sepia(1) saturate(5) hue-rotate(-35deg)}
@@ -1604,7 +1604,7 @@ html.scrimmed .cbar{display:none}
 .bs.c-sp{--A:7%;--R:-4.2deg;--hd:480ms}.bs.c-bw{--A:6%;--R:-3.6deg;--hd:440ms}.bs.c-cb{--A:9%;--R:-5.4deg;--hd:520ms}
 @keyframes bsBreath{0%,100%{transform:none}50%{transform:scale(1.015,1.03)}}
 @keyframes bsHit{0%{transform:translateX(calc(var(--A)*-.25))}10%{transform:translate(calc(var(--A)*-.15),-1px)}20%{transform:translate(calc(var(--A)*-.3),1px)}30%{transform:translateX(calc(var(--A)*-1)) rotate(var(--R))}55%{transform:translateX(calc(var(--A)*-.35)) rotate(calc(var(--R)*.3))}100%{transform:none}}
-@keyframes bsFlash{0%{opacity:.75}20%{opacity:.5}30%{opacity:.2}45%,100%{opacity:0}}
+@keyframes bsFlash{0%{opacity:.7}20%{opacity:.45}30%{opacity:.2}45%,100%{opacity:0}}   /* v5.40 受擊光：疊的是怪物自己加亮的顏色，不會蓋掉原色，所以高峰用 .7 讓命中看得清楚 */
 @keyframes bsLunge{0%,72%{transform:none}76%,88%{transform:translateX(8%)}93%,100%{transform:none}}
 @keyframes bsIdle{0%{opacity:1}72%{opacity:0}91%{opacity:1}}
 @keyframes bsAtk{0%{opacity:0}72%{opacity:1}91%{opacity:0}}

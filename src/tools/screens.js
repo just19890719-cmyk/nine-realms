@@ -5,4 +5,7 @@ module.exports=[['鐵匠鋪','forge',null],['道具欄武器','armory',p=>p.eval
   ['武器小卡','armory',p=>p.evaluate(()=>{const w=S.weapons.find(x=>!x.test)||makeWeapon(BPS.find(x=>!x.dev&&!x.unlock).id,0,6);ui.sheet={t:'w',id:w.id,m:'main'};render()})],
   ['強化小卡','armory',p=>p.evaluate(()=>{const w=makeWeapon(BPS.find(x=>!x.dev&&!x.unlock).id,0,6);ui.sheet={t:'w',id:w.id,m:'enh'};render()})],
   ['附魔小卡','armory',p=>p.evaluate(()=>{const w=makeWeapon(BPS.find(x=>!x.dev&&!x.unlock).id,0,3);ui.sheet={t:'w',id:w.id,m:'ench'};render()})],
-  ['設定頁','forge',p=>p.evaluate(()=>{ui.sheet={t:'set'};render()})]];
+  ['設定頁','forge',p=>p.evaluate(()=>{ui.sheet={t:'set'};render()})],
+  // v5.40 戰鬥畫面（Mochi 2026-10-29 指示加入）：1-1 展開戰鬥畫面、1-1 限時挑戰。放在最後，前面畫面的存檔狀態才不會變
+  ['戰鬥畫面','village',p=>p.evaluate(()=>{const st=S.villages[0];if(st.weaponId==null){const w=makeWeapon(BPS.find(x=>!x.dev&&!x.unlock).id,0,6);deliverCore(0,w.id)}ui.bsOpen=0;render()})],
+  ['限時挑戰','village',p=>p.evaluate(()=>{const st=S.villages[0];if(st.weaponId==null){const w=makeWeapon(BPS.find(x=>!x.dev&&!x.unlock).id,0,6);deliverCore(0,w.id)}chStart(0,st.weaponId)})]];
