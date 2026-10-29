@@ -2574,4 +2574,12 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 .fg2 .qimg.wart:not(#_),.v3 .wmini.wart:not(#_){background:url(art/ui/bag2/bag2_slot.webp) center/100% 100% no-repeat}
 /* v5.34 道具欄母版彈窗（標題列透明）往下捲時：標題列補上暗底，上方留白也蓋住，內容不會疊在標題上 */
 .sheet.shd:is(.k2,.q2,.s2,.v2,.c2,.g3) .sheet-head:not(#_):not(#_):not(#_){background:linear-gradient(#555,#555),url(art/ui/bag2/bag2_main_tex.webp) center top/100% auto no-repeat,#0b0d10;background-blend-mode:color-dodge,normal,normal;box-shadow:0 -40px 0 #0b0d10,0 8px 10px -4px rgba(0,0,0,.85)}
+/* v5.39 戰鬥畫面前景：霧氣（fog_band 一格寬＝4 倍高，往左飄一格剛好接上）＋往上飄的火星，在角色前面、傷害數字後面 */
+.bs-fog{position:absolute;left:0;bottom:-6px;height:var(--fh,46px);width:calc(100% + 4*var(--fh,46px));z-index:4;pointer-events:none;background:url(art/dp/fog_band.webp) 0 100%/auto 100% repeat-x;opacity:.4;animation:bsFog 18s linear infinite}
+.ch-fight .bs-fog{--fh:60px}
+@keyframes bsFog{from{transform:none}to{transform:translateX(calc(-4*var(--fh,46px)))}}
+.bs-em{position:absolute;bottom:6%;width:18px;opacity:0;z-index:4;pointer-events:none;animation:bsEmber 4.4s linear infinite}
+.bs-em.e0{left:30%;animation-delay:-.6s}.bs-em.e1{left:52%;width:16px;animation-duration:5.2s;animation-delay:-2.9s}.bs-em.e2{left:71%;width:14px;animation-duration:3.8s;animation-delay:-1.7s}.bs-em.e3{left:14%;width:22px;animation-duration:6s;animation-delay:-4.1s}
+@keyframes bsEmber{0%{opacity:0;transform:translate(0,0) scale(.7)}12%{opacity:1}70%{opacity:.75}100%{opacity:0;transform:translate(14px,-90px) scale(.35) rotate(80deg)}}
+@media(prefers-reduced-motion:reduce){.bs-fog,.bs-em{animation:none}.bs-em{display:none}}
 </style>

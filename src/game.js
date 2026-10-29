@@ -1333,7 +1333,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
- {v:'5.39',d:'10/28',t:'戰鬥畫面：打中有火花、新的傷害數字、怪物被打倒會倒下',b:['展開村莊的戰鬥畫面或限時挑戰時，騎士打中怪物會在怪物身上爆出火花；會心、穿心、震碎等附加效果觸發和錘的重擊，火花更大','傷害數字換成鍛造金屬字：一般是銀白鋼字、會心和重擊是熔金字；怪物受擊時改成被火光照亮的暖色（原本整隻變白）','怪物被打倒會往後倒、沉下去消失，下一隻再從後方走進來（原本只是閃一下就在原地出現）','只改畫面，收成、掉落、挑戰秒數和評級都沒有改'],g:[]},
+ {v:'5.39',d:'10/28',t:'戰鬥畫面：打中有火花、新的傷害數字、怪物被打倒會倒下',b:['展開村莊的戰鬥畫面或限時挑戰時，騎士打中怪物會在怪物身上爆出火花；會心、穿心、震碎等附加效果觸發和錘的重擊，火花更大','傷害數字換成鍛造金屬字：一般是銀白鋼字、會心和重擊是熔金字；怪物受擊時改成被火光照亮的暖色（原本整隻變白）','怪物被打倒會往後倒、沉下去消失，下一隻再從後方走進來（原本只是閃一下就在原地出現）','戰鬥畫面地面多了一層慢慢飄動的霧氣，還有火星往上飄，跟鐵匠鋪同一套','只改畫面，收成、掉落、挑戰秒數和評級都沒有改'],g:[]},
  {v:'5.38',d:'10/28',t:'秒殺榜加上伺服器檢查',b:['上傳秒殺紀錄時，伺服器會用那把武器（強化等級、屬性附魔、圖鑑加成）算出「運氣最好也不可能更快」的秒數，比這個還快的紀錄不會上榜','正常打出來的紀錄運氣再好也不會被擋；被擋的話結算畫面會顯示原因','挑戰、評級、獎勵都沒有改'],g:['vil']},
  {v:'5.37',d:'10/28',t:'七日簽到獎勵換新',b:['七日簽到改成以道具為主：第 1 天 3,000 金幣、第 2 天強化石 ×5、第 3 天附魔石 ×3、第 4 天綠光遺物 ×3、第 5 天強化石 ×10、第 6 天藍光遺物 ×2、第 7 天 100 鑽石＋紅光遺物 ×1','漏簽不會歸零、第 7 天領完從第 1 天重新開始，規則不變'],g:['shop']},
  {v:'5.35',d:'10/28',t:'可以自己登出、忘記密碼可以重設',b:['設定頁（右上角齒輪）多了「帳號」：可以看到登入的 Email，按「登出」再確認一次就會登出，進度會先存到雲端','登入畫面多了「忘記密碼？」：輸入 Email 後會寄一封重設信，點信裡的連結回到遊戲就能設定新密碼，設定完直接登入'],g:[]},
@@ -2467,7 +2467,8 @@ function vStrip(i,w){if(!vStrip.warm){vStrip.warm=1;['fx_hit_n','fx_hit_c'].forE
   const kn=KN[bpOf(w).cat],t=performance.now(),full=KN_FULL.includes(i),m='mon_'+(i+1);
   return `<div class="bs c-${kn.k}" data-act="bsclose" role="button" aria-label="收起戰鬥畫面" style="--n:${kn.n};--d:-${Math.round(t%kn.K)}ms;--dp:-${Math.round(t%(kn.K*kn.n))}ms">${img('v'+(i+1),'bs-bg'+(BS_BGP[i]?' bgp-'+BS_BGP[i]:''))}<i class="bs-gd"></i>
    <div class="bs-mon ${full?'':'pt'}" data-mon="${i}"><div class="bs-br"><div class="bs-hb">${full?img(m+'_idle','idle',MONS[i])+img(m+'_atk','atk'):img(m,'idle',MONS[i])}${full?['tn','fl'].map(c=>`<i class="${c}">${img(m+'_idle','idle')}${img(m+'_atk','atk')}</i>`).join(''):img(m,'tn')+img(m,'fl')}</div></div></div>
-   <div class="bs-kn">${Array.from({length:12},(_,f)=>img(`kn_${kn.k}_${f}`,'k'+f)).join('')}</div></div>`}
+   <div class="bs-kn">${Array.from({length:12},(_,f)=>img(`kn_${kn.k}_${f}`,'k'+f)).join('')}</div>
+   <i class="bs-fog"></i>${['fx_ember1','fx_ember_trail','fx_ember1','fx_ember_cluster'].map((n,k)=>`<img class="bs-em e${k}" src="${A('dp/'+n)}" alt="">`).join('')}</div>`}   // v5.39 前景霧氣＋火星（鐵匠鋪已驗收素材 art/dp）
 // 打中才扣血，扣掉的量＝跳出的傷害數字；每輪開始時依「血條落後時間多少」算倍率 f（0.6～1.6），爆擊多扣的會在之後幾輪少扣補回；
 // 血條最多只能比時間超前一點點，所以最後一下剛好打倒；看不到時直接對齊剩餘時間
 function monShot(i,sh,f,dx){const h=MONFX.hp[i];if(!h||h.refill||h.full||document.hidden)return;const m=document.querySelector(`#view [data-mon="${i}"]`),[,mul,kind='hit',lab]=sh;
@@ -2737,7 +2738,7 @@ function viewShop(){   // v5.17 換成道具欄母版（.b2）：主框、次面
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
- {v:'5.39',t:'戰鬥畫面傷害數字美術字：monPop 在 .bs-mon 的 hit／crit／buff 把「-數字」換成 dmgArt（art/fx_dmg_n 銀、fx_dmg_c 熔金，11 格 0～9 和減號，DMG_W 每字寬；不顯示千分位逗號；流血／中毒維持文字）。受擊光 .bs-hb .fl 由純白剪影改暖色 filter。命中特效：monPop 在 .bs-mon 上的 hit／crit／buff 加 .bs-fx（art/fx_hit_n、fx_hit_c，AI 合圖 6 格 steps(6) 0.3／0.36 秒；會心和錘 hv 用大的；流血／中毒不播）。擊倒演出：.bs-mon.kill 改用 bsDie（1.1 秒：後倒沉下淡出→從後方淡入，跟血條 refill 1.1 秒對齊），卡片小圖 .vmon.kill 不變',b:[['bsall','7 種武器各駐守 1-1～1-7（看一般命中）'],['bsproc',()=>`附加效果必定觸發：${ui.bsProc?'開':'關'}（看大火花）`],['bskill','1-1 展開戰鬥畫面，約 1 秒後擊倒（再按換下一種武器）']]},
+ {v:'5.39',t:'戰鬥畫面傷害數字美術字：monPop 在 .bs-mon 的 hit／crit／buff 把「-數字」換成 dmgArt（art/fx_dmg_n 銀、fx_dmg_c 熔金，11 格 0～9 和減號，DMG_W 每字寬；不顯示千分位逗號；流血／中毒維持文字）。受擊光 .bs-hb .fl 由純白剪影改暖色 filter。命中特效：monPop 在 .bs-mon 上的 hit／crit／buff 加 .bs-fx（art/fx_hit_n、fx_hit_c，AI 合圖 6 格 steps(6) 0.3／0.36 秒；會心和錘 hv 用大的；流血／中毒不播）。擊倒演出：.bs-mon.kill 改用 bsDie（1.1 秒：後倒沉下淡出→從後方淡入，跟血條 refill 1.1 秒對齊），卡片小圖 .vmon.kill 不變。前景：.bs-fog 霧氣（art/dp/fog_band，transform 往左飄一格）＋4 顆 .bs-em 火星（bsFog／bsEmber 已加進 ANIM_SYNC，重畫不重播）',b:[['bsall','7 種武器各駐守 1-1～1-7（看一般命中）'],['bsproc',()=>`附加效果必定觸發：${ui.bsProc?'開':'關'}（看大火花）`],['bskill','1-1 展開戰鬥畫面，約 1 秒後擊倒（再按換下一種武器）']]},
  {v:'5.38',t:'秒殺榜伺服器檢查：fk_submit 用雲端存檔的武器算最快可能秒數（附加效果全中 ×2.5、Boss 特效 ×1.3、+2%＋1 誤差），比它快 0.3 秒以上回 fast 並記 ac_log（sql/26）；遊戲端 fkMin 同算法，被擋時結算畫面顯示原因',b:[['fkmin538','每關最快可能秒數表（最好一般武器 +0／+6／+12，跟 chEst 比）'],['fkfast538','模擬伺服器擋下：1-1 結算畫面顯示「沒有上榜」']]},
  {v:'5.37',t:'七日簽到 SIGN 改成道具為主（3000 金幣／強化石×5／附魔石×3／綠光遺物×3／強化石×10／藍光遺物×2／100 鑽＋紅光遺物×1），GUIDE shop v5.37',b:[['shopsg','打開商城（今天可簽到）'],['sg_d7','跳到第 7 天（看兩樣獎勵的格子）'],['sg_reset','今天可以再簽到一次']]},
  {v:'5.35',t:'玩家自己登出（設定頁「帳號」→ 登出確認小卡）、忘記密碼（登入畫面 → 寄 Supabase 重設信 → 信裡連結帶 #type=recovery 回來設定新密碼並登入）；sql/24 重新開放前清空進度（先備份到 bak_v535）',b:[['acct535','設定頁「帳號」區塊（假 Email 預覽）'],['logoutask','登出確認小卡'],['pwforgot','忘記密碼畫面（預覽，不會真的寄信）'],['pwreset','設定新密碼畫面（預覽，不會真的改）'],['pwhash','解析重設連結網址（正常／過期／一般網址）']]},
@@ -3227,7 +3228,7 @@ function render(){
 }
 // v5.15 BUG-013 render() 每次重建 DOM，新元素上的循環動畫（紅點呼吸、收成按鈕脈動）會從頭播 → 看起來一直閃。
 // 這裡把這些循環動畫的起點對齊到頁面時間軸 0，重畫前後相位一樣。新增會被 render() 重建的循環動畫：把動畫名稱加進 ANIM_SYNC（或像 +9 裂縫用負的 animation-delay），run_tests.js 會檢查。
-const ANIM_SYNC=new Set(['givePulse','pulseO','pulse','b2crk','frun']);   // v5.18 +9 裂縫呼吸（b2crk）、+9 小卡跑框（frun）也改用這裡對齊（原本用產生畫面時的時間算負延遲，手機卡頓時會往前跳 0.1～0.6 秒）
+const ANIM_SYNC=new Set(['givePulse','pulseO','pulse','b2crk','frun','bsFog','bsEmber']);   // v5.18 +9 裂縫呼吸（b2crk）、+9 小卡跑框（frun）也改用這裡對齊（原本用產生畫面時的時間算負延遲，手機卡頓時會往前跳 0.1～0.6 秒）
 // v5.34 彈窗往下捲時標題列加暗底（.shd），內容不會從透明標題後面透出來；沒捲動時跟原本一樣
 function shdSync(n=document.querySelector('.sheet')){if(n)n.classList.toggle('shd',n.scrollTop>2)}
 if(typeof document!=='undefined')document.addEventListener('scroll',e=>{const t=e.target;if(t&&t.classList&&t.classList.contains('sheet'))shdSync(t)},{capture:true,passive:true});
