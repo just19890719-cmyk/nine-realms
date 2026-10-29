@@ -46,7 +46,8 @@ function kill(){killT=performance.now();
 window.DEMO={
   // 素材狀態：戰鬥卡片裡每一張 <img> 有沒有真的載入（naturalWidth>0），加上 style.css 背景圖（傷害數字、霧氣）各抽一張檢查
   assets:()=>{const im=[...document.querySelectorAll('#view img')],ok=im.filter(x=>x.complete&&x.naturalWidth>0).length,bad=im.filter(x=>x.complete&&!x.naturalWidth);
-    return {total:im.length,ok,bad:bad.length,pending:im.length-ok-bad.length,badUrls:[...new Set(bad.map(x=>x.currentSrc||x.src).concat(DEMO_IMGERR))].slice(0,5),css:CSSCHK,src:DEMO_SRC,probe:DEMO_PROBE}},
+    const urls=[...new Set(bad.map(x=>x.currentSrc||x.src).concat(DEMO_IMGERR))];   // DEMO_IMGERR 也算進去：命中特效這種只出現 0.4 秒的圖，失敗過也要顯示
+    return {total:im.length,ok,bad:urls.length,pending:im.length-ok-bad.length,badUrls:urls.slice(0,5),css:CSSCHK,src:DEMO_SRC,probe:DEMO_PROBE}},
   info:()=>({build:BUILD_ID,weapon:`${bp.n} +${lv}（攻擊力 ${fmt(power(w))}）`,cat,catN:CATS[cat],mon:`${vNo(mi)} ${MON_T[mi]}・${MONS[mi]}`,el:ELEM[MON_EL[mi]].n,mode,force,
     proc:procP(lv),special:(HIT_N[cat]||'').replace(/^.*附加效果/,'附加效果'),hp:H()?Math.ceil(H().cur/H().max*100):null,cycle:Math.round(dur(mi,w)/1000),
     width:innerWidth,blocked:DEMO_BLOCKED.slice(),log:log.slice(0,12).map(x=>({ago:Math.round((performance.now()-x.t)/100)/10,s:x.s,k:x.k}))}),
