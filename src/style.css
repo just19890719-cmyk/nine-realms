@@ -1604,7 +1604,7 @@ html.scrimmed .cbar{display:none}
 .bs.c-sp{--A:7%;--R:-4.2deg;--hd:480ms}.bs.c-bw{--A:6%;--R:-3.6deg;--hd:440ms}.bs.c-cb{--A:9%;--R:-5.4deg;--hd:520ms}
 @keyframes bsBreath{0%,100%{transform:none}50%{transform:scale(1.015,1.03)}}
 @keyframes bsHit{0%{transform:translateX(calc(var(--A)*-.25))}10%{transform:translate(calc(var(--A)*-.15),-1px)}20%{transform:translate(calc(var(--A)*-.3),1px)}30%{transform:translateX(calc(var(--A)*-1)) rotate(var(--R))}55%{transform:translateX(calc(var(--A)*-.35)) rotate(calc(var(--R)*.3))}100%{transform:none}}
-@keyframes bsFlash{0%{opacity:.75}20%{opacity:.5}30%{opacity:.2}45%,100%{opacity:0}}
+@keyframes bsFlash{0%{opacity:.45}20%{opacity:.3}30%{opacity:.12}45%,100%{opacity:0}}   /* v5.40 受擊光高峰 .75→.45（Mochi）：被打時看得出怪物原本的顏色 */
 @keyframes bsLunge{0%,72%{transform:none}76%,88%{transform:translateX(8%)}93%,100%{transform:none}}
 @keyframes bsIdle{0%{opacity:1}72%{opacity:0}91%{opacity:1}}
 @keyframes bsAtk{0%{opacity:0}72%{opacity:1}91%{opacity:0}}
