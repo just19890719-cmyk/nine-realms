@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-Hant-TW"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!-- 戰鬥展示測試頁的「戰鬥區」：直接載入 src/skin.js、src/game.js、src/style.css（跟正式遊戲同一份程式），
+     不呼叫 start()（不登入、不讀雲端、不綁定按鈕）。只能連自己網域：外部連線（Supabase 等）由 CSP 擋掉。 -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; frame-src 'none'; worker-src 'none'">
+<base href="../">
+<title>戰鬥展示（戰鬥區）</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;900&display=swap">
+<script>
+// ① 資料隔離：本頁的 localStorage／sessionStorage 換成記憶體版（重新整理就清空，不碰這個網域原本的遊戲存檔與登入憑證）
+(function(){const mem=()=>{const m=new Map();return{getItem:k=>m.has(k)?m.get(k):null,setItem:(k,v)=>{m.set(String(k),String(v))},removeItem:k=>{m.delete(String(k))},clear:()=>m.clear(),key:i=>[...m.keys()][i]??null,get length(){return m.size}}};
+  for(const n of ['localStorage','sessionStorage'])Object.defineProperty(window,n,{value:mem(),configurable:true});
+  window.DEMO_BLOCKED=[];const same=u=>{try{return new URL(u,location.href).origin===location.origin}catch(e){return false}};
+  const f=window.fetch.bind(window);window.fetch=(u,o)=>{const url=typeof u==='string'?u:u&&u.url;if(!same(url)){DEMO_BLOCKED.push(url);return Promise.reject(new TypeError('展示頁不連外部伺服器'))}return f(u,o)};
+  const op=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u,...r){if(!same(u)){DEMO_BLOCKED.push(u);throw new TypeError('展示頁不連外部伺服器')}return op.call(this,m,u,...r)};
+  window.WebSocket=function(u){DEMO_BLOCKED.push(u);throw new TypeError('展示頁不連外部伺服器')};
+  if(navigator.sendBeacon)navigator.sendBeacon=u=>{DEMO_BLOCKED.push(u);return false};
+  if(navigator.serviceWorker)try{navigator.serviceWorker.register=()=>Promise.reject(new Error('展示頁不註冊 Service Worker'))}catch(e){}})();
+</script>
+<style>
+/* 只藏掉戰鬥區以外的遊戲外框（上方資源列、下方導覽列、聊天列），戰鬥卡片本身的樣式完全照遊戲 */
+.ui-topbar.bar,.ui-navbar.nav,#cbar,#news{display:none!important}
+html{scrollbar-width:none}html::-webkit-scrollbar{display:none}   /* 手機沒有佔寬度的捲軸；桌機瀏覽器的捲軸會吃掉 15px，讓排版寬度跟手機不一樣 */
+#demo-msg{color:#c9b48a;font:14px/1.6 sans-serif;padding:16px}
+</style>
+</head><body>
+<div class="ui-topbar bar"><div class="bar-in"><div class="res" id="res"></div></div><div class="news" id="news"></div></div>
+<main class="wrap" id="view"><div id="demo-msg">載入遊戲程式中…</div></main>
+<div class="cbar" id="cbar"></div>
+<nav class="ui-navbar nav"><div class="nav-in" id="nav"></div></nav>
+<div id="layer"></div>
+<div id="fxl"></div>
+<div class="toasts" id="toasts"></div>
+<script>
+// ② 依序載入遊戲本體：style.css（檔案本身含 <style>）→ skin.js → game.js
+(async function(){
+  const msg=t=>{const e=document.getElementById('demo-msg');if(e)e.textContent=t};
+  try{const css=await (await fetch('src/style.css',{cache:'no-store'})).text();const h=document.createElement('div');h.innerHTML=css;h.querySelectorAll('style').forEach(s=>document.head.appendChild(s))}
+  catch(e){return msg('讀不到 src/style.css：'+e.message)}
+  for(const s of ['src/skin.js','src/game.js']){
+    const ok=await new Promise(r=>{const el=document.createElement('script');el.src=s+'?t='+Date.now();el.onload=()=>r(1);el.onerror=()=>r(0);document.body.appendChild(el)});
+    if(!ok)return msg('讀不到 '+s)}
+  const el=document.createElement('script');el.src='demo/battle-stage.js?t='+Date.now();document.body.appendChild(el);
+})();
+</script>
+</body></html>

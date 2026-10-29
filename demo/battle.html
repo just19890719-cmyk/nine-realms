@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="zh-Hant-TW"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-src 'self'">
+<title>戰鬥展示測試頁</title>
+<style>
+:root{--bg:#120f0c;--pan:#1d1813;--line:#4a3d2c;--tx:#e8dcc4;--mu:#a8987c;--gold:#d9b46a;--on:#7a5a22;--warn:#c4572f;--ok:#5f8f4a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.5 system-ui,"Noto Sans TC","PingFang TC",sans-serif}
+header{padding:10px 14px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:6px 16px;align-items:baseline}
+header h1{font-size:17px;margin:0;color:var(--gold)}
+header .src{color:var(--mu);font-size:12px}
+.lay{display:flex;flex-wrap:wrap;gap:14px;padding:14px;align-items:flex-start}
+.ctl{flex:1 1 320px;max-width:520px;display:flex;flex-direction:column;gap:10px}
+.box{background:var(--pan);border:1px solid var(--line);border-radius:6px;padding:10px 12px}
+.box h2{font-size:13px;margin:0 0 6px;color:var(--gold);font-weight:600}
+.row{display:flex;flex-wrap:wrap;gap:6px}
+button,select{font:inherit;color:var(--tx);background:#2a231b;border:1px solid var(--line);border-radius:4px;padding:5px 10px;cursor:pointer;min-height:32px}
+button:hover{border-color:var(--gold)}
+button.on{background:var(--on);border-color:var(--gold);color:#fff}
+button:disabled{opacity:.4;cursor:not-allowed}
+button.forced{border-color:var(--warn)}
+.muted{color:var(--mu);font-size:12px}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:600}
+.b-nat{background:var(--ok);color:#fff}.b-frc{background:var(--warn);color:#fff}
+dl{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;margin:0;font-size:13px}dt{color:var(--mu)}dd{margin:0}
+#log{font:12px/1.5 ui-monospace,monospace;max-height:180px;overflow:auto;margin:0;padding:0;list-style:none}
+#log li.f{color:#f0a080}
+.stagewrap{flex:0 0 auto;display:flex;flex-direction:column;gap:6px}
+.stagewrap .cap{color:var(--mu);font-size:12px}
+iframe{display:block;box-sizing:content-box;border:1px solid var(--line);background:#000;height:calc(100vh - 120px);min-height:560px;max-height:900px}
+table{border-collapse:collapse;font-size:12px;width:100%}td,th{border-bottom:1px solid var(--line);padding:3px 4px;text-align:left;vertical-align:top}th{color:var(--mu);font-weight:500}
+.na{color:var(--mu)}
+</style>
+</head><body>
+<header><h1>諸神鐵匠・戰鬥展示測試頁</h1>
+<span class="src" id="src"></span></header>
+<div class="lay">
+<div class="stagewrap">
+  <div class="cap" id="cap"></div>
+  <iframe id="stage" title="戰鬥區" width="390"></iframe>
+</div>
+<div class="ctl">
+  <div class="box"><h2>目前狀態</h2>
+    <div style="margin-bottom:6px"><span class="badge" id="badge"></span> <span class="muted" id="badgeN"></span></div>
+    <dl id="info"></dl>
+  </div>
+  <div class="box"><h2>優先驗收三項（v5.40）</h2>
+    <div class="row">
+      <button data-preset="hammer">① 錘：震碎時震動</button>
+      <button data-preset="polearm">② 長柄：貫穿數字避讓</button>
+      <button data-preset="ice">③ 冰狼：受擊顏色</button>
+    </div>
+    <div class="muted" id="presetN" style="margin-top:6px">按下後會切到該武器／怪物、單次攻擊模式，並強制觸發一次。之後可以繼續按下面的按鈕重複觸發。</div>
+  </div>
+  <div class="box"><h2>畫面寬度（戰鬥區實際用這個寬度排版）</h2>
+    <div class="row" id="widths"><button data-w="360">360px</button><button data-w="390">390px</button><button data-w="440">440px</button></div>
+  </div>
+  <div class="box"><h2>武器（該類別最低階圖紙、品質 2，跟開發者工具相同）</h2>
+    <div class="row" id="weps"></div>
+    <div class="row" style="margin-top:6px;align-items:center"><span class="muted">強化等級</span><select id="lv"><option value="0">+0</option><option value="6">+6</option><option value="9">+9</option><option value="12">+12</option></select><span class="muted">（影響附加效果自然觸發機率）</span></div>
+  </div>
+  <div class="box"><h2>怪物</h2>
+    <div class="row"><button data-mq="2">1-3 狼（哈提）</button><button data-mq="3">1-4 冰狼（斯庫爾）</button><select id="mon" aria-label="全部怪物"></select></div>
+  </div>
+  <div class="box"><h2>攻擊方式</h2>
+    <div class="row" id="modes"><button data-mode="auto">自動連續攻擊</button><button data-mode="single">單次攻擊</button></div>
+    <div class="row" style="margin-top:6px"><button id="force" class="forced">強制觸發附加效果：關</button></div>
+    <div class="row" style="margin-top:6px" id="singles">
+      <button data-s="natural">攻擊一次（照原本機率）</button>
+      <button data-s="normal" class="forced">強制一般命中</button>
+      <button data-s="special" class="forced">強制附加效果</button>
+    </div>
+    <div class="row" style="margin-top:6px"><button data-dev="bspierce" class="forced">開發者工具：長柄 6 位數兩段（假數字）</button><button data-dev="bsshake" class="forced">開發者工具：會心→錘擊→震碎（假數字）</button></div>
+    <div class="row" style="margin-top:6px"><button id="kill" class="forced">強制擊倒（看死亡與重生）</button><button id="reset">一鍵重設</button></div>
+    <div class="muted" style="margin-top:6px">單次攻擊：騎士照常揮動，按下後在「下一次揮到命中那一格」才結算一次（跟遊戲同一個時間點），所以會等 0～1.8 秒。紅框按鈕＝強制觸發，不代表自然機率已驗證。</div>
+  </div>
+  <div class="box"><h2>各武器附加效果（只用遊戲現有的）</h2><table id="fx"></table></div>
+  <div class="box"><h2>最近事件（戰鬥區實際打出的）</h2><ul id="log"></ul></div>
+</div>
+</div>
+<script>
+// 戰鬥程式來源：這個測試頁跟同一個 commit 的 src/game.js 一起載入，不另寫戰鬥動畫
+const SRC_BASE='main 34f138e（v5.40，PR #163 已合併）';
+const WEPS=[['sword','劍'],['axe','斧'],['dagger','雙刀'],['polearm','長柄'],['hammer','錘'],['bow','弓'],['crossbow','弩']];
+const FX={sword:['會心','×2.5（就是劍的附加效果）'],axe:['流血','之後再掉 3 次血'],dagger:['中毒','之後再掉 5 次血'],polearm:['貫穿','0.15 秒後追加一次 ×1.5'],hammer:['震碎','×1，之後 3 下各 +50%，觸發時震動整個戰鬥場景'],bow:['穿心','×2.5'],crossbow:['破甲','之後 6 下各 +25%']};
+const MONS=['1-1 林中魅妖・斯寇格拉','1-2 不死野豬・賽赫利姆尼爾','1-3 追月之狼・哈提','1-4 追日之狼・斯庫爾（冰）','1-5 戰場鴉魔・瓦爾拉文','1-6 深海巨怪・克拉肯','1-7 石皮巨魔・山怪特羅爾','1-8 泥巨人・莫庫卡爾菲','1-9 火焰騎兵・穆斯貝爾騎兵','1-10 守望之神・海姆達爾','2-1 九頭巨人・斯里瓦爾迪','2-2 狼群首領・鐵森林狼王','2-3 吞屍巨鷹・赫拉斯瓦爾格','2-4 巨人屍鬼・德勞格','2-5 冰湖水妖・諾克','2-6 洞穴蠕龍・林德蟲','2-7 風之巨人・卡瑞','2-8 幻術巨人王・烏特加德洛基','2-9 石心巨人・赫朗格尼爾','2-10 雷神・索爾'];
+const P={w:'sword',m:2,lv:6,mode:'auto',force:0,width:390};
+try{const q=new URLSearchParams(location.search);for(const k in P)if(q.has(k))P[k]=typeof P[k]==='number'?+q.get(k):q.get(k)}catch(e){}
+const $=s=>document.querySelector(s),stage=$('#stage'),D=()=>{try{return stage.contentWindow.DEMO}catch(e){return null}};
+// 網址是固定版本（例如 …/nine-realms/<commit>/demo/battle.html）時，顯示該版本
+const ref=(location.pathname.match(/nine-realms\/([0-9a-f]{7,40}|[^/]+)\/demo\//)||[])[1];
+$('#src').textContent='戰鬥程式來源：'+SRC_BASE+(ref?'｜本頁網址版本：'+ref.slice(0,12):'')+'｜測試資料只在記憶體，不連伺服器、不讀寫存檔';
+$('#weps').innerHTML=WEPS.map(([k,n])=>`<button data-w2="${k}">${n}</button>`).join('');
+$('#mon').innerHTML=MONS.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
+$('#fx').innerHTML='<tr><th>武器</th><th>附加效果（現有）</th><th>通用「會心」</th></tr>'+WEPS.map(([k,n])=>`<tr><td>${n}</td><td>${FX[k][0]}：${FX[k][1]}</td><td>${k==='sword'?'＝附加效果':'<span class="na">尚未實作</span>'}</td></tr>`).join('');
+let afterLoad=null;
+function load(){const q=new URLSearchParams({w:P.w,m:P.m,lv:P.lv,mode:P.mode,force:P.force?1:0});stage.width=P.width;stage.src='battle-stage.html?'+q;paint();
+  try{history.replaceState(null,'','?'+new URLSearchParams({...P,force:P.force?1:0}))}catch(e){}}
+stage.addEventListener('load',()=>{const t=setInterval(()=>{if(D()){clearInterval(t);if(afterLoad){const f=afterLoad;afterLoad=null;f()}}},100)});
+function paint(){
+  document.querySelectorAll('[data-w]').forEach(b=>b.classList.toggle('on',+b.dataset.w===P.width));
+  document.querySelectorAll('[data-w2]').forEach(b=>b.classList.toggle('on',b.dataset.w2===P.w));
+  document.querySelectorAll('[data-mq]').forEach(b=>b.classList.toggle('on',+b.dataset.mq===P.m));
+  document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('on',b.dataset.mode===P.mode));
+  document.querySelectorAll('[data-s]').forEach(b=>b.disabled=P.mode!=='single');
+  $('#mon').value=P.m;$('#lv').value=P.lv;$('#force').textContent='強制觸發附加效果：'+(P.force?'開':'關');$('#force').classList.toggle('on',!!P.force);
+  $('#cap').textContent=`戰鬥區寬 ${P.width}px（iframe 內實際排版寬度）`;
+}
+let lastForced=0;
+function info(){const d=D();if(!d)return;const o=d.info();const forced=o.force||(performance.now()-lastForced<4000);
+  $('#badge').textContent=forced?'強制觸發測試':'正常流程';$('#badge').className='badge '+(forced?'b-frc':'b-nat');
+  $('#badgeN').textContent=forced?'這段畫面是強制觸發，不能當作自然機率的驗證':'附加效果照原本機率（+'+P.lv+' 約 '+Math.round(o.proc*100)+'%）';
+  $('#info').innerHTML=[['版本','v'+o.build],['來源 commit',SRC_BASE+(ref?'｜網址版本 '+ref.slice(0,12):'')],['武器',o.weapon+'（'+o.catN+'）'],['附加效果',o.special],['怪物',o.mon+'（屬性 '+o.el+'）'],['攻擊方式',o.mode==='auto'?'自動連續攻擊（遊戲原本節奏）':'單次攻擊'],['怪物血量',o.hp==null?'—':o.hp+'%'],['一輪時間',o.cycle+' 秒（自動模式下這麼久才自然擊倒一隻）'],['戰鬥區寬度',o.width+'px'],['外部連線',o.blocked.length?'已攔截 '+o.blocked.length+' 次':'0 次（沒有連外）']].map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join('');
+  $('#log').innerHTML=o.log.map(x=>`<li class="${x.k?'f':''}">${x.ago.toFixed(1)} 秒前　${x.s}${x.k?'　〔'+x.k+'〕':''}</li>`).join('')}
+setInterval(info,400);
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const d=D();
+  if(b.dataset.w){P.width=+b.dataset.w;load();return}
+  if(b.dataset.w2){P.w=b.dataset.w2;load();return}
+  if(b.dataset.mq){P.m=+b.dataset.mq;load();return}
+  if(b.dataset.mode){P.mode=b.dataset.mode;d&&d.setMode(P.mode);paint();return}
+  if(b.id==='force'){P.force=P.force?0:1;d&&d.setForce(P.force);paint();return}
+  if(b.dataset.s){if(b.dataset.s!=='natural')lastForced=performance.now();d&&d.single(b.dataset.s==='natural'?null:b.dataset.s);return}
+  if(b.dataset.dev){lastForced=performance.now();d&&d.dev(b.dataset.dev);return}
+  if(b.id==='kill'){lastForced=performance.now();d&&d.kill();return}
+  if(b.id==='reset'){Object.assign(P,{mode:'auto',force:0});load();return}
+  if(b.dataset.preset){const p=b.dataset.preset;Object.assign(P,p==='hammer'?{w:'hammer',m:2}:p==='polearm'?{w:'polearm',m:2}:{w:'sword',m:3},{mode:'single',force:0});
+    afterLoad=()=>{lastForced=performance.now();setTimeout(()=>D()&&D().single(p==='ice'?'normal':'special'),600);if(p==='ice')setTimeout(()=>{lastForced=performance.now();D()&&D().single('special')},3200)};load()}
+});
+$('#mon').addEventListener('change',e=>{P.m=+e.target.value;load()});
+$('#lv').addEventListener('change',e=>{P.lv=+e.target.value;load()});
+load();
+</script>
+</body></html>
