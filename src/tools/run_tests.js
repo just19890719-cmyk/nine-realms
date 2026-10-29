@@ -240,6 +240,15 @@ async function L4(browser){layer='4 BUG 回歸';
      for(const t of ['village','market']){ui.sheet=null;ui.tab=t;render();await new Promise(z=>setTimeout(z,350));o[t]=document.documentElement.scrollWidth-document.documentElement.clientWidth;
        o[t+'Cut']=[...document.querySelectorAll('.vcard .nobr,.mk-chips.row')].filter(e=>{const r=e.getBoundingClientRect(),c=e.closest('.vcard,.mk-filter').getBoundingClientRect();return e.matches('.nobr')&&r.right>c.right+1}).length}return o});
    rec('BUG-014','320px：村莊頁、交易所不能左右捲，村莊卡文字不超出卡片',r.village<=0&&r.market<=0&&!r.villageCut,JSON.stringify(r));await p.context().close()}
+  // BUG-021 騎士揮擊比扣血慢：七種武器各展開一次（村莊戰鬥畫面），比較扣血時鐘（performance.now()%K）和騎士動畫實際播到哪裡，落差要小於 30ms（一個畫面約 17ms＋取樣誤差）；
+  // 只量 390（跟寬度無關）。原本 --d 負延遲在 render 時算好、瀏覽器晚開始播，一般速度就慢 29～214ms
+  {const p=await open(browser,MAIN_W,860);const r=await p.evaluate(async()=>{devdo('bsall');ui.tab='village';const o={};
+     for(const [i,c] of Object.entries(Object.keys(KN))){ui.bsOpen=+i;render();await new Promise(z=>setTimeout(z,700));const bs=document.querySelector('.bs');if(!bs){o[c]='沒有戰鬥畫面';continue}
+       const K=parseFloat(getComputedStyle(bs).getPropertyValue('--K')),d=[];
+       for(let n=0;n<12;n++){await new Promise(z=>requestAnimationFrame(z));const a=[...bs.querySelectorAll('.bs-kn img')].flatMap(x=>x.getAnimations()).find(x=>/^kn-/.test(x.animationName));if(a){let v=(performance.now()%K-a.effect.getComputedTiming().progress*K)%K;if(v>K/2)v-=K;if(v<-K/2)v+=K;d.push(Math.round(v))}await new Promise(z=>setTimeout(z,60))}
+       o[c]=d.length?Math.max(...d.map(Math.abs)):'量不到'}
+     ui.bsOpen=null;render();return o});
+   rec('BUG-021','戰鬥畫面七種武器：騎士揮擊動畫跟扣血時鐘落差小於 30ms（打到的那一格和扣血同時出現）',Object.values(r).every(v=>typeof v==='number'&&v<30),JSON.stringify(r));await p.context().close()}
   // BUG-020（P2-01）戰鬥畫面中毒／流血字疊在一起：同一種持續傷害只能留最新一個，標籤帶到新字；一般命中數字不受影響；真的雙刀 +12 打 4 秒取樣
   for(const w of WIDTHS){const p=await open(browser,w,860);const r=await p.evaluate(async()=>{const o={};devdo('bsdot');await new Promise(z=>setTimeout(z,400));const m=document.querySelector('.bs .bs-mon');if(!m)return {err:'沒有戰鬥畫面'};
        m.querySelectorAll('.mon-pop').forEach(e=>e.remove());monPop(m,'poison','<i>中毒</i>-3',22);monPop(m,'poison','-3',22);monPop(m,'poison','-3',22);monPop(m,'bleed','<i>流血</i>-5',22);monPop(m,'hit','-9');monPop(m,'hit','-9');
