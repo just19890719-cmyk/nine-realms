@@ -3378,6 +3378,26 @@
   "sfx/upgrade.mp3": {
    "status": "baseline",
    "sha256": "500bdbf643debb9d7288dfc81590144d950b5e09bfae0f7600328468ebc770e9"
+  },
+  "art/fx_hit_n.webp": {
+   "status": "pending",
+   "note": "v5.39 戰鬥命中特效（一般命中），Mochi 2026-10-29 用提示詞 battle-audit/命中特效_合圖_生圖提示詞.md 生成上傳，Claude 切 6 格黑底轉透明",
+   "sha256": "7415fbdf1040150a94a95673fe5a333218de6c67a8c90aec42d860ad84d1bd76"
+  },
+  "art/fx_hit_c.webp": {
+   "status": "pending",
+   "note": "v5.39 戰鬥命中特效（會心／重擊），Mochi 2026-10-29 用提示詞 battle-audit/命中特效_合圖_生圖提示詞.md 生成上傳，Claude 切 6 格黑底轉透明",
+   "sha256": "98a4466a138089958e7e62d7e5932b2a147a1a3276c3db0346eb69c26aacc298"
+  },
+  "art/fx_dmg_n.webp": {
+   "status": "pending",
+   "note": "v5.39 戰鬥傷害數字（一般傷害銀白鋼字），Mochi 2026-10-29 用提示詞 battle-audit/傷害數字_合圖_生圖提示詞.md 生成上傳，Claude 切 11 格（0～9、減號）轉透明",
+   "sha256": "7722598a3d4a91b841d5744a7a32a58463bb475290ede1851539b77180399348"
+  },
+  "art/fx_dmg_c.webp": {
+   "status": "pending",
+   "note": "v5.39 戰鬥傷害數字（會心傷害熔金字），Mochi 2026-10-29 用提示詞 battle-audit/傷害數字_合圖_生圖提示詞.md 生成上傳，Claude 切 11 格（0～9、減號）轉透明",
+   "sha256": "867c865b667e6595a3110c85831d8d65846ab986b44800fa6ed72d013f0ed27b"
   }
  }
 }
