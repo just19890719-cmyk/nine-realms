@@ -1563,7 +1563,7 @@ html.scrimmed .cbar{display:none}
 /* v4.20 村莊卡片戰鬥條：怪物在左、騎士在右；騎士 12 格動作依武器類別（kn_*），攻速照武器系統定案；背景固定不動 */
 .vcard.bt{flex-wrap:wrap;row-gap:6px;padding-top:6px}
 .vcard.bt>.bs{flex:0 0 100%;order:-1}
-.bs{position:relative;height:132px;border-radius:6px;overflow:hidden;border:1px solid #3a2e22;contain:layout paint}
+.bs{position:relative;height:132px;border-radius:6px;overflow:hidden;border:1px solid #3a2e22;contain:layout paint;background:#0b0907}
 .bs-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 62%;filter:brightness(.45) saturate(.85)}
 .bs-gd{position:absolute;left:0;right:0;bottom:0;height:30%;background:linear-gradient(180deg,transparent,rgba(0,0,0,.6))}
 .bs-mon{position:absolute;left:6%;bottom:0;height:96%;aspect-ratio:1;z-index:2;animation:bsLunge calc(var(--K)*var(--n)) infinite;animation-delay:var(--dp)}
