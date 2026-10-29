@@ -1333,7 +1333,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
- {v:'5.39',d:'10/28',t:'戰鬥畫面：怪物被打倒會倒下',b:['展開村莊的戰鬥畫面或限時挑戰時，怪物被打倒會往後倒、沉下去消失，下一隻再從後方走進來（原本只是閃一下就在原地出現）','只改畫面，收成、掉落、挑戰秒數和評級都沒有改'],g:[]},
+ {v:'5.39',d:'10/28',t:'戰鬥畫面：打中有火花、怪物被打倒會倒下',b:['展開村莊的戰鬥畫面或限時挑戰時，騎士打中怪物會在怪物身上爆出火花；會心、穿心、震碎等附加效果觸發和錘的重擊，火花更大','怪物被打倒會往後倒、沉下去消失，下一隻再從後方走進來（原本只是閃一下就在原地出現）','只改畫面，收成、掉落、挑戰秒數和評級都沒有改'],g:[]},
  {v:'5.38',d:'10/28',t:'秒殺榜加上伺服器檢查',b:['上傳秒殺紀錄時，伺服器會用那把武器（強化等級、屬性附魔、圖鑑加成）算出「運氣最好也不可能更快」的秒數，比這個還快的紀錄不會上榜','正常打出來的紀錄運氣再好也不會被擋；被擋的話結算畫面會顯示原因','挑戰、評級、獎勵都沒有改'],g:['vil']},
  {v:'5.37',d:'10/28',t:'七日簽到獎勵換新',b:['七日簽到改成以道具為主：第 1 天 3,000 金幣、第 2 天強化石 ×5、第 3 天附魔石 ×3、第 4 天綠光遺物 ×3、第 5 天強化石 ×10、第 6 天藍光遺物 ×2、第 7 天 100 鑽石＋紅光遺物 ×1','漏簽不會歸零、第 7 天領完從第 1 天重新開始，規則不變'],g:['shop']},
  {v:'5.35',d:'10/28',t:'可以自己登出、忘記密碼可以重設',b:['設定頁（右上角齒輪）多了「帳號」：可以看到登入的 Email，按「登出」再確認一次就會登出，進度會先存到雲端','登入畫面多了「忘記密碼？」：輸入 Email 後會寄一封重設信，點信裡的連結回到遊戲就能設定新密碼，設定完直接登入'],g:[]},
@@ -2415,9 +2415,10 @@ function monDex(i){const r0=Math.floor(i/10)*10,sm=ui.sheet&&ui.sheet.m,m=sm!=nu
    ${lk?`<div class="md-req">完成 ${vNo(m-1)} ${VILLAGES[m-1].name} 後解鎖</div>`:`<div class="md-req">任何武器都能挑戰${/神/.test(MON_T[m])?"祂":"牠"}</div><div class="md-el"><span>屬性 <b class="elc-${MON_EL[m]}">${ELEM[MON_EL[m]].n}</b></span>・<span>弱點 <b class="elc-${vWeak(m)}">${ELEM[vWeak(m)].n}</b></span>・<span>型態 <b>${RACE_N[MON_RACE[m]]}</b></span> <span class="muted nobr">（弱點 +3%～10%・同屬性 −3%～10%）</span></div><div class="md-lore">${MON_LORE[m]}</div>`}
    <div class="md-strip">${Array.from({length:10},(_,k)=>{const j=r0+k,l=S.villages[j].status==='locked';return `<button class="${j===m?'on':''} ${l?'lk':''}" data-act="mondex" data-k="${j}" aria-label="${vNo(j)}">${img('mon_'+(j+1))}</button>`}).join('')}</div></div>`}
 function vMon(i,k,bs){const art=MON_ART.includes(i);return `<div class="vmon ${k} ${art?'has-art':''} ${bs?'bs-tap':''}" data-mon="${i}" ${bs?`data-act="bsopen" data-i="${i}" role="button" aria-label="展開戰鬥畫面"`:''}>${art?img('mon_'+(i+1),'vthumb vmon-m',MONS[i]):img('v'+(i+1),'vthumb vmon-bg')}</div>`}
-function monPop(el,kind,txt,dx){if(!(el.classList.contains('bs-mon')&&/bleed|poison/.test(kind))){el.classList.remove('hit','kill');void el.offsetWidth;el.classList.add(kind==='kill'?'kill':'hit')}   // v4.20 戰鬥條：流血／中毒的小傷害不播受擊
+function monPop(el,kind,txt,dx,big){if(!(el.classList.contains('bs-mon')&&/bleed|poison/.test(kind))){el.classList.remove('hit','kill');void el.offsetWidth;el.classList.add(kind==='kill'?'kill':'hit')}   // v4.20 戰鬥條：流血／中毒的小傷害不播受擊
   const n=document.createElement('span');n.className='mon-pop '+kind;n.innerHTML=txt;if(dx)n.style.marginLeft=dx+'px';el.appendChild(n);setTimeout(()=>n.remove(),kind==='kill'?1100:kind==='crit'?1000:800);
-  if(kind!=='kill'){const sl=document.createElement('i');sl.className='mon-slash';el.appendChild(sl);setTimeout(()=>sl.remove(),350)}}
+  if(kind!=='kill'){const sl=document.createElement('i');sl.className='mon-slash';el.appendChild(sl);setTimeout(()=>sl.remove(),350)}
+  if(el.classList.contains('bs-mon')&&/^(hit|crit|buff)$/.test(kind)){const c=big||kind==='crit',f=document.createElement('i');f.className='bs-fx'+(c?' big':'');f.style.setProperty('--fx',(dx||0)+'px');f.innerHTML=`<img src="${A(c?'fx_hit_c':'fx_hit_n')}" alt="">`;el.appendChild(f);setTimeout(()=>f.remove(),c?420:360)}}   // v5.39 命中特效（AI 合圖 6 格逐格播）：一般命中／會心與錘重擊用大的
 // v4.02 各類武器打法：iv＝每輪攻擊間隔（毫秒）、E＝每輪平均倍率合計、plan(h)＝這一輪的每一下 [延遲毫秒, 倍率, 種類, 字]
 // 種類：hit 一般、crit 大黃字、bleed 紫色小字；hv＝重擊（怪物和血條晃比較大）
 // 總血量照舊＝攻擊力×本輪時間÷1.7 秒，只改「多久打一下、一下多少」，狩獵時間與收成不變
@@ -2459,7 +2460,8 @@ const bsExtra=i=>{const o=relicOdds(i);return [[STONE,stoneE(i)],[ENSTONE,enchE(
 function bsMore(i,w){const v=VILLAGES[i],bk=S.villages[i].bank;
   return `<div class="bs-more"><div class="bs-k">每打倒一隻</div><div class="bs-drops"><div class="bs-d">${img('it_gold')}<span>金幣</span><b>${killGoldTxt(i)}</b></div>${v.drops.map(d=>`<button class="bs-d ${d[1]<RARE_P?'rare':''}" data-act="matinfo" data-k="${d[0]}" data-v="${pct(dropChance(i,w,d,'normal'))}">${img(MATART[d[0]])}<span>${MATS[d[0]]}</span><b>${pct(dropChance(i,w,d,'normal'))}</b></button>`).join('')}${bsExtra(i)}</div>
    <div class="bs-k">已經打到${bk.cycles?`（${bk.cycles} 輪，還沒收成）`:''}</div>${bk.cycles?`<div class="bs-got">${harvestIcons({gold:bk.gold,...bk.mats})}</div>`:'<div class="small muted">這輪打完就會有收穫。</div>'}</div>`}
-function vStrip(i,w){const kn=KN[bpOf(w).cat],t=performance.now(),full=KN_FULL.includes(i),m='mon_'+(i+1);
+function vStrip(i,w){if(!vStrip.warm){vStrip.warm=1;['fx_hit_n','fx_hit_c'].forEach(n=>{new Image().src=A(n)})}   // v5.39 命中特效先載好，第一下就看得到
+  const kn=KN[bpOf(w).cat],t=performance.now(),full=KN_FULL.includes(i),m='mon_'+(i+1);
   return `<div class="bs c-${kn.k}" data-act="bsclose" role="button" aria-label="收起戰鬥畫面" style="--n:${kn.n};--d:-${Math.round(t%kn.K)}ms;--dp:-${Math.round(t%(kn.K*kn.n))}ms">${img('v'+(i+1),'bs-bg'+(BS_BGP[i]?' bgp-'+BS_BGP[i]:''))}<i class="bs-gd"></i>
    <div class="bs-mon ${full?'':'pt'}" data-mon="${i}"><div class="bs-br"><div class="bs-hb">${full?img(m+'_idle','idle',MONS[i])+img(m+'_atk','atk'):img(m,'idle',MONS[i])}${full?['tn','fl'].map(c=>`<i class="${c}">${img(m+'_idle','idle')}${img(m+'_atk','atk')}</i>`).join(''):img(m,'tn')+img(m,'fl')}</div></div></div>
    <div class="bs-kn">${Array.from({length:12},(_,f)=>img(`kn_${kn.k}_${f}`,'k'+f)).join('')}</div></div>`}
@@ -2467,7 +2469,7 @@ function vStrip(i,w){const kn=KN[bpOf(w).cat],t=performance.now(),full=KN_FULL.i
 // 血條最多只能比時間超前一點點，所以最後一下剛好打倒；看不到時直接對齊剩餘時間
 function monShot(i,sh,f,dx){const h=MONFX.hp[i];if(!h||h.refill||h.full||document.hidden)return;const m=document.querySelector(`#view [data-mon="${i}"]`),[,mul,kind='hit',lab]=sh;
   let dm=Math.round(h.unit*mul*f*(.92+Math.random()*.16));dm=Math.min(dm,h.cur-Math.max(1,h.live-h.unit*h.hs.E*2));if(dm<1)return;h.cur-=dm;
-  h.hit=h.hs.hv||kind==='crit'?2:1;if(m){monPop(m,kind,(lab?`<i>${lab}</i>`:kind==='bleed'&&!h.hs.kn?'流血 ':'')+'-'+fmt(dm),dx);if(kind==='bleed'||kind==='poison')monTint(m,kind);if(h.hs.hv){m.classList.remove('heavy');void m.offsetWidth;m.classList.add('heavy')}}monPaint(i,h)}
+  h.hit=h.hs.hv||kind==='crit'?2:1;if(m){monPop(m,kind,(lab?`<i>${lab}</i>`:kind==='bleed'&&!h.hs.kn?'流血 ':'')+'-'+fmt(dm),dx,h.hs.hv);if(kind==='bleed'||kind==='poison')monTint(m,kind);if(h.hs.hv){m.classList.remove('heavy');void m.offsetWidth;m.classList.add('heavy')}}monPaint(i,h)}
 function monTint(m,k){m.classList.add('t-'+k);clearTimeout(m._tn);m._tn=setTimeout(()=>m.classList.remove('t-'+k),450)}
 function monVolley(i,h){const sh=h.hs.plan(h),f=Math.max(.6,Math.min(1.6,(h.cur-h.live)/(h.unit*h.hs.E))),n=sh.filter(x=>!/bleed|poison/.test(x[2])).length;let k=0;
   sh.forEach(x=>{const dx=/bleed|poison/.test(x[2])?22:n>1?(k++-(n-1)/2)*(h.hs.kn&&ui.bsOpen===i?48:18):0;x[0]?setTimeout(()=>monShot(i,x,f,dx),x[0]):monShot(i,x,f,dx)})}
@@ -2525,7 +2527,7 @@ function chTick(){const c=ui.ch;if(!c)return;if(!ui.sheet||ui.sheet.t!=='ch'){ui
   const el=performance.now()-c.t0;while(c.n<c.ev.length&&c.ev[c.n][0]<=el+260){const e=c.ev[c.n++];setTimeout(()=>chHit(c,e),Math.max(0,e[0]-el))}
   if(c.win==null&&el>=CH_SEC*1000){c.done=1;setTimeout(()=>chEnd(c,false),400)}chPaint(c,el)}
 function chHit(c,e){if(ui.ch!==c||c.done&&c.cur<=0)return;c.cur=Math.max(0,c.cur-e[1]);const m=document.querySelector('.ch-fight [data-mon]');
-  if(m){const dot=e[2]==='bleed'||e[2]==='poison';monPop(m,e[2],(e[3]?`<i>${e[3]}</i>`:'')+'-'+fmt(e[1]),dot?22:0);if(dot)monTint(m,e[2])}
+  if(m){const dot=e[2]==='bleed'||e[2]==='poison';monPop(m,e[2],(e[3]?`<i>${e[3]}</i>`:'')+'-'+fmt(e[1]),dot?22:0,(W(c.id)&&KN[bpOf(W(c.id)).cat]||{}).hv);if(dot)monTint(m,e[2])}
   const b=document.querySelector('.ch-hp');if(b){b.classList.remove('shake','shake2');void b.offsetWidth;b.classList.add(e[2]==='crit'?'shake2':'shake')}
   chPaint(c);if(c.cur<=0&&!c.done){c.done=1;setTimeout(()=>{if(m)monPop(m,'kill','擊倒！')},120);setTimeout(()=>chEnd(c,true),1300)}}
 function chPaint(c,el=performance.now()-c.t0){const hp=c.cur/c.hp*100,left=Math.max(0,CH_SEC-el/1000);
@@ -2732,7 +2734,7 @@ function viewShop(){   // v5.17 換成道具欄母版（.b2）：主框、次面
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
- {v:'5.39',t:'戰鬥畫面擊倒演出：.bs-mon.kill 改用 bsDie（1.1 秒：後倒沉下淡出→從後方淡入，跟血條 refill 1.1 秒對齊），卡片小圖 .vmon.kill 不變',b:[['bskill','1-1 展開戰鬥畫面，約 1 秒後擊倒（再按換下一種武器）']]},
+ {v:'5.39',t:'戰鬥畫面命中特效：monPop 在 .bs-mon 上的 hit／crit／buff 加 .bs-fx（art/fx_hit_n、fx_hit_c，AI 合圖 6 格 steps(6) 0.3／0.36 秒；會心和錘 hv 用大的；流血／中毒不播）。擊倒演出：.bs-mon.kill 改用 bsDie（1.1 秒：後倒沉下淡出→從後方淡入，跟血條 refill 1.1 秒對齊），卡片小圖 .vmon.kill 不變',b:[['bsall','7 種武器各駐守 1-1～1-7（看一般命中）'],['bsproc',()=>`附加效果必定觸發：${ui.bsProc?'開':'關'}（看大火花）`],['bskill','1-1 展開戰鬥畫面，約 1 秒後擊倒（再按換下一種武器）']]},
  {v:'5.38',t:'秒殺榜伺服器檢查：fk_submit 用雲端存檔的武器算最快可能秒數（附加效果全中 ×2.5、Boss 特效 ×1.3、+2%＋1 誤差），比它快 0.3 秒以上回 fast 並記 ac_log（sql/26）；遊戲端 fkMin 同算法，被擋時結算畫面顯示原因',b:[['fkmin538','每關最快可能秒數表（最好一般武器 +0／+6／+12，跟 chEst 比）'],['fkfast538','模擬伺服器擋下：1-1 結算畫面顯示「沒有上榜」']]},
  {v:'5.37',t:'七日簽到 SIGN 改成道具為主（3000 金幣／強化石×5／附魔石×3／綠光遺物×3／強化石×10／藍光遺物×2／100 鑽＋紅光遺物×1），GUIDE shop v5.37',b:[['shopsg','打開商城（今天可簽到）'],['sg_d7','跳到第 7 天（看兩樣獎勵的格子）'],['sg_reset','今天可以再簽到一次']]},
  {v:'5.35',t:'玩家自己登出（設定頁「帳號」→ 登出確認小卡）、忘記密碼（登入畫面 → 寄 Supabase 重設信 → 信裡連結帶 #type=recovery 回來設定新密碼並登入）；sql/24 重新開放前清空進度（先備份到 bak_v535）',b:[['acct535','設定頁「帳號」區塊（假 Email 預覽）'],['logoutask','登出確認小卡'],['pwforgot','忘記密碼畫面（預覽，不會真的寄信）'],['pwreset','設定新密碼畫面（預覽，不會真的改）'],['pwhash','解析重設連結網址（正常／過期／一般網址）']]},
