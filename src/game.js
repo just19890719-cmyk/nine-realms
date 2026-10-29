@@ -1333,7 +1333,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
- {v:'5.39',d:'10/28',t:'戰鬥畫面：打中有火花、新的傷害數字、怪物被打倒會倒下',b:['展開村莊的戰鬥畫面或限時挑戰時，騎士打中怪物會在怪物身上爆出火花；會心、穿心、震碎等附加效果觸發和錘的重擊，火花更大','傷害數字換成鍛造金屬字：一般是銀白鋼字、會心和重擊是熔金字；怪物受擊時改成被火光照亮的暖色（原本整隻變白）','怪物被打倒會往後倒、沉下去消失，下一隻再從後方走進來（原本只是閃一下就在原地出現）','戰鬥畫面地面多了一層慢慢飄動的霧氣，還有火星往上飄，跟鐵匠鋪同一套','會心時怪物會震一下，錘的重擊會讓整個戰鬥畫面輕震；一般命中和擊倒不震，血條和按鈕也不會跟著震','只改畫面，收成、掉落、挑戰秒數和評級都沒有改'],g:[]},
+ {v:'5.39',d:'10/28',t:'戰鬥畫面：打中有火花、新的傷害數字、怪物被打倒會倒下',b:['展開村莊的戰鬥畫面或限時挑戰時，騎士打中怪物會在怪物身上爆出火花；會心、穿心、震碎等附加效果觸發和錘的重擊，火花更大','傷害數字換成鍛造金屬字：一般是銀白鋼字、會心和重擊是熔金字；怪物受擊時改成被火光照亮的暖色（原本整隻變白）','怪物被打倒會往後倒、沉下去消失，下一隻再從後方走進來（原本只是閃一下就在原地出現）','戰鬥畫面地面多了一層慢慢飄動的霧氣，還有火星往上飄，跟鐵匠鋪同一套','會心時怪物會震一下，錘的重擊會讓整個戰鬥畫面輕震；一般命中和擊倒不震；血條改成只扣血，不再跟著每一下抖','只改畫面，收成、掉落、挑戰秒數和評級都沒有改'],g:[]},
  {v:'5.38',d:'10/28',t:'秒殺榜加上伺服器檢查',b:['上傳秒殺紀錄時，伺服器會用那把武器（強化等級、屬性附魔、圖鑑加成）算出「運氣最好也不可能更快」的秒數，比這個還快的紀錄不會上榜','正常打出來的紀錄運氣再好也不會被擋；被擋的話結算畫面會顯示原因','挑戰、評級、獎勵都沒有改'],g:['vil']},
  {v:'5.37',d:'10/28',t:'七日簽到獎勵換新',b:['七日簽到改成以道具為主：第 1 天 3,000 金幣、第 2 天強化石 ×5、第 3 天附魔石 ×3、第 4 天綠光遺物 ×3、第 5 天強化石 ×10、第 6 天藍光遺物 ×2、第 7 天 100 鑽石＋紅光遺物 ×1','漏簽不會歸零、第 7 天領完從第 1 天重新開始，規則不變'],g:['shop']},
  {v:'5.35',d:'10/28',t:'可以自己登出、忘記密碼可以重設',b:['設定頁（右上角齒輪）多了「帳號」：可以看到登入的 Email，按「登出」再確認一次就會登出，進度會先存到雲端','登入畫面多了「忘記密碼？」：輸入 Email 後會寄一封重設信，點信裡的連結回到遊戲就能設定新密碼，設定完直接登入'],g:[]},
@@ -2497,7 +2497,7 @@ function monFx(i,st,w,full,d,el){const max=Math.max(1,Math.round(vPow(i,w)*d/170
   return h}
 function monPaint(i,h){const hp=h.cur/h.max*100;
   document.querySelectorAll(`[data-vhp="${i}"]`).forEach(e=>{const g=e.previousElementSibling,up=hp>(parseFloat(e.style.width)||0)+5;e.style.transition=up?'none':'';e.style.width=hp+'%';e.classList.toggle('full',!!h.full);
-    if(g){g.style.transition=up?'none':'';g.style.width=hp+'%'}if(h.hit){const b=e.parentNode;b.classList.remove('shake','shake2');void b.offsetWidth;b.classList.add(h.hit>1?'shake2':'shake')}});
+    if(g){g.style.transition=up?'none':'';g.style.width=hp+'%'}});
   document.querySelectorAll(`[data-vhpt="${i}"]`).forEach(e=>e.textContent=h.full?'暫停':Math.ceil(hp)+'%');h.hit=0}
 const clock=(ms,ref)=>{const s=Math.max(0,Math.ceil(ms/1000)),long=(ref??ms)>=3600000;return(long?[Math.floor(s/3600),Math.floor(s%3600/60),s%60]:[Math.floor(s/60),s%60]).map(x=>String(x).padStart(2,'0')).join(':')};
 // v3.76 地圖切換：沒選過就顯示目前進度所在的那一界
@@ -2538,7 +2538,6 @@ function chTick(){const c=ui.ch;if(!c)return;if(!ui.sheet||ui.sheet.t!=='ch'){ui
   if(c.win==null&&el>=CH_SEC*1000){c.done=1;setTimeout(()=>chEnd(c,false),400)}chPaint(c,el)}
 function chHit(c,e){if(ui.ch!==c||c.done&&c.cur<=0)return;c.cur=Math.max(0,c.cur-e[1]);const m=document.querySelector('.ch-fight [data-mon]');
   if(m){const dot=e[2]==='bleed'||e[2]==='poison';monPop(m,e[2],(e[3]?`<i>${e[3]}</i>`:'')+'-'+fmt(e[1]),dot?22:0,(W(c.id)&&KN[bpOf(W(c.id)).cat]||{}).hv);if(dot)monTint(m,e[2])}
-  const b=document.querySelector('.ch-hp');if(b){b.classList.remove('shake','shake2');void b.offsetWidth;b.classList.add(e[2]==='crit'?'shake2':'shake')}
   chPaint(c);if(c.cur<=0&&!c.done){c.done=1;setTimeout(()=>{if(m)monPop(m,'kill','擊倒！')},120);setTimeout(()=>chEnd(c,true),1300)}}
 function chPaint(c,el=performance.now()-c.t0){const hp=c.cur/c.hp*100,left=Math.max(0,CH_SEC-el/1000);
   document.querySelectorAll('.ch-hp i').forEach(e=>e.style.width=hp+'%');document.querySelectorAll('.ch-hpt').forEach(e=>e.textContent=fmt(Math.ceil(c.cur))+' / '+fmt(c.hp));
@@ -2744,7 +2743,7 @@ function viewShop(){   // v5.17 換成道具欄母版（.b2）：主框、次面
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
- {v:'5.39',t:'戰鬥畫面傷害數字美術字：monPop 在 .bs-mon 的 hit／crit／buff 把「-數字」換成 dmgArt（art/fx_dmg_n 銀、fx_dmg_c 熔金，11 格 0～9 和減號，DMG_W 每字寬；不顯示千分位逗號；流血／中毒維持文字）。受擊光 .bs-hb .fl 由純白剪影改暖色 filter。命中特效：monPop 在 .bs-mon 上的 hit／crit／buff 加 .bs-fx（art/fx_hit_n、fx_hit_c，AI 合圖 6 格 steps(6) 0.3／0.36 秒；會心和錘 hv 用大的；流血／中毒不播）。擊倒演出：.bs-mon.kill 改用 bsDie（1.1 秒：後倒沉下淡出→從後方淡入，跟血條 refill 1.1 秒對齊），卡片小圖 .vmon.kill 不變。震動：bsShake（WAAPI translate，不跟 transform 動畫衝突）會心只震 .bs-hb 0.1 秒、hv 重擊震 .bs-bg／.bs-mon／.bs-kn 0.14 秒，一般命中與擊倒不震。前景：.bs-fog 霧氣（art/dp/fog_band，transform 往左飄一格）＋4 顆 .bs-em 火星（bsFog／bsEmber 已加進 ANIM_SYNC，重畫不重播）',b:[['bsall','7 種武器各駐守 1-1～1-7（看一般命中）'],['bsproc',()=>`附加效果必定觸發：${ui.bsProc?'開':'關'}（看大火花）`],['bsshake','震動示範：會心（只有怪物震）→ 1 秒後錘重擊（整個戰鬥場景震）'],['bskill','1-1 展開戰鬥畫面，約 1 秒後擊倒（再按換下一種武器）']]},
+ {v:'5.39',t:'戰鬥畫面傷害數字美術字：monPop 在 .bs-mon 的 hit／crit／buff 把「-數字」換成 dmgArt（art/fx_dmg_n 銀、fx_dmg_c 熔金，11 格 0～9 和減號，DMG_W 每字寬；不顯示千分位逗號；流血／中毒維持文字）。受擊光 .bs-hb .fl 由純白剪影改暖色 filter。命中特效：monPop 在 .bs-mon 上的 hit／crit／buff 加 .bs-fx（art/fx_hit_n、fx_hit_c，AI 合圖 6 格 steps(6) 0.3／0.36 秒；會心和錘 hv 用大的；流血／中毒不播）。擊倒演出：.bs-mon.kill 改用 bsDie（1.1 秒：後倒沉下淡出→從後方淡入，跟血條 refill 1.1 秒對齊），卡片小圖 .vmon.kill 不變。震動：bsShake（WAAPI translate，不跟 transform 動畫衝突）會心只震 .bs-hb 0.1 秒、hv 重擊震 .bs-bg／.bs-mon／.bs-kn 0.14 秒，一般命中與擊倒不震；monPaint／chHit 拿掉 .hpbar／.ch-hp 的 shake、shake2（血條不抖）。前景：.bs-fog 霧氣（art/dp/fog_band，transform 往左飄一格）＋4 顆 .bs-em 火星（bsFog／bsEmber 已加進 ANIM_SYNC，重畫不重播）',b:[['bsall','7 種武器各駐守 1-1～1-7（看一般命中）'],['bsproc',()=>`附加效果必定觸發：${ui.bsProc?'開':'關'}（看大火花）`],['bsshake','震動示範：會心（只有怪物震）→ 1 秒後錘重擊（整個戰鬥場景震）'],['bskill','1-1 展開戰鬥畫面，約 1 秒後擊倒（再按換下一種武器）']]},
  {v:'5.38',t:'秒殺榜伺服器檢查：fk_submit 用雲端存檔的武器算最快可能秒數（附加效果全中 ×2.5、Boss 特效 ×1.3、+2%＋1 誤差），比它快 0.3 秒以上回 fast 並記 ac_log（sql/26）；遊戲端 fkMin 同算法，被擋時結算畫面顯示原因',b:[['fkmin538','每關最快可能秒數表（最好一般武器 +0／+6／+12，跟 chEst 比）'],['fkfast538','模擬伺服器擋下：1-1 結算畫面顯示「沒有上榜」']]},
  {v:'5.37',t:'七日簽到 SIGN 改成道具為主（3000 金幣／強化石×5／附魔石×3／綠光遺物×3／強化石×10／藍光遺物×2／100 鑽＋紅光遺物×1），GUIDE shop v5.37',b:[['shopsg','打開商城（今天可簽到）'],['sg_d7','跳到第 7 天（看兩樣獎勵的格子）'],['sg_reset','今天可以再簽到一次']]},
  {v:'5.35',t:'玩家自己登出（設定頁「帳號」→ 登出確認小卡）、忘記密碼（登入畫面 → 寄 Supabase 重設信 → 信裡連結帶 #type=recovery 回來設定新密碼並登入）；sql/24 重新開放前清空進度（先備份到 bak_v535）',b:[['acct535','設定頁「帳號」區塊（假 Email 預覽）'],['logoutask','登出確認小卡'],['pwforgot','忘記密碼畫面（預覽，不會真的寄信）'],['pwreset','設定新密碼畫面（預覽，不會真的改）'],['pwhash','解析重設連結網址（正常／過期／一般網址）']]},
