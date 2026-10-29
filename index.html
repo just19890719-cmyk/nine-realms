@@ -1635,6 +1635,21 @@ html.scrimmed .cbar{display:none}
 @keyframes kn-sw10{0%{opacity:0}64.00%{opacity:1}75.99%{opacity:1}76.00%{opacity:0}100%{opacity:0}}.bs.c-sw .k10{animation-name:kn-sw10}
 @keyframes kn-sw11{0%{opacity:0}76.00%{opacity:1}85.99%{opacity:1}86.00%{opacity:0}100%{opacity:0}}.bs.c-sw .k11{animation-name:kn-sw11}
 .bs.c-sw{--K:1000ms}
+/* v5.41 單手劍 VS 狼第一階段（Mochi 2026-10-29 核准 1-A／2-A／3-A／3-C／4-A）：只套在單手劍打 1-3 哈提、1-4 斯庫爾（.bs.c-sw.sv），其他武器、其他怪物不變。
+   一刀仍是 1000ms、第 9 張（k8）仍從 450ms 開始＝扣血那一刻。舉刀停 200→230ms、砍下 90→60ms、砍到停 110→150ms、送刀 80→120ms、收刀 120+100→100+80ms、站姿 140→100ms */
+@keyframes kn-sv0{0%{opacity:1}5.99%{opacity:1}6.00%{opacity:0}90.00%{opacity:1}100%{opacity:1}}.bs.c-sw.sv .k0{animation-name:kn-sv0}
+@keyframes kn-sv1{0%{opacity:0}6.00%{opacity:1}15.99%{opacity:1}16.00%{opacity:0}100%{opacity:0}}.bs.c-sw.sv .k1{animation-name:kn-sv1}
+@keyframes kn-sv2{0%{opacity:0}16.00%{opacity:1}38.99%{opacity:1}39.00%{opacity:0}100%{opacity:0}}.bs.c-sw.sv .k2{animation-name:kn-sv2}
+@keyframes kn-sv6{0%{opacity:0}39.00%{opacity:1}41.99%{opacity:1}42.00%{opacity:0}100%{opacity:0}}.bs.c-sw.sv .k6{animation-name:kn-sv6}
+@keyframes kn-sv7{0%{opacity:0}42.00%{opacity:1}44.99%{opacity:1}45.00%{opacity:0}100%{opacity:0}}.bs.c-sw.sv .k7{animation-name:kn-sv7}
+@keyframes kn-sv8{0%{opacity:0}45.00%{opacity:1}59.99%{opacity:1}60.00%{opacity:0}100%{opacity:0}}.bs.c-sw.sv .k8{animation-name:kn-sv8}
+@keyframes kn-sv9{0%{opacity:0}60.00%{opacity:1}71.99%{opacity:1}72.00%{opacity:0}100%{opacity:0}}.bs.c-sw.sv .k9{animation-name:kn-sv9}
+@keyframes kn-sv10{0%{opacity:0}72.00%{opacity:1}81.99%{opacity:1}82.00%{opacity:0}100%{opacity:0}}.bs.c-sw.sv .k10{animation-name:kn-sv10}
+@keyframes kn-sv11{0%{opacity:0}82.00%{opacity:1}89.99%{opacity:1}90.00%{opacity:0}100%{opacity:0}}.bs.c-sw.sv .k11{animation-name:kn-sv11}
+.bs.c-sw.sv .bs-kn img{animation-delay:0s}   /* 起點交給 game.js 的 animSync 對齊頁面時間軸 0：剛展開時動畫會比扣血晚 40～70ms 才開始，對齊後第 9 張剛好在扣血那一刻出現 */
+.bs.c-sw.sv .bs-mon.hit .bs-hb{animation:bsHitSv var(--hd) linear}
+@keyframes bsHitSv{0%{transform:translate(1px,-1px)}5%{transform:translate(-1px,1px)}10%{transform:translate(1px,0)}14.6%{transform:none;animation-timing-function:cubic-bezier(.2,.8,.4,1)}27%{transform:translateX(calc(var(--A)*-1)) rotate(var(--R)) scale(.97,1.03);animation-timing-function:cubic-bezier(.3,.6,.4,1)}100%{transform:none}}
+.bs.c-sw.sv .bs-mon.hit.poise .bs-hb{animation:none}   /* 3-C 狼正在撲過來時被打：不後退，受擊光、火花、數字照常（Flare 的受擊硬直規則） */
 @keyframes kn-ax0{0%{opacity:1}7.68%{opacity:1}7.69%{opacity:0}90.77%{opacity:1}100%{opacity:1}}.bs.c-ax .k0{animation-name:kn-ax0}
 @keyframes kn-ax4{0%{opacity:0}7.69%{opacity:1}13.07%{opacity:1}13.08%{opacity:0}46.15%{opacity:1}55.37%{opacity:1}55.38%{opacity:0}100%{opacity:0}}.bs.c-ax .k4{animation-name:kn-ax4}
 @keyframes kn-ax5{0%{opacity:0}13.08%{opacity:1}18.45%{opacity:1}18.46%{opacity:0}55.38%{opacity:1}59.99%{opacity:1}60.00%{opacity:0}100%{opacity:0}}.bs.c-ax .k5{animation-name:kn-ax5}
@@ -3104,7 +3119,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='5.40';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='5.41';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -4102,6 +4117,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'5.41',d:'10/29',t:'單手劍打狼更有打擊感（先在 1-3、1-4 試）',b:['單手劍舉刀停久一點、砍下更快，砍到時會停一下','狼被砍到先頓一下，再快速往後退、慢慢回原位','狼撲過來的時候被砍，只會閃光跳數字，不會同時往後退','先套在 1-3 哈提、1-4 斯庫爾；傷害、攻速、收成都沒有改'],g:[]},
  {v:'5.40',d:'10/29',t:'戰鬥畫面微調：錘的震動、兩段傷害數字、受擊光',b:['錘只有打出「震碎」時戰鬥畫面才會震，普通錘擊不再每一下都震','長柄「貫穿」這種兩段攻擊，第二個傷害數字會自動往下讓開，不會疊在第一個上面','怪物被打中時改成用自己的顏色變亮，冰狼這種淺色的怪物不會再變成黃白色','只改畫面，傷害、收成、掉落和存檔都沒有改'],g:[]},
  {v:'5.39',d:'10/28',t:'戰鬥畫面：打中有火花、新的傷害數字、怪物被打倒會倒下',b:['展開村莊的戰鬥畫面或限時挑戰時，騎士打中怪物會在怪物身上爆出火花；會心、穿心、震碎等附加效果觸發和錘的重擊，火花更大','傷害數字換成鍛造金屬字：一般是銀白鋼字、會心和重擊是熔金字；怪物受擊時改成被火光照亮的暖色（原本整隻變白）','怪物被打倒會往後倒、沉下去消失，下一隻再從後方走進來（原本只是閃一下就在原地出現）','戰鬥畫面地面多了一層慢慢飄動的霧氣，還有火星往上飄，跟鐵匠鋪同一套','會心時怪物會震一下，錘的重擊會讓整個戰鬥畫面輕震；一般命中和擊倒不震；血條改成只扣血，不再跟著每一下抖','只改畫面，收成、掉落、挑戰秒數和評級都沒有改'],g:[]},
  {v:'5.38',d:'10/28',t:'秒殺榜加上伺服器檢查',b:['上傳秒殺紀錄時，伺服器會用那把武器（強化等級、屬性附魔、圖鑑加成）算出「運氣最好也不可能更快」的秒數，比這個還快的紀錄不會上榜','正常打出來的紀錄運氣再好也不會被擋；被擋的話結算畫面會顯示原因','挑戰、評級、獎勵都沒有改'],g:['vil']},
@@ -5188,10 +5204,12 @@ function vMon(i,k,bs){const art=MON_ART.includes(i);return `<div class="vmon ${k
 // v5.39 戰鬥畫面傷害數字美術字（AI 合圖 art/fx_dmg_n 銀白、fx_dmg_c 熔金；一排 0～9 和減號，DMG_W＝每個字的寬／高）
 const DMG_W=[.464,.312,.46,.44,.488,.428,.468,.468,.488,.46,.404];
 const dmgArt=(t,c)=>`<span class="dmg ${c?'c':'n'}">${[...t].map(ch=>{const i=ch==='-'?10:+ch;return `<span style="--i:${i};--w:${DMG_W[i]}"></span>`}).join('')}</span>`;
-function monPop(el,kind,txt,dx,big){if(el.classList.contains('bs-mon')&&/^(hit|crit|buff)$/.test(kind))txt=txt.replace(/-([\d,]+)$/,(x,d)=>dmgArt('-'+d.replace(/,/g,''),big||kind==='crit'));if(!(el.classList.contains('bs-mon')&&/bleed|poison/.test(kind))){el.classList.remove('hit','kill');void el.offsetWidth;el.classList.add(kind==='kill'?'kill':'hit')}   // v4.20 戰鬥條：流血／中毒的小傷害不播受擊
+function monPop(el,kind,txt,dx,big){if(el.classList.contains('bs-mon')&&/^(hit|crit|buff)$/.test(kind))txt=txt.replace(/-([\d,]+)$/,(x,d)=>dmgArt('-'+d.replace(/,/g,''),big||kind==='crit'));if(!(el.classList.contains('bs-mon')&&/bleed|poison/.test(kind))){el.classList.remove('hit','kill','poise');void el.offsetWidth;el.classList.add(kind==='kill'?'kill':'hit');if(kind!=='kill'&&el.closest('.bs.sv')&&bsLunging(el))el.classList.add('poise')}   // v4.20 戰鬥條：流血／中毒的小傷害不播受擊
   const n=document.createElement('span');n.className='mon-pop '+kind;n.innerHTML=txt;if(dx)n.style.marginLeft=dx+'px';el.appendChild(n);setTimeout(()=>n.remove(),kind==='kill'?1100:kind==='crit'?1000:800);
   if(kind!=='kill'){const sl=document.createElement('i');sl.className='mon-slash';el.appendChild(sl);setTimeout(()=>sl.remove(),350)}
   if(el.classList.contains('bs-mon')&&/^(hit|crit|buff)$/.test(kind)){const c=big||kind==='crit',f=document.createElement('i');f.className='bs-fx'+(c?' big':'');f.style.setProperty('--fx',(dx||0)+'px');f.innerHTML=`<img src="${A(c?'fx_hit_c':'fx_hit_n')}" alt="">`;el.appendChild(f);setTimeout(()=>f.remove(),c?420:360);popAvoid(el,n);bsShake(el,kind==='crit'?(big?2:1):0)}}
+// v5.41 狼正在撲過來（bsLunge 72%～93% 那一段）就回傳 true，被打時只閃光、不後退（方案 3-C）
+const bsLunging=el=>{const a=el.getAnimations().find(x=>x.animationName==='bsLunge'),p=a&&a.effect.getComputedTiming().progress;return p!=null&&p>=.72&&p<.93};
 // v5.40 多段傷害數字不重疊：新跳出的數字如果壓到還在飄的數字，就往下讓開（例：長柄貫穿兩段只差 0.15 秒）。
 // 新數字用排版位置算（彈出後會放大到 1.15 倍），舊數字用目前畫面上的位置算。
 // 只讓開 0.4 秒內剛跳出的數字（同一下攻擊的多段）；快消失的舊數字不算，不然連續會心會一格一格往下疊到戰鬥框底部
@@ -5248,9 +5266,10 @@ const bsExtra=i=>{const o=relicOdds(i);return [[STONE,stoneE(i)],[ENSTONE,enchE(
 function bsMore(i,w){const v=VILLAGES[i],bk=S.villages[i].bank;
   return `<div class="bs-more"><div class="bs-k">每打倒一隻</div><div class="bs-drops"><div class="bs-d">${img('it_gold')}<span>金幣</span><b>${killGoldTxt(i)}</b></div>${v.drops.map(d=>`<button class="bs-d ${d[1]<RARE_P?'rare':''}" data-act="matinfo" data-k="${d[0]}" data-v="${pct(dropChance(i,w,d,'normal'))}">${img(MATART[d[0]])}<span>${MATS[d[0]]}</span><b>${pct(dropChance(i,w,d,'normal'))}</b></button>`).join('')}${bsExtra(i)}</div>
    <div class="bs-k">已經打到${bk.cycles?`（${bk.cycles} 輪，還沒收成）`:''}</div>${bk.cycles?`<div class="bs-got">${harvestIcons({gold:bk.gold,...bk.mats})}</div>`:'<div class="small muted">這輪打完就會有收穫。</div>'}</div>`}
+const BS_SV=[2,3];   // v5.41 單手劍 VS 狼第一階段（Mochi 核准）：新的出刀節奏、命中停頓、快退慢回、撲擊硬直只套在 1-3 哈提、1-4 斯庫爾，樣式在 style.css 的 .bs.c-sw.sv
 function vStrip(i,w){if(!vStrip.warm){vStrip.warm=1;['fx_hit_n','fx_hit_c'].forEach(n=>{new Image().src=A(n)})}   // v5.39 命中特效先載好，第一下就看得到
   const kn=KN[bpOf(w).cat],t=performance.now(),full=KN_FULL.includes(i),m='mon_'+(i+1);
-  return `<div class="bs c-${kn.k}" data-act="bsclose" role="button" aria-label="收起戰鬥畫面" style="--n:${kn.n};--d:-${Math.round(t%kn.K)}ms;--dp:-${Math.round(t%(kn.K*kn.n))}ms">${img('v'+(i+1),'bs-bg'+(BS_BGP[i]?' bgp-'+BS_BGP[i]:''))}<i class="bs-gd"></i>
+  return `<div class="bs c-${kn.k}${kn.k==='sw'&&BS_SV.includes(i)?' sv':''}" data-act="bsclose" role="button" aria-label="收起戰鬥畫面" style="--n:${kn.n};--d:-${Math.round(t%kn.K)}ms;--dp:-${Math.round(t%(kn.K*kn.n))}ms">${img('v'+(i+1),'bs-bg'+(BS_BGP[i]?' bgp-'+BS_BGP[i]:''))}<i class="bs-gd"></i>
    <div class="bs-mon ${full?'':'pt'}" data-mon="${i}"><div class="bs-br"><div class="bs-hb">${full?img(m+'_idle','idle',MONS[i])+img(m+'_atk','atk'):img(m,'idle',MONS[i])}${full?['tn','fl'].map(c=>`<i class="${c}">${img(m+'_idle','idle')}${img(m+'_atk','atk')}</i>`).join(''):img(m,'tn')+img(m,'fl')}</div></div></div>
    <div class="bs-kn">${Array.from({length:12},(_,f)=>img(`kn_${kn.k}_${f}`,'k'+f)).join('')}</div>
    <i class="bs-fog"></i>${['fx_ember1','fx_ember_trail','fx_ember1','fx_ember_cluster'].map((n,k)=>`<img class="bs-em e${k}" src="${A('dp/'+n)}" alt="">`).join('')}</div>`}   // v5.39 前景霧氣＋火星（鐵匠鋪已驗收素材 art/dp）
@@ -5522,6 +5541,7 @@ function viewShop(){   // v5.17 換成道具欄母版（.b2）：主框、次面
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'5.41',t:'單手劍 VS 狼第一階段：.bs.c-sw.sv（BS_SV＝1-3、1-4）用 kn-sv0～11 新節奏（k8 仍 450ms 起、一刀 1000ms），受擊 bsHitSv（70ms 停頓→60ms 退到最遠＋壓扁→慢回，480ms），撲擊中（bsLunge 72%～93%）被打加 .poise 不後退',b:[['bssv','1-3 哈提、1-4 斯庫爾都換成單手劍 +6，展開 1-3 戰鬥畫面'],['bssv4','展開 1-4 斯庫爾（冰狼）戰鬥畫面']]},
  {v:'5.40',t:'受擊光改成怪物自己的顏色加亮（brightness 2.4＋saturate 1.5，高峰 .7，冰狼不變黃）；bsShake 同元素先取消舊的震動；錘只有震碎（kind crit＋hv）才震場景；popAvoid 讓多段傷害數字往下避開重疊；screens.js 加「戰鬥畫面」「限時挑戰」兩個測試畫面',b:[['bsflash','受擊光示範：1-4 冰狼普通受擊＋會心受擊，被打時保持藍色'],['bsshake','震動示範：會心（只有怪物震）→ 普通錘擊（不震）→ 錘震碎（整個戰鬥場景震）'],['bspierce','兩段數字示範：長柄貫穿 6 位數，第二個數字應該在第一個下面、不重疊']]},
  {v:'5.39',t:'戰鬥畫面傷害數字美術字：monPop 在 .bs-mon 的 hit／crit／buff 把「-數字」換成 dmgArt（art/fx_dmg_n 銀、fx_dmg_c 熔金，11 格 0～9 和減號，DMG_W 每字寬；不顯示千分位逗號；流血／中毒維持文字）。受擊光 .bs-hb .fl 由純白剪影改暖色 filter。命中特效：monPop 在 .bs-mon 上的 hit／crit／buff 加 .bs-fx（art/fx_hit_n、fx_hit_c，AI 合圖 6 格 steps(6) 0.3／0.36 秒；會心和錘 hv 用大的；流血／中毒不播）。擊倒演出：.bs-mon.kill 改用 bsDie（1.1 秒：後倒沉下淡出→從後方淡入，跟血條 refill 1.1 秒對齊），卡片小圖 .vmon.kill 不變。震動：bsShake（WAAPI translate，不跟 transform 動畫衝突）會心只震 .bs-hb 0.1 秒、hv 重擊震 .bs-bg／.bs-mon／.bs-kn 0.14 秒，一般命中與擊倒不震；monPaint／chHit 拿掉 .hpbar／.ch-hp 的 shake、shake2（血條不抖）。前景：.bs-fog 霧氣（art/dp/fog_band，transform 往左飄一格）＋4 顆 .bs-em 火星（bsFog／bsEmber 已加進 ANIM_SYNC，重畫不重播）',b:[['bsall','7 種武器各駐守 1-1～1-7（看一般命中）'],['bsproc',()=>`附加效果必定觸發：${ui.bsProc?'開':'關'}（看大火花）`],['bskill','1-1 展開戰鬥畫面，約 1 秒後擊倒（再按換下一種武器）']]},
  {v:'5.38',t:'秒殺榜伺服器檢查：fk_submit 用雲端存檔的武器算最快可能秒數（附加效果全中 ×2.5、Boss 特效 ×1.3、+2%＋1 誤差），比它快 0.3 秒以上回 fast 並記 ac_log（sql/26）；遊戲端 fkMin 同算法，被擋時結算畫面顯示原因',b:[['fkmin538','每關最快可能秒數表（最好一般武器 +0／+6／+12，跟 chEst 比）'],['fkfast538','模擬伺服器擋下：1-1 結算畫面顯示「沒有上榜」']]},
@@ -5910,6 +5930,8 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
      S.villages.forEach((v,j)=>{if(j<=i&&v.status!=='cleared')v.status='cleared'});const w=makeWeapon(b.id,2,6);st.weaponId=w.id;st.cycleStart=NOW()-dur(i,w)*.3;delete MONFX.hp[i];
      ui.sheet=null;ui.tab='village';ui.realm=i>=10?1:0;ui.bsOpen=i;toast(`${k+1}/${n}：${Math.floor(i/10)+1}-${i%10+1} ${MONS[i]}（錘 +6）`,'ok');render();setTimeout(()=>document.querySelector('.bs')?.scrollIntoView({block:'center'}),50)},
    bsshake:()=>{if(!document.querySelector('.bs'))devdo('bsall');setTimeout(()=>{const m=document.querySelector('.bs [data-mon]');if(!m)return toast('先展開一個戰鬥畫面','bad');m.closest('.bs').scrollIntoView({block:'center'});monPop(m,'crit','<i>會心</i>-888',0);setTimeout(()=>monPop(m,'hit','-1888',0,1),1000);setTimeout(()=>monPop(m,'crit','<i>震碎</i>-4888',0,1),2000)},300)},   // v5.39，v5.40 加普通錘擊、震碎
+   bssv:()=>{devdo('bsall');const b=BPS.filter(x=>x.cat==='sword').sort((x,y)=>x.t-y.t)[0];[2,3].forEach(i=>{const st=S.villages[i],w=makeWeapon(b.id,2,6);st.weaponId=w.id;st.cycleStart=NOW()-dur(i,w)*.3;delete MONFX.hp[i]});Object.keys(KHIT).forEach(k=>delete KHIT[k]);ui.bsOpen=2;render();setTimeout(()=>document.querySelector('.bs')?.scrollIntoView({block:'center'}),50);toast('1-3 哈提、1-4 斯庫爾換成單手劍 +6：看舉刀、砍到停一下、狼先頓再退、撲過來被砍不後退','ok')},   // v5.41
+   bssv4:()=>{if(!document.querySelector('.bs.sv'))devdo('bssv');ui.bsOpen=3;render();setTimeout(()=>document.querySelector('.bs')?.scrollIntoView({block:'center'}),50)},
    bsflash:()=>{devdo('bsall');ui.bsOpen=3;render();setTimeout(()=>{const m=document.querySelector('.bs [data-mon]');if(!m)return;m.closest('.bs').scrollIntoView({block:'center'});monPop(m,'hit','-1234',0);setTimeout(()=>monPop(m,'crit','<i>會心</i>-3456',0),1200)},300);toast('1-4 冰狼：普通受擊 → 1.2 秒後會心受擊，被打時要看得出藍色','ok')},   // v5.40
    bspierce:()=>{if(!document.querySelector('.bs'))devdo('bsall');setTimeout(()=>{const m=document.querySelector('.bs [data-mon]');if(!m)return toast('先展開一個戰鬥畫面','bad');m.closest('.bs').scrollIntoView({block:'center'});monPop(m,'hit','-123456',-24);setTimeout(()=>monPop(m,'crit','<i>貫穿</i>-234567',24),150)},300)},   // v5.40
   bskill:()=>{if(ui.bsOpen!==0||ui.tab!=='village')devdo('bsall');else devdo('bs11');const st=S.villages[0],w=W(st.weaponId);if(w){st.cycleStart=NOW()-dur(0,w)+1200;delete MONFX.hp[0]}render();setTimeout(()=>document.querySelector('.bs')?.scrollIntoView({block:'center'}),50);toast('1-1 約 1 秒後擊倒，看怪物倒下再換下一隻進場','ok')},   // v5.39
@@ -6016,7 +6038,7 @@ function render(){
 }
 // v5.15 BUG-013 render() 每次重建 DOM，新元素上的循環動畫（紅點呼吸、收成按鈕脈動）會從頭播 → 看起來一直閃。
 // 這裡把這些循環動畫的起點對齊到頁面時間軸 0，重畫前後相位一樣。新增會被 render() 重建的循環動畫：把動畫名稱加進 ANIM_SYNC（或像 +9 裂縫用負的 animation-delay），run_tests.js 會檢查。
-const ANIM_SYNC=new Set(['givePulse','pulseO','pulse','b2crk','frun','bsFog','bsEmber']);   // v5.18 +9 裂縫呼吸（b2crk）、+9 小卡跑框（frun）也改用這裡對齊（原本用產生畫面時的時間算負延遲，手機卡頓時會往前跳 0.1～0.6 秒）
+const ANIM_SYNC=new Set(['givePulse','pulseO','pulse','b2crk','frun','bsFog','bsEmber',...[0,1,2,6,7,8,9,10,11].map(k=>'kn-sv'+k)]);   // v5.41 單手劍 VS 狼的騎士格也對齊時間軸 0（扣血用 performance.now()%1000＝450 判定，兩邊同一個起點）   // v5.18 +9 裂縫呼吸（b2crk）、+9 小卡跑框（frun）也改用這裡對齊（原本用產生畫面時的時間算負延遲，手機卡頓時會往前跳 0.1～0.6 秒）
 // v5.34 彈窗往下捲時標題列加暗底（.shd），內容不會從透明標題後面透出來；沒捲動時跟原本一樣
 function shdSync(n=document.querySelector('.sheet')){if(n)n.classList.toggle('shd',n.scrollTop>2)}
 if(typeof document!=='undefined')document.addEventListener('scroll',e=>{const t=e.target;if(t&&t.classList&&t.classList.contains('sheet'))shdSync(t)},{capture:true,passive:true});
