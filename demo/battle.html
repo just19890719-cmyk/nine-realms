@@ -74,10 +74,11 @@ table{border-collapse:collapse;font-size:12px;width:100%}td,th{border-bottom:1px
       <button data-s="normal" class="forced">強制一般命中</button>
       <button data-s="special" class="forced">強制附加效果</button>
     </div>
-    <div class="row" style="margin-top:6px"><button data-dev="bspierce" class="forced">開發者工具：長柄 6 位數兩段（假數字）</button><button data-dev="bsshake" class="forced">開發者工具：會心→錘擊→震碎（假數字）</button></div>
+    <div class="row" style="margin-top:6px;align-items:center"><span class="muted">假數字（長柄兩段，跟開發者工具同款）</span><select id="digits" aria-label="位數"><option value="4">4 位數</option><option value="5">5 位數</option><option value="6" selected>6 位數</option></select><button data-fake="1" class="forced">播放一次</button><button data-fake="2" class="forced">連續兩次貫穿</button></div>
     <div class="row" style="margin-top:6px"><button id="kill" class="forced">強制擊倒（看死亡與重生）</button><button id="reset">一鍵重設</button></div>
     <div class="muted" style="margin-top:6px">單次攻擊：騎士照常揮動，按下後在「下一次揮到命中那一格」才結算一次（跟遊戲同一個時間點），所以會等 0～1.8 秒。紅框按鈕＝強制觸發，不代表自然機率已驗證。</div>
   </div>
+  <div class="box"><h2>修法預覽（只在展示頁，正式遊戲沒改）</h2><div class="row"><button id="fix"></button></div><div class="muted" style="margin-top:6px">P2-01：雙刀中毒、斧流血的小數字互相重疊。開啟後同一種持續傷害只留最新一個數字，標籤搬到新數字上；傷害、機率、節奏不變。等 Mochi 決定要不要放進遊戲。</div></div>
   <div class="box"><h2>各武器附加效果（只用遊戲現有的）</h2><table id="fx"></table></div>
   <div class="box"><h2>最近事件（戰鬥區實際打出的）</h2><ul id="log"></ul></div>
 </div>
@@ -89,9 +90,11 @@ const SRC_BASE='main 34f138e＝v5.40（PR #163 已於 2026-10-29 05:14 UTC 合�
 const WEPS=[['sword','劍'],['axe','斧'],['dagger','雙刀'],['polearm','長柄'],['hammer','錘'],['bow','弓'],['crossbow','弩']];
 const FX={sword:['會心','×2.5（就是劍的附加效果）'],axe:['流血','之後再掉 3 次血'],dagger:['中毒','之後再掉 5 次血'],polearm:['貫穿','0.15 秒後追加一次 ×1.5'],hammer:['震碎','×1，之後 3 下各 +50%，觸發時震動整個戰鬥場景'],bow:['穿心','×2.5'],crossbow:['破甲','之後 6 下各 +25%']};
 const MONS=['1-1 林中魅妖・斯寇格拉','1-2 不死野豬・賽赫利姆尼爾','1-3 追月之狼・哈提','1-4 追日之狼・斯庫爾（冰）','1-5 戰場鴉魔・瓦爾拉文','1-6 深海巨怪・克拉肯','1-7 石皮巨魔・山怪特羅爾','1-8 泥巨人・莫庫卡爾菲','1-9 火焰騎兵・穆斯貝爾騎兵','1-10 守望之神・海姆達爾','2-1 九頭巨人・斯里瓦爾迪','2-2 狼群首領・鐵森林狼王','2-3 吞屍巨鷹・赫拉斯瓦爾格','2-4 巨人屍鬼・德勞格','2-5 冰湖水妖・諾克','2-6 洞穴蠕龍・林德蟲','2-7 風之巨人・卡瑞','2-8 幻術巨人王・烏特加德洛基','2-9 石心巨人・赫朗格尼爾','2-10 雷神・索爾'];
-const P={w:'sword',m:2,lv:6,mode:'auto',force:0,width:390};
+const P={w:'sword',m:2,lv:6,mode:'auto',force:0,fix:0,width:390};
 try{const q=new URLSearchParams(location.search);for(const k in P)if(q.has(k))P[k]=typeof P[k]==='number'?+q.get(k):q.get(k)}catch(e){}
-const $=s=>document.querySelector(s),stage=$('#stage'),D=()=>{try{return stage.contentWindow.DEMO}catch(e){return null}};
+// GEN：每次重新載入戰鬥區就 +1。舊的戰鬥區在新的載好之前還會回報，只接受同一個 GEN 的（快速切換寬度／武器時，舊 iframe 不會蓋掉新設定）
+let GEN=0;
+const $=s=>document.querySelector(s),stage=$('#stage'),D=()=>{try{const d=stage.contentWindow.DEMO;return d&&d.gen===GEN?d:null}catch(e){return null}};
 // 網址是固定版本（例如 …/nine-realms/<commit>/demo/battle.html）時，顯示該版本
 const ref=(location.pathname.match(/nine-realms\/([0-9a-f]{7,40}|[^/]+)\/demo\//)||[])[1];
 $('#src').textContent='戰鬥程式來源：'+SRC_BASE+(ref?'｜本頁網址版本：'+ref.slice(0,12):'')+'｜測試資料只在記憶體，不連伺服器、不讀寫存檔';
@@ -99,44 +102,48 @@ $('#weps').innerHTML=WEPS.map(([k,n])=>`<button data-w2="${k}">${n}</button>`).j
 $('#mon').innerHTML=MONS.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
 $('#fx').innerHTML='<tr><th>武器</th><th>附加效果（現有）</th><th>通用「會心」</th></tr>'+WEPS.map(([k,n])=>`<tr><td>${n}</td><td>${FX[k][0]}：${FX[k][1]}</td><td>${k==='sword'?'＝附加效果':'<span class="na">尚未實作</span>'}</td></tr>`).join('');
 let afterLoad=null;
-function load(){const q=new URLSearchParams({w:P.w,m:P.m,lv:P.lv,mode:P.mode,force:P.force?1:0});{const u=new URLSearchParams(location.search);['art','ref'].forEach(k=>{if(u.has(k))q.set(k,u.get(k))})}stage.width=P.width;stage.src='battle-stage.html?'+q;paint();
+function load(){GEN++;const q=new URLSearchParams({w:P.w,m:P.m,lv:P.lv,mode:P.mode,force:P.force?1:0,fix:P.fix?1:0,gen:GEN});{const u=new URLSearchParams(location.search);['art','ref'].forEach(k=>{if(u.has(k))q.set(k,u.get(k))})}stage.width=P.width;stage.src='battle-stage.html?'+q;paint();
   try{const u=new URLSearchParams(location.search),n=new URLSearchParams({...P,force:P.force?1:0});['art','ref'].forEach(k=>{if(u.has(k))n.set(k,u.get(k))});history.replaceState(null,'','?'+n)}catch(e){}}
-stage.addEventListener('load',()=>{const t=setInterval(()=>{if(D()){clearInterval(t);if(afterLoad){const f=afterLoad;afterLoad=null;f()}}},100)});
+// 新的戰鬥區載好後：控制頁在載入期間改過的設定（攻擊方式、強制觸發）補送過去，再執行預設的驗收動作
+stage.addEventListener('load',()=>{const g=GEN,t=setInterval(()=>{if(g!==GEN)return clearInterval(t);const d=D();if(!d)return;clearInterval(t);const o=d.info();
+  if(o.mode!==P.mode)d.setMode(P.mode);if(!!o.force!==!!P.force)d.setForce(P.force);if(!!o.fix!==!!P.fix)d.setFix(P.fix);if(afterLoad&&afterLoad.gen===g){const f=afterLoad;afterLoad=null;f()}},100)});
 function paint(){
   document.querySelectorAll('[data-w]').forEach(b=>b.classList.toggle('on',+b.dataset.w===P.width));
   document.querySelectorAll('[data-w2]').forEach(b=>b.classList.toggle('on',b.dataset.w2===P.w));
   document.querySelectorAll('[data-mq]').forEach(b=>b.classList.toggle('on',+b.dataset.mq===P.m));
   document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('on',b.dataset.mode===P.mode));
   document.querySelectorAll('[data-s]').forEach(b=>b.disabled=P.mode!=='single');
-  $('#mon').value=P.m;$('#lv').value=P.lv;$('#force').textContent='強制觸發附加效果：'+(P.force?'開':'關');$('#force').classList.toggle('on',!!P.force);
+  $('#mon').value=P.m;$('#lv').value=P.lv;$('#force').textContent='強制觸發附加效果：'+(P.force?'開':'關');$('#force').classList.toggle('on',!!P.force);$('#fix').textContent='P2-01 修法預覽（同類中毒／流血只留最新一個）：'+(P.fix?'開':'關');$('#fix').classList.toggle('on',!!P.fix);
   $('#cap').textContent=`戰鬥區寬 ${P.width}px（iframe 內實際排版寬度）`;
 }
 let lastForced=0;
-function info(){const d=D();if(!d){$('#badge').textContent='戰鬥區載入中';$('#badge').className='badge b-wait';return}const o=d.info(),a=d.assets();const forced=o.force||(performance.now()-lastForced<4000);
+function info(){const d=D();if(!d){$('#badge').textContent='戰鬥區載入中';$('#badge').className='badge b-wait';return}const o=d.info(),a=d.assets();const lastTag=(o.log.find(x=>x.k)||{}).k||'';   // 最近一下是強制／假數字，或強制觸發、修法預覽開著，就不顯示「正常流程」
+  const forced=o.force||o.fix||/強制|假數字/.test(lastTag)||(performance.now()-lastForced<4000);
   const cssBad=Object.values(a.css).filter(x=>x==='失敗').length,cssWait=Object.values(a.css).filter(x=>x==='載入中').length,fail=a.bad+cssBad,wait=a.pending+cssWait||!a.total;
   // 素材沒全部載入好，就不顯示「正常流程」：失敗＝紅色、還在載入＝灰色
   if(fail){$('#badge').textContent='素材載入失敗（'+fail+' 張）';$('#badge').className='badge b-bad';$('#badgeN').textContent='畫面不完整，不能拿來做視覺驗收；看下面「素材」一欄的原因'}
   else if(wait){$('#badge').textContent='素材載入中（'+a.ok+'/'+a.total+'）';$('#badge').className='badge b-wait';$('#badgeN').textContent='等全部載入完成再看'}
-  else{$('#badge').textContent=forced?'強制觸發測試':'正常流程';$('#badge').className='badge '+(forced?'b-frc':'b-nat');
-  $('#badgeN').textContent=(forced?'這段畫面是強制觸發，不能當作自然機率的驗證':'附加效果照原本機率（+'+P.lv+' 約 '+Math.round(o.proc*100)+'%）')+'｜素材 '+a.ok+'/'+a.total+' 張＋背景圖 '+Object.keys(a.css).length+' 張全部載入'}
+  else{$('#badge').textContent=o.fix?'修法預覽（非正式行為）':/假數字/.test(lastTag)?'假數字展示':forced?'強制觸發測試':'正常流程';$('#badge').className='badge '+(forced?'b-frc':'b-nat');
+  $('#badgeN').textContent=(forced?'畫面不是自然流程（'+[o.force&&'強制觸發附加效果開著',o.fix&&'P2-01 修法預覽開著',lastTag&&'最近一下：'+lastTag].filter(Boolean).join('、')+'），不能當作自然機率或正式遊戲的驗證':'附加效果照原本機率（+'+P.lv+' 約 '+Math.round(o.proc*100)+'%）')+'｜素材 '+a.ok+'/'+a.total+' 張＋背景圖 '+Object.keys(a.css).length+' 張全部載入'}
   const pr=x=>!x?'檢查中':x.err?'失敗：'+x.err:`HTTP ${x.status}、${x.type||'沒有 Content-Type'}、${x.bytes} bytes、檔頭 ${x.sig}${x.webp?'（是 WebP）':'（不是 WebP）'}${x.redirected?'、轉址到 '+x.final:''}`;
   $('#assets').innerHTML=[['圖片來源',a.src.artFrom+'<br><span class="muted">'+a.src.art+'</span>'],['戰鬥卡片圖片',`${a.ok} 張正常、${a.bad} 張失敗、${a.pending} 張載入中（共 ${a.total}）`],['背景圖（CSS）',Object.entries(a.css).map(([k,v])=>k+' '+v).join('、')],
     ['頁面網址的騎士圖',pr(a.probe.host)],...(a.probe.art||a.src.art!==a.src.host?[['GitHub 原始檔的騎士圖',pr(a.probe.art)]]:[]),...(a.badUrls.length?[['失敗的圖片',a.badUrls.map(u=>'<span class="muted">'+u.replace(/[<>&]/g,'')+'</span>').join('<br>')]]:[])].map(([x,y])=>`<dt>${x}</dt><dd>${y}</dd>`).join('');
-  $('#info').innerHTML=[['版本','v'+o.build],['來源 commit',SRC_BASE+(ref?'｜網址版本 '+ref.slice(0,12):'')],['武器',o.weapon+'（'+o.catN+'）'],['附加效果',o.special],['怪物',o.mon+'（屬性 '+o.el+'）'],['攻擊方式',o.mode==='auto'?'自動連續攻擊（遊戲原本節奏）':'單次攻擊'],['怪物血量',o.hp==null?'—':o.hp+'%'],['一輪時間',o.cycle+' 秒（自動模式下這麼久才自然擊倒一隻）'],['戰鬥區寬度',o.width+'px'],['外部連線',o.blocked.length?'已攔截 '+o.blocked.length+' 次':'0 次（沒有連外）']].map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join('');
-  $('#log').innerHTML=o.log.map(x=>`<li class="${x.k?'f':''}">${x.ago.toFixed(1)} 秒前　${x.s}${x.k?'　〔'+x.k+'〕':''}</li>`).join('')}
+  $('#info').innerHTML=[['版本','v'+o.build],['來源 commit',SRC_BASE+(ref?'｜網址版本 '+ref.slice(0,12):'')],['武器',o.weapon+'（'+o.catN+'）'],['附加效果',o.special],['怪物',o.mon+'（屬性 '+o.el+'）'],['攻擊方式',o.mode==='auto'?'自動連續攻擊（遊戲原本節奏）':'單次攻擊'],['P2-01 修法預覽',o.fix?'<b style="color:#f0a080">開（不是正式遊戲的行為）</b>':'關（跟正式遊戲一樣）'],['怪物血量',o.hp==null?'—':o.hp+'%'],['一輪時間',o.cycle+' 秒（自動模式下這麼久才自然擊倒一隻）'],['戰鬥區寬度',o.width+'px'],['後端 API（Supabase 等）',`實際送出 ${o.req.api} 次｜被攔截沒送出 ${o.req.apiBlocked} 次`],['素材請求（圖片）',o.req.asset+' 次（'+(location.hostname.includes('githack')?'GitHub 原始檔':'同一個網址')+'）'],['其他請求',`程式 ${o.req.code} 次、字型 ${o.req.font} 次、其他 ${o.req.other} 次${o.req.otherUrls.length?'（'+o.req.otherUrls.join('、')+'）':''}`],['計數範圍','這一次載入的戰鬥區（第 '+o.gen+' 次），從載入起算；切換寬度／武器／怪物、重設都會重新計算。控制頁本身不發請求']].map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join('');
+  $('#log').innerHTML=o.log.map(x=>`<li class="${/強制|假數字|預覽/.test(x.k)?'f':''}">${x.ago.toFixed(1)} 秒前　${x.s}${x.k?'　〔'+x.k+'〕':''}</li>`).join('')}
 setInterval(info,400);
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const d=D();
   if(b.dataset.w){P.width=+b.dataset.w;load();return}
   if(b.dataset.w2){P.w=b.dataset.w2;load();return}
   if(b.dataset.mq){P.m=+b.dataset.mq;load();return}
   if(b.dataset.mode){P.mode=b.dataset.mode;d&&d.setMode(P.mode);paint();return}
+  if(b.id==='fix'){P.fix=P.fix?0:1;d&&d.setFix(P.fix);paint();return}
   if(b.id==='force'){P.force=P.force?0:1;d&&d.setForce(P.force);paint();return}
   if(b.dataset.s){if(b.dataset.s!=='natural')lastForced=performance.now();d&&d.single(b.dataset.s==='natural'?null:b.dataset.s);return}
-  if(b.dataset.dev){lastForced=performance.now();d&&d.dev(b.dataset.dev);return}
+  if(b.dataset.fake){lastForced=performance.now();if(d){d.fake(+$('#digits').value,b.dataset.fake==='2');if(P.mode!=='single'){P.mode='single';paint()}}return}
   if(b.id==='kill'){lastForced=performance.now();d&&d.kill();return}
   if(b.id==='reset'){Object.assign(P,{mode:'auto',force:0});load();return}
   if(b.dataset.preset){const p=b.dataset.preset;Object.assign(P,p==='hammer'?{w:'hammer',m:2}:p==='polearm'?{w:'polearm',m:2}:{w:'sword',m:3},{mode:'single',force:0});
-    afterLoad=()=>{lastForced=performance.now();setTimeout(()=>D()&&D().single(p==='ice'?'normal':'special'),600);if(p==='ice')setTimeout(()=>{lastForced=performance.now();D()&&D().single('special')},3200)};load()}
+    afterLoad=()=>{lastForced=performance.now();setTimeout(()=>D()&&D().single(p==='ice'?'normal':'special'),600);if(p==='ice')setTimeout(()=>{lastForced=performance.now();D()&&D().single('special')},3200)};load();afterLoad.gen=GEN}
 });
 $('#mon').addEventListener('change',e=>{P.m=+e.target.value;load()});
 $('#lv').addEventListener('change',e=>{P.lv=+e.target.value;load()});
