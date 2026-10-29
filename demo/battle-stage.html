@@ -3,21 +3,36 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <!-- 戰鬥展示測試頁的「戰鬥區」：直接載入 src/skin.js、src/game.js、src/style.css（跟正式遊戲同一份程式），
-     不呼叫 start()（不登入、不讀雲端、不綁定按鈕）。只能連自己網域：外部連線（Supabase 等）由 CSP 擋掉。 -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; frame-src 'none'; worker-src 'none'">
-<base href="../">
+     不呼叫 start()（不登入、不讀雲端、不綁定按鈕）。外部連線只放行 GitHub 原始檔（讀圖片用），Supabase 等一律由 CSP 擋掉。 -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://raw.githubusercontent.com; media-src 'self' blob:; connect-src 'self' https://raw.githubusercontent.com; frame-src 'none'; worker-src 'none'">
+<script>
+// ⓪ 程式與圖片的來源。HOST＝這個頁面所在的根目錄（程式從這裡讀）。
+// ART＝圖片從哪裡讀：githack 網址（或網址加 ?art=raw&ref=commit）改從 GitHub 原始檔 raw.githubusercontent.com 讀同一個 commit 的圖片
+// （githack 上的圖片在 ChatGPT Work 全部載入失敗，GitHub 原始檔會回正確的 image/webp）。其他網址（本機、正式網站）照原本從同一個地方讀。
+(function(){const Q=new URLSearchParams(location.search),HOST=location.href.replace(/demo\/battle-stage\.html.*$/,'');
+  const gh=/^(raw|rawcdn)\.githack\.com$/.test(location.hostname)&&location.pathname.match(/^\/([^/]+)\/([^/]+)\/([^/]+)\//);
+  const ref=gh?gh[3]:Q.get('ref'),raw=Q.get('art')==='host'?null:gh?`https://raw.githubusercontent.com/${gh[1]}/${gh[2]}/${gh[3]}/`:Q.get('art')==='raw'&&ref?`https://raw.githubusercontent.com/just19890719-cmyk/nine-realms/${ref}/`:null;
+  window.DEMO_SRC={host:HOST,art:raw||HOST,artFrom:raw?'GitHub 原始檔（raw.githubusercontent.com）':'跟頁面同一個網址',ref:ref||''};
+  document.write('<base href="'+DEMO_SRC.art.replace(/"/g,'')+'">')})();   // 遊戲裡的圖片都用相對路徑（art/…），由 base 決定從哪裡讀
+</script>
 <title>戰鬥展示（戰鬥區）</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;900&display=swap">
 <script>
 // ① 資料隔離：本頁的 localStorage／sessionStorage 換成記憶體版（重新整理就清空，不碰這個網域原本的遊戲存檔與登入憑證）
 (function(){const mem=()=>{const m=new Map();return{getItem:k=>m.has(k)?m.get(k):null,setItem:(k,v)=>{m.set(String(k),String(v))},removeItem:k=>{m.delete(String(k))},clear:()=>m.clear(),key:i=>[...m.keys()][i]??null,get length(){return m.size}}};
   for(const n of ['localStorage','sessionStorage'])Object.defineProperty(window,n,{value:mem(),configurable:true});
-  window.DEMO_BLOCKED=[];const same=u=>{try{return new URL(u,location.href).origin===location.origin}catch(e){return false}};
-  const f=window.fetch.bind(window);window.fetch=(u,o)=>{const url=typeof u==='string'?u:u&&u.url;if(!same(url)){DEMO_BLOCKED.push(url);return Promise.reject(new TypeError('展示頁不連外部伺服器'))}return f(u,o)};
-  const op=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u,...r){if(!same(u)){DEMO_BLOCKED.push(u);throw new TypeError('展示頁不連外部伺服器')}return op.call(this,m,u,...r)};
+  window.DEMO_BLOCKED=[];const okHost=u=>{try{const o=new URL(u,location.href).origin;return o===location.origin||o==='https://raw.githubusercontent.com'}catch(e){return false}};
+  const f=window.fetch.bind(window);window.fetch=(u,o)=>{const url=typeof u==='string'?u:u&&u.url;if(!okHost(url)){DEMO_BLOCKED.push(url);return Promise.reject(new TypeError('展示頁不連外部伺服器'))}return f(u,o)};
+  const op=XMLHttpRequest.prototype.open;XMLHttpRequest.prototype.open=function(m,u,...r){if(!okHost(u)){DEMO_BLOCKED.push(u);throw new TypeError('展示頁不連外部伺服器')}return op.call(this,m,u,...r)};
   window.WebSocket=function(u){DEMO_BLOCKED.push(u);throw new TypeError('展示頁不連外部伺服器')};
   if(navigator.sendBeacon)navigator.sendBeacon=u=>{DEMO_BLOCKED.push(u);return false};
-  if(navigator.serviceWorker)try{navigator.serviceWorker.register=()=>Promise.reject(new Error('展示頁不註冊 Service Worker'))}catch(e){}})();
+  if(navigator.serviceWorker)try{navigator.serviceWorker.register=()=>Promise.reject(new Error('展示頁不註冊 Service Worker'))}catch(e){}
+  // 圖片載入失敗一律記下來（控制區會改成紅色「素材載入失敗」，不會只顯示綠色正常流程）
+  window.DEMO_IMGERR=[];document.addEventListener('error',e=>{const t=e.target;if(t&&t.tagName==='IMG'&&DEMO_IMGERR.length<200)DEMO_IMGERR.push(t.currentSrc||t.src)},true);
+  // 素材診斷：同一張騎士圖，分別向「頁面網址」和「圖片來源」各要一次，記下 HTTP 狀態、Content-Type、檔頭是不是 WebP
+  const probe=async base=>{try{const r=await f(base+'art/kn_sw_0.webp',{cache:'no-store'}),b=new Uint8Array(await r.arrayBuffer()),sig=String.fromCharCode(...b.slice(0,4))+'/'+String.fromCharCode(...b.slice(8,12));
+      return {url:base+'art/kn_sw_0.webp',status:r.status,type:r.headers.get('content-type')||'',redirected:r.redirected,final:r.url,bytes:b.length,webp:sig==='RIFF/WEBP',sig:sig.replace(/[^\x20-\x7e]/g,'?')}}catch(e){return {url:base+'art/kn_sw_0.webp',err:e.message}}};
+  window.DEMO_PROBE={};const H=DEMO_SRC.host,A2=DEMO_SRC.art;probe(H).then(x=>DEMO_PROBE.host=x);if(A2!==H)probe(A2).then(x=>DEMO_PROBE.art=x)})();
 </script>
 <style>
 /* 只藏掉戰鬥區以外的遊戲外框（上方資源列、下方導覽列、聊天列），戰鬥卡片本身的樣式完全照遊戲 */
@@ -34,15 +49,15 @@ html{scrollbar-width:none}html::-webkit-scrollbar{display:none}   /* 手機沒�
 <div id="fxl"></div>
 <div class="toasts" id="toasts"></div>
 <script>
-// ② 依序載入遊戲本體：style.css（檔案本身含 <style>）→ skin.js → game.js
-(async function(){
+// ② 依序載入遊戲本體：style.css（檔案本身含 <style>）→ skin.js → game.js（都從 HOST 讀；style.css 裡的圖片相對路徑跟著 base 走）
+(async function(){const H=DEMO_SRC.host;
   const msg=t=>{const e=document.getElementById('demo-msg');if(e)e.textContent=t};
-  try{const css=await (await fetch('src/style.css',{cache:'no-store'})).text();const h=document.createElement('div');h.innerHTML=css;h.querySelectorAll('style').forEach(s=>document.head.appendChild(s))}
+  try{const css=await (await fetch(H+'src/style.css',{cache:'no-store'})).text();const h=document.createElement('div');h.innerHTML=css;h.querySelectorAll('style').forEach(s=>document.head.appendChild(s))}
   catch(e){return msg('讀不到 src/style.css：'+e.message)}
   for(const s of ['src/skin.js','src/game.js']){
-    const ok=await new Promise(r=>{const el=document.createElement('script');el.src=s+'?t='+Date.now();el.onload=()=>r(1);el.onerror=()=>r(0);document.body.appendChild(el)});
+    const ok=await new Promise(r=>{const el=document.createElement('script');el.src=H+s+'?t='+Date.now();el.onload=()=>r(1);el.onerror=()=>r(0);document.body.appendChild(el)});
     if(!ok)return msg('讀不到 '+s)}
-  const el=document.createElement('script');el.src='demo/battle-stage.js?t='+Date.now();document.body.appendChild(el);
+  const el=document.createElement('script');el.src=H+'demo/battle-stage.js?t='+Date.now();document.body.appendChild(el);
 })();
 </script>
 </body></html>

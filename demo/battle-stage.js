@@ -44,6 +44,9 @@ function kill(){killT=performance.now();
   const d=dur(mi,w);st.bank.cycles++;monFx(mi,st,w,false,d,0);monPaint(mi,H());setTimeout(()=>{monFx(mi,st,w,false,d,0);monPaint(mi,H())},1150)}
 
 window.DEMO={
+  // 素材狀態：戰鬥卡片裡每一張 <img> 有沒有真的載入（naturalWidth>0），加上 style.css 背景圖（傷害數字、霧氣）各抽一張檢查
+  assets:()=>{const im=[...document.querySelectorAll('#view img')],ok=im.filter(x=>x.complete&&x.naturalWidth>0).length,bad=im.filter(x=>x.complete&&!x.naturalWidth);
+    return {total:im.length,ok,bad:bad.length,pending:im.length-ok-bad.length,badUrls:[...new Set(bad.map(x=>x.currentSrc||x.src).concat(DEMO_IMGERR))].slice(0,5),css:CSSCHK,src:DEMO_SRC,probe:DEMO_PROBE}},
   info:()=>({build:BUILD_ID,weapon:`${bp.n} +${lv}（攻擊力 ${fmt(power(w))}）`,cat,catN:CATS[cat],mon:`${vNo(mi)} ${MON_T[mi]}・${MONS[mi]}`,el:ELEM[MON_EL[mi]].n,mode,force,
     proc:procP(lv),special:(HIT_N[cat]||'').replace(/^.*附加效果/,'附加效果'),hp:H()?Math.ceil(H().cur/H().max*100):null,cycle:Math.round(dur(mi,w)/1000),
     width:innerWidth,blocked:DEMO_BLOCKED.slice(),log:log.slice(0,12).map(x=>({ago:Math.round((performance.now()-x.t)/100)/10,s:x.s,k:x.k}))}),
@@ -53,5 +56,6 @@ window.DEMO={
   // 開發者工具 v5.40 原本的兩個按鈕（固定假數字，直接呼叫 devdo，同一份程式）：bspierce 長柄 6 位數兩段、bsshake 會心→普通錘擊→震碎
   dev:k=>{if(!['bspierce','bsshake'].includes(k))return;note('開發者工具 '+k+'（固定假數字）','強制');devdo(k)},
 };
+const CSSCHK={};['fx_dmg_n','fx_dmg_c','dp/fog_band'].forEach(n=>{const u=new URL(A(n),document.baseURI).href,i=new Image();CSSCHK[n]='載入中';i.onload=()=>CSSCHK[n]=i.naturalWidth?'正常':'失敗';i.onerror=()=>CSSCHK[n]='失敗';i.src=u});
 draw();note('測試狀態已建立');
 })();

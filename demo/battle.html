@@ -23,7 +23,8 @@ button:disabled{opacity:.4;cursor:not-allowed}
 button.forced{border-color:var(--warn)}
 .muted{color:var(--mu);font-size:12px}
 .badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:600}
-.b-nat{background:var(--ok);color:#fff}.b-frc{background:var(--warn);color:#fff}
+.b-nat{background:var(--ok);color:#fff}.b-frc{background:var(--warn);color:#fff}.b-bad{background:#b02020;color:#fff}.b-wait{background:#555;color:#fff}
+#assets dd{word-break:break-all}
 dl{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;margin:0;font-size:13px}dt{color:var(--mu)}dd{margin:0}
 #log{font:12px/1.5 ui-monospace,monospace;max-height:180px;overflow:auto;margin:0;padding:0;list-style:none}
 #log li.f{color:#f0a080}
@@ -46,6 +47,7 @@ table{border-collapse:collapse;font-size:12px;width:100%}td,th{border-bottom:1px
     <div style="margin-bottom:6px"><span class="badge" id="badge"></span> <span class="muted" id="badgeN"></span></div>
     <dl id="info"></dl>
   </div>
+  <div class="box"><h2>素材（圖片有沒有真的載入）</h2><dl id="assets"></dl></div>
   <div class="box"><h2>優先驗收三項（v5.40）</h2>
     <div class="row">
       <button data-preset="hammer">① 錘：震碎時震動</button>
@@ -82,7 +84,8 @@ table{border-collapse:collapse;font-size:12px;width:100%}td,th{border-bottom:1px
 </div>
 <script>
 // 戰鬥程式來源：這個測試頁跟同一個 commit 的 src/game.js 一起載入，不另寫戰鬥動畫
-const SRC_BASE='main 34f138e（v5.40，PR #163 已合併）';
+// PR #163 實際狀態（GitHub 查詢，2026-10-29）：merged=true，merged_at 2026-10-29 05:14:19 UTC，由 just19890719-cmyk 合併；原分支 claude/project-thread-e2elxw head 8e68523；合併後 main＝34f138e
+const SRC_BASE='main 34f138e＝v5.40（PR #163 已於 2026-10-29 05:14 UTC 合併進 main，原分支 head 8e68523）';
 const WEPS=[['sword','劍'],['axe','斧'],['dagger','雙刀'],['polearm','長柄'],['hammer','錘'],['bow','弓'],['crossbow','弩']];
 const FX={sword:['會心','×2.5（就是劍的附加效果）'],axe:['流血','之後再掉 3 次血'],dagger:['中毒','之後再掉 5 次血'],polearm:['貫穿','0.15 秒後追加一次 ×1.5'],hammer:['震碎','×1，之後 3 下各 +50%，觸發時震動整個戰鬥場景'],bow:['穿心','×2.5'],crossbow:['破甲','之後 6 下各 +25%']};
 const MONS=['1-1 林中魅妖・斯寇格拉','1-2 不死野豬・賽赫利姆尼爾','1-3 追月之狼・哈提','1-4 追日之狼・斯庫爾（冰）','1-5 戰場鴉魔・瓦爾拉文','1-6 深海巨怪・克拉肯','1-7 石皮巨魔・山怪特羅爾','1-8 泥巨人・莫庫卡爾菲','1-9 火焰騎兵・穆斯貝爾騎兵','1-10 守望之神・海姆達爾','2-1 九頭巨人・斯里瓦爾迪','2-2 狼群首領・鐵森林狼王','2-3 吞屍巨鷹・赫拉斯瓦爾格','2-4 巨人屍鬼・德勞格','2-5 冰湖水妖・諾克','2-6 洞穴蠕龍・林德蟲','2-7 風之巨人・卡瑞','2-8 幻術巨人王・烏特加德洛基','2-9 石心巨人・赫朗格尼爾','2-10 雷神・索爾'];
@@ -96,8 +99,8 @@ $('#weps').innerHTML=WEPS.map(([k,n])=>`<button data-w2="${k}">${n}</button>`).j
 $('#mon').innerHTML=MONS.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
 $('#fx').innerHTML='<tr><th>武器</th><th>附加效果（現有）</th><th>通用「會心」</th></tr>'+WEPS.map(([k,n])=>`<tr><td>${n}</td><td>${FX[k][0]}：${FX[k][1]}</td><td>${k==='sword'?'＝附加效果':'<span class="na">尚未實作</span>'}</td></tr>`).join('');
 let afterLoad=null;
-function load(){const q=new URLSearchParams({w:P.w,m:P.m,lv:P.lv,mode:P.mode,force:P.force?1:0});stage.width=P.width;stage.src='battle-stage.html?'+q;paint();
-  try{history.replaceState(null,'','?'+new URLSearchParams({...P,force:P.force?1:0}))}catch(e){}}
+function load(){const q=new URLSearchParams({w:P.w,m:P.m,lv:P.lv,mode:P.mode,force:P.force?1:0});{const u=new URLSearchParams(location.search);['art','ref'].forEach(k=>{if(u.has(k))q.set(k,u.get(k))})}stage.width=P.width;stage.src='battle-stage.html?'+q;paint();
+  try{const u=new URLSearchParams(location.search),n=new URLSearchParams({...P,force:P.force?1:0});['art','ref'].forEach(k=>{if(u.has(k))n.set(k,u.get(k))});history.replaceState(null,'','?'+n)}catch(e){}}
 stage.addEventListener('load',()=>{const t=setInterval(()=>{if(D()){clearInterval(t);if(afterLoad){const f=afterLoad;afterLoad=null;f()}}},100)});
 function paint(){
   document.querySelectorAll('[data-w]').forEach(b=>b.classList.toggle('on',+b.dataset.w===P.width));
@@ -109,9 +112,16 @@ function paint(){
   $('#cap').textContent=`戰鬥區寬 ${P.width}px（iframe 內實際排版寬度）`;
 }
 let lastForced=0;
-function info(){const d=D();if(!d)return;const o=d.info();const forced=o.force||(performance.now()-lastForced<4000);
-  $('#badge').textContent=forced?'強制觸發測試':'正常流程';$('#badge').className='badge '+(forced?'b-frc':'b-nat');
-  $('#badgeN').textContent=forced?'這段畫面是強制觸發，不能當作自然機率的驗證':'附加效果照原本機率（+'+P.lv+' 約 '+Math.round(o.proc*100)+'%）';
+function info(){const d=D();if(!d){$('#badge').textContent='戰鬥區載入中';$('#badge').className='badge b-wait';return}const o=d.info(),a=d.assets();const forced=o.force||(performance.now()-lastForced<4000);
+  const cssBad=Object.values(a.css).filter(x=>x==='失敗').length,cssWait=Object.values(a.css).filter(x=>x==='載入中').length,fail=a.bad+cssBad,wait=a.pending+cssWait||!a.total;
+  // 素材沒全部載入好，就不顯示「正常流程」：失敗＝紅色、還在載入＝灰色
+  if(fail){$('#badge').textContent='素材載入失敗（'+fail+' 張）';$('#badge').className='badge b-bad';$('#badgeN').textContent='畫面不完整，不能拿來做視覺驗收；看下面「素材」一欄的原因'}
+  else if(wait){$('#badge').textContent='素材載入中（'+a.ok+'/'+a.total+'）';$('#badge').className='badge b-wait';$('#badgeN').textContent='等全部載入完成再看'}
+  else{$('#badge').textContent=forced?'強制觸發測試':'正常流程';$('#badge').className='badge '+(forced?'b-frc':'b-nat');
+  $('#badgeN').textContent=(forced?'這段畫面是強制觸發，不能當作自然機率的驗證':'附加效果照原本機率（+'+P.lv+' 約 '+Math.round(o.proc*100)+'%）')+'｜素材 '+a.ok+'/'+a.total+' 張＋背景圖 '+Object.keys(a.css).length+' 張全部載入'}
+  const pr=x=>!x?'檢查中':x.err?'失敗：'+x.err:`HTTP ${x.status}、${x.type||'沒有 Content-Type'}、${x.bytes} bytes、檔頭 ${x.sig}${x.webp?'（是 WebP）':'（不是 WebP）'}${x.redirected?'、轉址到 '+x.final:''}`;
+  $('#assets').innerHTML=[['圖片來源',a.src.artFrom+'<br><span class="muted">'+a.src.art+'</span>'],['戰鬥卡片圖片',`${a.ok} 張正常、${a.bad} 張失敗、${a.pending} 張載入中（共 ${a.total}）`],['背景圖（CSS）',Object.entries(a.css).map(([k,v])=>k+' '+v).join('、')],
+    ['頁面網址的騎士圖',pr(a.probe.host)],...(a.probe.art||a.src.art!==a.src.host?[['GitHub 原始檔的騎士圖',pr(a.probe.art)]]:[]),...(a.badUrls.length?[['失敗的圖片',a.badUrls.map(u=>'<span class="muted">'+u.replace(/[<>&]/g,'')+'</span>').join('<br>')]]:[])].map(([x,y])=>`<dt>${x}</dt><dd>${y}</dd>`).join('');
   $('#info').innerHTML=[['版本','v'+o.build],['來源 commit',SRC_BASE+(ref?'｜網址版本 '+ref.slice(0,12):'')],['武器',o.weapon+'（'+o.catN+'）'],['附加效果',o.special],['怪物',o.mon+'（屬性 '+o.el+'）'],['攻擊方式',o.mode==='auto'?'自動連續攻擊（遊戲原本節奏）':'單次攻擊'],['怪物血量',o.hp==null?'—':o.hp+'%'],['一輪時間',o.cycle+' 秒（自動模式下這麼久才自然擊倒一隻）'],['戰鬥區寬度',o.width+'px'],['外部連線',o.blocked.length?'已攔截 '+o.blocked.length+' 次':'0 次（沒有連外）']].map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join('');
   $('#log').innerHTML=o.log.map(x=>`<li class="${x.k?'f':''}">${x.ago.toFixed(1)} 秒前　${x.s}${x.k?'　〔'+x.k+'〕':''}</li>`).join('')}
 setInterval(info,400);
