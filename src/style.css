@@ -1599,7 +1599,7 @@ html.scrimmed .cbar{display:none}
 .bs-mon .mon-pop.poison{color:#7dff6a;font-size:14px;top:36%;text-shadow:0 0 3px #000,0 1px 2px #000}
 .bs-mon .mon-pop.kill{font-size:18px;top:30%}
 .bs-kn{position:absolute;right:calc(-6% - 8px);bottom:-4%;height:123.2%;aspect-ratio:960/440;z-index:3}
-.bs-kn img{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 4px 5px rgba(0,0,0,.7));opacity:0;animation:none var(--K) infinite step-end;animation-delay:var(--d)}
+.bs-kn img{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 4px 5px rgba(0,0,0,.7));opacity:0;animation:none var(--K) infinite step-end;animation-delay:0s}   /* v5.43 BUG-021：七種武器的騎士格起點都交給 animSync 對齊頁面時間軸 0（原本用 --d 負延遲，瀏覽器晚開始播，騎士比扣血慢 30～260ms） */
 .bs.c-sw{--A:6%;--R:-3.6deg;--hd:480ms}.bs.c-ax{--A:8%;--R:-4.8deg;--hd:500ms}.bs.c-hm{--A:11%;--R:-6.6deg;--hd:600ms}.bs.c-dg{--A:3%;--R:-1.8deg;--hd:360ms}
 .bs.c-sp{--A:7%;--R:-4.2deg;--hd:480ms}.bs.c-bw{--A:6%;--R:-3.6deg;--hd:440ms}.bs.c-cb{--A:9%;--R:-5.4deg;--hd:520ms}
 @keyframes bsBreath{0%,100%{transform:none}50%{transform:scale(1.015,1.03)}}

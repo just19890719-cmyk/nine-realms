@@ -1615,7 +1615,7 @@ html.scrimmed .cbar{display:none}
 .bs-mon .mon-pop.poison{color:#7dff6a;font-size:14px;top:36%;text-shadow:0 0 3px #000,0 1px 2px #000}
 .bs-mon .mon-pop.kill{font-size:18px;top:30%}
 .bs-kn{position:absolute;right:calc(-6% - 8px);bottom:-4%;height:123.2%;aspect-ratio:960/440;z-index:3}
-.bs-kn img{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 4px 5px rgba(0,0,0,.7));opacity:0;animation:none var(--K) infinite step-end;animation-delay:var(--d)}
+.bs-kn img{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 4px 5px rgba(0,0,0,.7));opacity:0;animation:none var(--K) infinite step-end;animation-delay:0s}   /* v5.43 BUG-021：七種武器的騎士格起點都交給 animSync 對齊頁面時間軸 0（原本用 --d 負延遲，瀏覽器晚開始播，騎士比扣血慢 30～260ms） */
 .bs.c-sw{--A:6%;--R:-3.6deg;--hd:480ms}.bs.c-ax{--A:8%;--R:-4.8deg;--hd:500ms}.bs.c-hm{--A:11%;--R:-6.6deg;--hd:600ms}.bs.c-dg{--A:3%;--R:-1.8deg;--hd:360ms}
 .bs.c-sp{--A:7%;--R:-4.2deg;--hd:480ms}.bs.c-bw{--A:6%;--R:-3.6deg;--hd:440ms}.bs.c-cb{--A:9%;--R:-5.4deg;--hd:520ms}
 @keyframes bsBreath{0%,100%{transform:none}50%{transform:scale(1.015,1.03)}}
@@ -3119,7 +3119,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='5.42';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='5.43';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -4117,6 +4117,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'5.43',d:'10/30',t:'戰鬥畫面：騎士揮擊和扣血同時發生',b:['原本騎士的動作比傷害數字慢一點（手機上最多慢到四分之一秒），看起來像還沒打到怪物就先扣血','現在七種武器打到的那一刻，火花、傷害數字、怪物受擊都會同時出現（村莊戰鬥畫面和限時挑戰都一樣）','攻速、傷害、收成都沒有改'],g:[]},
  {v:'5.42',d:'10/29',t:'戰鬥畫面：中毒、流血的數字不再疊在一起',b:['雙刀中毒、斧頭流血這種連續小傷害，同一種同時只顯示一個數字，會直接換成最新的數字，不會好幾個綠字蓋在一起','傷害、觸發機率、攻擊節奏都沒有改'],g:[]},
  {v:'5.41',d:'10/29',t:'單手劍打狼更有打擊感（先在 1-3、1-4 試）',b:['單手劍舉刀停久一點、砍下更快，砍到時會停一下','狼被砍到先頓一下，再快速往後退、慢慢回原位','狼撲過來的時候被砍，只會閃光跳數字，不會同時往後退','先套在 1-3 哈提、1-4 斯庫爾；傷害、攻速、收成都沒有改'],g:[]},
  {v:'5.40',d:'10/29',t:'戰鬥畫面微調：錘的震動、兩段傷害數字、受擊光',b:['錘只有打出「震碎」時戰鬥畫面才會震，普通錘擊不再每一下都震','長柄「貫穿」這種兩段攻擊，第二個傷害數字會自動往下讓開，不會疊在第一個上面','怪物被打中時改成用自己的顏色變亮，冰狼這種淺色的怪物不會再變成黃白色','只改畫面，傷害、收成、掉落和存檔都沒有改'],g:[]},
@@ -5276,7 +5277,7 @@ function bsMore(i,w){const v=VILLAGES[i],bk=S.villages[i].bank;
 const BS_SV=[2,3];   // v5.41 單手劍 VS 狼第一階段（Mochi 核准）：新的出刀節奏、命中停頓、快退慢回、撲擊硬直只套在 1-3 哈提、1-4 斯庫爾，樣式在 style.css 的 .bs.c-sw.sv
 function vStrip(i,w){if(!vStrip.warm){vStrip.warm=1;['fx_hit_n','fx_hit_c'].forEach(n=>{new Image().src=A(n)})}   // v5.39 命中特效先載好，第一下就看得到
   const kn=KN[bpOf(w).cat],t=performance.now(),full=KN_FULL.includes(i),m='mon_'+(i+1);
-  return `<div class="bs c-${kn.k}${kn.k==='sw'&&BS_SV.includes(i)?' sv':''}" data-act="bsclose" role="button" aria-label="收起戰鬥畫面" style="--n:${kn.n};--d:-${Math.round(t%kn.K)}ms;--dp:-${Math.round(t%(kn.K*kn.n))}ms">${img('v'+(i+1),'bs-bg'+(BS_BGP[i]?' bgp-'+BS_BGP[i]:''))}<i class="bs-gd"></i>
+  return `<div class="bs c-${kn.k}${kn.k==='sw'&&BS_SV.includes(i)?' sv':''}" data-act="bsclose" role="button" aria-label="收起戰鬥畫面" style="--n:${kn.n};--dp:-${Math.round(t%(kn.K*kn.n))}ms">${img('v'+(i+1),'bs-bg'+(BS_BGP[i]?' bgp-'+BS_BGP[i]:''))}<i class="bs-gd"></i>
    <div class="bs-mon ${full?'':'pt'}" data-mon="${i}"><div class="bs-br"><div class="bs-hb">${full?img(m+'_idle','idle',MONS[i])+img(m+'_atk','atk'):img(m,'idle',MONS[i])}${full?['tn','fl'].map(c=>`<i class="${c}">${img(m+'_idle','idle')}${img(m+'_atk','atk')}</i>`).join(''):img(m,'tn')+img(m,'fl')}</div></div></div>
    <div class="bs-kn">${Array.from({length:12},(_,f)=>img(`kn_${kn.k}_${f}`,'k'+f)).join('')}</div>
    <i class="bs-fog"></i>${['fx_ember1','fx_ember_trail','fx_ember1','fx_ember_cluster'].map((n,k)=>`<img class="bs-em e${k}" src="${A('dp/'+n)}" alt="">`).join('')}</div>`}   // v5.39 前景霧氣＋火星（鐵匠鋪已驗收素材 art/dp）
@@ -5548,6 +5549,7 @@ function viewShop(){   // v5.17 換成道具欄母版（.b2）：主框、次面
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'5.43',t:'BUG-021 騎士揮擊對齊扣血：.bs-kn img animation-delay 改 0、全部 kn-<k><f> 加進 ANIM_SYNC（原本只有 v5.41 的 kn-sv），vStrip 拿掉 --d',b:[['bssync','展開目前戰鬥畫面（沒有就展開 1-3），量 2 秒騎士動畫跟扣血時鐘的落差']]},
  {v:'5.42',t:'P2-01（BUG-020）：dotMerge——.bs-mon 裡同種 bleed／poison 的 .mon-pop 同時只留一個：舊字 <0.4 秒直接換數字（不重播動畫），否則移除再跳新字；<i> 標籤帶到新字；只改顯示',b:[['bsdot','1-3 換成雙刀 +12＋附加效果必定觸發，展開戰鬥畫面看中毒字'],['bsdotax','1-3 換成斧 +12＋附加效果必定觸發，看流血字']]},
  {v:'5.41',t:'單手劍 VS 狼第一階段：.bs.c-sw.sv（BS_SV＝1-3、1-4）用 kn-sv0～11 新節奏（k8 仍 450ms 起、一刀 1000ms），受擊 bsHitSv（70ms 停頓→60ms 退到最遠＋壓扁→慢回，480ms），撲擊中（bsLunge 72%～93%）被打加 .poise 不後退',b:[['bssv','1-3 哈提、1-4 斯庫爾都換成單手劍 +6，展開 1-3 戰鬥畫面'],['bssv4','展開 1-4 斯庫爾（冰狼）戰鬥畫面']]},
  {v:'5.40',t:'受擊光改成怪物自己的顏色加亮（brightness 2.4＋saturate 1.5，高峰 .7，冰狼不變黃）；bsShake 同元素先取消舊的震動；錘只有震碎（kind crit＋hv）才震場景；popAvoid 讓多段傷害數字往下避開重疊；screens.js 加「戰鬥畫面」「限時挑戰」兩個測試畫面',b:[['bsflash','受擊光示範：1-4 冰狼普通受擊＋會心受擊，被打時保持藍色'],['bsshake','震動示範：會心（只有怪物震）→ 普通錘擊（不震）→ 錘震碎（整個戰鬥場景震）'],['bspierce','兩段數字示範：長柄貫穿 6 位數，第二個數字應該在第一個下面、不重疊']]},
@@ -5693,6 +5695,10 @@ function sheetDev(){
 
 // v5.42 開發者工具：1-3 換成雙刀／斧 +12、附加效果必定觸發，看中毒／流血字有沒有疊在一起（BUG-020）
 function bsDotDemo(c){devdo('bsall');const b=BPS.filter(x=>x.cat===c).sort((x,y)=>x.t-y.t)[0],st=S.villages[2],w=makeWeapon(b.id,2,12);st.weaponId=w.id;st.cycleStart=NOW()-dur(2,w)*.3;delete MONFX.hp[2];ui.bsProc=true;Object.keys(KHIT).forEach(k=>delete KHIT[k]);ui.bsOpen=2;render();setTimeout(()=>document.querySelector('.bs')?.scrollIntoView({block:'center'}),50);toast((c==='dagger'?'雙刀中毒':'斧流血')+'：同一種持續傷害只留最新一個數字（附加效果必定觸發已開）','ok')}
+// v5.43 開發者工具：量騎士動畫跟扣血時鐘（performance.now()%K）差幾毫秒，正數＝騎士比較慢（BUG-021）
+function bsSyncCheck(){const bs=document.querySelector('.bs');if(!bs)return toast('沒有展開的戰鬥畫面','bad');bs.scrollIntoView({block:'center'});const K=parseFloat(getComputedStyle(bs).getPropertyValue('--K')),d=[];
+  const one=()=>{const a=[...bs.querySelectorAll('.bs-kn img')].flatMap(x=>x.getAnimations()).find(x=>/^kn-/.test(x.animationName));if(!a)return;let v=(performance.now()%K-a.effect.getComputedTiming().progress*K)%K;if(v>K/2)v-=K;if(v<-K/2)v+=K;d.push(Math.round(v))};
+  let n=0;const iv=setInterval(()=>{one();if(++n>=20){clearInterval(iv);toast(d.length?`騎士動畫落後扣血 ${Math.min(...d)}～${Math.max(...d)} 毫秒（${d.length} 次取樣，一個畫面約 17 毫秒）`:'量不到騎士動畫',d.length&&Math.max(...d.map(Math.abs))<35?'ok':'bad')}},100)}
 function devdo(k){if(k.startsWith('gd')||k==='fropen'){ui.sheet=null;   // v3.98 好友＋公會測試
     const mk=['gdnone','gdlead','gdmem','gdlv5'].includes(k);if(mk&&!chatMock()){ui.sheet={t:'d'};render();return toast('模擬按鈕只在本機未登入時可用','bad')}
     if(mk){if(k!=='gdlv5')GD.mock=null;gdMockInit();const m=GD.mock;if(k==='gdnone'){m.g=null;m.me.cd=null}else{m.g=m.g||{id:1,name:'霜狼鍛造會',emb:'霜',notice:'每週日晚上一起衝首領，記得捐獻！',join:'open',exp:3860};m.role=k==='gdlead'?'lead':'mem';if(k==='gdlead')m.mem.forEach(x=>{if(x.role==='lead')x.role='mem'});else if(!m.mem.some(x=>x.role==='lead'))m.mem[0].role='lead';if(k==='gdlv5')m.g.exp=Math.max(m.g.exp,GD_LV[4])}GD.mk=false;GD.edit=false;GD.tab='mem';return gdOpen()}
@@ -5943,6 +5949,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
    bssv:()=>{devdo('bsall');const b=BPS.filter(x=>x.cat==='sword').sort((x,y)=>x.t-y.t)[0];[2,3].forEach(i=>{const st=S.villages[i],w=makeWeapon(b.id,2,6);st.weaponId=w.id;st.cycleStart=NOW()-dur(i,w)*.3;delete MONFX.hp[i]});Object.keys(KHIT).forEach(k=>delete KHIT[k]);ui.bsOpen=2;render();setTimeout(()=>document.querySelector('.bs')?.scrollIntoView({block:'center'}),50);toast('1-3 哈提、1-4 斯庫爾換成單手劍 +6：看舉刀、砍到停一下、狼先頓再退、撲過來被砍不後退','ok')},   // v5.41
    bsdot:()=>bsDotDemo('dagger'),
    bsdotax:()=>bsDotDemo('axe'),
+   bssync:()=>{if(ui.bsOpen==null){devdo('bsall');ui.bsOpen=2}ui.tab='village';render();setTimeout(bsSyncCheck,300)},   // v5.43
    bssv4:()=>{if(!document.querySelector('.bs.sv'))devdo('bssv');ui.bsOpen=3;render();setTimeout(()=>document.querySelector('.bs')?.scrollIntoView({block:'center'}),50)},
    bsflash:()=>{devdo('bsall');ui.bsOpen=3;render();setTimeout(()=>{const m=document.querySelector('.bs [data-mon]');if(!m)return;m.closest('.bs').scrollIntoView({block:'center'});monPop(m,'hit','-1234',0);setTimeout(()=>monPop(m,'crit','<i>會心</i>-3456',0),1200)},300);toast('1-4 冰狼：普通受擊 → 1.2 秒後會心受擊，被打時要看得出藍色','ok')},   // v5.40
    bspierce:()=>{if(!document.querySelector('.bs'))devdo('bsall');setTimeout(()=>{const m=document.querySelector('.bs [data-mon]');if(!m)return toast('先展開一個戰鬥畫面','bad');m.closest('.bs').scrollIntoView({block:'center'});monPop(m,'hit','-123456',-24);setTimeout(()=>monPop(m,'crit','<i>貫穿</i>-234567',24),150)},300)},   // v5.40
@@ -6050,7 +6057,7 @@ function render(){
 }
 // v5.15 BUG-013 render() 每次重建 DOM，新元素上的循環動畫（紅點呼吸、收成按鈕脈動）會從頭播 → 看起來一直閃。
 // 這裡把這些循環動畫的起點對齊到頁面時間軸 0，重畫前後相位一樣。新增會被 render() 重建的循環動畫：把動畫名稱加進 ANIM_SYNC（或像 +9 裂縫用負的 animation-delay），run_tests.js 會檢查。
-const ANIM_SYNC=new Set(['givePulse','pulseO','pulse','b2crk','frun','bsFog','bsEmber',...[0,1,2,6,7,8,9,10,11].map(k=>'kn-sv'+k)]);   // v5.41 單手劍 VS 狼的騎士格也對齊時間軸 0（扣血用 performance.now()%1000＝450 判定，兩邊同一個起點）   // v5.18 +9 裂縫呼吸（b2crk）、+9 小卡跑框（frun）也改用這裡對齊（原本用產生畫面時的時間算負延遲，手機卡頓時會往前跳 0.1～0.6 秒）
+const ANIM_SYNC=new Set(['givePulse','pulseO','pulse','b2crk','frun','bsFog','bsEmber',...[0,1,2,6,7,8,9,10,11].map(k=>'kn-sv'+k),...Object.values(KN).flatMap(x=>Array.from({length:12},(_,f)=>'kn-'+x.k+f))]);   // v5.43 BUG-021：七種武器的騎士格全部對齊時間軸 0，打到的那一格跟扣血同時出現   // v5.41 單手劍 VS 狼的騎士格也對齊時間軸 0（扣血用 performance.now()%1000＝450 判定，兩邊同一個起點）   // v5.18 +9 裂縫呼吸（b2crk）、+9 小卡跑框（frun）也改用這裡對齊（原本用產生畫面時的時間算負延遲，手機卡頓時會往前跳 0.1～0.6 秒）
 // v5.34 彈窗往下捲時標題列加暗底（.shd），內容不會從透明標題後面透出來；沒捲動時跟原本一樣
 function shdSync(n=document.querySelector('.sheet')){if(n)n.classList.toggle('shd',n.scrollTop>2)}
 if(typeof document!=='undefined')document.addEventListener('scroll',e=>{const t=e.target;if(t&&t.classList&&t.classList.contains('sheet'))shdSync(t)},{capture:true,passive:true});
