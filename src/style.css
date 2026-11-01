@@ -134,7 +134,8 @@ body{color:var(--bone);font-family:var(--body);line-height:1.5;padding-left:max(
 .player{position:relative}
 .player .lvb{display:none;position:absolute;left:22px;top:28px;min-width:22px;padding:0 3px;border-radius:7px;background:#1b130c;border:1px solid var(--line2);color:var(--gold-hi);font:700 11px/14px var(--display);font-style:normal;text-align:center}
 @media (max-width:420px){.player .pname{display:none}.player .lvb{display:block}.player{min-width:44px;flex:none}}
-@media (max-width:360px){.res{flex-wrap:wrap;row-gap:4px}.res::before{content:"";order:2;flex-basis:100%;height:0}.res .chip{order:3}.res .chip:first-of-type{margin-left:auto}.res .gear{order:1}.res .mute{order:1}}
+/* v5.44 360 寬資源列改回一行（v2.0 起 320 不列入支援，兩行只留給 340 以下） */
+@media (max-width:340px){.res{flex-wrap:wrap;row-gap:4px}.res::before{content:"";order:2;flex-basis:100%;height:0}.res .chip{order:3}.res .chip:first-of-type{margin-left:auto}.res .gear{order:1}.res .mute{order:1}}
 
 /* ===== 底部分頁列 ===== */
 .nav{position:fixed;left:0;right:0;bottom:0;z-index:25;background:linear-gradient(#1d1611,#0f0c09);border-top:1px solid var(--line2);box-shadow:0 -6px 18px rgba(0,0,0,.6);
@@ -159,7 +160,7 @@ body{color:var(--bone);font-family:var(--body);line-height:1.5;padding-left:max(
 .hico{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px;border-radius:6px;background:#0c0a08;border:1px solid var(--line);font-size:13px;font-weight:700}
 .hico img{width:48px;height:48px;border-radius:4px}
 .toasts{position:fixed;top:calc(60px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:6px;width:min(92vw,420px);pointer-events:none}
-@media (max-width:360px){.toasts{top:calc(104px + env(safe-area-inset-top,0px))}} /* 頂部列兩行時，提示訊息往下移 */
+@media (max-width:340px){.toasts{top:calc(104px + env(safe-area-inset-top,0px))}} /* 頂部列兩行時，提示訊息往下移 */
 .toast{padding:10px 12px;border-radius:6px;background:rgba(36,28,20,.97);border:1px solid var(--line2);font-size:13px;animation:up .2s ease-out;box-shadow:var(--shadow)}
 .toast.ok{border-color:#3f7a4b}
 .toast.bad{border-color:#7d2a24;color:#ffc0b8}
@@ -2593,4 +2594,11 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 .bs-em.e0{left:30%;animation-delay:-.6s}.bs-em.e1{left:52%;width:16px;animation-duration:5.2s;animation-delay:-2.9s}.bs-em.e2{left:71%;width:14px;animation-duration:3.8s;animation-delay:-1.7s}.bs-em.e3{left:14%;width:22px;animation-duration:6s;animation-delay:-4.1s}
 @keyframes bsEmber{0%{opacity:0;transform:translate(0,0) scale(.7)}12%{opacity:1}70%{opacity:.75}100%{opacity:0;transform:translate(14px,-90px) scale(.35) rotate(80deg)}}
 @media(prefers-reduced-motion:reduce){.bs-fog,.bs-em{animation:none}.bs-em{display:none}}
+/* v5.44 村莊卡片：武器名稱過長只截名稱、保留 +強化等級；「最強…」和「預估…」中間用空白分隔，換行時不會留下孤立的「・」 */
+.vcard .wc-n{display:inline-flex;min-width:0;white-space:nowrap}.vcard .wc-nm{min-width:0;overflow:hidden;text-overflow:ellipsis}.vcard .wc-n{gap:.3em}
+.vcard .vsep{display:inline-block;width:.7em}
+.vcard .wchip{max-width:none}.vcard .wchip~[data-vclock]{flex:none;padding-left:6px}
+@media (max-width:400px){.vcard .wchip .wmini{display:none}.v3 .vcard .wchip:not(#_):not(#_){padding-left:9px}}
+/* v5.44 圖鑑武器名稱兩行時平均分配，不會只剩一個字在第二行 */
+.cx2 .cx-nm{text-wrap:balance}
 </style>

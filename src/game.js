@@ -335,7 +335,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='5.43';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='5.44';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -906,7 +906,7 @@ if(typeof window!=='undefined')setInterval(()=>{if(AUTH&&CLOUD.ready&&!document.
 const mkPrice=(cur,p,cls='')=>`<span class="mk-price ${cls}">${img(MK_CUR[cur][0])}<b>${fmt(p)}</b></span>`;
 const mkWho=r=>mkMe(r)?'<span class="t-gold">我的上架</span>':esc(r.seller_nick||'無名鐵匠');
 function mkItemRow(r,act){return `<button class="ui-card ui-card--row mk-row ${mkMe(r)?'me':''}" data-act="${act}" data-id="${r.id}"><div class="mk-art mk-iart">${itemIco(r.item)}</div>
-   <div class="grow mk-mid"><b class="mk-nm">${itemName(r.item)} <span class="lvt">×${fmt(r.left_qty)}</span></b><span class="small muted">${MATS[r.item]?'材料':'道具'}・標價是一個的價格</span>
+   <div class="grow mk-mid"><b class="mk-nm">${itemName(r.item)} <span class="lvt">×${fmt(r.left_qty)}</span></b><span class="small muted">${MATS[r.item]?'材料':'道具'}・標價為單價</span>
    <span class="small muted">${mkWho(r)}・剩 ${fmtT(mkLeft(r))}</span></div><span class="mk-pu">${mkPrice(r.cur,r.price)}<i>每個</i></span></button>`}
 function mkRow(r,act){if(mkIsItem(r))return mkItemRow(r,act);const w=r.weapon,b=BP[bpId(r.bp)],me=mkMe(r);
   return `<button class="ui-card ui-card--row mk-row ${me?'me':''}" data-act="${act}" data-id="${r.id}"><div class="mk-art">${wArt(b.id,{frame:fq(w)})}</div>
@@ -1333,6 +1333,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'5.44',d:'11/02',t:'畫面整理：村莊卡片和窄螢幕排版',b:['360 寬的手機，上方金幣、鑽石改回一行，不再擠成兩行','村莊卡片的武器名稱太長時只縮短名稱，<b>+強化等級</b>一定看得到','「每小時打倒幾隻、多少金幣」「最強武器、預估秒數」換行時不會把「金幣」「・」拆到下一行','圖鑑的長武器名稱兩行平均分配；交易所道具說明改成「標價為單價」，窄螢幕不會被切掉','數值、收益、存檔都沒有改'],g:[]},
  {v:'5.43',d:'10/30',t:'戰鬥畫面：騎士揮擊和扣血同時發生',b:['原本騎士的動作比傷害數字慢一點（手機上最多慢到四分之一秒），看起來像還沒打到怪物就先扣血','現在七種武器打到的那一刻，火花、傷害數字、怪物受擊都會同時出現（村莊戰鬥畫面和限時挑戰都一樣）','攻速、傷害、收成都沒有改'],g:[]},
  {v:'5.42',d:'10/29',t:'戰鬥畫面：中毒、流血的數字不再疊在一起',b:['雙刀中毒、斧頭流血這種連續小傷害，同一種同時只顯示一個數字，會直接換成最新的數字，不會好幾個綠字蓋在一起','傷害、觸發機率、攻擊節奏都沒有改'],g:[]},
  {v:'5.41',d:'10/29',t:'單手劍打狼更有打擊感（先在 1-3、1-4 試）',b:['單手劍舉刀停久一點、砍下更快，砍到時會停一下','狼被砍到先頓一下，再快速往後退、慢慢回原位','狼撲過來的時候被砍，只會閃光跳數字，不會同時往後退','先套在 1-3 哈提、1-4 斯庫爾；傷害、攻速、收成都沒有改'],g:[]},
@@ -2539,13 +2540,13 @@ function viewVillage(){
    if(k==='open'){const has=S.weapons.filter(x=>eligible(i,x)).sort((a,b)=>vPow(i,b)-vPow(i,a))[0]||null,sec=has&&chEst(i,has);   // v4.52 限時挑戰：駐守中的武器也能挑戰；卡片不顯示弱點（Mochi：點開詳情才看）
      return `<div class="ui-card vcard open next" data-act="vopen" data-i="${i}" role="button" tabindex="0"><span class="next-tag">下一個挑戰</span>${has&&sec<=CH_SEC?'<i class="dot give-dot"></i>':''}${img('v'+(i+1),'vthumb')}<div class="grow"><div class="row nowrap"><b class="grow">${vNo(i)} ${v.name}</b></div>
       <div class="small vwho">${MONS[i]}・血量 ${fmt(VHP(i))}</div>${FIRST_GOLD[i]?`<div class="small t-gold">首次收復獎勵 ${img('it_gold','fg-ic')} ${fmt(FIRST_GOLD[i])} 金幣</div>`:''}
-      <div class="small ${has?sec<=CH_SEC?'t-ok':'t-danger':'muted'}">${has?`<span class="nobr">最強 ${bpOf(has).n} +${has.lv}・</span><span class="nobr">預估 ${Math.round(sec)} 秒${sec<=CH_SEC?' '+grChip(GRADES[grOf(sec)],'sm'):'（超過）'}</span>`:'道具欄還沒有武器'}</div></div>
+      <div class="small ${has?sec<=CH_SEC?'t-ok':'t-danger':'muted'}">${has?`<span class="nobr">最強 ${bpOf(has).n} +${has.lv}<span class="vsep"></span></span><span class="nobr">預估 ${Math.round(sec)} 秒${sec<=CH_SEC?' '+grChip(GRADES[grOf(sec)],'sm'):'（超過）'}</span>`:'道具欄還沒有武器'}</div></div>
       <div class="vside">${has?btn('挑戰','vopen',{cls:'btn-primary sm',attrs:`data-i="${i}"`}):btn('去鍛造','forgeCat',{cls:'btn-sec sm',attrs:'data-k="all"'})}</div></div>`}
    const bs=knOn(w)&&ui.bsOpen===i;   // v4.21 點怪物小圖才展開戰鬥畫面，一次只開一個
    // v4.39 卡片下方的箭頭也能展開／收起戰鬥畫面；展開時下方多列每輪掉落和已經打到還沒收成的東西（Mochi）
    return `<div class="ui-card vcard ${k} ${bs?'bt':''} ${knOn(w)?'tgl':''}" ${w?'':`data-act="vopen" data-i="${i}" role="button" tabindex="0"`}>${vGiveDot(i)||st.bank.cycles?'<i class="dot give-dot"></i>':''}${bs?vStrip(i,w):w?vMon(i,k,knOn(w)):img('v'+(i+1),'vthumb')}<div class="grow"><div class="row nowrap"><b class="grow">${vNo(i)} ${v.name}</b>${grChip(vGr(i),'sm')}<span class="vst ${k}">${lab}</span></div>
-    ${w?`<div class="row nowrap small"><span class="wchip ${lc(w)}b" data-act="vopen" data-i="${i}" role="button" aria-label="武器：收回或更換">${wArt(w.b,{cls:'wmini'})}<span class="${lc(w)}">${bpOf(w).n} +${w.lv}</span></span><span class="num grow right" data-vclock="${i}"></span></div>${hpBar(i)}
-     ${k==='full'?`<div class="small t-danger">已達離線上限 ${S.capH} 小時，暫停累積，請收成</div>`:st.bank.cycles&&!bs?`<div class="vbank">${harvestMini({gold:st.bank.gold,...st.bank.mats})}</div>`:bs?'':`<div class="small muted">每小時約打倒 ${fmt(kph(i,w))} 隻・${fmt(gph(i,w))} 金幣</div>`}${betterIdle(i)?`<button class="tag-up" data-act="vswap" data-i="${i}">道具欄有更強的可以換 ›</button>`:''}`
+    ${w?`<div class="row nowrap small"><span class="wchip ${lc(w)}b" data-act="vopen" data-i="${i}" role="button" aria-label="武器：收回或更換">${wArt(w.b,{cls:'wmini'})}<span class="${lc(w)} wc-n"><span class="wc-nm">${bpOf(w).n}</span> +${w.lv}</span></span><span class="num grow right" data-vclock="${i}"></span></div>${hpBar(i)}
+     ${k==='full'?`<div class="small t-danger">已達離線上限 ${S.capH} 小時，暫停累積，請收成</div>`:st.bank.cycles&&!bs?`<div class="vbank">${harvestMini({gold:st.bank.gold,...st.bank.mats})}</div>`:bs?'':`<div class="small muted"><span class="nobr">每小時約打倒 ${fmt(kph(i,w))} 隻<span class="vsep"></span></span><span class="nobr">${fmt(gph(i,w))} 金幣</span></div>`}${betterIdle(i)?`<button class="tag-up" data-act="vswap" data-i="${i}">道具欄有更強的可以換 ›</button>`:''}`
      :`<div class="small muted">沒有駐守武器，狩獵暫停。點開指派武器。</div>`}</div>
     <div class="vside vside-c">${st.bank.cycles?`<button class="ui-btn ui-btn--accent harvest-btn" data-act="collect" data-i="${i}"><span>收成</span><b>×<span data-vpend="${i}">${st.bank.cycles}</span></b></button>`:`<div class="drops">${drops}</div>`}</div>${bs?bsMore(i,w):''}${knOn(w)?`<button class="bs-tgl ${bs?'up':''}" data-act="${bs?'bsclose':'bsopen'}" data-i="${i}" aria-label="${bs?'收起':'展開'}戰鬥畫面"><i></i></button>`:''}</div>`}).join('')}</div>`;
 }
@@ -2765,6 +2766,7 @@ function viewShop(){   // v5.17 換成道具欄母版（.b2）：主框、次面
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'5.44',t:'村莊卡片斷字／武器名稱保留 +等級／360 資源列一行／圖鑑名稱平均換行／交易所「標價為單價」',b:[['v544','最長名稱武器 +12 駐守 1-1、金幣 1.2 億、鑽石 99,999，切到村莊看排版']]},
  {v:'5.43',t:'BUG-021 騎士揮擊對齊扣血：.bs-kn img animation-delay 改 0、全部 kn-<k><f> 加進 ANIM_SYNC（原本只有 v5.41 的 kn-sv），vStrip 拿掉 --d',b:[['bssync','展開目前戰鬥畫面（沒有就展開 1-3），量 2 秒騎士動畫跟扣血時鐘的落差']]},
  {v:'5.42',t:'P2-01（BUG-020）：dotMerge——.bs-mon 裡同種 bleed／poison 的 .mon-pop 同時只留一個：舊字 <0.4 秒直接換數字（不重播動畫），否則移除再跳新字；<i> 標籤帶到新字；只改顯示',b:[['bsdot','1-3 換成雙刀 +12＋附加效果必定觸發，展開戰鬥畫面看中毒字'],['bsdotax','1-3 換成斧 +12＋附加效果必定觸發，看流血字']]},
  {v:'5.41',t:'單手劍 VS 狼第一階段：.bs.c-sw.sv（BS_SV＝1-3、1-4）用 kn-sv0～11 新節奏（k8 仍 450ms 起、一刀 1000ms），受擊 bsHitSv（70ms 停頓→60ms 退到最遠＋壓扁→慢回，480ms），撲擊中（bsLunge 72%～93%）被打加 .poise 不後退',b:[['bssv','1-3 哈提、1-4 斯庫爾都換成單手劍 +6，展開 1-3 戰鬥畫面'],['bssv4','展開 1-4 斯庫爾（冰狼）戰鬥畫面']]},
@@ -3165,6 +3167,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
    bssv:()=>{devdo('bsall');const b=BPS.filter(x=>x.cat==='sword').sort((x,y)=>x.t-y.t)[0];[2,3].forEach(i=>{const st=S.villages[i],w=makeWeapon(b.id,2,6);st.weaponId=w.id;st.cycleStart=NOW()-dur(i,w)*.3;delete MONFX.hp[i]});Object.keys(KHIT).forEach(k=>delete KHIT[k]);ui.bsOpen=2;render();setTimeout(()=>document.querySelector('.bs')?.scrollIntoView({block:'center'}),50);toast('1-3 哈提、1-4 斯庫爾換成單手劍 +6：看舉刀、砍到停一下、狼先頓再退、撲過來被砍不後退','ok')},   // v5.41
    bsdot:()=>bsDotDemo('dagger'),
    bsdotax:()=>bsDotDemo('axe'),
+   v544:()=>{const b=BPS.filter(x=>!x.dev).sort((x,y)=>y.n.length-x.n.length)[0];const w=makeWeapon(b.id,0,12);const st=S.villages[0];st.weaponId=null;deliverCore(0,w.id);S.gold=123456789;S.gems=99999;ui.sheet=null;ui.realm=0;ui.tab='village';save();render()},   // v5.44
    bssync:()=>{if(ui.bsOpen==null){devdo('bsall');ui.bsOpen=2}ui.tab='village';render();setTimeout(bsSyncCheck,300)},   // v5.43
    bssv4:()=>{if(!document.querySelector('.bs.sv'))devdo('bssv');ui.bsOpen=3;render();setTimeout(()=>document.querySelector('.bs')?.scrollIntoView({block:'center'}),50)},
    bsflash:()=>{devdo('bsall');ui.bsOpen=3;render();setTimeout(()=>{const m=document.querySelector('.bs [data-mon]');if(!m)return;m.closest('.bs').scrollIntoView({block:'center'});monPop(m,'hit','-1234',0);setTimeout(()=>monPop(m,'crit','<i>會心</i>-3456',0),1200)},300);toast('1-4 冰狼：普通受擊 → 1.2 秒後會心受擊，被打時要看得出藍色','ok')},   // v5.40
