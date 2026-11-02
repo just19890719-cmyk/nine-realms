@@ -2601,4 +2601,57 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 @media (max-width:400px){.vcard .wchip .wmini{display:none}.v3 .vcard .wchip:not(#_):not(#_){padding-left:9px}}
 /* v5.44 圖鑑武器名稱兩行時平均分配，不會只剩一個字在第二行 */
 .cx2 .cx-nm{text-wrap:balance}
+/* ===== v5.45 1-3 狼嚎谷展開卡升級第一輪（Mochi 2026-11-02）：只套在 .bs.bx（BS_X），其他關卡不變 ===== */
+/* A 戰鬥區：比原本 132px 高約 30%，手機依寬度縮放；地面線在底部約 15%，怪物和騎士腳底對齊同一條線 */
+.bs.bx{height:clamp(160px,44vw,210px);border-color:rgba(58,46,34,.55)}
+.bs.bx .bs-bg{filter:brightness(.4) saturate(.8) contrast(.92)}   /* 背景不能比角色亮 */
+.bs.bx .bs-gd{height:22%;background:linear-gradient(180deg,transparent,rgba(0,0,0,.7) 70%)}
+.bs.bx .bs-mon{left:7.4%;bottom:13.8%;height:83.8%}   /* 怪物身高約戰鬥區 60%，左緣在 10% 左右，面向右 */
+.bs.bx .bs-kn{right:-14%;bottom:12.2%;height:86%}   /* 騎士身高約戰鬥區 54%，中心在 75% 左右，面向左；中間留攻擊交會區 */
+.bs.bx .bs-kb{position:absolute;inset:0;transform-origin:62% 97%;animation:bsKnIdle 2.2s ease-in-out infinite}
+@keyframes bsKnIdle{0%,100%{transform:none}50%{transform:translateY(-1.5px) scale(1.01)}}   /* 騎士待機：上下 1～2px、1.01 倍 */
+.bs.bx .bs-br{animation:bsBreathX 1.9s ease-in-out infinite}
+@keyframes bsBreathX{0%,100%{transform:none}50%{transform:translateY(-1px) scale(1.015)}}   /* 狼呼吸 1→1.015 */
+/* 單手劍出手：快出去（60ms 前衝 14px）→ 停一下（命中停頓 50ms）→ 慢回來（350ms），跟 v5.41 騎士格同一個時間軸（命中在 45%） */
+.bs.bx.c-sw.sv .bs-kn{animation:bsKnStep var(--K) infinite;animation-delay:0s}
+@keyframes bsKnStep{0%,39%{transform:none;animation-timing-function:cubic-bezier(.5,0,1,1)}45%{transform:translateX(-14px);animation-timing-function:linear}50%{transform:translateX(-14px);animation-timing-function:cubic-bezier(.2,.6,.3,1)}85%,100%{transform:none}}
+/* 命中閃光：亮度約 1→1.7→1、90ms，不會整隻變白 */
+.bs.bx:not(#_) .bs-mon.hit .fl{animation:bsFlashX 90ms ease-out}
+@keyframes bsFlashX{0%{opacity:0}30%{opacity:.55}100%{opacity:0}}
+/* 怪物小硬直：一般 6px／1.5deg／110ms；暴擊 11px＋1.03 倍／160ms；狼正在撲過來時照 v5.41 只閃光不後退 */
+.bs.bx:not(#_) .bs-mon.hit:not(.poise) .bs-hb{animation:bsHitX 110ms ease-out}
+.bs.bx:not(#_) .bs-mon.hit.hc:not(.poise) .bs-hb{animation:bsHitXC 160ms ease-out}
+@keyframes bsHitX{0%{transform:none}30%{transform:translateX(-6px) rotate(-1.5deg)}100%{transform:none}}
+@keyframes bsHitXC{0%{transform:none}35%{transform:translateX(-11px) rotate(-2deg) scale(1.03)}100%{transform:none}}
+/* 傷害數字：一般淡金往上飄 18px、0.8 秒；暴擊大一號、0.7→1.25→1 彈出、往上 25px、0.95 秒，暖紅黑陰影 */
+.bs.bx .mon-pop .dmg{--dh:clamp(20px,6.4vw,26px)}
+.bs.bx .mon-pop .dmg.c{--dh:clamp(30px,9.4vw,38px)}
+.bs.bx .bs-mon .mon-pop.hit,.bs.bx .bs-mon .mon-pop.buff{animation:bxPop .8s ease-out forwards;filter:drop-shadow(0 2px 2px rgba(0,0,0,.85))}
+.bs.bx .bs-mon .mon-pop:is(.hit,.buff,.crit){left:62%;top:16%}
+.bs.bx .bs-mon .mon-pop.crit{top:12%;animation:bxPopC .95s ease-out forwards;filter:drop-shadow(0 0 3px rgba(158,45,22,.95)) drop-shadow(0 2px 3px rgba(20,4,0,.9))}
+.bs.bx .bs-mon .mon-pop.crit i{font-size:13px;font-weight:800;color:#ffd36a;text-shadow:0 0 3px #9e2d16,0 1px 2px #000}
+@keyframes bxPop{0%{opacity:0;transform:translate(-50%,4px)}12%{opacity:1;transform:translate(-50%,0)}70%{opacity:1}100%{opacity:0;transform:translate(-50%,-18px)}}
+@keyframes bxPopC{0%{opacity:0;transform:translate(-50%,0) scale(.7)}16%{opacity:1;transform:translate(-50%,-5px) scale(1.25)}32%{transform:translate(-50%,-8px) scale(1)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-25px) scale(1)}}
+/* 收成按鈕：主要按鈕、比原本大一點，暖金光每 2.5 秒輕輕呼吸一次 */
+.vcard .harvest-btn.hx{width:82px;min-height:66px;animation:bxCta 2.5s ease-in-out infinite}
+.vcard .harvest-btn.hx span{font-size:15px}.vcard .harvest-btn.hx b{font-size:19px}
+@keyframes bxCta{0%,100%{box-shadow:0 0 0 rgba(255,190,90,0);transform:none}50%{box-shadow:0 0 12px rgba(255,190,90,.55);transform:scale(1.02)}}
+.vcard .harvest-btn.hx:active{transform:scale(.97);transition:transform 90ms}
+@media(prefers-reduced-motion:reduce){.bs.bx .bs-kb,.bs.bx .bs-kn,.vcard .harvest-btn.hx{animation:none!important}}
+/* C 掉落區：小卡片（圖示＋名稱＋機率），框色＝普通／稀有／史詩／傳說，只有稀有以上有很淡的外光；「本次狩獵獲得」另一區只放圖示＋數量 */
+.vcard .bx-more{padding:8px 0 2px;border-top:0;display:flex;flex-direction:column;gap:8px}
+.bx-sec{padding:8px;background:rgba(0,0,0,.38);border:1px solid rgba(74,63,51,.55)}
+.bx-h{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;font-weight:700;color:#c9a46a;margin:0 0 6px}.bx-h span{font-weight:400;color:rgba(232,220,200,.6)}
+.bx-drops{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:6px}
+.bx-d{display:flex;align-items:center;gap:4px;min-width:0;min-height:44px;padding:5px;border:1px solid #6b6257;border-radius:3px;background:rgba(14,11,8,.7);color:inherit;font:inherit;text-align:left;cursor:pointer}
+.bx-d>img,.bx-d>.wart,.bx-d>.ph-ico{flex:none;width:26px;height:26px}
+.bx-t{display:flex;flex-direction:column;min-width:0;line-height:1.25}
+.bx-n{font-size:12px;color:rgba(243,232,208,.78);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bx-d b{font-size:12px;font-weight:700;color:#e8c27a;font-variant-numeric:tabular-nums}
+.bx-d.r{border-color:#4d84b8;box-shadow:0 0 5px rgba(77,132,184,.22)}.bx-d.e{border-color:#8757c6;box-shadow:0 0 5px rgba(135,87,198,.22)}.bx-d.l{border-color:#c89a3a;box-shadow:0 0 6px rgba(200,154,58,.3)}
+.bx-all{justify-content:center;border-style:dashed;background:rgba(14,11,8,.45)}.bx-all .bx-t{align-items:center}.bx-all b{color:#c9a46a}
+@media(max-width:380px){.bx-drops{grid-template-columns:repeat(3,minmax(0,1fr))}.bx-d{padding:4px;gap:3px}.bx-d>img,.bx-d>.wart,.bx-d>.ph-ico{width:22px;height:22px}.bx-n,.bx-d b{font-size:11px}}
+.bx-got{display:flex;flex-wrap:wrap;gap:6px}
+.bx-g{display:flex;align-items:center;gap:4px;padding:3px 9px 3px 4px;border:1px solid #4a3f33;background:rgba(14,11,8,.7)}
+.bx-g>img,.bx-g>.wart,.bx-g>.ph-ico{width:28px;height:28px}.bx-g b{font-size:15px;font-weight:800;color:#f3e8d0;font-variant-numeric:tabular-nums}
 </style>
