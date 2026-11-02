@@ -2709,4 +2709,12 @@ body.dpv .hero.hv-F .smith{transform:translateX(calc(-104% + var(--mx) * 2px)) t
 .matbox:is(.rar-r,.rar-e,.rar-l){position:relative}
 .matbox:is(.rar-r,.rar-e,.rar-l)::before{content:"";position:absolute;inset:3px;border:1px solid var(--rc);box-shadow:inset 0 0 12px var(--rg),0 0 6px var(--rg);pointer-events:none;z-index:1}
 .matbox.rar-r{--rc:#4D84B8;--rg:rgba(77,132,184,.35)}.matbox.rar-e{--rc:#8757C6;--rg:rgba(135,87,198,.38)}.matbox.rar-l{--rc:#C89A3A;--rg:rgba(200,154,58,.4)}
+/* 強化石台待機時就依區間微微發光（安定區綠、危險區紅），播動畫時（.playing）交回原本的符文時間軸控制 */
+.enh-stage.safe:not(.playing):not(.rn-red):not(:has(.enh-ribbon.show)) .stage-sq .rn-stone.glow{opacity:.42}
+.enh-stage.danger:not(.playing):not(:has(.enh-ribbon.show)) .stage-sq .rn-stone.glow{opacity:.3;filter:hue-rotate(-34deg) saturate(2.6) brightness(1.1)}
+/* 鍛造舖：「開始鍛造」改成整排大按鈕（參考圖），數量選擇在上面一排 */
+.sel-bp .qtyrow:not(#_){flex-wrap:wrap}
+.sel-bp .qtyrow .forge-go:not(#_){flex:1 1 100%;margin:8px 0 0;min-height:60px;padding:6px 18px}
+.sel-bp .forge-go .fg-t{font-size:20px;letter-spacing:.12em}.sel-bp .forge-go .fg-s{font-size:12px}
+.sel-bp .forge-go:not(.is-disabled){filter:drop-shadow(0 0 8px rgba(255,170,70,.35))}
 </style>
