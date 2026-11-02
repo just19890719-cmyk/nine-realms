@@ -2614,7 +2614,7 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 @keyframes bsBreathX{0%,100%{transform:none}50%{transform:translateY(-1px) scale(1.015)}}   /* 狼呼吸 1→1.015 */
 /* 單手劍出手：快出去（60ms 前衝 14px）→ 停一下（命中停頓 50ms）→ 慢回來（350ms），跟 v5.41 騎士格同一個時間軸（命中在 45%） */
 .bs.bx.c-sw.sv .bs-kn{animation:bsKnStep var(--K) infinite;animation-delay:0s}
-@keyframes bsKnStep{0%,39%{transform:none;animation-timing-function:cubic-bezier(.5,0,1,1)}45%{transform:translateX(-14px);animation-timing-function:linear}50%{transform:translateX(-14px);animation-timing-function:cubic-bezier(.2,.6,.3,1)}85%,100%{transform:none}}
+@keyframes bsKnStep{0%,9%{transform:none;animation-timing-function:cubic-bezier(.55,0,1,.45)}39%{transform:translateX(7px);animation-timing-function:cubic-bezier(0,.55,.45,1)}45%{transform:translateX(-16px);animation-timing-function:linear}50%{transform:translateX(-16px);animation-timing-function:cubic-bezier(.25,.6,.35,1)}88%,100%{transform:none}}   /* v5.46 蓄力：舉劍那 30%（90～390ms）整個人 ease-in 往後拉 7px → 出手 60ms ease-out 衝到 -16px → 打中停 50ms → 380ms 慢慢收回原位，最後 120ms 站定再出下一刀（騎士 12 格不變、命中時間仍是 450ms） */
 /* 命中閃光：亮度約 1→1.7→1、90ms，不會整隻變白 */
 .bs.bx:not(#_) .bs-mon.hit .fl{animation:bsFlashX 90ms ease-out}
 @keyframes bsFlashX{0%{opacity:0}30%{opacity:.55}100%{opacity:0}}
@@ -2723,4 +2723,17 @@ body.dpv .hero.hv-F .smith{transform:translateX(calc(-104% + var(--mx) * 2px)) t
 .pgh-t h1::before,.pgh-t h1::after,.realm .center h1::before,.realm .center h1::after{display:none}
 .pgh{height:clamp(124px,35vw,150px)}
 .realm .center{display:flex;flex-direction:column;align-items:center}
+
+/* ===== v5.46 1-3 單手劍攻擊手感（Mochi 2026-11-02 攻擊動畫優化指令）：只套在 .bs.bx.sv（1-3 單手劍），其他武器、其他關卡不變 ===== */
+/* 揮擊殘影：用騎士現有的第 8 格（下劈）做半透明、往後拉長的一格，出手瞬間 420～500ms 出現，不是程式畫的圖 */
+.bs.bx.sv .bs-kb .bs-ag{position:absolute;inset:0;width:100%;height:100%;opacity:0;transform-origin:62% 70%;filter:none;animation:bsAg var(--K) infinite;animation-delay:0s;pointer-events:none}
+@keyframes bsAg{0%,41.9%{opacity:0;transform:translateX(10px) scaleX(1.14)}42%{opacity:.42;transform:translateX(10px) scaleX(1.14)}46%{opacity:.3;transform:translateX(16px) scaleX(1.2)}50%,100%{opacity:0;transform:translateX(20px) scaleX(1.22)}}
+/* 受擊閃白 0.1 秒：狼自己的圖調亮、降低彩度，看起來偏白但紋理還在 */
+.bs.bx.sv .bs-hb .fl{filter:brightness(3.1) saturate(.35)}
+.bs.bx.sv:not(#_) .bs-mon.hit .fl{animation:bsFlashSv 100ms ease-out}
+@keyframes bsFlashSv{0%{opacity:.85}40%{opacity:.7}100%{opacity:0}}
+/* 一般傷害數字：彈出放大 1.3 倍再縮回 1 倍，然後往上飄淡出 */
+.bs.bx.sv .bs-mon .mon-pop.hit,.bs.bx.sv .bs-mon .mon-pop.buff{animation:bxPopSv .85s ease-out forwards}
+@keyframes bxPopSv{0%{opacity:0;transform:translate(-50%,2px) scale(.6)}12%{opacity:1;transform:translate(-50%,-2px) scale(1.3)}26%{transform:translate(-50%,-4px) scale(1)}70%{opacity:1}100%{opacity:0;transform:translate(-50%,-20px) scale(1)}}
+@media(prefers-reduced-motion:reduce){.bs.bx.sv .bs-kb .bs-ag{display:none}}
 </style>
