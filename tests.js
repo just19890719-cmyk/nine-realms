@@ -501,6 +501,15 @@ function vPickTests(){const S0=S,sv=ui.sheet;S=fresh();const w=makeWeapon('t1_wo
 function vNeedTests(){const o=ui.sheet;let bad=[];VILLAGES.forEach((v,i)=>{if(S.villages[i].weaponId!=null)return;const h=sheetVillage(i);if(/vneed|需要的武器|data-act="vforge"/.test(h))bad.push(i)});ui.sheet=o;
   return[T('H 村莊詳情不再有「需要的武器」（v4.38 不限武器）',typeof vNeedPanel==='undefined'&&!bad.length,bad.length?'還有：'+bad.map(vNo).join('、'):'都拿掉了')]}
 // v4.02 武器打法：每種還在的武器類別都有打法與說明，連擊間隔加起來比攻擊間隔短
+function atkFeelTests(){const res=[];try{   // v5.46 1-3 單手劍攻擊手感：攻速、命中時間不變；殘影只在 1-3 單手劍；命中停頓會記住循環動畫起點、恢復時補回
+  res.push(T('AF1 單手劍攻速、命中時間沒變（K 1000、ph 450）',KN.sword.K===1000&&KN.sword.ph===450,JSON.stringify(KN.sword)));
+  const b=BPS.find(x=>x.cat==='sword'&&!x.dev),w={id:-9,b:b.id,q:0,lv:8,traits:[],ench:[null,null,null,null]};
+  const h3=vStrip(2,w),h1=vStrip(0,w);res.push(T('AF2 殘影只在 1-3 單手劍戰鬥畫面',/bs-ag/.test(h3)&&/ sv/.test(h3)&&!/bs-ag/.test(h1),''));
+  res.push(T('AF3 命中停頓預設 80ms、震動 1px',BX_HS===80&&BX_SK===1,BX_HS+'/'+BX_SK));
+  if(typeof document!=='undefined'&&document.body.animate){const d=document.createElement('div');document.body.appendChild(d);const a=d.animate([{opacity:1},{opacity:.9}],{duration:1000,iterations:Infinity});a.startTime=123;
+    bxStop(d,40);const x=d._hs&&d._hs.l.find(y=>y.a===a);res.push(T('AF4 命中停頓：循環動畫暫停並記住原本起點',a.playState==='paused'&&x&&x.st===123,a.playState+' '+(x&&x.st)));
+    clearTimeout(d._hs.t);d._hs.l.forEach(y=>{if(y.st!=null)y.a.startTime=y.st});res.push(T('AF5 恢復後回到原本起點（不會越拖越慢）',a.startTime===123&&a.playState==='running',a.startTime+' '+a.playState));a.cancel();d.remove()}
+  }catch(e){res.push(T('AF 攻擊手感',false,e.message))}return res}
 function hitTests(){const cats=[...new Set(BPS.map(b=>b.cat))],miss=cats.filter(c=>!HIT[c]||!HIT_N[c]);
   const bad=Object.entries(HIT).filter(([k,h])=>{const z={};let sum=0;for(let n=0;n<400;n++){const p=h.plan(z);if(p.some(x=>x[0]>=h.iv*.85))return true;sum+=p.reduce((a,x)=>a+x[1],0)}return k!=='shield'&&Math.abs(sum/400/h.E-1)>.15});
   return[T('H 武器打法：每種武器類別都有打法，連擊在下一輪前打完、平均倍率和設定相符',!miss.length&&!bad.length,miss.length?'缺：'+miss.join('、'):bad.length?'不符：'+bad.map(x=>x[0]).join('、'):cats.length+' 種都有')]}
@@ -568,7 +577,7 @@ function withTestBps(f){const keep=BPS.slice(),add=TEST_BPS.filter(b=>!BP[b.id])
 var TEST_LAST=null;
 function runTests0(mode,bd){
   if(mode==='econ')return econHtml(12)+econHtml(8);
-  const r=runAll({N:100000});r.res.push(...bd,...frameLvTests(),...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...storyTests(),...curveTests(),...vNeedTests(),...vPickTests(),...bsTglTests(),...godWordTests(),...hitTests(),...enchTests(),...wsTests(),...wpnTests(),...stackTests(),...uiStableTests());const pass=r.res.filter(x=>x.pass).length;
+  const r=runAll({N:100000});r.res.push(...bd,...frameLvTests(),...layoutTests(),...monTests(),...mythTests(),...dexTests(),...godReqTests(),...storyTests(),...curveTests(),...vNeedTests(),...vPickTests(),...bsTglTests(),...godWordTests(),...hitTests(),...atkFeelTests(),...enchTests(),...wsTests(),...wpnTests(),...stackTests(),...uiStableTests());const pass=r.res.filter(x=>x.pass).length;
   TEST_LAST={res:r.res,done:true};   // v5.08 統一測試指令（src/tools/run_tests.js）讀這裡的逐項結果
   return `<div><b>${pass}/${r.res.length} 通過</b>（${r.ms} 毫秒）</div>`+resHtml(r.res);
 }
