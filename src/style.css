@@ -2624,7 +2624,7 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 @keyframes bsHitX{0%{transform:none}30%{transform:translateX(-6px) rotate(-1.5deg)}100%{transform:none}}
 @keyframes bsHitXC{0%{transform:none}35%{transform:translateX(-11px) rotate(-2deg) scale(1.03)}100%{transform:none}}
 /* 傷害數字：一般淡金往上飄 18px、0.8 秒；暴擊大一號、0.7→1.25→1 彈出、往上 25px、0.95 秒，暖紅黑陰影 */
-.bs.bx .mon-pop .dmg{--dh:clamp(20px,6.4vw,26px)}
+.bs.bx .mon-pop .dmg{--dh:clamp(22px,7vw,28px)}
 .bs.bx .mon-pop .dmg.c{--dh:clamp(30px,9.4vw,38px)}
 .bs.bx .bs-mon .mon-pop.hit,.bs.bx .bs-mon .mon-pop.buff{animation:bxPop .8s ease-out forwards;filter:drop-shadow(0 2px 2px rgba(0,0,0,.85))}
 .bs.bx .bs-mon .mon-pop:is(.hit,.buff,.crit){left:62%;top:16%}
@@ -2637,7 +2637,14 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 .vcard .harvest-btn.hx span{font-size:15px}.vcard .harvest-btn.hx b{font-size:19px}
 @keyframes bxCta{0%,100%{box-shadow:0 0 0 rgba(255,190,90,0);transform:none}50%{box-shadow:0 0 12px rgba(255,190,90,.55);transform:scale(1.02)}}
 .vcard .harvest-btn.hx:active{transform:scale(.97);transition:transform 90ms}
+.vcard .harvest-btn.hx .hx-ic{width:30px;height:30px;margin:-2px 0 1px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.8));pointer-events:none}
+/* 斬擊弧光（art/fx_slash_n，AI 生圖 6 格黑底轉透明）：近戰武器命中時在怪物前方掃過一次 0.21 秒；弓、弩不播 */
+.bs.bx .bs-sl{position:absolute;left:66%;top:50%;width:74%;aspect-ratio:1;transform:translate(-50%,-50%) rotate(-6deg);overflow:hidden;pointer-events:none;z-index:4;mix-blend-mode:screen}
+.bs.bx .bs-sl.big{width:92%}
+.bs.bx .bs-sl img{position:absolute;left:0;top:0;width:600%;height:100%;max-width:none;animation:bsFx .21s steps(6) forwards}
+.bs.bx .bs-sl.big img{animation-duration:.25s}
 @media(prefers-reduced-motion:reduce){.bs.bx .bs-kb,.bs.bx .bs-kn,.vcard .harvest-btn.hx{animation:none!important}}
+@media(prefers-reduced-motion:reduce){.bs.bx .bs-sl{display:none}}
 /* C 掉落區：小卡片（圖示＋名稱＋機率），框色＝普通／稀有／史詩／傳說，只有稀有以上有很淡的外光；「本次狩獵獲得」另一區只放圖示＋數量 */
 .vcard .bx-more{padding:8px 0 2px;border-top:0;display:flex;flex-direction:column;gap:8px}
 .bx-sec{padding:8px;background:rgba(0,0,0,.38);border:1px solid rgba(74,63,51,.55)}
@@ -2652,6 +2659,6 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 .bx-all{justify-content:center;border-style:dashed;background:rgba(14,11,8,.45)}.bx-all .bx-t{align-items:center}.bx-all b{color:#c9a46a}
 @media(max-width:380px){.bx-drops{grid-template-columns:repeat(3,minmax(0,1fr))}.bx-d{padding:4px;gap:3px}.bx-d>img,.bx-d>.wart,.bx-d>.ph-ico{width:22px;height:22px}.bx-n,.bx-d b{font-size:11px}}
 .bx-got{display:flex;flex-wrap:wrap;gap:6px}
-.bx-g{display:flex;align-items:center;gap:4px;padding:3px 9px 3px 4px;border:1px solid #4a3f33;background:rgba(14,11,8,.7)}
-.bx-g>img,.bx-g>.wart,.bx-g>.ph-ico{width:28px;height:28px}.bx-g b{font-size:15px;font-weight:800;color:#f3e8d0;font-variant-numeric:tabular-nums}
+.bx-g{display:flex;align-items:center;gap:3px;padding:3px 7px 3px 3px;border:1px solid #4a3f33;background:rgba(14,11,8,.7)}
+.bx-g>img,.bx-g>.wart,.bx-g>.ph-ico{width:26px;height:26px}.bx-g b{font-size:14px;font-weight:800;color:#f3e8d0;font-variant-numeric:tabular-nums}
 </style>

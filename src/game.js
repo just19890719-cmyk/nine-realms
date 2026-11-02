@@ -1333,7 +1333,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
- {v:'5.45',d:'11/02',t:'1-3 狼嚎谷戰鬥畫面升級',b:['1-3 狼嚎谷展開後的戰鬥畫面<b>加高約 30%</b>，狼和騎士放大、站在同一條地面上','騎士單手劍出手會往前踏一步，打中停一下再收招；狼被打會小小後退，暴擊退得更多','一般傷害和<b>暴擊</b>數字分得更清楚，暴擊時戰鬥畫面輕震一下（一般攻擊不震）','掉落改成小卡片，框色分普通／稀有／史詩／傳說；「本次狩獵獲得」另外列出','收成按鈕放大，有可以收成時會微微發光','只改 1-3，傷害、掉落率、收益、存檔都沒有改'],g:[]},
+ {v:'5.45',d:'11/02',t:'1-3 狼嚎谷戰鬥畫面升級',b:['1-3 狼嚎谷展開後的戰鬥畫面<b>加高約 30%</b>，狼和騎士放大、站在同一條地面上','騎士單手劍出手會往前踏一步，打中停一下再收招；狼被打會小小後退，暴擊退得更多','近戰武器打中時多了一道金色<b>斬擊弧光</b>','一般傷害和<b>暴擊</b>數字分得更清楚，暴擊時戰鬥畫面輕震一下（一般攻擊不震）','掉落改成小卡片，框色分普通／稀有／史詩／傳說；「本次狩獵獲得」另外列出','收成按鈕放大、加上寶箱圖示，有可以收成時會微微發光','只改 1-3，傷害、掉落率、收益、存檔都沒有改'],g:[]},
  {v:'5.44',d:'11/02',t:'畫面整理：村莊卡片和窄螢幕排版',b:['360 寬的手機，上方金幣、鑽石改回一行，不再擠成兩行','村莊卡片的武器名稱太長時只縮短名稱，<b>+強化等級</b>一定看得到','「每小時打倒幾隻、多少金幣」「最強武器、預估秒數」換行時不會把「金幣」「・」拆到下一行','圖鑑的長武器名稱兩行平均分配；交易所道具說明改成「標價為單價」，窄螢幕不會被切掉','數值、收益、存檔都沒有改'],g:[]},
  {v:'5.43',d:'10/30',t:'戰鬥畫面：騎士揮擊和扣血同時發生',b:['原本騎士的動作比傷害數字慢一點（手機上最多慢到四分之一秒），看起來像還沒打到怪物就先扣血','現在七種武器打到的那一刻，火花、傷害數字、怪物受擊都會同時出現（村莊戰鬥畫面和限時挑戰都一樣）','攻速、傷害、收成都沒有改'],g:[]},
  {v:'5.42',d:'10/29',t:'戰鬥畫面：中毒、流血的數字不再疊在一起',b:['雙刀中毒、斧頭流血這種連續小傷害，同一種同時只顯示一個數字，會直接換成最新的數字，不會好幾個綠字蓋在一起','傷害、觸發機率、攻擊節奏都沒有改'],g:[]},
@@ -2433,7 +2433,7 @@ function dotMerge(el,kind,txt){if(!el.classList.contains('bs-mon')||!/^(bleed|po
 function monPop(el,kind,txt,dx,big){const dm=dotMerge(el,kind,txt);txt=dm.txt;if(el.classList.contains('bs-mon')&&/^(hit|crit|buff)$/.test(kind))txt=txt.replace(/-([\d,]+)$/,(x,d)=>dmgArt('-'+d.replace(/,/g,''),big||kind==='crit'));if(!(el.classList.contains('bs-mon')&&/bleed|poison/.test(kind))){el.classList.remove('hit','kill','poise');void el.offsetWidth;el.classList.add(kind==='kill'?'kill':'hit');el.classList.toggle('hc',kind==='crit'||!!big);if(kind!=='kill'&&el.closest('.bs.sv')&&bsLunging(el))el.classList.add('poise')}   // v4.20 戰鬥條：流血／中毒的小傷害不播受擊
   const n=dm.keep||document.createElement('span');if(!dm.keep){n.className='mon-pop '+kind;n.innerHTML=txt;n._t0=performance.now();if(el.closest('.bs.bx')&&/^(hit|crit|buff)$/.test(kind))dx=(dx||0)+Math.round(Math.random()*16-8);if(dx)n.style.marginLeft=dx+'px';el.appendChild(n);setTimeout(()=>n.remove(),kind==='kill'?1100:kind==='crit'?1000:800)}
   if(kind!=='kill'){const sl=document.createElement('i');sl.className='mon-slash';el.appendChild(sl);setTimeout(()=>sl.remove(),350)}
-  if(el.classList.contains('bs-mon')&&/^(hit|crit|buff)$/.test(kind)){const c=big||kind==='crit',f=document.createElement('i');f.className='bs-fx'+(c?' big':'');f.style.setProperty('--fx',(dx||0)+'px');f.innerHTML=`<img src="${A(c?'fx_hit_c':'fx_hit_n')}" alt="">`;el.appendChild(f);setTimeout(()=>f.remove(),c?420:360);popAvoid(el,n);bsShake(el,kind==='crit'?(big?2:1):0)}}
+  if(el.classList.contains('bs-mon')&&/^(hit|crit|buff)$/.test(kind)){const c=big||kind==='crit',f=document.createElement('i');f.className='bs-fx'+(c?' big':'');f.style.setProperty('--fx',(dx||0)+'px');f.innerHTML=`<img src="${A(c?'fx_hit_c':'fx_hit_n')}" alt="">`;el.appendChild(f);setTimeout(()=>f.remove(),c?420:360);const bxs=el.closest('.bs.bx');if(bxs&&!/\bc-(bw|cb)\b/.test(bxs.className)){const g=document.createElement('i');g.className='bs-sl'+(c?' big':'');g.innerHTML=`<img src="${A('fx_slash_n')}" alt="">`;el.appendChild(g);setTimeout(()=>g.remove(),300)}popAvoid(el,n);bsShake(el,kind==='crit'?(big?2:1):0)}}
 // v5.41 狼正在撲過來（bsLunge 72%～93% 那一段）就回傳 true，被打時只閃光、不後退（方案 3-C）
 const bsLunging=el=>{const a=el.getAnimations().find(x=>x.animationName==='bsLunge'),p=a&&a.effect.getComputedTiming().progress;return p!=null&&p>=.72&&p<.93};
 // v5.40 多段傷害數字不重疊：新跳出的數字如果壓到還在飄的數字，就往下讓開（例：長柄貫穿兩段只差 0.15 秒）。
@@ -2504,7 +2504,7 @@ function bsMore(i,w){if(BS_X.includes(i))return bsMoreX(i,w);const v=VILLAGES[i]
    <div class="bs-k">已經打到${bk.cycles?`（${bk.cycles} 輪，還沒收成）`:''}</div>${bk.cycles?`<div class="bs-got">${harvestIcons({gold:bk.gold,...bk.mats})}</div>`:'<div class="small muted">這輪打完就會有收穫。</div>'}</div>`}
 const BS_SV=[2,3];   // v5.41 單手劍 VS 狼第一階段（Mochi 核准）：新的出刀節奏、命中停頓、快退慢回、撲擊硬直只套在 1-3 哈提、1-4 斯庫爾，樣式在 style.css 的 .bs.c-sw.sv
 const BS_X=[2];   // v5.45 1-3 狼嚎谷展開卡升級第一輪（Mochi 2026-11-02 指定只做 1-3）：戰鬥區加高、角色放大、地面線、命中閃光／小硬直、一般與暴擊數字、收成按鈕、掉落區，樣式在 style.css 的 .bs.bx
-function vStrip(i,w){if(!vStrip.warm){vStrip.warm=1;['fx_hit_n','fx_hit_c'].forEach(n=>{new Image().src=A(n)})}   // v5.39 命中特效先載好，第一下就看得到
+function vStrip(i,w){if(!vStrip.warm){vStrip.warm=1;['fx_hit_n','fx_hit_c','fx_slash_n','ic_harvest'].forEach(n=>{new Image().src=A(n)})}   // v5.39 命中特效先載好，第一下就看得到
   const kn=KN[bpOf(w).cat],t=performance.now(),full=KN_FULL.includes(i),m='mon_'+(i+1);
   const bx=BS_X.includes(i),kimg=Array.from({length:12},(_,f)=>img(`kn_${kn.k}_${f}`,'k'+f)).join('');
   return `<div class="bs c-${kn.k}${kn.k==='sw'&&BS_SV.includes(i)?' sv':''}${bx?' bx':''}" data-act="bsclose" role="button" aria-label="收起戰鬥畫面" style="--n:${kn.n};--dp:-${Math.round(t%(kn.K*kn.n))}ms">${img('v'+(i+1),'bs-bg'+(BS_BGP[i]?' bgp-'+BS_BGP[i]:''))}<i class="bs-gd"></i>
@@ -2561,7 +2561,7 @@ function viewVillage(){
     ${w?`<div class="row nowrap small"><span class="wchip ${lc(w)}b" data-act="vopen" data-i="${i}" role="button" aria-label="武器：收回或更換">${wArt(w.b,{cls:'wmini'})}<span class="${lc(w)} wc-n"><span class="wc-nm">${bpOf(w).n}</span> +${w.lv}</span></span><span class="num grow right" data-vclock="${i}"></span></div>${hpBar(i)}
      ${k==='full'?`<div class="small t-danger">已達離線上限 ${S.capH} 小時，暫停累積，請收成</div>`:st.bank.cycles&&!bs?`<div class="vbank">${harvestMini({gold:st.bank.gold,...st.bank.mats})}</div>`:bs?'':`<div class="small muted"><span class="nobr">每小時約打倒 ${fmt(kph(i,w))} 隻<span class="vsep"></span></span><span class="nobr">${fmt(gph(i,w))} 金幣</span></div>`}${betterIdle(i)?`<button class="tag-up" data-act="vswap" data-i="${i}">道具欄有更強的可以換 ›</button>`:''}`
      :`<div class="small muted">沒有駐守武器，狩獵暫停。點開指派武器。</div>`}</div>
-    <div class="vside vside-c">${st.bank.cycles?`<button class="ui-btn ui-btn--accent harvest-btn${bs&&BS_X.includes(i)?' hx':''}" data-act="collect" data-i="${i}"><span>收成</span><b>×<span data-vpend="${i}">${st.bank.cycles}</span></b></button>`:`<div class="drops">${drops}</div>`}</div>${bs?bsMore(i,w):''}${knOn(w)?`<button class="bs-tgl ${bs?'up':''}" data-act="${bs?'bsclose':'bsopen'}" data-i="${i}" aria-label="${bs?'收起':'展開'}戰鬥畫面"><i></i></button>`:''}</div>`}).join('')}</div>`;
+    <div class="vside vside-c">${st.bank.cycles?`<button class="ui-btn ui-btn--accent harvest-btn${bs&&BS_X.includes(i)?' hx':''}" data-act="collect" data-i="${i}">${bs&&BS_X.includes(i)?`<img class="hx-ic" src="${A('ic_harvest')}" alt="">`:''}<span>收成</span><b>×<span data-vpend="${i}">${st.bank.cycles}</span></b></button>`:`<div class="drops">${drops}</div>`}</div>${bs?bsMore(i,w):''}${knOn(w)?`<button class="bs-tgl ${bs?'up':''}" data-act="${bs?'bsclose':'bsopen'}" data-i="${i}" aria-label="${bs?'收起':'展開'}戰鬥畫面"><i></i></button>`:''}</div>`}).join('')}</div>`;
 }
 // v3.61 從別頁點進村莊：自動捲到目前待交付的關卡（已經看得到就不動，保留上方地圖）
 function scrollToNextVillage(){const el=document.querySelector('#view .vcard.next');scrollTo(0,0);if(!el)return;const r=el.getBoundingClientRect(),nav=document.querySelector('.nav'),bar=document.querySelector('.bar');
@@ -2779,7 +2779,7 @@ function viewShop(){   // v5.17 換成道具欄母版（.b2）：主框、次面
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
- {v:'5.45',t:'1-3 狼嚎谷展開卡升級第一輪（BS_X=[2]、.bs.bx、bsMoreX、收成 .hx、bxall）',b:[['v545','單手劍 +8 駐守 1-3、累積 36 輪、展開戰鬥畫面'],['v545c','同上，接下來 3 秒每一下都暴擊（看暴擊數字和震動）']]},
+ {v:'5.45',t:'1-3 狼嚎谷展開卡升級第一輪（BS_X=[2]、.bs.bx、bsMoreX、收成 .hx＋art/ic_harvest、bxall、近戰斬擊弧光 .bs-sl art/fx_slash_n）',b:[['v545','單手劍 +8 駐守 1-3、累積 36 輪、展開戰鬥畫面'],['v545c','同上，接下來 3 秒每一下都暴擊（看暴擊數字和震動）']]},
  {v:'5.44',t:'村莊卡片斷字／武器名稱保留 +等級／360 資源列一行／圖鑑名稱平均換行／交易所「標價為單價」',b:[['v544','最長名稱武器 +12 駐守 1-1、金幣 1.2 億、鑽石 99,999，切到村莊看排版']]},
  {v:'5.43',t:'BUG-021 騎士揮擊對齊扣血：.bs-kn img animation-delay 改 0、全部 kn-<k><f> 加進 ANIM_SYNC（原本只有 v5.41 的 kn-sv），vStrip 拿掉 --d',b:[['bssync','展開目前戰鬥畫面（沒有就展開 1-3），量 2 秒騎士動畫跟扣血時鐘的落差']]},
  {v:'5.42',t:'P2-01（BUG-020）：dotMerge——.bs-mon 裡同種 bleed／poison 的 .mon-pop 同時只留一個：舊字 <0.4 秒直接換數字（不重播動畫），否則移除再跳新字；<i> 標籤帶到新字；只改顯示',b:[['bsdot','1-3 換成雙刀 +12＋附加效果必定觸發，展開戰鬥畫面看中毒字'],['bsdotax','1-3 換成斧 +12＋附加效果必定觸發，看流血字']]},
