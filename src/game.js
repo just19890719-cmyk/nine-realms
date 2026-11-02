@@ -2652,9 +2652,9 @@ function grPanel(i,go){const cur=S.villages[i].gr;return `<div class="ui-panel p
 // v4.70 Mochi：金幣、強化石、附魔石、遺物、武器都跟材料一樣用格子顯示（圖＋名稱＋機率）
 const dropGold=i=>`<div class="matbox">${img('it_gold')}<span class="mb-n">金幣</span><span class="mb-c">${killGoldTxt(i)}${grMul(i)!==1?' ×'+grMul(i):''}</span></div>`;
 const pctS=x=>+(x*100).toFixed(x<.01?2:1)+'%';
-function dropBoxes(i){const o=relicOdds(i),gm=grMul(i),box=(ico,n,c,act='')=>`<${act?'button':'div'} class="matbox ${act?'mb-tap':''}" ${act}>${ico}<span class="mb-n">${n}</span><span class="mb-c">${c}</span></${act?'button':'div'}>`;
-  return [[STONE,stoneE(i)*gm],[ENSTONE,enchE(i)*gm],[REPAIR,repairE(i)*gm],...RELICS.map(k=>[k,RELIC_P*gm*o[k]/100])].map(([k,p])=>box(itemIco(k),RELICS.includes(k)?ITEMS[k][3]+'遺物':itemName(k),pctS(p),`data-act="iteminfo" data-k="${k}"`)).join('')
-   +wDrops(i).map(([k,p])=>box(wArt(k==='_w0'?'w0_sword':k,{cls:'mb-w'}),k==='_w0'?'鐵爐村武器<br><span class="small">隨機一把</span>':BP[k].n,pctS(p*gm))).join('')}   // v4.71 機率乘評級倍率
+function dropBoxes(i){const o=relicOdds(i),gm=grMul(i),box=(ico,n,c,act='',r='')=>`<${act?'button':'div'} class="matbox ${act?'mb-tap':''} ${r?'rar-'+r:''}" ${act}>${ico}<span class="mb-n">${n}</span><span class="mb-c">${c}</span></${act?'button':'div'}>`;
+  return [[STONE,stoneE(i)*gm],[ENSTONE,enchE(i)*gm],[REPAIR,repairE(i)*gm],...RELICS.map(k=>[k,RELIC_P*gm*o[k]/100])].map(([k,p])=>box(itemIco(k),RELICS.includes(k)?ITEMS[k][3]+'遺物':itemName(k),pctS(p),`data-act="iteminfo" data-k="${k}"`,BX_RAR[k]||'')).join('')
+   +wDrops(i).map(([k,p])=>box(wArt(k==='_w0'?'w0_sword':k,{cls:'mb-w'}),k==='_w0'?'鐵爐村武器<br><span class="small">隨機一把</span>':BP[k].n,pctS(p*gm),'',k==='_w0'?'e':'l')).join('')}   // v5.45 第 2 輪：掉落格框色分稀有度（跟 1-3 戰鬥卡同一套 BX_RAR）   // v4.71 機率乘評級倍率
 const gph=(i,w)=>{const v=VILLAGES[i],st=S.villages[i],gs=goldMul(i,w)*grMul(i);return Math.round(3600000/gameDur(i,w)*vKillGold(i)*STRATS[st.strat].gold*gs*(1+(tal('gold')+gdGold())/100))};
 const kph=(i,w)=>Math.round(3600000/gameDur(i,w));   // v4.52 每小時擊殺數
 const harvestMini=g=>Object.entries(g).filter(([k,n])=>n).slice(0,4).map(([k,n])=>`<span class="hm">${itemIco(k)}${fmt(n)}</span>`).join('');

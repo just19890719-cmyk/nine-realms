@@ -2705,4 +2705,8 @@ body.dpv .hero.hv-F .smith{transform:translateX(calc(-104% + var(--mx) * 2px)) t
 .evt-z.on{opacity:1}.evt-z.z0.on{border-color:#5f9c4b;background:rgba(30,58,22,.7)}.evt-z.z1.on{border-color:#a3742f;background:rgba(62,40,12,.75)}.evt-z.z2.on{border-color:#a8432e;background:rgba(70,18,10,.75)}
 .evt-ar{flex:none;width:8px;height:10px;background:#8a6a3c;clip-path:polygon(0 0,100% 50%,0 100%);opacity:.7}
 .ev-auto:not(#_) b{color:#ffe7a8}
+/* 村莊詳情的掉落格：框色分稀有度（稀有藍、史詩紫、傳說金，跟 1-3 戰鬥卡同色） */
+.matbox:is(.rar-r,.rar-e,.rar-l){position:relative}
+.matbox:is(.rar-r,.rar-e,.rar-l)::before{content:"";position:absolute;inset:3px;border:1px solid var(--rc);box-shadow:inset 0 0 12px var(--rg),0 0 6px var(--rg);pointer-events:none;z-index:1}
+.matbox.rar-r{--rc:#4D84B8;--rg:rgba(77,132,184,.35)}.matbox.rar-e{--rc:#8757C6;--rg:rgba(135,87,198,.38)}.matbox.rar-l{--rc:#C89A3A;--rg:rgba(200,154,58,.4)}
 </style>
