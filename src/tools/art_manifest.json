@@ -3398,6 +3398,21 @@
    "status": "pending",
    "note": "v5.39 戰鬥傷害數字（會心傷害熔金字），Mochi 2026-10-29 用提示詞 battle-audit/傷害數字_合圖_生圖提示詞.md 生成上傳，Claude 切 11 格（0～9、減號）轉透明",
    "sha256": "867c865b667e6595a3110c85831d8d65846ab986b44800fa6ed72d013f0ed27b"
+  },
+  "art/fx_slash_n.webp": {
+   "status": "pending",
+   "sha256": "dd1bb0b69934a8eff8f06d0b4ca30fe45d92301b8d53ed180c1c0b411e204db1",
+   "note": "v5.45 1-3 狼嚎谷第一輪：Mochi 電腦 ChatGPT 生圖（提示詞 /mnt/project-files/battle-1-3/），Mochi 2026-11-02 授權生圖並整合"
+  },
+  "art/ic_harvest.webp": {
+   "status": "pending",
+   "sha256": "2bd6623fdbb6dab0b833d1c4bdb935983412fda00a726cee0298b2bab4a6efdd",
+   "note": "v5.45 1-3 狼嚎谷第一輪：Mochi 電腦 ChatGPT 生圖（提示詞 /mnt/project-files/battle-1-3/），Mochi 2026-11-02 授權生圖並整合"
+  },
+  "art/ttl_crest.webp": {
+   "status": "pending",
+   "sha256": "d602fc9b10c40f0f384f63bf74b18b64ff9ff62875b4335760de8031fa392d92",
+   "note": "v5.45 第 3 輪：頁首標題三角結飾，Mochi 電腦 ChatGPT 生圖（提示詞 /mnt/project-files/polish-target/標題三角結飾_生圖提示詞.md）"
   }
  }
 }

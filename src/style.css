@@ -2601,4 +2601,126 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 @media (max-width:400px){.vcard .wchip .wmini{display:none}.v3 .vcard .wchip:not(#_):not(#_){padding-left:9px}}
 /* v5.44 圖鑑武器名稱兩行時平均分配，不會只剩一個字在第二行 */
 .cx2 .cx-nm{text-wrap:balance}
+/* ===== v5.45 1-3 狼嚎谷展開卡升級第一輪（Mochi 2026-11-02）：只套在 .bs.bx（BS_X），其他關卡不變 ===== */
+/* A 戰鬥區：比原本 132px 高約 30%，手機依寬度縮放；地面線在底部約 15%，怪物和騎士腳底對齊同一條線 */
+.bs.bx{height:clamp(160px,44vw,210px);border-color:rgba(58,46,34,.55)}
+.bs.bx .bs-bg{filter:brightness(.4) saturate(.8) contrast(.92)}   /* 背景不能比角色亮 */
+.bs.bx .bs-gd{height:22%;background:linear-gradient(180deg,transparent,rgba(0,0,0,.7) 70%)}
+.bs.bx .bs-mon{left:7.4%;bottom:13.8%;height:83.8%}   /* 怪物身高約戰鬥區 60%，左緣在 10% 左右，面向右 */
+.bs.bx .bs-kn{right:-14%;bottom:12.2%;height:86%}   /* 騎士身高約戰鬥區 54%，中心在 75% 左右，面向左；中間留攻擊交會區 */
+.bs.bx .bs-kb{position:absolute;inset:0;transform-origin:62% 97%;animation:bsKnIdle 2.2s ease-in-out infinite}
+@keyframes bsKnIdle{0%,100%{transform:none}50%{transform:translateY(-1.5px) scale(1.01)}}   /* 騎士待機：上下 1～2px、1.01 倍 */
+.bs.bx .bs-br{animation:bsBreathX 1.9s ease-in-out infinite}
+@keyframes bsBreathX{0%,100%{transform:none}50%{transform:translateY(-1px) scale(1.015)}}   /* 狼呼吸 1→1.015 */
+/* 單手劍出手：快出去（60ms 前衝 14px）→ 停一下（命中停頓 50ms）→ 慢回來（350ms），跟 v5.41 騎士格同一個時間軸（命中在 45%） */
+.bs.bx.c-sw.sv .bs-kn{animation:bsKnStep var(--K) infinite;animation-delay:0s}
+@keyframes bsKnStep{0%,39%{transform:none;animation-timing-function:cubic-bezier(.5,0,1,1)}45%{transform:translateX(-14px);animation-timing-function:linear}50%{transform:translateX(-14px);animation-timing-function:cubic-bezier(.2,.6,.3,1)}85%,100%{transform:none}}
+/* 命中閃光：亮度約 1→1.7→1、90ms，不會整隻變白 */
+.bs.bx:not(#_) .bs-mon.hit .fl{animation:bsFlashX 90ms ease-out}
+@keyframes bsFlashX{0%{opacity:0}30%{opacity:.55}100%{opacity:0}}
+/* 怪物小硬直：一般 6px／1.5deg／110ms；暴擊 11px＋1.03 倍／160ms；狼正在撲過來時照 v5.41 只閃光不後退 */
+.bs.bx:not(#_) .bs-mon.hit:not(.poise) .bs-hb{animation:bsHitX 110ms ease-out}
+.bs.bx:not(#_) .bs-mon.hit.hc:not(.poise) .bs-hb{animation:bsHitXC 160ms ease-out}
+@keyframes bsHitX{0%{transform:none}30%{transform:translateX(-6px) rotate(-1.5deg)}100%{transform:none}}
+@keyframes bsHitXC{0%{transform:none}35%{transform:translateX(-11px) rotate(-2deg) scale(1.03)}100%{transform:none}}
+/* 傷害數字：一般淡金往上飄 18px、0.8 秒；暴擊大一號、0.7→1.25→1 彈出、往上 25px、0.95 秒，暖紅黑陰影 */
+.bs.bx .mon-pop .dmg{--dh:clamp(22px,7vw,28px)}
+.bs.bx .mon-pop .dmg.c{--dh:clamp(30px,9.4vw,38px)}
+.bs.bx .bs-mon .mon-pop.hit,.bs.bx .bs-mon .mon-pop.buff{animation:bxPop .8s ease-out forwards;filter:drop-shadow(0 2px 2px rgba(0,0,0,.85))}
+.bs.bx .bs-mon .mon-pop:is(.hit,.buff,.crit){left:62%;top:16%}
+.bs.bx .bs-mon .mon-pop.crit{top:12%;animation:bxPopC .95s ease-out forwards;filter:drop-shadow(0 0 3px rgba(158,45,22,.95)) drop-shadow(0 2px 3px rgba(20,4,0,.9))}
+.bs.bx .bs-mon .mon-pop.crit i{font-size:13px;font-weight:800;color:#ffd36a;text-shadow:0 0 3px #9e2d16,0 1px 2px #000}
+@keyframes bxPop{0%{opacity:0;transform:translate(-50%,4px)}12%{opacity:1;transform:translate(-50%,0)}70%{opacity:1}100%{opacity:0;transform:translate(-50%,-18px)}}
+@keyframes bxPopC{0%{opacity:0;transform:translate(-50%,0) scale(.7)}16%{opacity:1;transform:translate(-50%,-5px) scale(1.25)}32%{transform:translate(-50%,-8px) scale(1)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-25px) scale(1)}}
+/* 收成按鈕：主要按鈕、比原本大一點，暖金光每 2.5 秒輕輕呼吸一次 */
+.vcard .harvest-btn.hx{width:82px;min-height:66px;animation:bxCta 2.5s ease-in-out infinite}
+.vcard .harvest-btn.hx span{font-size:15px}.vcard .harvest-btn.hx b{font-size:19px}
+@keyframes bxCta{0%,100%{box-shadow:0 0 0 rgba(255,190,90,0);transform:none}50%{box-shadow:0 0 12px rgba(255,190,90,.55);transform:scale(1.02)}}
+.vcard .harvest-btn.hx:active{transform:scale(.97);transition:transform 90ms}
+.vcard .harvest-btn.hx .hx-ic{width:30px;height:30px;margin:-2px 0 1px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.8));pointer-events:none}
+/* 斬擊弧光（art/fx_slash_n，AI 生圖 6 格黑底轉透明）：近戰武器命中時在怪物前方掃過一次 0.21 秒；弓、弩不播 */
+.bs.bx .bs-sl{position:absolute;left:66%;top:50%;width:74%;aspect-ratio:1;transform:translate(-50%,-50%) rotate(-6deg);overflow:hidden;pointer-events:none;z-index:4;mix-blend-mode:screen}
+.bs.bx .bs-sl.big{width:92%}
+.bs.bx .bs-sl img{position:absolute;left:0;top:0;width:600%;height:100%;max-width:none;animation:bsFx .21s steps(6) forwards}
+.bs.bx .bs-sl.big img{animation-duration:.25s}
+@media(prefers-reduced-motion:reduce){.bs.bx .bs-kb,.bs.bx .bs-kn,.vcard .harvest-btn.hx{animation:none!important}}
+@media(prefers-reduced-motion:reduce){.bs.bx .bs-sl{display:none}}
+/* C 掉落區：小卡片（圖示＋名稱＋機率），框色＝普通／稀有／史詩／傳說，只有稀有以上有很淡的外光；「本次狩獵獲得」另一區只放圖示＋數量 */
+.vcard .bx-more{padding:8px 0 2px;border-top:0;display:flex;flex-direction:column;gap:8px}
+.bx-sec{padding:8px;background:rgba(0,0,0,.38);border:1px solid rgba(74,63,51,.55)}
+.bx-h{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;font-weight:700;color:#c9a46a;margin:0 0 6px}.bx-h span{font-weight:400;color:rgba(232,220,200,.6)}
+.bx-drops{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:6px}
+.bx-d{display:flex;align-items:center;gap:4px;min-width:0;min-height:44px;padding:5px;border:1px solid #6b6257;border-radius:3px;background:rgba(14,11,8,.7);color:inherit;font:inherit;text-align:left;cursor:pointer}
+.bx-d>img,.bx-d>.wart,.bx-d>.ph-ico{flex:none;width:26px;height:26px}
+.bx-t{display:flex;flex-direction:column;min-width:0;line-height:1.25}
+.bx-n{font-size:12px;color:rgba(243,232,208,.78);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bx-d b{font-size:12px;font-weight:700;color:#e8c27a;font-variant-numeric:tabular-nums}
+.bx-d.r{border-color:#4d84b8;box-shadow:0 0 5px rgba(77,132,184,.22)}.bx-d.e{border-color:#8757c6;box-shadow:0 0 5px rgba(135,87,198,.22)}.bx-d.l{border-color:#c89a3a;box-shadow:0 0 6px rgba(200,154,58,.3)}
+.bx-all{justify-content:center;border-style:dashed;background:rgba(14,11,8,.45)}.bx-all .bx-t{align-items:center}.bx-all b{color:#c9a46a}
+@media(max-width:380px){.bx-drops{grid-template-columns:repeat(3,minmax(0,1fr))}.bx-d{padding:4px;gap:3px}.bx-d>img,.bx-d>.wart,.bx-d>.ph-ico{width:22px;height:22px}.bx-n,.bx-d b{font-size:11px}}
+.bx-got{display:flex;flex-wrap:wrap;gap:6px}
+.bx-g{display:flex;align-items:center;gap:3px;padding:3px 7px 3px 3px;border:1px solid #4a3f33;background:rgba(14,11,8,.7)}
+.bx-g>img,.bx-g>.wart,.bx-g>.ph-ico{width:26px;height:26px}.bx-g b{font-size:14px;font-weight:800;color:#f3e8d0;font-variant-numeric:tabular-nums}
+/* ===== v5.45 第 2 輪：對照 Mochi 參考圖（2026-11-02）===== */
+/* 導覽列：沒選到的圖示也是全彩（原本 55% 亮度看起來灰灰的），選到的稍微放大 */
+.nav button img{opacity:.92;filter:saturate(1.05)}
+.nav button:not(.on){color:#cbbd9f}
+.nav button.on img{transform:scale(1.08);filter:drop-shadow(0 0 6px rgba(255,170,80,.55))}
+/* 頁首橫幅：場景圖＋大金字標題（道具欄／交易所／商城），標題兩側沿用道具欄母版的飾條 */
+.pgh{position:relative;margin:10px calc(-1 * max(12px,env(safe-area-inset-left,0px))) 8px;height:clamp(104px,30vw,132px);background-size:cover;background-position:center 38%;border-bottom:1px solid #6b4f2c;box-shadow:0 1px 0 #000}
+.pgh::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,6,4,.15) 0%,rgba(8,6,4,.05) 40%,rgba(8,6,4,.78) 100%);pointer-events:none}
+.pgh-t{position:absolute;left:0;right:0;bottom:12px;z-index:1;display:flex;flex-direction:column;align-items:center;gap:2px}
+.pgh-t h1{display:flex;align-items:center;gap:8px;font-weight:900;font-size:clamp(30px,9.4vw,40px);line-height:1.1;color:#f4d68e;letter-spacing:.14em;text-indent:.14em;white-space:nowrap;text-shadow:0 2px 0 #3b2108,0 0 14px rgba(255,186,90,.35),0 3px 10px #000}
+.pgh-t h1::before,.pgh-t h1::after{content:"";width:clamp(40px,14vw,64px);height:14px;background:url(art/ui/bag2/bag2_title_l.webp) center/contain no-repeat}
+.pgh-t h1::after{background-image:url(art/ui/bag2/bag2_title_r.webp)}
+.pgh-t span{font-size:13px;color:#eadcbc;letter-spacing:.12em;text-shadow:0 1px 3px #000,0 0 6px #000}
+/* 有頁首橫幅時，道具欄母版框裡的小標題就不重複顯示，只留容量 */
+.pgh+.b2 .b2-head h2,.pgh+.b2 .b2-head h2::before{visibility:hidden}
+.pgh+.b2 .b2-head{min-height:0;padding-bottom:2px}
+.pgh+.b2 .b2-head:not(:has(.b2-cap)),.pgh+.b2 .b2-head:not(:has(.b2-cap))+.b2-rule{display:none}
+/* 鍛造舖：鐵匠大圖從約 300px 縮成橫幅，鐵匠靠左、右邊疊大金字標題 */
+.hero.hv-F:not(.fv-1):not(.fv-2){height:clamp(178px,50vw,214px)}
+.hero.hv-F .smith{height:122%;bottom:-38%}
+body.dpv .hero.hv-F .smith{transform:translateX(calc(-104% + var(--mx) * 2px)) translateY(calc(var(--my) * 1px))}
+.hero .fh-t{left:34%;right:0;bottom:auto;top:50%;transform:translateY(-50%);z-index:2;pointer-events:none}
+.hero .fh-t h1{font-size:clamp(32px,10vw,42px)}
+.hero .fh-t h1::before,.hero .fh-t h1::after{display:none}
+.hero.fv-1 .fh-t,.hero.fv-2 .fh-t{display:none}
+/* 村莊列表：沒駐守的村莊右側也顯示可能掉落（道具欄格子框），狀態字已在說明裡就不重複 */
+.v3 .vcard.pause .vside:not(#_){display:flex}
+.v3 .vcard .drops{gap:4px}
+.v3 .vcard .drops .dico:not(#_){width:36px;height:36px;padding:5px;border:0;border-radius:0;background:url(art/ui/bag2/bag2_slot.webp) center/100% 100% no-repeat;object-fit:contain}
+@media (max-width:420px){.v3 .vcard.pause .vst{display:none}.v3 .vcard .drops .dico:nth-child(3){display:none}}
+@media (max-width:374px){.v3 .vcard .drops:not(#_){flex-wrap:nowrap;width:auto}.v3 .vcard .drops .dico:not(#_){width:32px;height:32px;padding:4px}}
+/* 村莊上方界名：跟其他頁首同一套大金字＋兩側飾條 */
+.realm .center h1:not(#_){display:flex;align-items:center;justify-content:center;gap:8px;font-weight:900;font-size:clamp(30px,9.4vw,40px);line-height:1.1;color:#f4d68e;letter-spacing:.14em;text-indent:.14em;white-space:nowrap;text-shadow:0 2px 0 #3b2108,0 0 14px rgba(255,186,90,.35),0 3px 10px #000}
+.realm .center h1::before,.realm .center h1::after{content:"";width:clamp(34px,11vw,56px);height:14px;background:url(art/ui/bag2/bag2_title_l.webp) center/contain no-repeat}
+.realm .center h1::after{background-image:url(art/ui/bag2/bag2_title_r.webp)}
+.realm .center .small{font-size:13px;color:#eadcbc;letter-spacing:.12em;text-shadow:0 1px 3px #000,0 0 6px #000}
+/* 強化小卡：三段區間列（目前這一級落在哪一段就亮起來），一鍵到 +6 的數字原本深褐色看不到 */
+.ev-tiers{display:flex;align-items:center;gap:2px;margin:8px 0 2px}
+.evt-z{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;padding:4px 2px;border:1px solid #4a3f33;background:rgba(14,11,8,.75);clip-path:polygon(8px 0,calc(100% - 8px) 0,100% 50%,calc(100% - 8px) 100%,8px 100%,0 50%);opacity:.6}
+.evt-z b{font-size:12px;line-height:1.3;white-space:nowrap}.evt-z span{font-size:11px;color:#cbbd9f;white-space:nowrap;font-variant-numeric:tabular-nums}
+.evt-z.z0 b{color:#8fd47a}.evt-z.z1 b{color:#e9b45a}.evt-z.z2 b{color:#ff7a62}
+.evt-z.on{opacity:1}.evt-z.z0.on{border-color:#5f9c4b;background:rgba(30,58,22,.7)}.evt-z.z1.on{border-color:#a3742f;background:rgba(62,40,12,.75)}.evt-z.z2.on{border-color:#a8432e;background:rgba(70,18,10,.75)}
+.evt-ar{flex:none;width:8px;height:10px;background:#8a6a3c;clip-path:polygon(0 0,100% 50%,0 100%);opacity:.7}
+.ev-auto:not(#_) b{color:#ffe7a8}
+/* 村莊詳情的掉落格：框色分稀有度（稀有藍、史詩紫、傳說金，跟 1-3 戰鬥卡同色） */
+.matbox:is(.rar-r,.rar-e,.rar-l){position:relative}
+.matbox:is(.rar-r,.rar-e,.rar-l)::before{content:"";position:absolute;inset:3px;border:1px solid var(--rc);box-shadow:inset 0 0 12px var(--rg),0 0 6px var(--rg);pointer-events:none;z-index:1}
+.matbox.rar-r{--rc:#4D84B8;--rg:rgba(77,132,184,.35)}.matbox.rar-e{--rc:#8757C6;--rg:rgba(135,87,198,.38)}.matbox.rar-l{--rc:#C89A3A;--rg:rgba(200,154,58,.4)}
+/* 強化石台待機時就依區間微微發光（安定區綠、危險區紅），播動畫時（.playing）交回原本的符文時間軸控制 */
+.enh-stage.safe:not(.playing):not(.rn-red):not(:has(.enh-ribbon.show)) .stage-sq .rn-stone.glow{opacity:.42}
+.enh-stage.danger:not(.playing):not(:has(.enh-ribbon.show)) .stage-sq .rn-stone.glow{opacity:.3;filter:hue-rotate(-34deg) saturate(2.6) brightness(1.1)}
+/* 鍛造舖：「開始鍛造」改成整排大按鈕（參考圖），數量選擇在上面一排 */
+.sel-bp .qtyrow:not(#_){flex-wrap:wrap}
+.sel-bp .qtyrow .forge-go:not(#_){flex:1 1 100%;margin:8px 0 0;min-height:60px;padding:6px 18px}
+.sel-bp .forge-go .fg-t{font-size:20px;letter-spacing:.12em}.sel-bp .forge-go .fg-s{font-size:12px}
+.sel-bp .forge-go:not(.is-disabled){filter:drop-shadow(0 0 8px rgba(255,170,70,.35))}
+/* 頁首標題上方的三角結飾（art/ttl_crest，AI 生圖，Mochi 參考圖 1、3、6 的樣式）；有了它，標題兩側的小飾條就不重複 */
+.pgh-t::before,.realm .center::before,.hero .fh-t::before{content:"";display:block;width:clamp(150px,50vw,200px);aspect-ratio:428/72;margin:0 auto -2px;background:url(art/ttl_crest.webp) center/contain no-repeat;filter:drop-shadow(0 1px 3px rgba(0,0,0,.9))}
+.hero .fh-t::before{width:clamp(130px,40vw,170px)}
+.pgh-t h1::before,.pgh-t h1::after,.realm .center h1::before,.realm .center h1::after{display:none}
+.pgh{height:clamp(124px,35vw,150px)}
+.realm .center{display:flex;flex-direction:column;align-items:center}
 </style>
