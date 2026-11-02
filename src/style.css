@@ -2717,4 +2717,10 @@ body.dpv .hero.hv-F .smith{transform:translateX(calc(-104% + var(--mx) * 2px)) t
 .sel-bp .qtyrow .forge-go:not(#_){flex:1 1 100%;margin:8px 0 0;min-height:60px;padding:6px 18px}
 .sel-bp .forge-go .fg-t{font-size:20px;letter-spacing:.12em}.sel-bp .forge-go .fg-s{font-size:12px}
 .sel-bp .forge-go:not(.is-disabled){filter:drop-shadow(0 0 8px rgba(255,170,70,.35))}
+/* 頁首標題上方的三角結飾（art/ttl_crest，AI 生圖，Mochi 參考圖 1、3、6 的樣式）；有了它，標題兩側的小飾條就不重複 */
+.pgh-t::before,.realm .center::before,.hero .fh-t::before{content:"";display:block;width:clamp(150px,50vw,200px);aspect-ratio:428/72;margin:0 auto -2px;background:url(art/ttl_crest.webp) center/contain no-repeat;filter:drop-shadow(0 1px 3px rgba(0,0,0,.9))}
+.hero .fh-t::before{width:clamp(130px,40vw,170px)}
+.pgh-t h1::before,.pgh-t h1::after,.realm .center h1::before,.realm .center h1::after{display:none}
+.pgh{height:clamp(124px,35vw,150px)}
+.realm .center{display:flex;flex-direction:column;align-items:center}
 </style>
