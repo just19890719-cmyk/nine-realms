@@ -1333,7 +1333,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
- {v:'5.45',d:'11/02',t:'1-3 狼嚎谷戰鬥畫面升級',b:['1-3 狼嚎谷展開後的戰鬥畫面<b>加高約 30%</b>，狼和騎士放大、站在同一條地面上','騎士單手劍出手會往前踏一步，打中停一下再收招；狼被打會小小後退，暴擊退得更多','近戰武器打中時多了一道金色<b>斬擊弧光</b>','一般傷害和<b>暴擊</b>數字分得更清楚，暴擊時戰鬥畫面輕震一下（一般攻擊不震）','掉落改成小卡片，框色分普通／稀有／史詩／傳說；「本次狩獵獲得」另外列出','收成按鈕放大、加上寶箱圖示，有可以收成時會微微發光','只改 1-3，傷害、掉落率、收益、存檔都沒有改'],g:[]},
+ {v:'5.45',d:'11/02',t:'1-3 戰鬥畫面升級・各頁換新頁首',b:['1-3 狼嚎谷展開後的戰鬥畫面<b>加高約 30%</b>，狼和騎士放大、站在同一條地面上','騎士單手劍出手會往前踏一步，打中停一下再收招；狼被打會小小後退，暴擊退得更多','近戰武器打中時多了一道金色<b>斬擊弧光</b>','一般傷害和<b>暴擊</b>數字分得更清楚，暴擊時戰鬥畫面輕震一下（一般攻擊不震）','掉落改成小卡片，框色分普通／稀有／史詩／傳說；「本次狩獵獲得」另外列出','收成按鈕放大、加上寶箱圖示，有可以收成時會微微發光','道具欄、交易所、商城上方加場景橫幅和大標題；鍛造舖的鐵匠大圖縮成橫幅','底部導覽列圖示改成全彩；沒有駐守武器的村莊也顯示可能掉落','強化小卡多了安定區／危險區／極危區三段提示，「一鍵到 +6」的數字看得清楚了','傷害、掉落率、收益、強化成功率、存檔都沒有改'],g:[]},
  {v:'5.44',d:'11/02',t:'畫面整理：村莊卡片和窄螢幕排版',b:['360 寬的手機，上方金幣、鑽石改回一行，不再擠成兩行','村莊卡片的武器名稱太長時只縮短名稱，<b>+強化等級</b>一定看得到','「每小時打倒幾隻、多少金幣」「最強武器、預估秒數」換行時不會把「金幣」「・」拆到下一行','圖鑑的長武器名稱兩行平均分配；交易所道具說明改成「標價為單價」，窄螢幕不會被切掉','數值、收益、存檔都沒有改'],g:[]},
  {v:'5.43',d:'10/30',t:'戰鬥畫面：騎士揮擊和扣血同時發生',b:['原本騎士的動作比傷害數字慢一點（手機上最多慢到四分之一秒），看起來像還沒打到怪物就先扣血','現在七種武器打到的那一刻，火花、傷害數字、怪物受擊都會同時出現（村莊戰鬥畫面和限時挑戰都一樣）','攻速、傷害、收成都沒有改'],g:[]},
  {v:'5.42',d:'10/29',t:'戰鬥畫面：中毒、流血的數字不再疊在一起',b:['雙刀中毒、斧頭流血這種連續小傷害，同一種同時只顯示一個數字，會直接換成最新的數字，不會好幾個綠字蓋在一起','傷害、觸發機率、攻擊節奏都沒有改'],g:[]},
@@ -2194,7 +2194,7 @@ function viewForge(){
   const sideH='';   // v4.36 工坊／熔解入口拿掉
   const fv=ui.forgeV||'O';   // v3.19 鐵匠鋪內容頁預覽：O 原版／1 主畫面縮成橫條／2 主畫面收起（只在鍛造中分頁顯示）
   return `<section class="hero hv-${hv} fv-${fv} ft-${ui.ftab}"><img class="dp dp-far" src="${D('forge_far')}" alt=""><img class="dp dp-glow" src="${D('forge_fireglow')}" alt=""><img class="dp dp-glow g2" src="${D('forge_fireglow')}" alt=""><img class="dp dp-barrel" src="${D('prop_barrel')}" alt=""><img class="dp dp-steam" src="${D('fx_smoke_wisp')}" alt="">${smFr('smith','鐵匠')}<div class="dp dp-firelit"></div><div class="dp dp-fog"></div><div class="dp dp-embers">${dpEmb}</div><div class="dp dp-grade"></div><img class="dp dp-fg dp-chains" src="${D('prop_chains')}" alt=""><img class="dp dp-fg dp-coal" src="${D('prop_coal')}" alt=""><img class="dp dp-fg dp-hammer" src="${D('prop_hammer')}" alt="">
-   ${hv==='C'||hv==='E'||hv==='F'?'':sideH}${hv==='C'||hv==='E'||hv==='F'?'':hv==='B'?commBadge():commissionCard()}${hv==='E'?heroScene():''}${hv==='F'?heroRibbon():''}</section>${hv==='C'?`<div class="hero-info">${sideH}${commissionCard()}</div>`:''}
+   ${hv==='C'||hv==='E'||hv==='F'?'':sideH}${hv==='C'||hv==='E'||hv==='F'?'':hv==='B'?commBadge():commissionCard()}${hv==='E'?heroScene():''}${hv==='F'?heroRibbon():''}<div class="pgh-t fh-t"><h1>鍛造舖</h1><span>武器鍛造・強化戰力</span></div></section>${hv==='C'?`<div class="hero-info">${sideH}${commissionCard()}</div>`:''}
   ${tabs.length<2?'':`<div class="subtabs">${tabs.map(([k,n])=>`<button class="ui-tab ${ui.ftab===k?'on':''}" data-act="ftab" data-k="${k}">${n}${k==='queue'&&done||k==='bp'&&BPS.some(bpNew)?'<i class="dot"></i>':''}</button>`).join('')}</div>`}<div class="fg2">${body}</div>`;
 }
 function sheetWorkshop(kind){
@@ -2264,6 +2264,9 @@ function sheetBossW(r,j){const g=bossBoardNow(),x=g&&g.top[r],ws=x?(x.ws||[]).fi
 /* ---------- 道具欄 ---------- */
 const SORTS={power:['攻擊力',(a,b)=>power(b)-power(a)],lv:['強化等級',(a,b)=>b.lv-a.lv||power(b)-power(a)],
   cat:['類別',(a,b)=>bpOf(a).cat.localeCompare(bpOf(b).cat)||power(b)-power(a)],post:['駐守優先',(a,b)=>busyW(b)-busyW(a)||power(b)-power(a)],recent:['取得時間',(a,b)=>b.created-a.created||b.id-a.id]};
+// v5.45 第 2 輪（對照 Mochi 參考圖）：道具欄／交易所／商城上方加場景橫幅＋大金字標題（.pgh）；挑武器駐守（pickV）不加
+const PG_HEAD={armory:['道具欄','武器收藏・材料與圖鑑'],market:['交易所','玩家互相買賣武器與道具'],shop:['商城','補給・簽到・材料']};
+function pgHead(){const h=PG_HEAD[ui.tab];if(!h||(ui.tab==='armory'&&ui.pickV!=null))return '';return `<section class="pgh" style="background-image:url(${A(REALM_N[0][2])})"><div class="pgh-t"><h1>${h[0]}</h1><span>${h[1]}</span></div></section>`}
 function viewArmory(){
   if(ui.pickV!=null){const r=viewPick(ui.pickV);if(r)return r;ui.pickV=null}
   if(ui.atab==='m')return viewBag();
@@ -2347,8 +2350,9 @@ function sheetWeapon(id,mode){
       const st=[['成功率',`<b class="t-ok">${pct(r)}</b>`,bl?'含祝福 +10%':''],['爆裝率',`<b class="${danger&&!sc?'t-danger':'t-ok'}">${danger?(sc?'0%':pct(total)):'0%'}</b>`,danger?(sc?'防爆保護':'失敗 '+pct(bc)):'安定區'],
         ['攻擊力',`<b>${fmt(power(w))}<small>→</small><span class="t-gold">${fmt(power(w,next))}</span></b>`,''],['強化石',`<b class="${lackGold?'t-danger':''}">${free?'免費':fmt(cost)+' 顆'}</b>`,`剩 ${fmt(stones())} 顆`]]   // v4.58 小卡顯示強化石剩幾顆（Mochi）;
       const stats=cls=>`<div class="ev-stats ${cls}">${st.map(([k,v,s])=>`<div class="ev-st ${k==='爆裝率'&&danger?(sc?'guard':'risk'):''} ${k==='強化石'?'stone':''}"><span>${k}</span>${v}${s?`<i>${s}</i>`:''}</div>`).join('')}</div>`;
-      const tg='';
-      const warn=danger?(sc?`<div class="ev-warn guard guardline">${img('it_scroll')}防爆卷保護中：爆裝時武器保留</div>`:`<div class="ev-warn risk warn"><span class="grow"><b>危險區</b>：失敗時可能爆裝，武器會永久消失（${pct(total)}）</span></div>`):'';
+      const tg='',zn=next<=stable(w)?0:next<10?1:2;   // v5.45 第 2 輪：三段區間列（安定／危險／極危，只顯示，不動強化率）
+      const tiers=`<div class="ev-tiers">${[['安定區',`+0～+${stable(w)}`],['危險區',`+${stable(w)+1}～+9`],['極危區','+10 以上']].map(([t,r],k)=>`<div class="evt-z z${k} ${k===zn?'on':''}"><b>${t}</b><span>${r}</span></div>`).join('<i class="evt-ar"></i>')}</div>`;
+      const warn=danger?(sc?`<div class="ev-warn guard guardline">${img('it_scroll')}防爆卷保護中：爆裝時武器保留</div>`:`<div class="ev-warn risk warn"><span class="grow"><b>危險區</b>：失敗時可能爆裝，武器會永久<span class="nobr">消失（${pct(total)}）</span></span></div>`):'';
       const lack=lackGold?`<div class="lack-line">強化石用完了：村莊收成（越後面的關卡掉越多）、熔解武器可以拿到。</div>`:lackScroll||lackBless?`<div class="lack-line">${lackScroll?'防爆卷用完了。':'祝福石用完了。'}${btn(lackScroll?'取消防爆卷':'取消祝福石','noItem',{cls:'btn-sec sm',attrs:`data-k="${lackScroll?'useScroll':'useBless'}"`})}${btn('去商城','tab',{cls:'btn-sec sm',attrs:'data-k="shop"'})}</div>`:'';
       const lab=ui.busy?'強化中…':lackGold?'強化石不足':lackBless?'祝福石不足':lackScroll?'防爆卷不足':armed?`確認強化（${pct(total)} 爆裝）`:`${last?'再次強化':'強化'} +${w.lv}→+${next}`;
       const bar=`<div class="ev-bar ${canAuto?'two':''}"><button class="ui-btn ${unguarded?'ui-btn--danger':'ui-btn--primary'} btn ${unguarded?'btn-risk':'btn-primary'} big" data-act="enhance" data-id="${id}" ${ui.busy||lackGold||lackBless||lackScroll?'disabled':''}>${lab}</button>
@@ -2357,7 +2361,7 @@ function sheetWeapon(id,mode){
       const info=`<details class="enh-more ev-more"><summary>ⓘ 規則與攻擊力明細</summary><div class="kvgrid">${kv('安定值','+'+stable(w)+'（'+kindN(b)+'）')}${kv('失敗後爆裝率',danger?pct(bc):'0%')}${kv('基礎成功率',pct(RATE[next]))}${kv('失敗率',pct(1-r))}</div>
         <div class="small"><b>規則</b>：每次強化用 1 顆強化石，成功或失敗都會用掉。失敗不會降級。+1～+6 一定成功；+7～+9 失敗就爆裝；+10～+12 成功 1%，失敗時 1/3 維持原樣、2/3 爆裝。最高 +${MAX_LV}。</div></details>`;
       if(ev==='1')return head+`<div class="ev ev1">`+nameRow+stage+stats('row4')+tg+warn+lack+info+bar+`</div>`;
-      if(ev==='2')return head+`<div class="ev ev2">`+nameRow+`<div class="ev2-wrap">${stage}${stats('over')}</div>`+tg+warn+lack+info+bar+`</div>`;
+      if(ev==='2')return head+`<div class="ev ev2">`+nameRow+`<div class="ev2-wrap">${stage}${stats('over')}</div>`+tg+warn+lack+info+tiers+bar+`</div>`;
       if(ev==='3')return head+`<div class="ev ev3">`+nameRow+`<div class="ev3-grid">${stage}${stats('col')}</div>`+tg+warn+lack+info+bar+`</div>`;
     }
     return head+nameRow+stageHtml({art:A(b.id),danger,from:w.lv,to:next,zone:danger?`危險區`:`安定區`,ribbon:rib,rk:last&&last.k})
@@ -2560,7 +2564,7 @@ function viewVillage(){
    return `<div class="ui-card vcard ${k} ${bs?'bt':''} ${knOn(w)?'tgl':''}" ${w?'':`data-act="vopen" data-i="${i}" role="button" tabindex="0"`}>${vGiveDot(i)||st.bank.cycles?'<i class="dot give-dot"></i>':''}${bs?vStrip(i,w):w?vMon(i,k,knOn(w)):img('v'+(i+1),'vthumb')}<div class="grow"><div class="row nowrap"><b class="grow">${vNo(i)} ${v.name}</b>${grChip(vGr(i),'sm')}<span class="vst ${k}">${lab}</span></div>
     ${w?`<div class="row nowrap small"><span class="wchip ${lc(w)}b" data-act="vopen" data-i="${i}" role="button" aria-label="武器：收回或更換">${wArt(w.b,{cls:'wmini'})}<span class="${lc(w)} wc-n"><span class="wc-nm">${bpOf(w).n}</span> +${w.lv}</span></span><span class="num grow right" data-vclock="${i}"></span></div>${hpBar(i)}
      ${k==='full'?`<div class="small t-danger">已達離線上限 ${S.capH} 小時，暫停累積，請收成</div>`:st.bank.cycles&&!bs?`<div class="vbank">${harvestMini({gold:st.bank.gold,...st.bank.mats})}</div>`:bs?'':`<div class="small muted"><span class="nobr">每小時約打倒 ${fmt(kph(i,w))} 隻<span class="vsep"></span></span><span class="nobr">${fmt(gph(i,w))} 金幣</span></div>`}${betterIdle(i)?`<button class="tag-up" data-act="vswap" data-i="${i}">道具欄有更強的可以換 ›</button>`:''}`
-     :`<div class="small muted">沒有駐守武器，狩獵暫停。點開指派武器。</div>`}</div>
+     :`<div class="small muted"><span class="nobr">沒有駐守武器，</span><span class="nobr">狩獵暫停。</span><span class="nobr">點開指派武器。</span></div>`}</div>
     <div class="vside vside-c">${st.bank.cycles?`<button class="ui-btn ui-btn--accent harvest-btn${bs&&BS_X.includes(i)?' hx':''}" data-act="collect" data-i="${i}">${bs&&BS_X.includes(i)?`<img class="hx-ic" src="${A('ic_harvest')}" alt="">`:''}<span>收成</span><b>×<span data-vpend="${i}">${st.bank.cycles}</span></b></button>`:`<div class="drops">${drops}</div>`}</div>${bs?bsMore(i,w):''}${knOn(w)?`<button class="bs-tgl ${bs?'up':''}" data-act="${bs?'bsclose':'bsopen'}" data-i="${i}" aria-label="${bs?'收起':'展開'}戰鬥畫面"><i></i></button>`:''}</div>`}).join('')}</div>`;
 }
 // v3.61 從別頁點進村莊：自動捲到目前待交付的關卡（已經看得到就不動，保留上方地圖）
@@ -2779,7 +2783,7 @@ function viewShop(){   // v5.17 換成道具欄母版（.b2）：主框、次面
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
- {v:'5.45',t:'1-3 狼嚎谷展開卡升級第一輪（BS_X=[2]、.bs.bx、bsMoreX、收成 .hx＋art/ic_harvest、bxall、近戰斬擊弧光 .bs-sl art/fx_slash_n）',b:[['v545','單手劍 +8 駐守 1-3、累積 36 輪、展開戰鬥畫面'],['v545c','同上，接下來 3 秒每一下都暴擊（看暴擊數字和震動）']]},
+ {v:'5.45',t:'1-3 狼嚎谷展開卡升級第一輪（BS_X=[2]、.bs.bx、bsMoreX、收成 .hx＋art/ic_harvest、bxall、近戰斬擊弧光 .bs-sl art/fx_slash_n）＋第 2 輪對照參考圖：頁首橫幅 pgHead／.pgh、鍛造舖標題 .fh-t、導覽列全彩、村莊卡掉落格、強化三段區間 .ev-tiers',b:[['v545','單手劍 +8 駐守 1-3、累積 36 輪、展開戰鬥畫面'],['v545z','強化小卡：+7（危險區）／+10（極危區）測試劍，看三段區間列（再按換另一段）'],['v545c','同上，接下來 3 秒每一下都暴擊（看暴擊數字和震動）']]},
  {v:'5.44',t:'村莊卡片斷字／武器名稱保留 +等級／360 資源列一行／圖鑑名稱平均換行／交易所「標價為單價」',b:[['v544','最長名稱武器 +12 駐守 1-1、金幣 1.2 億、鑽石 99,999，切到村莊看排版']]},
  {v:'5.43',t:'BUG-021 騎士揮擊對齊扣血：.bs-kn img animation-delay 改 0、全部 kn-<k><f> 加進 ANIM_SYNC（原本只有 v5.41 的 kn-sv），vStrip 拿掉 --d',b:[['bssync','展開目前戰鬥畫面（沒有就展開 1-3），量 2 秒騎士動畫跟扣血時鐘的落差']]},
  {v:'5.42',t:'P2-01（BUG-020）：dotMerge——.bs-mon 裡同種 bleed／poison 的 .mon-pop 同時只留一個：舊字 <0.4 秒直接換數字（不重播動畫），否則移除再跳新字；<i> 標籤帶到新字；只改顯示',b:[['bsdot','1-3 換成雙刀 +12＋附加效果必定觸發，展開戰鬥畫面看中毒字'],['bsdotax','1-3 換成斧 +12＋附加效果必定觸發，看流血字']]},
@@ -3182,6 +3186,7 @@ if(k==='cpush'){toast('上傳中…');cloudPush(true).then(()=>{toast(CLOUD.err?
    bsdot:()=>bsDotDemo('dagger'),
    bsdotax:()=>bsDotDemo('axe'),
    v545:()=>{for(let k=0;k<3;k++)if(S.villages[k].status!=='cleared')S.villages[k].status='cleared';const b=BPS.find(x=>x.cat==='sword'&&!x.dev&&!x.unlock);const w=makeWeapon(b.id,0,8);const st=S.villages[2];st.weaponId=null;deliverCore(2,w.id);st.cycleStart-=dur(2,w)*36+5;tick();ui.sheet=null;ui.realm=0;ui.tab='village';ui.bsOpen=2;save();render();const c=document.querySelector('.vcard.bt');if(c)scrollTo(0,c.getBoundingClientRect().top+scrollY-70)},   // v5.45
+   v545z:()=>{const b=BPS.find(x=>x.cat==='sword'&&!x.dev&&!x.unlock);const w=makeWeapon(b.id,0,ui.v545z=(ui.v545z===7?10:7));w.test=true;ui.tab='armory';ui.sheet={t:'w',id:w.id,m:'enh'};render()},
    v545c:()=>{if(ui.bsOpen!==2)devdo('v545');ui.bsProc=1;setTimeout(()=>{ui.bsProc=0},3000)},
    v544:()=>{const b=BPS.filter(x=>!x.dev).sort((x,y)=>y.n.length-x.n.length)[0];const w=makeWeapon(b.id,0,12);const st=S.villages[0];st.weaponId=null;deliverCore(0,w.id);S.gold=123456789;S.gems=99999;ui.sheet=null;ui.realm=0;ui.tab='village';save();render()},   // v5.44
    bssync:()=>{if(ui.bsOpen==null){devdo('bsall');ui.bsOpen=2}ui.tab='village';render();setTimeout(bsSyncCheck,300)},   // v5.43
@@ -3275,7 +3280,7 @@ function render(){
   if(QUIET)return;if(ui.nwOn&&!(ui.sheet&&ui.sheet.t==='set'&&ui.sheet.k==='n')){ui.nwOn=false;nwMarkAll()}   // v4.03 離開更新公告頁才把 NEW 消掉
   renderRes();renderNav();
   const hs=[...document.querySelectorAll('#view .hscroll,#view .catbar')].map(e=>e.scrollLeft);   // 保留橫向捲動位置（點圖紙不會跳回最前面）
-  const V=document.getElementById('view'),y=scrollY,html=({forge:viewForge,armory:viewArmory,village:viewVillage,shop:viewShop,market:viewMarketPage})[ui.tab]();
+  const V=document.getElementById('view'),y=scrollY,html=pgHead()+({forge:viewForge,armory:viewArmory,village:viewVillage,shop:viewShop,market:viewMarketPage})[ui.tab]();
   // v3.67 離開鐵匠鋪時把上方 hero（大背景、鐵匠、道具圖）整塊收起來，回來直接放回去，不用重新載入和解碼圖片
   let oldHero=V.querySelector(':scope > section.hero');if(oldHero&&ui.tab!=='forge'){HERO_KEEP=oldHero;oldHero.remove();oldHero=null}
   else if(!oldHero&&ui.tab==='forge'&&HERO_KEEP){V.prepend(HERO_KEEP);oldHero=HERO_KEEP;HERO_KEEP=null}

@@ -2661,4 +2661,48 @@ html{scrollbar-gutter:stable}   /* v5.07 開關彈窗時捲軸消失／出現不
 .bx-got{display:flex;flex-wrap:wrap;gap:6px}
 .bx-g{display:flex;align-items:center;gap:3px;padding:3px 7px 3px 3px;border:1px solid #4a3f33;background:rgba(14,11,8,.7)}
 .bx-g>img,.bx-g>.wart,.bx-g>.ph-ico{width:26px;height:26px}.bx-g b{font-size:14px;font-weight:800;color:#f3e8d0;font-variant-numeric:tabular-nums}
+/* ===== v5.45 第 2 輪：對照 Mochi 參考圖（2026-11-02）===== */
+/* 導覽列：沒選到的圖示也是全彩（原本 55% 亮度看起來灰灰的），選到的稍微放大 */
+.nav button img{opacity:.92;filter:saturate(1.05)}
+.nav button:not(.on){color:#cbbd9f}
+.nav button.on img{transform:scale(1.08);filter:drop-shadow(0 0 6px rgba(255,170,80,.55))}
+/* 頁首橫幅：場景圖＋大金字標題（道具欄／交易所／商城），標題兩側沿用道具欄母版的飾條 */
+.pgh{position:relative;margin:10px calc(-1 * max(12px,env(safe-area-inset-left,0px))) 8px;height:clamp(104px,30vw,132px);background-size:cover;background-position:center 38%;border-bottom:1px solid #6b4f2c;box-shadow:0 1px 0 #000}
+.pgh::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,6,4,.15) 0%,rgba(8,6,4,.05) 40%,rgba(8,6,4,.78) 100%);pointer-events:none}
+.pgh-t{position:absolute;left:0;right:0;bottom:12px;z-index:1;display:flex;flex-direction:column;align-items:center;gap:2px}
+.pgh-t h1{display:flex;align-items:center;gap:8px;font-weight:900;font-size:clamp(30px,9.4vw,40px);line-height:1.1;color:#f4d68e;letter-spacing:.14em;text-indent:.14em;white-space:nowrap;text-shadow:0 2px 0 #3b2108,0 0 14px rgba(255,186,90,.35),0 3px 10px #000}
+.pgh-t h1::before,.pgh-t h1::after{content:"";width:clamp(40px,14vw,64px);height:14px;background:url(art/ui/bag2/bag2_title_l.webp) center/contain no-repeat}
+.pgh-t h1::after{background-image:url(art/ui/bag2/bag2_title_r.webp)}
+.pgh-t span{font-size:13px;color:#eadcbc;letter-spacing:.12em;text-shadow:0 1px 3px #000,0 0 6px #000}
+/* 有頁首橫幅時，道具欄母版框裡的小標題就不重複顯示，只留容量 */
+.pgh+.b2 .b2-head h2,.pgh+.b2 .b2-head h2::before{visibility:hidden}
+.pgh+.b2 .b2-head{min-height:0;padding-bottom:2px}
+.pgh+.b2 .b2-head:not(:has(.b2-cap)),.pgh+.b2 .b2-head:not(:has(.b2-cap))+.b2-rule{display:none}
+/* 鍛造舖：鐵匠大圖從約 300px 縮成橫幅，鐵匠靠左、右邊疊大金字標題 */
+.hero.hv-F:not(.fv-1):not(.fv-2){height:clamp(178px,50vw,214px)}
+.hero.hv-F .smith{height:122%;bottom:-38%}
+body.dpv .hero.hv-F .smith{transform:translateX(calc(-104% + var(--mx) * 2px)) translateY(calc(var(--my) * 1px))}
+.hero .fh-t{left:34%;right:0;bottom:auto;top:50%;transform:translateY(-50%);z-index:2;pointer-events:none}
+.hero .fh-t h1{font-size:clamp(32px,10vw,42px)}
+.hero .fh-t h1::before,.hero .fh-t h1::after{display:none}
+.hero.fv-1 .fh-t,.hero.fv-2 .fh-t{display:none}
+/* 村莊列表：沒駐守的村莊右側也顯示可能掉落（道具欄格子框），狀態字已在說明裡就不重複 */
+.v3 .vcard.pause .vside:not(#_){display:flex}
+.v3 .vcard .drops{gap:4px}
+.v3 .vcard .drops .dico:not(#_){width:36px;height:36px;padding:5px;border:0;border-radius:0;background:url(art/ui/bag2/bag2_slot.webp) center/100% 100% no-repeat;object-fit:contain}
+@media (max-width:420px){.v3 .vcard.pause .vst{display:none}.v3 .vcard .drops .dico:nth-child(3){display:none}}
+@media (max-width:374px){.v3 .vcard .drops:not(#_){flex-wrap:nowrap;width:auto}.v3 .vcard .drops .dico:not(#_){width:32px;height:32px;padding:4px}}
+/* 村莊上方界名：跟其他頁首同一套大金字＋兩側飾條 */
+.realm .center h1:not(#_){display:flex;align-items:center;justify-content:center;gap:8px;font-weight:900;font-size:clamp(30px,9.4vw,40px);line-height:1.1;color:#f4d68e;letter-spacing:.14em;text-indent:.14em;white-space:nowrap;text-shadow:0 2px 0 #3b2108,0 0 14px rgba(255,186,90,.35),0 3px 10px #000}
+.realm .center h1::before,.realm .center h1::after{content:"";width:clamp(34px,11vw,56px);height:14px;background:url(art/ui/bag2/bag2_title_l.webp) center/contain no-repeat}
+.realm .center h1::after{background-image:url(art/ui/bag2/bag2_title_r.webp)}
+.realm .center .small{font-size:13px;color:#eadcbc;letter-spacing:.12em;text-shadow:0 1px 3px #000,0 0 6px #000}
+/* 強化小卡：三段區間列（目前這一級落在哪一段就亮起來），一鍵到 +6 的數字原本深褐色看不到 */
+.ev-tiers{display:flex;align-items:center;gap:2px;margin:8px 0 2px}
+.evt-z{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;padding:4px 2px;border:1px solid #4a3f33;background:rgba(14,11,8,.75);clip-path:polygon(8px 0,calc(100% - 8px) 0,100% 50%,calc(100% - 8px) 100%,8px 100%,0 50%);opacity:.6}
+.evt-z b{font-size:12px;line-height:1.3;white-space:nowrap}.evt-z span{font-size:11px;color:#cbbd9f;white-space:nowrap;font-variant-numeric:tabular-nums}
+.evt-z.z0 b{color:#8fd47a}.evt-z.z1 b{color:#e9b45a}.evt-z.z2 b{color:#ff7a62}
+.evt-z.on{opacity:1}.evt-z.z0.on{border-color:#5f9c4b;background:rgba(30,58,22,.7)}.evt-z.z1.on{border-color:#a3742f;background:rgba(62,40,12,.75)}.evt-z.z2.on{border-color:#a8432e;background:rgba(70,18,10,.75)}
+.evt-ar{flex:none;width:8px;height:10px;background:#8a6a3c;clip-path:polygon(0 0,100% 50%,0 100%);opacity:.7}
+.ev-auto:not(#_) b{color:#ffe7a8}
 </style>
