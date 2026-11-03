@@ -3413,6 +3413,26 @@
    "status": "pending",
    "sha256": "d602fc9b10c40f0f384f63bf74b18b64ff9ff62875b4335760de8031fa392d92",
    "note": "v5.45 第 3 輪：頁首標題三角結飾，Mochi 電腦 ChatGPT 生圖（提示詞 /mnt/project-files/polish-target/標題三角結飾_生圖提示詞.md）"
+  },
+  "art/kn_sw_m1.webp": {
+   "status": "pending",
+   "sha256": "31112d75ba042925bbfd072f6b2bcef52cfd6bbadcd042801908885267c5fd2d",
+   "note": "v5.47 1-3 單手劍中間格（ChatGPT 圖片編輯，Claude 去背對齊）；Mochi 2026-11-03 00:53Z 決策卡選「放進去+登記素材」"
+  },
+  "art/kn_sw_m2.webp": {
+   "status": "pending",
+   "sha256": "2babbfd85ca81775f3fca38b6c257c2aa5893f36b6cbb3185ece906325265397",
+   "note": "v5.47 1-3 單手劍中間格（ChatGPT 圖片編輯，Claude 去背對齊）；Mochi 2026-11-03 00:53Z 決策卡選「放進去+登記素材」"
+  },
+  "art/kn_sw_m3.webp": {
+   "status": "pending",
+   "sha256": "5102fda55e145e472fd286a8419bde4900bca37a077d84de16bae96233bd3892",
+   "note": "v5.47 1-3 單手劍中間格（ChatGPT 圖片編輯，Claude 去背對齊）；Mochi 2026-11-03 00:53Z 決策卡選「放進去+登記素材」"
+  },
+  "art/kn_sw_m4.webp": {
+   "status": "pending",
+   "sha256": "6d95920b43651bad58d1d305cbe582af673906d2a9364c0ad4c9af47792910bd",
+   "note": "v5.47 1-3 單手劍中間格（ChatGPT 圖片編輯，Claude 去背對齊）；Mochi 2026-11-03 00:53Z 決策卡選「放進去+登記素材」"
   }
  }
 }

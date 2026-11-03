@@ -2736,4 +2736,20 @@ body.dpv .hero.hv-F .smith{transform:translateX(calc(-104% + var(--mx) * 2px)) t
 .bs.bx.sv .bs-mon .mon-pop.hit,.bs.bx.sv .bs-mon .mon-pop.buff{animation:bxPopSv .85s ease-out forwards}
 @keyframes bxPopSv{0%{opacity:0;transform:translate(-50%,2px) scale(.6)}12%{opacity:1;transform:translate(-50%,-2px) scale(1.3)}26%{transform:translate(-50%,-4px) scale(1)}70%{opacity:1}100%{opacity:0;transform:translate(-50%,-20px) scale(1)}}
 @media(prefers-reduced-motion:reduce){.bs.bx.sv .bs-kb .bs-ag{display:none}}
+/* ===== v5.47 1-3 單手劍揮劍節奏（Mochi 2026-11-03 選「先重排時間」＋「放進去+登記素材」）：只套 .bs.bx.c-sw.sv（1-3），1-4 和其他武器不變。
+   一刀仍 1000ms、k8 仍 450ms 起＝扣血那一刻、出刀 k6→k7→k8 仍是硬切。新增 4 張中間格 kn_sw_m1～m4：舉劍 k0→m1→m2→k1、收劍 k9→m3→m4→k10。
+   慢的段落上下兩張重疊 40ms 淡入（上層淡入／下層出現時上層淡出），用真的騎士圖接起來，不是程式畫的 ===== */
+@keyframes kn-sx0{0.00%{opacity:1}10.99%{opacity:1}11.00%{opacity:0}90.00%{opacity:1}100.00%{opacity:1}}.bs.bx.c-sw.sv .k0{animation-name:kn-sx0}
+@keyframes kn-sxm1{0.00%{opacity:0}7.00%{opacity:0;animation-timing-function:linear}11.00%{opacity:1}17.99%{opacity:1}18.00%{opacity:0}100.00%{opacity:0}}.bs.bx.c-sw.sv .m1{animation-name:kn-sxm1}
+@keyframes kn-sxm2{0.00%{opacity:0}14.00%{opacity:0;animation-timing-function:linear}18.00%{opacity:1}20.00%{opacity:1;animation-timing-function:linear}24.00%{opacity:0}100.00%{opacity:0}}.bs.bx.c-sw.sv .m2{animation-name:kn-sxm2}
+@keyframes kn-sx1{0.00%{opacity:0}20.00%{opacity:1}29.99%{opacity:1}30.00%{opacity:0}100.00%{opacity:0}}.bs.bx.c-sw.sv .k1{animation-name:kn-sx1}
+@keyframes kn-sx2{0.00%{opacity:0}26.00%{opacity:0;animation-timing-function:linear}30.00%{opacity:1}36.99%{opacity:1}37.00%{opacity:0}100.00%{opacity:0}}.bs.bx.c-sw.sv .k2{animation-name:kn-sx2}
+@keyframes kn-sx6{0.00%{opacity:0}33.00%{opacity:0;animation-timing-function:linear}37.00%{opacity:1}41.99%{opacity:1}42.00%{opacity:0}100.00%{opacity:0}}.bs.bx.c-sw.sv .k6{animation-name:kn-sx6}
+@keyframes kn-sx7{0.00%{opacity:0}42.00%{opacity:1}44.99%{opacity:1}45.00%{opacity:0}100.00%{opacity:0}}.bs.bx.c-sw.sv .k7{animation-name:kn-sx7}
+@keyframes kn-sx8{0.00%{opacity:0}45.00%{opacity:1}63.99%{opacity:1}64.00%{opacity:0}100.00%{opacity:0}}.bs.bx.c-sw.sv .k8{animation-name:kn-sx8}
+@keyframes kn-sx9{0.00%{opacity:0}60.00%{opacity:0;animation-timing-function:linear}64.00%{opacity:1}68.99%{opacity:1}69.00%{opacity:0}100.00%{opacity:0}}.bs.bx.c-sw.sv .k9{animation-name:kn-sx9}
+@keyframes kn-sxm3{0.00%{opacity:0}65.00%{opacity:0;animation-timing-function:linear}69.00%{opacity:1}73.99%{opacity:1}74.00%{opacity:0}100.00%{opacity:0}}.bs.bx.c-sw.sv .m3{animation-name:kn-sxm3}
+@keyframes kn-sxm4{0.00%{opacity:0}70.00%{opacity:0;animation-timing-function:linear}74.00%{opacity:1}75.00%{opacity:1;animation-timing-function:linear}79.00%{opacity:0}100.00%{opacity:0}}.bs.bx.c-sw.sv .m4{animation-name:kn-sxm4}
+@keyframes kn-sx10{0.00%{opacity:0}75.00%{opacity:1}86.99%{opacity:1}87.00%{opacity:0}100.00%{opacity:0}}.bs.bx.c-sw.sv .k10{animation-name:kn-sx10}
+@keyframes kn-sx11{0.00%{opacity:0}83.00%{opacity:0;animation-timing-function:linear}87.00%{opacity:1}90.00%{opacity:1;animation-timing-function:linear}94.00%{opacity:0}100.00%{opacity:0}}.bs.bx.c-sw.sv .k11{animation-name:kn-sx11}
 </style>
