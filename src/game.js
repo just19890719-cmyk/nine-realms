@@ -335,7 +335,7 @@ function loadState(){
 function save(){if(QUIET)return;S.savedAt=Date.now();CLOUD.dirty=true;if(CLOUD_ONLY)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- v3.34 雲端帳號與存檔（Supabase：Email＋密碼；本機照常存，定時與離開時同步到雲端） ---------- */
-const BUILD_ID='5.46';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
+const BUILD_ID='5.47';const BUILD='v'+BUILD_ID+' 封測';const BETA=true;
 const MAINT=true;   // v4.18 封測暫停：開遊戲只看到維護公告，一般玩家進不去；只有管理員（admins 表）登入後能進。重新開放：改成 false 並更新 BUILD_ID
 const SB_URL='https://bzvilstgpjkztrydjwlt.supabase.co',SB_KEY='sb_publishable_CMSLltB8qKwMU3nUFezthw_HRm3EBN4',AUTH_KEY='nrs-auth';
 const CLOUD={dirty:false,busy:false,last:0,err:'',state:'off',ready:false,kicked:false};let SID=null;
@@ -1333,6 +1333,7 @@ function sndSettings(){if(ui.sheet&&ui.sheet.t==='set')return render();ui.result
 // v4.03 遊戲內公告＋玩法說明（Mochi 選：右上角齒輪取代喇叭、內容寫在程式裡、不自動跳出只亮紅點）
 // 每次更新：在 NW_LOG 最上面加一則（g＝這次改到的玩法 key），並把 GUIDE 裡對應項目的內容和 v 改成新版本 → 沒看過的玩家會看到 NEW、齒輪亮紅點
 const NW_LOG=[
+ {v:'5.47',d:'11/03',t:'1-3 單手劍揮劍更順',b:['1-3 狼嚎谷用單手劍時，騎士舉劍不會再<b>卡住一下</b>，抬手、收刀的動作接得更順','出刀和打中的時間點不變','傷害、攻速、掉落、收益都沒有改'],g:[]},
  {v:'5.46',d:'11/02',t:'1-3 單手劍攻擊手感',b:['1-3 狼嚎谷用單手劍時，騎士出手前會先<b>往後蓄力</b>，再快速衝出去，揮劍時帶一道殘影','打中的瞬間戰鬥畫面<b>停頓一下</b>，狼會閃白、往後退，畫面輕輕震動','傷害數字彈出時先放大再縮回','傷害、攻速、掉落、收益都沒有改'],g:[]},
  {v:'5.45',d:'11/02',t:'1-3 戰鬥畫面升級・各頁換新頁首',b:['1-3 狼嚎谷展開後的戰鬥畫面<b>加高約 30%</b>，狼和騎士放大、站在同一條地面上','騎士單手劍出手會往前踏一步，打中停一下再收招；狼被打會小小後退，暴擊退得更多','近戰武器打中時多了一道金色<b>斬擊弧光</b>','一般傷害和<b>暴擊</b>數字分得更清楚，暴擊時戰鬥畫面輕震一下（一般攻擊不震）','掉落改成小卡片，框色分普通／稀有／史詩／傳說；「本次狩獵獲得」另外列出','收成按鈕放大、加上寶箱圖示，有可以收成時會微微發光','交易所、商城上方加場景橫幅和大標題，各頁標題上方有金色三角結飾；鍛造舖的鐵匠大圖縮成橫幅','底部導覽列圖示改成全彩；沒有駐守武器的村莊也顯示可能掉落','強化小卡多了安定區／危險區／極危區三段提示，石台平常就依區間發綠光或紅光；「一鍵到 +6」的數字看得清楚了','鍛造舖「開始鍛造」改成整排大按鈕；村莊詳情的掉落格框色分稀有度','傷害、掉落率、收益、強化成功率、存檔都沒有改'],g:[]},
  {v:'5.44',d:'11/02',t:'畫面整理：村莊卡片和窄螢幕排版',b:['360 寬的手機，上方金幣、鑽石改回一行，不再擠成兩行','村莊卡片的武器名稱太長時只縮短名稱，<b>+強化等級</b>一定看得到','「每小時打倒幾隻、多少金幣」「最強武器、預估秒數」換行時不會把「金幣」「・」拆到下一行','圖鑑的長武器名稱兩行平均分配；交易所道具說明改成「標價為單價」，窄螢幕不會被切掉','數值、收益、存檔都沒有改'],g:[]},
@@ -2794,6 +2795,7 @@ function viewShop(){   // v5.17 換成道具欄母版（.b2）：主框、次面
 // v4.62 開發者工具「依版本」分頁（Mochi）：新版本一律加在最上面，一個版本一段。
 // v＝版本、t＝這版改了什麼（一句話）、b＝[按鈕代碼, 按鈕文字]；按鈕代碼就是 devdo(k) 的 k，文字可以是函式（會變的狀態）
 const DEV_LOG=[
+ {v:'5.47',t:'1-3 單手劍 12 張重新分配時間（kn-sx，只套 .bs.bx.c-sw.sv）：舉劍停 230→110ms、劍拉到最後 30→130ms、慢段落上下格 40ms 淡入；k8 仍 450ms、出刀硬切不變',b:[['v546','測試新節奏：單手劍 +8 駐守 1-3、展開戰鬥畫面']]},
  {v:'5.46',t:'1-3 單手劍攻擊手感（只套 .bs.bx.sv）：bsKnStep 蓄力 ease-in 後拉 7px→60ms ease-out 衝出→慢收；.bs-ag 殘影（kn_sw_7 半透明拉長）；bxStop 命中整個戰鬥畫面停 BX_HS（預設 80ms，循環動畫恢復時補時間）；bsShake 每下輕震 BX_SK px（暴擊加倍）；閃白 100ms；數字彈出放大',b:[['v546','測試攻擊動畫：單手劍 +8 駐守 1-3、展開戰鬥畫面'],['v546s',()=>`命中停頓：${ui.bxHS??BX_HS}ms（按一下換 0／50／70／80／100／120）`],['v546k',()=>`震動強度：${ui.bxSK??BX_SK}px（按一下換 0／1／2／3）`],['v546c','接下來 3 秒每一下都暴擊']]},
  {v:'5.45',t:'1-3 狼嚎谷展開卡升級第一輪（BS_X=[2]、.bs.bx、bsMoreX、收成 .hx＋art/ic_harvest、bxall、近戰斬擊弧光 .bs-sl art/fx_slash_n）＋第 2 輪對照參考圖：頁首橫幅 pgHead／.pgh、鍛造舖標題 .fh-t、導覽列全彩、村莊卡掉落格、強化三段區間 .ev-tiers、石台待機發光、鍛造大按鈕、掉落框色 rar-*、標題三角結飾 art/ttl_crest',b:[['v545','單手劍 +8 駐守 1-3、累積 36 輪、展開戰鬥畫面'],['v545z','強化小卡：+7（危險區）／+10（極危區）測試劍，看三段區間列（再按換另一段）'],['v545c','同上，接下來 3 秒每一下都暴擊（看暴擊數字和震動）']]},
  {v:'5.44',t:'村莊卡片斷字／武器名稱保留 +等級／360 資源列一行／圖鑑名稱平均換行／交易所「標價為單價」',b:[['v544','最長名稱武器 +12 駐守 1-1、金幣 1.2 億、鑽石 99,999，切到村莊看排版']]},
@@ -3313,7 +3315,7 @@ function render(){
 }
 // v5.15 BUG-013 render() 每次重建 DOM，新元素上的循環動畫（紅點呼吸、收成按鈕脈動）會從頭播 → 看起來一直閃。
 // 這裡把這些循環動畫的起點對齊到頁面時間軸 0，重畫前後相位一樣。新增會被 render() 重建的循環動畫：把動畫名稱加進 ANIM_SYNC（或像 +9 裂縫用負的 animation-delay），run_tests.js 會檢查。
-const ANIM_SYNC=new Set(['bsKnIdle','bsKnStep','bsAg','bxCta','givePulse','pulseO','pulse','b2crk','frun','bsFog','bsEmber',...[0,1,2,6,7,8,9,10,11].map(k=>'kn-sv'+k),...Object.values(KN).flatMap(x=>Array.from({length:12},(_,f)=>'kn-'+x.k+f))]);   // v5.43 BUG-021：七種武器的騎士格全部對齊時間軸 0，打到的那一格跟扣血同時出現   // v5.41 單手劍 VS 狼的騎士格也對齊時間軸 0（扣血用 performance.now()%1000＝450 判定，兩邊同一個起點）   // v5.18 +9 裂縫呼吸（b2crk）、+9 小卡跑框（frun）也改用這裡對齊（原本用產生畫面時的時間算負延遲，手機卡頓時會往前跳 0.1～0.6 秒）
+const ANIM_SYNC=new Set(['bsKnIdle','bsKnStep','bsAg','bxCta','givePulse','pulseO','pulse','b2crk','frun','bsFog','bsEmber',...[0,1,2,6,7,8,9,10,11].flatMap(k=>['kn-sv'+k,'kn-sx'+k]),...Object.values(KN).flatMap(x=>Array.from({length:12},(_,f)=>'kn-'+x.k+f))]);   // v5.43 BUG-021：七種武器的騎士格全部對齊時間軸 0，打到的那一格跟扣血同時出現   // v5.41 單手劍 VS 狼的騎士格也對齊時間軸 0（扣血用 performance.now()%1000＝450 判定，兩邊同一個起點）   // v5.18 +9 裂縫呼吸（b2crk）、+9 小卡跑框（frun）也改用這裡對齊（原本用產生畫面時的時間算負延遲，手機卡頓時會往前跳 0.1～0.6 秒）
 // v5.34 彈窗往下捲時標題列加暗底（.shd），內容不會從透明標題後面透出來；沒捲動時跟原本一樣
 function shdSync(n=document.querySelector('.sheet')){if(n)n.classList.toggle('shd',n.scrollTop>2)}
 if(typeof document!=='undefined')document.addEventListener('scroll',e=>{const t=e.target;if(t&&t.classList&&t.classList.contains('sheet'))shdSync(t)},{capture:true,passive:true});
