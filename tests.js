@@ -512,7 +512,8 @@ function atkFeelTests(){const res=[];try{   // v5.46 1-3 單手劍攻擊手感�
     // v5.47 1-3 單手劍重新分配時間：1-3 用 kn-sx、1-4 仍用 kn-sv；打到的那一格 k8 仍從 45%（450ms）開始
     const c=document.createElement('div');c.style.cssText='position:fixed;left:-9999px;width:390px';c.innerHTML=vStrip(2,w)+vStrip(3,w);document.body.appendChild(c);const ss=[...c.querySelectorAll('.bs')],an=(i,k)=>getComputedStyle(ss[i].querySelector('.k'+k)).animationName;
     let k8='';for(const sh of document.styleSheets){try{for(const r of sh.cssRules)if(r.name==='kn-sx8')k8=[...r.cssRules].map(x=>x.keyText).join(',')}catch(e){}}
-    res.push(T('AF6 1-3 單手劍用新節奏、1-4 不變、打到那一格仍在 450ms',an(0,2)==='kn-sx2'&&an(0,8)==='kn-sx8'&&an(1,2)==='kn-sv2'&&/^0%,45%,/.test(k8),an(0,2)+' '+an(1,2)+' '+k8));c.remove()}
+    res.push(T('AF6 1-3 單手劍用新節奏、1-4 不變、打到那一格仍在 450ms',an(0,2)==='kn-sx2'&&an(0,8)==='kn-sx8'&&an(1,2)==='kn-sv2'&&/^0%,45%,/.test(k8),an(0,2)+' '+an(1,2)+' '+k8));
+    const m=k=>getComputedStyle(ss[0].querySelector('.m'+k)).animationName;res.push(T('AF7 1-3 單手劍有 4 張中間格、1-4 沒有',[1,2,3,4].every(k=>m(k)==='kn-sxm'+k)&&!ss[1].querySelector('.m1'),[1,2,3,4].map(m).join(',')));c.remove()}
   }catch(e){res.push(T('AF 攻擊手感',false,e.message))}return res}
 function hitTests(){const cats=[...new Set(BPS.map(b=>b.cat))],miss=cats.filter(c=>!HIT[c]||!HIT_N[c]);
   const bad=Object.entries(HIT).filter(([k,h])=>{const z={};let sum=0;for(let n=0;n<400;n++){const p=h.plan(z);if(p.some(x=>x[0]>=h.iv*.85))return true;sum+=p.reduce((a,x)=>a+x[1],0)}return k!=='shield'&&Math.abs(sum/400/h.E-1)>.15});
